@@ -5,6 +5,9 @@ export type FactoryExperience = {
   id: string;
   content: string;
   task: string;
+  indonesian: string;
+  explanation?: string;
+  harvest: string[];
 };
 
 const experiencePath = path.join(
@@ -26,9 +29,22 @@ export function getFactoryExperiences(): FactoryExperience[] {
       if (!match) throw new Error('Invalid Factory Experience format');
 
       const content = section.trim();
-      const task = content.match(/## Task\s*\n\s*([^\n]+)/)?.[1]?.trim() ?? '';
+      const task = content.match(/## Task\s*\r?\n\s*([^\r\n]+)/)?.[1]?.trim() ?? '';
+      const taskSection = content.match(/## Task\s*\r?\n([\s\S]*?)(?=\r?\n## |$)/)?.[1] ?? '';
+      const indonesianFromMarker = content.match(/\*\*🇮🇩\*\*\s*\r?\n\s*([^\r\n]+)/)?.[1]?.trim();
+      const indonesianFromTask = taskSection
+        .split(/\r?\n/)
+        .map((line) => line.replace(/\*\*/g, '').trim())
+        .find((line) => /[A-Za-z]/.test(line) && !/[\u3400-\u9FFF]/.test(line) && !line.startsWith('#')) ?? '';
+      const indonesian = indonesianFromMarker ?? indonesianFromTask;
+      const explanation = content.match(/## Story Background\s*\r?\n([\s\S]*?)(?=\r?\n## |$)/)?.[1]?.trim();
+      const harvestSection = content.match(/## Today's Harvest\s*\r?\n([\s\S]*?)(?=\r?\n## |$)/)?.[1] ?? '';
+      const harvest = harvestSection
+        .split(/\r?\n/)
+        .map((line) => line.replace(/^-\s*/, '').trim())
+        .filter(Boolean);
 
-      return { id: match[1], content, task };
+      return { id: match[1], content, task, indonesian, explanation, harvest };
     })
     .filter(({ id }) => Number(id.slice(-3)) >= 1)
     .sort((a, b) => a.id.localeCompare(b.id));
