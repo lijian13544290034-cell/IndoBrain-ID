@@ -65,10 +65,15 @@ function firstIndonesianSentence(scene: string) {
 
 function harvestFromDialogue(harvest: string[], dialogue: string) {
   const normalizedDialogue = dialogue.toLocaleLowerCase();
-  return harvest.filter((entry) => {
-    const term = entry.replace(/^[-*\s]+/, '').split(/[（(]/)[0]?.trim().toLocaleLowerCase();
-    return Boolean(term) && normalizedDialogue.includes(term);
-  });
+  const sourced = harvest
+    .map((entry) => entry.replace(/^[-*\s]+/, '').split(/[（(]/)[0]?.trim())
+    .filter((term) => Boolean(term) && normalizedDialogue.includes(term.toLocaleLowerCase()));
+  const words = dialogue.toLocaleLowerCase().match(/[a-zà-ÿ]+(?:'[a-zà-ÿ]+)?/g) ?? [];
+  const directPhrases = [
+    ...words.flatMap((_, index) => words.slice(index, index + 2).length === 2 ? [words.slice(index, index + 2).join(' ')] : []),
+    ...words,
+  ];
+  return [...new Set([...sourced, ...directPhrases])].slice(0, 6);
 }
 
 function parseSource(): Map<string, DriverExperience> {
