@@ -22,14 +22,14 @@ export default function FactoryPage() {
 
       <section className="mt-9 grid gap-3 sm:grid-cols-2" aria-label="Factory roles">
         {roles.map((role) => role.active ? (
-          <Link key={role.indonesian} href={role.href!} className="rounded-2xl border border-stone-300 bg-white px-5 py-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+          <Link key={role.indonesian} href={role.href!} className="flex min-h-40 cursor-pointer flex-col rounded-2xl border border-stone-300 bg-white px-5 py-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
             <LocalizedLabel indonesian={role.indonesian} chinese={role.chinese} className="font-semibold" />
-            <p className="mt-4 text-sm text-stone-500">Tahap pertama · 50 situasi tersedia<br />第一阶段 · 已完成 50 个工作场景</p>
+            <p className="mt-auto pt-4 text-sm leading-6 text-stone-500">Tahap pertama · 50 situasi tersedia<br />第一阶段 · 已完成 50 个工作场景</p>
           </Link>
         ) : (
-          <div key={role.indonesian} className="rounded-2xl border border-stone-200 bg-stone-50 px-5 py-5 text-stone-500">
+          <div key={role.indonesian} aria-disabled="true" className="flex min-h-40 cursor-default flex-col rounded-2xl border border-stone-200 bg-stone-50 px-5 py-5 text-stone-500">
             <LocalizedLabel indonesian={role.indonesian} chinese={role.chinese} className="font-medium" chineseClassName="text-stone-400" />
-            <p className="mt-4 text-sm text-stone-400">Segera Hadir<br />即将上线</p>
+            <p className="mt-auto pt-4 text-sm leading-6 text-stone-400">Segera Hadir<br />即将上线</p>
           </div>
         ))}
       </section>
