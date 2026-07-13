@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { factorySupplemental } from '@/lib/factory-supplemental';
 
 export type FactoryExperience = {
   id: string;
@@ -44,7 +45,15 @@ export function getFactoryExperiences(): FactoryExperience[] {
         .map((line) => line.replace(/^-\s*/, '').trim())
         .filter(Boolean);
 
-      return { id: match[1], content, task, indonesian, explanation, harvest };
+      const supplemental = factorySupplemental[match[1]];
+      return {
+        id: match[1],
+        content,
+        task,
+        indonesian,
+        explanation: explanation ?? supplemental?.explanation,
+        harvest: harvest.length ? harvest : (supplemental?.harvest ?? []),
+      };
     })
     .filter(({ id }) => Number(id.slice(-3)) >= 1)
     .sort((a, b) => a.id.localeCompare(b.id));

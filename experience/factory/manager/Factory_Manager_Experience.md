@@ -72,7 +72,7 @@ Hari ini produksi apa?
 
 **🇮🇩**
 
-Hari ini kita produksi dua order.
+Hari ini kita produksi dua pesanan.
 
 ---
 
@@ -82,7 +82,7 @@ Hari ini kita produksi dua order.
 
 **🇮🇩**
 
-Order dari customer yang mana?
+Pesanan dari pelanggan yang mana?
 
 ---
 
@@ -94,9 +94,9 @@ ABC公司的。
 
 **🇮🇩**
 
-Order dari ABC.
+Pesanan ABC.
 
-Dan order dari XYZ.
+Dan pesanan XYZ.
 
 ---
 
@@ -492,7 +492,7 @@ Hari ini bisa selesai?
 
 **🇮🇩**
 
-Kalau sesuai progress sekarang, bisa selesai hari ini.
+Kalau sesuai progres sekarang, bisa selesai hari ini.
 
 ---
 
@@ -653,7 +653,7 @@ Kualitas masih normal.
 
 Oke.
 
-Tolong dipertahankan ya.
+Tolong dijaga ya.
 
 ---
 
@@ -913,7 +913,7 @@ Hari ini bisa selesai?
 
 **🇮🇩**
 
-Kalau sesuai progress,
+Kalau sesuai progres,
 
 hari ini bisa selesai.
 
@@ -1084,7 +1084,7 @@ Customer Visit（客户来访）
 
 **🇮🇩**
 
-Customer datang jam berapa?
+Pelanggan datang jam berapa?
 
 ---
 
@@ -1212,7 +1212,7 @@ Shipment（出货）
 
 **🇮🇩**
 
-Hari ini bisa shipment?
+Hari ini barang bisa keluar nggak?
 
 ---
 
@@ -1226,7 +1226,7 @@ Hari ini bisa shipment?
 
 Bisa, Pak.
 
-Sore ini loading container.
+Sore ini kita muat kontainer.
 
 ---
 
@@ -1499,7 +1499,7 @@ Loading Container（装柜安排）
 
 **🇮🇩**
 
-Sore ini loading container?
+Sore ini muat kontainer?
 
 ---
 
@@ -1513,7 +1513,7 @@ Sore ini loading container?
 
 Iya, Pak.
 
-Containernya datang jam dua siang.
+Kontainernya datang jam dua siang.
 
 ---
 
@@ -1802,7 +1802,7 @@ Dokumen ekspornya sudah siap?
 
 Sebagian besar sudah siap, Pak.
 
-Tinggal certificate of origin.
+Tinggal surat keterangan asal (SKA).
 
 ---
 
@@ -2044,7 +2044,7 @@ ETA 是什么时候？
 
 **🇮🇩**
 
-ETA-nya kapan?
+Perkiraan sampainya kapan?
 
 ---
 
@@ -2054,7 +2054,7 @@ ETA-nya kapan?
 
 **🇮🇩**
 
-Estimasi tanggal dua puluh lima, Pak.
+Perkiraan tanggal dua puluh lima, Pak.
 
 ---
 
@@ -2064,7 +2064,7 @@ Estimasi tanggal dua puluh lima, Pak.
 
 **🇮🇩**
 
-Customernya sudah dikabari?
+Pelanggan sudah dikabari?
 
 ---
 
@@ -2157,7 +2157,7 @@ Customer Receipt（客户收货确认）
 
 **🇮🇩**
 
-Customernya sudah terima barang?
+Pelanggan sudah terima barang?
 
 ---
 
@@ -2177,7 +2177,7 @@ Sudah diterima, Pak.
 
 **🇮🇩**
 
-Jumlah sama packing-nya aman?
+Jumlah sama kemasannya aman?
 
 ---
 
@@ -2273,7 +2273,7 @@ Customer Feedback（客户反馈）
 
 **🇮🇩**
 
-Customer ada komplain nggak?
+Pelanggan ada komplain nggak?
 
 ---
 
@@ -2293,7 +2293,7 @@ Sampai sekarang belum ada komplain, Pak.
 
 **🇮🇩**
 
-Kalau ada feedback, langsung kabarin saya ya.
+Kalau ada masukan, langsung kabarin saya ya.
 
 ---
 
@@ -2400,7 +2400,7 @@ New Order（新订单）
 
 **🇮🇩**
 
-Customer ada order baru nggak?
+Pelanggan ada pesanan baru nggak?
 
 ---
 
@@ -2410,7 +2410,7 @@ Customer ada order baru nggak?
 
 **🇮🇩**
 
-Customernya masih konfirmasi jumlah, Pak.
+Pelanggan masih konfirmasi jumlah, Pak.
 
 ---
 
@@ -2420,7 +2420,7 @@ Customernya masih konfirmasi jumlah, Pak.
 
 **🇮🇩**
 
-Kira-kira kapan order masuk?
+Kira-kira kapan pesanannya masuk?
 
 ---
 
@@ -2524,7 +2524,7 @@ Minggu depan produksi apa?
 
 **🇮🇩**
 
-Minggu depan ada tiga order, Pak.
+Minggu depan ada tiga pesanan, Pak.
 
 ---
 
@@ -2534,7 +2534,7 @@ Minggu depan ada tiga order, Pak.
 
 **🇮🇩**
 
-Order yang mana dulu?
+Pesanan yang mana dulu?
 
 ---
 
@@ -2544,7 +2544,7 @@ Order yang mana dulu?
 
 **🇮🇩**
 
-Order ABC dulu, Pak.
+Pesanan ABC dulu, Pak.
 
 ---
 
@@ -2628,9 +2628,9 @@ ABC 的订单先做。
 
 **🇮🇩**
 
-Order ABC dikerjakan dulu ya.
+Pesanan ABC dikerjakan dulu ya.
 
-Ini lebih urgent.
+Ini paling mendesak.
 
 ---
 
@@ -2644,7 +2644,7 @@ Ini lebih urgent.
 
 Siap, Pak.
 
-Berarti order XYZ kita mundurkan.
+Berarti pesanan XYZ kita mundurkan.
 
 ---
 
@@ -2658,7 +2658,7 @@ Berarti order XYZ kita mundurkan.
 
 Iya.
 
-Jangan sampai terlambat untuk order ABC.
+Jangan sampai pesanan ABC terlambat.
 
 ---
 
@@ -2758,7 +2758,7 @@ Minggu ini ada masalah apa aja?
 
 **🇮🇩**
 
-Ada satu order yang terlambat satu hari.
+Ada satu pesanan yang terlambat satu hari.
 
 Sama ada satu mesin yang bermasalah.
 
@@ -2782,7 +2782,7 @@ Minggu depan fokusnya apa?
 
 **🇮🇩**
 
-Fokus selesaikan order ABC dulu.
+Fokus selesaikan pesanan ABC dulu.
 
 Sama perbaiki mesin yang bermasalah.
 
@@ -2915,7 +2915,7 @@ Production Target（今日目标）
 
 👨 老板
 
-Target hari ini bisa tercapai?
+Sasaran hari ini bisa tercapai?
 
 👨‍🏭 工厂经理
 
@@ -2941,11 +2941,11 @@ Urgent Order（加急订单）
 
 👨 老板
 
-Hari ini ada order urgent?
+Hari ini ada pesanan yang mendesak?
 
 👨‍🏭 工厂经理
 
-Ada satu order urgent.
+Ada satu pesanan yang mendesak.
 
 👨 老板
 
@@ -2967,7 +2967,7 @@ Material 到了吗？
 
 👨 老板
 
-Material sudah datang?
+Bahan baku sudah datang?
 
 👨‍🏭 工厂经理
 
@@ -2977,7 +2977,7 @@ Belum, Pak.
 
 Supplier 怎么说？
 
-Supplier bilang apa?
+Pemasok bilang apa?
 
 👨‍🏭 工厂经理
 
@@ -3083,13 +3083,13 @@ Besok produksi apa?
 
 👨‍🏭 工厂经理
 
-Lanjut order ABC.
+Lanjut pesanan ABC.
 
 👨 老板
 
 Material 都准备好了？
 
-Material sudah siap?
+Bahan baku sudah siap?
 
 👨‍🏭 工厂经理
 
@@ -3139,7 +3139,7 @@ Production Efficiency（生产效率）
 
 👨 老板
 
-Hari ini efisiensi produksi bagaimana?
+Efisiensi produksi hari ini bagaimana?
 
 👨‍🏭 工厂经理
 
@@ -3179,7 +3179,7 @@ Masih normal, Pak.
 
 继续关注材料成本。
 
-Tolong terus pantau biaya material.
+Tolong terus pantau biaya bahan baku.
 
 ---
 
@@ -3195,7 +3195,7 @@ Rejected Products（不良品）
 
 👨 老板
 
-Hari ini ada barang reject?
+Hari ini ada barang cacat?
 
 👨‍🏭 工厂经理
 
@@ -3285,13 +3285,13 @@ Customer Priority（客户优先级）
 
 👨 老板
 
-Customer mana yang paling urgent?
+Pelanggan mana yang paling mendesak?
 
 👨‍🏭 工厂经理
 
 ABC 最急。
 
-Order ABC paling urgent.
+Pesanan ABC paling mendesak.
 
 👨 老板
 
@@ -3313,7 +3313,7 @@ Supplier 最近怎么样？
 
 👨 老板
 
-Supplier akhir-akhir ini bagaimana?
+Pemasok akhir-akhir ini bagaimana?
 
 👨‍🏭 工厂经理
 
@@ -3341,13 +3341,13 @@ Production Improvement（改善）
 
 👨 老板
 
-Hari ini ada improvement apa?
+Hari ini ada perbaikan apa?
 
 👨‍🏭 工厂经理
 
 包装速度提升了。
 
-Packing lebih cepat sekarang.
+Pengemasan sekarang lebih cepat.
 
 👨 老板
 
@@ -3373,11 +3373,11 @@ Training（员工培训）
 
 👨 老板
 
-Operator baru sudah training?
+Operator baru sudah dilatih?
 
 👨‍🏭 工厂经理
 
-Sudah selesai training.
+Sudah selesai pelatihannya.
 
 👨 老板
 
@@ -3385,7 +3385,7 @@ Sudah selesai training.
 
 🇮🇩
 
-Tolong didampingi operator senior.
+Tolong dampingi dengan operator yang lebih berpengalaman.
 
 ---
 
@@ -3401,7 +3401,7 @@ Machine Maintenance（设备保养）
 
 👨 老板
 
-Mesinnya sudah maintenance?
+Mesinnya sudah dirawat?
 
 👨‍🏭 工厂经理
 
@@ -3459,7 +3459,7 @@ Monthly Meeting（月度会议）
 
 👨 老板
 
-Meeting bulanan kapan?
+Rapat bulanan kapan?
 
 👨‍🏭 工厂经理
 
@@ -3521,7 +3521,7 @@ Team Meeting（班组会议）
 
 👨 老板
 
-Tadi pagi sudah briefing?
+Tadi pagi sudah pengarahan?
 
 👨‍🏭 工厂经理
 
@@ -3533,7 +3533,7 @@ Sudah, Pak.
 
 大家都清楚今天目标吗？
 
-Semua sudah paham target hari ini?
+Semua sudah paham sasaran hari ini?
 
 👨‍🏭 工厂经理
 
@@ -3561,7 +3561,7 @@ Apa prioritas utama hari ini?
 
 确保 ABC 的订单今天完成。
 
-Pastikan order ABC selesai hari ini.
+Pastikan pesanan ABC selesai hari ini.
 
 👨 老板
 
@@ -3585,7 +3585,7 @@ Customer Complaint（客户投诉）
 
 👨 老板
 
-Customer ada komplain?
+Pelanggan ada komplain?
 
 👨‍🏭 工厂经理
 
@@ -3597,7 +3597,7 @@ Belum ada, Pak.
 
 🇮🇩
 
-Tolong terus di-follow up.
+Tolong terus ditindaklanjuti.
 
 ---
 
@@ -3645,7 +3645,7 @@ Biaya bulan ini bagaimana?
 
 👨‍🏭 工厂经理
 
-Masih sesuai target.
+Masih sesuai sasaran.
 
 👨 老板
 
@@ -3669,7 +3669,7 @@ Monthly Target（月度目标）
 
 👨 老板
 
-Target bulan ini bisa tercapai?
+Sasaran bulan ini bisa tercapai?
 
 👨‍🏭 工厂经理
 

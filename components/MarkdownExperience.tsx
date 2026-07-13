@@ -25,6 +25,62 @@ const localizedHeadings: Record<string, { indonesian: string; chinese: string }>
   'Next Scene': { indonesian: 'Situasi Berikutnya', chinese: '下一场景' },
 };
 
+const workplaceReplacements: Array<[RegExp, string]> = [
+  [/Factory Manager/gi, 'Manajer Pabrik'],
+  [/Morning Production Meeting/gi, 'Rapat Produksi Pagi'],
+  [/Today's Production Quantity/gi, 'Jumlah Produksi Hari Ini'],
+  [/Production Progress/gi, 'Kemajuan Produksi'],
+  [/Quality Check/gi, 'Pemeriksaan Mutu'],
+  [/Raw Material Check/gi, 'Pemeriksaan Bahan Baku'],
+  [/Delivery Schedule/gi, 'Jadwal Pengiriman'],
+  [/Customer Visit/gi, 'Kunjungan Pelanggan'],
+  [/Loading Container/gi, 'Muat Kontainer'],
+  [/Shipment Schedule/gi, 'Jadwal Keberangkatan Kapal'],
+  [/Customer Receipt/gi, 'Penerimaan Barang oleh Pelanggan'],
+  [/Customer Feedback/gi, 'Masukan Pelanggan'],
+  [/New Order/gi, 'Pesanan Baru'],
+  [/Weekly Production Plan/gi, 'Rencana Produksi Mingguan'],
+  [/Production Priority/gi, 'Prioritas Produksi'],
+  [/Weekly Management Meeting/gi, 'Rapat Manajemen Mingguan'],
+  [/Production Management/gi, 'Manajemen Produksi'],
+  [/Production Target/gi, 'Sasaran Produksi'],
+  [/Urgent Order/gi, 'Pesanan Mendesak'],
+  [/Supplier Follow-up/gi, 'Tindak Lanjut Pemasok'],
+  [/Production Delay/gi, 'Keterlambatan Produksi'],
+  [/Production Efficiency/gi, 'Efisiensi Produksi'],
+  [/Production Cost/gi, 'Biaya Produksi'],
+  [/Safety Check/gi, 'Pemeriksaan Keselamatan'],
+  [/Customer Priority/gi, 'Prioritas Pelanggan'],
+  [/Production Improvement/gi, 'Perbaikan Produksi'],
+  [/Machine Maintenance/gi, 'Perawatan Mesin'],
+  [/Monthly Meeting/gi, 'Rapat Bulanan'],
+  [/Team Meeting/gi, 'Rapat Tim'],
+  [/Customer Complaint/gi, 'Keluhan Pelanggan'],
+  [/Quality Improvement/gi, 'Perbaikan Mutu'],
+  [/Monthly Target/gi, 'Sasaran Bulanan'],
+  [/Factory Daily Closing/gi, 'Penutupan Operasional Harian'],
+  [/\bshipment\b/gi, 'pengiriman barang'],
+  [/\bloading\b/gi, 'muat'],
+  [/\bcustomer\b/gi, 'pelanggan'],
+  [/\border\b/gi, 'pesanan'],
+  [/\bfollow[ -]?up\b/gi, 'tindak lanjut'],
+  [/\bmaintenance\b/gi, 'perawatan'],
+  [/\btraining\b/gi, 'pelatihan'],
+  [/\burgent\b/gi, 'mendesak'],
+  [/\bcheck\b/gi, 'pemeriksaan'],
+  [/\breport\b/gi, 'laporan'],
+  [/\bmeeting\b/gi, 'rapat'],
+  [/\bschedule\b/gi, 'jadwal'],
+  [/\btarget\b/gi, 'sasaran'],
+  [/\bproduction\b/gi, 'produksi'],
+  [/\bquality\b/gi, 'mutu'],
+  [/\bfactory\b/gi, 'pabrik'],
+];
+
+function localizeWorkplaceLine(line: string) {
+  return workplaceReplacements.reduce((value, [pattern, replacement]) => value.replace(pattern, replacement), line);
+}
+
 export default function MarkdownExperience({ content }: Props) {
   return (
     <article className="mt-8 rounded-2xl border border-stone-200 bg-white px-6 py-8 shadow-sm sm:px-10 sm:py-10">
@@ -53,13 +109,13 @@ export default function MarkdownExperience({ content }: Props) {
           return <div key={key} className="h-3" />;
         }
         if (line.startsWith('- ')) {
-          return <p key={key} className="ml-5 text-[15px] leading-7 text-stone-700">• {line.slice(2)}</p>;
+          return <p key={key} className="ml-5 text-[15px] leading-7 text-stone-700">• {localizeWorkplaceLine(line.slice(2))}</p>;
         }
         if (line.startsWith('> ')) {
-          return <p key={key} className="border-l-2 border-stone-300 pl-4 text-[15px] leading-7 text-stone-600">{line.slice(2)}</p>;
+          return <p key={key} className="border-l-2 border-stone-300 pl-4 text-[15px] leading-7 text-stone-600">{localizeWorkplaceLine(line.slice(2))}</p>;
         }
 
-        return <p key={key} className="text-[15px] leading-7 text-stone-700 sm:text-base sm:leading-8">{line.replace(/`/g, '')}</p>;
+        return <p key={key} className="text-[15px] leading-7 text-stone-700 sm:text-base sm:leading-8">{localizeWorkplaceLine(line.replace(/`/g, ''))}</p>;
       })}
     </article>
   );
