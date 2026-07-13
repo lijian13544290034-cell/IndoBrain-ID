@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const entries = [
   { href: '/driver', icon: '🚗', title: '司机', subtitle: 'Sopir', priority: true },
-  { href: '/module/nanny', icon: '👩', title: '保姆', subtitle: 'ART', priority: true },
+  { href: '/nanny', icon: '👩', title: '保姆', subtitle: 'ART', priority: true },
   { href: '/factory', icon: '🏭', title: '工厂', subtitle: 'Pabrik', priority: false },
   { href: '/chat/ai-chat', icon: '💬', title: '自由聊天', subtitle: 'Chat Bebas', priority: false },
 ];
