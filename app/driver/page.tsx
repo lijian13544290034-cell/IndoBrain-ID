@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import LocalizedLabel from '@/components/LocalizedLabel';
+import ComingSoonCard from '@/components/ComingSoonCard';
 import { getDriverExperiences } from '@/lib/driver-experiences';
 import { driverWorkflow, isDriverWorkflow } from '@/lib/driver-workflow';
 
@@ -7,7 +8,8 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
   const { workflow } = await searchParams;
   const selected = isDriverWorkflow(workflow) ? workflow : undefined;
   const all = getDriverExperiences();
-  const experiences = selected ? all.filter((item) => driverWorkflow.find((stage) => stage.slug === selected)?.ids.includes(Number(item.id.slice(-3)) as never)) : all;
+  const selectedExperiences = selected ? all.filter((item) => driverWorkflow.find((stage) => stage.slug === selected)?.ids.includes(Number(item.id.slice(-3)) as never)) : all;
+  const experiences = selectedExperiences.filter((item) => !item.missing);
   return <main className="mx-auto min-h-screen w-full max-w-4xl px-5 pb-12 pt-10 sm:px-8 sm:pt-14">
     <Link href="/" className="text-sm text-stone-500 hover:text-stone-900">← Beranda（返回首页）</Link>
     <header className="mt-7 rounded-2xl border border-stone-200 bg-stone-50 px-5 py-5">
@@ -22,7 +24,7 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
     </header>
     <section className="mt-7" aria-label="Situasi sopir">
       <h1 className="text-lg font-semibold">Situasi Sopir <span className="text-sm font-normal text-stone-500">（司机场景）</span></h1>
-      {experiences.length === 0 ? <p className="mt-4 rounded-xl border border-dashed border-stone-300 p-5 text-sm leading-6 text-stone-500">Belum ada situasi dalam kategori ini.<br />此分类暂时没有场景。</p> : <div className="mt-4 grid gap-3 sm:grid-cols-2">{experiences.map((experience) => experience.missing ? <article key={experience.id} aria-disabled="true" className="flex min-h-40 cursor-default flex-col rounded-xl border border-stone-200 bg-stone-50 px-4 py-4"><p className="text-[11px] font-medium text-stone-400">{experience.id}</p><p className="mt-2 font-semibold text-stone-700">Belum tersedia</p><p className="mt-auto pt-2 text-xs leading-5 text-stone-500">该内容将在后续版本补充。</p></article> : <Link key={experience.id} href={`/driver/${experience.id.slice(-3)}?workflow=${selected ?? ''}`} className="flex min-h-40 cursor-pointer flex-col rounded-xl border border-stone-200 bg-white px-4 py-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-stone-50 hover:shadow-md"><p className="text-[11px] font-medium text-stone-400">{experience.id}</p><p className="mt-2 font-semibold text-stone-900">{experience.task}</p><p className="mt-2 text-sm leading-6 text-stone-700">{experience.indonesian}</p><p className="mt-auto pt-2 line-clamp-2 text-xs leading-5 text-stone-500">{experience.explanation}</p></Link>)}</div>}
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">{experiences.map((experience) => <Link key={experience.id} href={`/driver/${experience.id.slice(-3)}?workflow=${selected ?? ''}`} className="flex min-h-40 cursor-pointer flex-col rounded-xl border border-stone-200 bg-white px-4 py-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-stone-50 hover:shadow-md"><p className="text-[11px] font-medium text-stone-400">{experience.id}</p><p className="mt-2 font-semibold text-stone-900">{experience.task}</p><p className="mt-2 text-sm leading-6 text-stone-700">{experience.indonesian}</p><p className="mt-auto pt-2 line-clamp-2 text-xs leading-5 text-stone-500">{experience.explanation}</p></Link>)}<ComingSoonCard className="sm:col-span-2" /></div>
     </section>
   </main>;
 }
