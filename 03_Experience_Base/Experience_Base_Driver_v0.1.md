@@ -48,10 +48,6 @@ Morning Pickup（早晨接人）
 
 Besok pagi jemput saya di depan rumah jam setengah delapan ya.
 
-**🔊**
-
-贝索克 巴吉 姜普特 萨亚 迪 德潘 鲁玛 江 瑟登阿 德拉潘 呀。
-
 ---
 
 ### 👨‍✈️ 司机
@@ -65,12 +61,6 @@ Besok pagi jemput saya di depan rumah jam setengah delapan ya.
 Siap Pak.
 
 Besok langsung ke kantor ya?
-
-**🔊**
-
-西亚普 帕。
-
-贝索克 朗松 克 坎托尔 呀？
 
 ---
 

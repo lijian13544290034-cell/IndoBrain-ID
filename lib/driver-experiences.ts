@@ -25,10 +25,16 @@ function section(content: string, heading: string) {
 }
 
 function firstIndonesianSentence(scene: string) {
-  const match = scene.match(/\*\*🇮🇩\*\*\s*\r?\n([\s\S]*?)(?=\r?\n\s*(?:---|### |## )|$)/);
-  return match?.[1]
-    .replace(/\*\*🔊\*\*[\s\S]*/m, '')
-    .trim() ?? '';
+  const marker = `**${String.fromCodePoint(0x1f1ee, 0x1f1e9)}**`;
+  const legacyContentMarker = `**${String.fromCodePoint(0x1f50a)}**`;
+  const start = scene.indexOf(marker);
+  if (start < 0) return '';
+
+  return scene
+    .slice(start + marker.length)
+    .split(/\r?\n\s*(?:---|### |## )/)[0]
+    .split(legacyContentMarker)[0]
+    .trim();
 }
 
 function parseSource(): Map<string, DriverExperience> {

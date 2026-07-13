@@ -5,6 +5,7 @@ export type NannyExperience = { id: string; task: string; indonesian: string; ch
 const sourceDir = path.join(process.cwd(), '03_Experience_Base', 'Experience');
 const actorMarkers = [String.fromCodePoint(0x1f468), String.fromCodePoint(0x1f469)];
 const indonesianFlag = String.fromCodePoint(0x1f1ee, 0x1f1e9);
+const legacyContentMarker = String.fromCodePoint(0x1f50a);
 
 function between(source: string, heading: string, stops: string[]) {
   const stop = stops.map((item) => `^${item}`).join('|');
@@ -21,6 +22,7 @@ function firstIndonesianBlock(source: string) {
     .slice(start + indonesianFlag.length)
     .replace(/^\s*\r?\n/, '')
     .split(/\r?\n[-]{3,}/)[0]
+    .split(legacyContentMarker)[0]
     .trim()
     .replace(/\s*\r?\n\s*/g, ' ');
 }
