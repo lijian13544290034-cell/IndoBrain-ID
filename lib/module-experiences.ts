@@ -1,21 +1,14 @@
 export type ModuleRole = 'driver' | 'nanny';
 
-export type ModuleExperience = {
+import { getDriverExperiences, type DriverExperience } from '@/lib/driver-experiences';
+
+export type ModuleExperience = DriverExperience & {
   id: string;
   task: string;
   indonesian: string;
   chinese: string;
   harvest: string[];
 };
-
-const driverTasks = [
-  '明天早上七点半来接我', '你到了吗？', '先去银行，然后去公司', '前面堵车吗？', '通知客户我们会晚到',
-  '走另外一条路吧', '停地下停车场', '你先在这里等我', '我开完会了，过来接我', '先去银行',
-  '我大概二十分钟出来', '下午去客户公司', '我们到了', '我在楼下等您', '附近有什么好吃的吗？',
-  '先去加个油', '今天先去哪里？', '这条路有点堵', '靠边停一下', '到了',
-  '明天几点出发？', '去机场接人', '行李多吗？', '先送客户回去', '去加油站',
-  '车停在哪里？', '帮我拿一下东西', '今天还有安排吗？', '晚上送我回家', '明天早上还是七点半来接我',
-];
 
 const nannyTasks = [
   '今天做什么菜？', '不要放辣椒', '帮我买水果', '今天打扫房间', '孩子放学几点？',
@@ -30,19 +23,16 @@ const nannyTasks = [
   '明天记得买菜', '先休息一下', '帮我拿毛巾', '晚上锁门', '明天见',
 ];
 
-function createExperiences(prefix: string, tasks: string[], role: ModuleRole): ModuleExperience[] {
+function createNannyExperiences(prefix: string, tasks: string[]): ModuleExperience[] {
   return tasks.map((task, index) => {
     const id = `${prefix}-${String(index + 1).padStart(3, '0')}`;
-    const indonesian = role === 'driver'
-      ? (index === 0 ? 'Besok pagi jemput saya jam setengah delapan ya.' : 'Tolong bantu atur perjalanan saya ya.')
-      : 'Tolong bantu urus rumah ya.';
-    return { id, task, indonesian, chinese: task, harvest: role === 'driver' ? ['jemput（接人）', 'langsung（直接）', 'tunggu（等待）'] : ['tolong（请）', 'sudah（已经）', 'nanti（之后）'] };
+    return { id, task, indonesian: 'Tolong bantu urus rumah ya.', chinese: task, harvest: ['tolong（请）', 'sudah（已经）', 'nanti（之后）'] };
   });
 }
 
 export const moduleExperiences: Record<ModuleRole, ModuleExperience[]> = {
-  driver: createExperiences('EXP-DRV', driverTasks, 'driver'),
-  nanny: createExperiences('EXP-NAN', nannyTasks, 'nanny'),
+  driver: getDriverExperiences(),
+  nanny: createNannyExperiences('EXP-NAN', nannyTasks),
 };
 
 export const moduleMeta = {
