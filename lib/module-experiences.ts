@@ -26,7 +26,7 @@ const nannyTasks = [
 function createNannyExperiences(prefix: string, tasks: string[]): ModuleExperience[] {
   return tasks.map((task, index) => {
     const id = `${prefix}-${String(index + 1).padStart(3, '0')}`;
-    return { id, task, indonesian: 'Tolong bantu urus rumah ya.', chinese: task, harvest: ['tolong（请）', 'sudah（已经）', 'nanti（之后）'] };
+    return { id, task, indonesian: 'Tolong bantu urus rumah ya.', chinese: task, explanation: task, harvest: ['tolong（请）', 'sudah（已经）', 'nanti（之后）'] };
   });
 }
 

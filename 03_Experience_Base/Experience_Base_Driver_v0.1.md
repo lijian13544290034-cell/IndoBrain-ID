@@ -1649,7 +1649,7 @@ Saya isi bensin dulu ya.
 
 Oke.
 
-Silakan.
+Oke, jalan aja.
 
 ---
 

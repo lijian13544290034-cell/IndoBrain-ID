@@ -6,6 +6,7 @@ export type DriverExperience = {
   task: string;
   indonesian: string;
   chinese: string;
+  explanation: string;
   harvest: string[];
   missing?: boolean;
 };
@@ -52,6 +53,7 @@ function parseSource(): Map<string, DriverExperience> {
         task: override?.task ?? task,
         indonesian: override?.indonesian ?? indonesian,
         chinese: override?.task ?? task,
+        explanation: section(body, 'Story Background'),
         harvest,
       });
     }
@@ -69,7 +71,8 @@ export function getDriverExperiences(): DriverExperience[] {
       id,
       task: '正式内容尚未导入',
       indonesian: '',
-      chinese: `Formal source content for ${id} is missing.`,
+      chinese: '',
+      explanation: '',
       harvest: [],
       missing: true,
     };
