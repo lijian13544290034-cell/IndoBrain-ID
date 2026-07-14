@@ -8,8 +8,7 @@ export default async function ModuleExperiencePage({ params }: { params: Promise
   if (!(role in moduleMeta)) notFound();
   const key = role as ModuleRole;
   const entries = moduleExperiences[key];
-  const expectedId = `EXP-${key === 'driver' ? 'DRV' : 'NAN'}-${id}`;
-  const item = entries.find((entry) => entry.id === expectedId);
+  const item = entries.find((entry) => entry.id.endsWith(`-${id}`));
   if (!item) notFound();
   const index = entries.indexOf(item); const previous = entries[index - 1]; const next = entries[index + 1];
   return <main className="mx-auto min-h-screen w-full max-w-2xl px-5 py-10 sm:px-8">
