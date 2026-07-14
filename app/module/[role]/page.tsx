@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import ExperienceCard from '@/components/ExperienceCard';
 import { notFound } from 'next/navigation';
 import { moduleExperiences, moduleMeta, type ModuleRole } from '@/lib/module-experiences';
 
@@ -20,12 +21,7 @@ export default async function ModulePage({ params }: { params: Promise<{ role: s
     <section className="mt-7">
       <h2 className="text-lg font-semibold">Situasi Kerja <span className="text-sm font-normal text-stone-500">（工作场景）</span></h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        {experiences.map((item) => <Link key={item.id} href={'/module/' + key + '/' + item.id.slice(-3)} className="flex min-h-40 cursor-pointer flex-col rounded-xl border border-stone-200 bg-white px-4 py-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-stone-50 hover:shadow-md">
-          <p className="text-[11px] font-medium text-stone-400">{item.id}</p>
-          <p className="mt-2 font-semibold text-stone-900">{item.task}</p>
-          <p className="mt-2 text-sm leading-6 text-stone-700">{item.indonesian}</p>
-          <p className="mt-auto pt-2 line-clamp-2 text-xs leading-5 text-stone-500">{item.explanation}</p>
-        </Link>)}
+        {experiences.map((item) => <ExperienceCard key={item.id} href={'/module/' + key + '/' + item.id.slice(-3)} experience={item} />)}
       </div>
     </section>
   </main>;

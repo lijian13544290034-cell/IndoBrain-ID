@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getSessionId } from '@/lib/session';
 
-export default function ExperienceActions({ experienceId, indonesian, factory = false }: { experienceId: string; indonesian: string; factory?: boolean }) {
+export default function ExperienceActions({ experienceId, indonesian }: { experienceId: string; indonesian: string }) {
   const [status, setStatus] = useState('');
   const event = async (action: string) => {
     await fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: getSessionId(), experience_id: experienceId, action }) });
@@ -12,11 +12,11 @@ export default function ExperienceActions({ experienceId, indonesian, factory = 
   async function copy() {
     await navigator.clipboard.writeText(indonesian);
     await event('copied');
-    setStatus(factory ? 'Sudah disalin（已复制）' : '已复制');
+    setStatus('Sudah disalin（已复制）');
   }
   async function feedback(helpful: boolean) {
     await fetch('/api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: getSessionId(), experience_id: experienceId, helpful }) });
-    setStatus(factory ? (helpful ? 'Terima kasih atas masukan Anda（感谢反馈）' : 'Masukan sudah dicatat（已记录）') : (helpful ? '感谢反馈' : '已记录，我们会改进'));
+    setStatus(helpful ? 'Terima kasih atas masukan Anda（感谢反馈）' : 'Masukan sudah dicatat（已记录）');
   }
   return <div className="mt-7 flex flex-wrap gap-2">
     <button onClick={copy} className="min-h-10 cursor-pointer rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium transition duration-200 hover:bg-stone-50 hover:shadow-sm">Salin Bahasa Indonesia（复制印尼语）</button>
