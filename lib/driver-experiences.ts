@@ -26,7 +26,7 @@ const dialogueOverrides: Record<string, string> = {
   'EXP-DRV-003': 'Kita ke bank dulu, setelah itu ke kantor ya.',
   'EXP-DRV-004': 'Di depan macet?',
   'EXP-DRV-005': 'Tolong bilang ke klien ya, kita telat sekitar sepuluh menit.',
-  'EXP-DRV-006': 'Pak, kita lewat jalan lain ya.',
+  'EXP-DRV-006': 'Kita lewat jalan lain ya.',
   'EXP-DRV-007': 'Parkir di basement saja.',
   'EXP-DRV-008': 'Tunggu saya di sini dulu ya.',
   'EXP-DRV-009': 'Saya sudah selesai rapat. Tolong jemput saya di depan kantor ya.',
@@ -54,6 +54,10 @@ const generatedExperiences: Record<string, DriverExperience> = {
   'EXP-DRV-027': { id: 'EXP-DRV-027', task: '今天晚点回家。', chinese: '今天晚点回家。', indonesian: 'Hari ini saya pulang lebih malam ya.', explanation: '老板提前告诉司机，今天回家时间会比平时晚。', harvest: ['hari ini', 'pulang', 'lebih malam'] },
   'EXP-DRV-028': { id: 'EXP-DRV-028', task: '今晚需要加班。', chinese: '今晚需要加班。', indonesian: 'Malam ini kita perlu lembur ya.', explanation: '当天工作延长，需要司机配合晚间加班安排。', harvest: ['malam ini', 'perlu', 'lembur'] },
   'EXP-DRV-029': { id: 'EXP-DRV-029', task: '把车停在门口。', chinese: '把车停在门口。', indonesian: 'Parkir mobil di depan ya.', explanation: '到达地点后，老板安排车辆停在门口。', harvest: ['parkir', 'mobil', 'di depan'] },
+};
+
+const generatedDialogueOverrides: Record<string, string> = {
+  'EXP-DRV-028': 'Malam ini perlu lembur ya.',
 };
 
 function section(content: string, heading: string) {
@@ -125,6 +129,7 @@ export function getDriverExperiences(): DriverExperience[] {
   const sourceRecords = parseSource();
   return Array.from({ length: 30 }, (_, index) => {
     const id = `EXP-DRV-${String(index + 1).padStart(3, '0')}`;
-    return sourceRecords.get(id) ?? generatedExperiences[id] ?? { id, task: '正式内容尚未导入', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
+    const generated = generatedExperiences[id];
+    return sourceRecords.get(id) ?? (generated ? { ...generated, indonesian: generatedDialogueOverrides[id] ?? generated.indonesian } : undefined) ?? { id, task: '正式内容尚未导入', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
   });
 }

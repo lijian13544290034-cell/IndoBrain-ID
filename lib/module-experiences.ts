@@ -1,6 +1,7 @@
 export type ModuleRole = 'driver' | 'nanny' | 'production' | 'warehouse' | 'qc' | 'purchasing' | 'operator';
 
 import { getDriverExperiences, type DriverExperience } from '@/lib/driver-experiences';
+import { getNannyExperiences } from '@/lib/nanny-experiences';
 
 export type ModuleExperience = DriverExperience & {
   id: string;
@@ -17,7 +18,7 @@ const factoryRoleExperiences: Record<'production' | 'warehouse' | 'qc' | 'purcha
     { id: 'EXP-PRO-003', task: '这条生产线停了吗？', chinese: '这条生产线停了吗？', indonesian: 'Jalur produksi ini berhenti?', explanation: '出现异常时及时确认生产线状态。', harvest: ['jalur produksi', 'ini', 'berhenti'] },
     { id: 'EXP-PRO-004', task: '今天产量还差多少？', chinese: '今天产量还差多少？', indonesian: 'Produksi hari ini masih kurang berapa?', explanation: '班组长用这句话了解与当天目标的差距。', harvest: ['produksi', 'hari ini', 'masih kurang', 'berapa'] },
     { id: 'EXP-PRO-005', task: '今天晚上需要加班吗？', chinese: '今天晚上需要加班吗？', indonesian: 'Malam ini perlu lembur?', explanation: '根据进度确认是否需要加班。', harvest: ['malam ini', 'perlu', 'lembur'] },
-    { id: 'EXP-PRO-006', task: '把这个订单排到明天。', chinese: '把这个订单排到明天。', indonesian: 'Pesanan ini jadwalkan besok ya.', explanation: '生产计划调整后安排指定订单到次日。', harvest: ['pesanan ini', 'jadwalkan', 'besok'] },
+    { id: 'EXP-PRO-006', task: '把这个订单排到明天。', chinese: '把这个订单排到明天。', indonesian: 'Jadwalkan pesanan ini besok ya.', explanation: '生产计划调整后安排指定订单到次日。', harvest: ['jadwalkan', 'pesanan ini', 'besok'] },
     { id: 'EXP-PRO-007', task: '优先完成这个订单。', chinese: '优先完成这个订单。', indonesian: 'Selesaikan pesanan ini dulu ya.', explanation: '交期紧的订单需要优先处理。', harvest: ['selesaikan', 'pesanan ini', 'dulu'] },
     { id: 'EXP-PRO-008', task: '把今天的产量报给我。', chinese: '把今天的产量报给我。', indonesian: 'Laporkan produksi hari ini ke saya ya.', explanation: '班组结束时汇报当天实际产量。', harvest: ['laporkan', 'produksi hari ini', 'ke saya'] },
   ],
@@ -26,9 +27,9 @@ const factoryRoleExperiences: Record<'production' | 'warehouse' | 'qc' | 'purcha
     { id: 'EXP-WHS-002', task: '这批材料已经到了。', chinese: '这批材料已经到了。', indonesian: 'Bahan batch ini sudah datang.', explanation: '仓库通知相关人员材料已到厂。', harvest: ['bahan', 'batch ini', 'sudah datang'] },
     { id: 'EXP-WHS-003', task: '把坏掉的材料分开。', chinese: '把坏掉的材料分开。', indonesian: 'Pisahkan bahan yang rusak ya.', explanation: '避免受损材料被误发到生产线。', harvest: ['pisahkan', 'bahan', 'yang rusak'] },
     { id: 'EXP-WHS-004', task: '把材料送到生产线。', chinese: '把材料送到生产线。', indonesian: 'Kirim bahan ke jalur produksi ya.', explanation: '生产线需要材料时，仓库安排发料。', harvest: ['kirim bahan', 'ke jalur produksi', 'produksi'] },
-    { id: 'EXP-WHS-005', task: '这个货放在哪个位置？', chinese: '这个货放在哪个位置？', indonesian: 'Barang ini taruh di lokasi mana?', explanation: '入库时确认货物的存放位置。', harvest: ['barang ini', 'taruh', 'lokasi mana'] },
+    { id: 'EXP-WHS-005', task: '这个货放在哪个位置？', chinese: '这个货放在哪个位置？', indonesian: 'Barang ini ditaruh di lokasi mana?', explanation: '入库时确认货物的存放位置。', harvest: ['barang ini', 'ditaruh', 'lokasi mana'] },
     { id: 'EXP-WHS-006', task: '今天盘点库存。', chinese: '今天盘点库存。', indonesian: 'Hari ini hitung stok ya.', explanation: '仓库按计划核对实际库存。', harvest: ['hari ini', 'hitung stok', 'stok'] },
-    { id: 'EXP-WHS-007', task: '这个箱子要贴标签。', chinese: '这个箱子要贴标签。', indonesian: 'Kotak ini harus ditempel label.', explanation: '货物入库或出库前需要识别标签。', harvest: ['kotak ini', 'harus', 'ditempel label'] },
+    { id: 'EXP-WHS-007', task: '这个箱子要贴标签。', chinese: '这个箱子要贴标签。', indonesian: 'Kotak ini harus dikasih label.', explanation: '货物入库或出库前需要识别标签。', harvest: ['kotak ini', 'harus', 'dikasih label'] },
     { id: 'EXP-WHS-008', task: '出货的货准备好了吗？', chinese: '出货的货准备好了吗？', indonesian: 'Barang untuk kirim sudah siap?', explanation: '发货前由仓库确认货物备齐。', harvest: ['barang', 'untuk kirim', 'sudah siap'] },
   ],
   qc: [
@@ -43,22 +44,22 @@ const factoryRoleExperiences: Record<'production' | 'warehouse' | 'qc' | 'purcha
   ],
   purchasing: [
     { id: 'EXP-PUR-001', task: '原材料不够。', chinese: '原材料不够。', indonesian: 'Bahan bakunya tidak cukup.', explanation: '采购收到缺料信息后需要安排补货。', harvest: ['bahan baku', 'tidak cukup', 'cukup'] },
-    { id: 'EXP-PUR-002', task: '问一下供应商什么时候送到。', chinese: '问一下供应商什么时候送到。', indonesian: 'Tanya pemasoknya datang kapan ya.', explanation: '材料未到时，采购向供应商确认到货时间。', harvest: ['tanya pemasok', 'datang kapan', 'ya'] },
+    { id: 'EXP-PUR-002', task: '问一下供应商什么时候送到。', chinese: '问一下供应商什么时候送到。', indonesian: 'Tanya ke pemasok, kapan kirim ya.', explanation: '材料未到时，采购向供应商确认到货时间。', harvest: ['tanya ke pemasok', 'kapan kirim', 'ya'] },
     { id: 'EXP-PUR-003', task: '订购这个材料。', chinese: '订购这个材料。', indonesian: 'Pesan bahan ini ya.', explanation: '确认需求后向供应商下采购单。', harvest: ['pesan', 'bahan ini', 'ya'] },
     { id: 'EXP-PUR-004', task: '供应商送晚了。', chinese: '供应商送晚了。', indonesian: 'Pemasoknya terlambat.', explanation: '供应商延误会影响材料供应。', harvest: ['pemasok', 'terlambat', 'pemasoknya'] },
     { id: 'EXP-PUR-005', task: '确认材料规格。', chinese: '确认材料规格。', indonesian: 'Konfirmasi spesifikasi bahannya ya.', explanation: '下单前确认规格，避免买错材料。', harvest: ['konfirmasi', 'spesifikasi bahan', 'ya'] },
-    { id: 'EXP-PUR-006', task: '这个材料要买多少？', chinese: '这个材料要买多少？', indonesian: 'Bahan ini beli berapa?', explanation: '采购根据生产计划确认采购数量。', harvest: ['bahan ini', 'beli', 'berapa'] },
+    { id: 'EXP-PUR-006', task: '这个材料要买多少？', chinese: '这个材料要买多少？', indonesian: 'Bahan ini beli berapa banyak?', explanation: '采购根据生产计划确认采购数量。', harvest: ['bahan ini', 'beli', 'berapa banyak'] },
     { id: 'EXP-PUR-007', task: '这个报价可以吗？', chinese: '这个报价可以吗？', indonesian: 'Penawaran ini bisa dipakai?', explanation: '采购比较报价后确认是否采用。', harvest: ['penawaran ini', 'bisa', 'dipakai'] },
     { id: 'EXP-PUR-008', task: '请供应商今天送货。', chinese: '请供应商今天送货。', indonesian: 'Minta pemasok kirim hari ini ya.', explanation: '生产紧急时要求供应商当天送达。', harvest: ['minta pemasok', 'kirim', 'hari ini'] },
   ],
   operator: [
-    { id: 'EXP-OPR-001', task: '开始开机器。', chinese: '开始开机器。', indonesian: 'Mulai nyalakan mesin ya.', explanation: '操作员在确认安全后启动设备。', harvest: ['mulai', 'nyalakan', 'mesin'] },
+    { id: 'EXP-OPR-001', task: '开始开机器。', chinese: '开始开机器。', indonesian: 'Nyalakan mesinnya ya.', explanation: '操作员在确认安全后启动设备。', harvest: ['nyalakan', 'mesinnya', 'ya'] },
     { id: 'EXP-OPR-002', task: '操作机器要戴手套。', chinese: '操作机器要戴手套。', indonesian: 'Kalau pakai mesin, harus pakai sarung tangan.', explanation: '操作设备时使用手套保护双手。', harvest: ['pakai mesin', 'harus pakai', 'sarung tangan'] },
     { id: 'EXP-OPR-003', task: '机器不正常。', chinese: '机器不正常。', indonesian: 'Mesinnya tidak normal.', explanation: '操作员发现设备异常时及时报告。', harvest: ['mesinnya', 'tidak normal', 'normal'] },
     { id: 'EXP-OPR-004', task: '今天做这个产品。', chinese: '今天做这个产品。', indonesian: 'Hari ini buat produk ini ya.', explanation: '班组按当天安排生产指定产品。', harvest: ['hari ini', 'buat', 'produk ini'] },
-    { id: 'EXP-OPR-005', task: '数一下做了多少件。', chinese: '数一下做了多少件。', indonesian: 'Hitung sudah buat berapa pcs ya.', explanation: '操作员记录当前完成数量。', harvest: ['hitung', 'buat berapa', 'pcs'] },
+    { id: 'EXP-OPR-005', task: '数一下做了多少件。', chinese: '数一下做了多少件。', indonesian: 'Tolong hitung, sudah buat berapa pcs ya.', explanation: '操作员记录当前完成数量。', harvest: ['tolong hitung', 'buat berapa', 'pcs'] },
     { id: 'EXP-OPR-006', task: '先关掉机器。', chinese: '先关掉机器。', indonesian: 'Matikan mesinnya dulu ya.', explanation: '异常或换线前按要求关闭设备。', harvest: ['matikan', 'mesinnya', 'dulu'] },
-    { id: 'EXP-OPR-007', task: '请叫一下主管。', chinese: '请叫一下主管。', indonesian: 'Tolong panggil pengawas ya.', explanation: '现场需要主管协助时使用。', harvest: ['tolong panggil', 'pengawas', 'ya'] },
+    { id: 'EXP-OPR-007', task: '请叫一下主管。', chinese: '请叫一下主管。', indonesian: 'Tolong panggil supervisornya ya.', explanation: '现场需要主管协助时使用。', harvest: ['tolong panggil', 'supervisornya', 'ya'] },
     { id: 'EXP-OPR-008', task: '整理一下工作区域。', chinese: '整理一下工作区域。', indonesian: 'Rapikan area kerja ya.', explanation: '结束工作前保持操作区域整洁。', harvest: ['rapikan', 'area kerja', 'ya'] },
   ],
 };
@@ -86,7 +87,7 @@ function createNannyExperiences(prefix: string, tasks: string[]): ModuleExperien
 export const moduleExperiences: Record<ModuleRole, ModuleExperience[]> = {
   ...factoryRoleExperiences,
   driver: getDriverExperiences(),
-  nanny: createNannyExperiences('EXP-NAN', nannyTasks),
+  nanny: getNannyExperiences(),
 };
 
 export const moduleMeta = {
