@@ -18,6 +18,10 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
       <p className="text-xs text-stone-400">Peran（角色）</p>
       <LocalizedLabel indonesian="Sopir" chinese="司机" className="mt-1 font-semibold" />
       <p className="mt-2 text-sm leading-6 text-stone-500">Situasi perjalanan sehari-hari<br />日常司机沟通场景</p>
+      <nav className="mt-5 grid gap-2 sm:grid-cols-2" aria-label="Mode Sopir">
+        <Link href="/driver" className="min-h-12 rounded-xl border border-stone-900 bg-stone-900 px-4 py-3 text-sm font-medium text-white">Pengalaman（真实场景）<span className="mt-1 block text-xs font-normal text-stone-300">40 situasi</span></Link>
+        <Link href="/driver/essentials" className="min-h-12 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-medium text-stone-600 transition duration-200 hover:bg-stone-100 hover:shadow-sm">Essentials（高频必备）<span className="mt-1 block text-xs font-normal text-stone-400">60 ungkapan</span></Link>
+      </nav>
       <p className="mt-5 text-xs text-stone-400">Alur Perjalanan（行程分类）</p>
       <nav className="mt-3 grid gap-2 sm:grid-cols-3" aria-label="Alur perjalanan">
         <Link href="/driver" className={`flex min-h-10 items-center rounded-lg border px-3 py-2 text-xs font-medium transition duration-200 ${!selected ? 'border-stone-900 bg-stone-900 text-white' : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-100 hover:shadow-sm'}`}>Semua（全部）</Link>
