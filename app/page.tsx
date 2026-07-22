@@ -5,6 +5,7 @@ const entries = [
   { href: '/nanny', icon: '👩', title: '保姆', subtitle: 'ART', priority: true },
   { href: '/factory', icon: '🏭', title: '工厂', subtitle: 'Pabrik', priority: false },
   { href: '/chat/ai-chat', icon: '💬', title: '自由聊天', subtitle: 'Chat Bebas', priority: false },
+  { href: '/social', icon: '🤝', title: 'Social', subtitle: '社交', description: 'Bahasa Indonesia untuk berteman dan berkomunikasi sehari-hari.', chineseDescription: '认识朋友、日常聊天和自然社交', priority: false },
 ];
 
 export default function Home() {
@@ -36,6 +37,7 @@ export default function Home() {
               <span>
                 <span className={`block text-lg ${entry.priority ? 'font-semibold' : 'font-medium'}`}>{entry.title}</span>
                 <span className="mt-1 block text-sm text-gray-400">{entry.subtitle}</span>
+                {'description' in entry && <><span className="mt-2 block text-xs leading-5 text-gray-500">{entry.description}</span><span className="mt-1 block text-xs leading-5 text-gray-400">{entry.chineseDescription}</span></>}
               </span>
             </Link>
           ))}
