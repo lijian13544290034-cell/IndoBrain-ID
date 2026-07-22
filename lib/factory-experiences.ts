@@ -46,6 +46,19 @@ const dialogueOverrides: Record<string, string> = {
   'EXP-FAC-050': 'Masih ada yang perlu saya bantu?',
 };
 
+// A small number of source records did not yet include a usable harvest list.
+// Keep the vocabulary tied strictly to the spoken sentence shown for that ID.
+const harvestOverrides: Record<string, string[]> = {
+  'EXP-FAC-008': ['barangnya（货物）', 'hari ini（今天）', 'keluar（出货）'],
+  'EXP-FAC-010': ['sore ini（今天下午）', 'muat kontainer（装柜）', 'kontainer（集装箱）'],
+  'EXP-FAC-014': ['kira-kira（大约）', 'kapan（什么时候）', 'sampai（到达）'],
+  'EXP-FAC-016': ['pelanggan（客户）', 'ada（有）', 'keluhan（投诉）'],
+  'EXP-FAC-017': ['pelanggan（客户）', 'ada（有）', 'pesanan baru（新订单）'],
+  'EXP-FAC-030': ['hari ini（今天）', 'keseluruhannya（整体）', 'gimana（怎么样）'],
+  'EXP-FAC-039': ['hari ini（今天）', 'sudah（已经）', 'rapat（开会）'],
+  'EXP-FAC-050': ['masih ada（还有）', 'perlu（需要）', 'saya bantu（我来处理）'],
+};
+
 function harvestFromDialogue(harvest: string[], dialogue: string) {
   const normalizedDialogue = dialogue.toLocaleLowerCase();
   const sourced = harvest
@@ -107,7 +120,10 @@ export function getFactoryExperiences(): FactoryExperience[] {
         .map((line) => line.replace(/^-\s*/, '').trim())
         .filter(Boolean);
       const supplemental = factorySupplemental[match[1]];
-      const harvest = formatHarvest(sourceHarvest.length ? sourceHarvest : (supplemental?.harvest ?? []), indonesian);
+      const harvest = formatHarvest(
+        harvestOverrides[match[1]] ?? (sourceHarvest.length ? sourceHarvest : (supplemental?.harvest ?? [])),
+        indonesian,
+      );
 
       const displayExplanation = explanation ?? supplemental?.explanation ?? '';
       return {

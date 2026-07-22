@@ -63,6 +63,11 @@ Object.assign(generatedExperiences, {
   'EXP-DRV-033': { id: 'EXP-DRV-033', task: '今天不要走收费公路。', chinese: '今天不要走收费公路。', indonesian: 'Hari ini jangan lewat jalan tol ya.', explanation: '希望避开收费公路时使用。', harvest: ['hari ini（今天）', 'jangan lewat（不要走）', 'jalan tol（收费公路）'] },
   'EXP-DRV-034': { id: 'EXP-DRV-034', task: '先去洗车。', chinese: '先去洗车。', indonesian: 'Kita cuci mobil dulu ya.', explanation: '车辆需要清洁时，安排司机先去洗车。', harvest: ['cuci mobil（洗车）', 'dulu（先）', 'ya（语气词）'] },
   'EXP-DRV-035': { id: 'EXP-DRV-035', task: '航站楼改了吗？', chinese: '航站楼改了吗？', indonesian: 'Terminalnya berubah?', explanation: '去机场前确认航站楼是否发生变化。', harvest: ['terminal（航站楼）', 'berubah（改变）'] },
+  'EXP-DRV-036': { id: 'EXP-DRV-036', task: '今天在酒店大堂等我。', chinese: '今天在酒店大堂等我。', indonesian: 'Hari ini tunggu saya di lobi hotel ya.', explanation: '在酒店会面时，安排司机在大堂等候。', harvest: ['hari ini（今天）', 'tunggu saya（等我）', 'lobi hotel（酒店大堂）'] },
+  'EXP-DRV-037': { id: 'EXP-DRV-037', task: '把空调调小一点。', chinese: '把空调调小一点。', indonesian: 'AC-nya kecilkan sedikit ya.', explanation: '车内空调太强时，请司机调低一些。', harvest: ['AC-nya（空调）', 'kecilkan（调小）', 'sedikit（一点）'] },
+  'EXP-DRV-038': { id: 'EXP-DRV-038', task: '我先去取文件。', chinese: '我先去取文件。', indonesian: 'Saya ambil dokumen dulu ya.', explanation: '出发前需要先取文件时使用。', harvest: ['ambil（拿、取）', 'dokumen（文件）', 'dulu（先）'] },
+  'EXP-DRV-039': { id: 'EXP-DRV-039', task: '到了机场告诉我航站楼。', chinese: '到了机场告诉我航站楼。', indonesian: 'Kalau sudah sampai bandara, kabari terminalnya ya.', explanation: '机场接送前，确认实际抵达的航站楼。', harvest: ['sudah sampai（已经到了）', 'bandara（机场）', 'kabari（通知）', 'terminalnya（航站楼）'] },
+  'EXP-DRV-040': { id: 'EXP-DRV-040', task: '等我把客户送进酒店再走。', chinese: '等我把客户送进酒店再走。', indonesian: 'Tunggu sampai saya antar klien masuk hotel ya.', explanation: '客户抵达酒店时，司机在离开前等候确认。', harvest: ['tunggu sampai（等到）', 'antar klien（送客户）', 'masuk hotel（进入酒店）'] },
 } satisfies Record<string, DriverExperience>);
 
 const generatedDialogueOverrides: Record<string, string> = {
@@ -136,7 +141,7 @@ function parseSource(): Map<string, DriverExperience> {
 
 export function getDriverExperiences(): DriverExperience[] {
   const sourceRecords = parseSource();
-  return Array.from({ length: 35 }, (_, index) => {
+  return Array.from({ length: 40 }, (_, index) => {
     const id = `EXP-DRV-${String(index + 1).padStart(3, '0')}`;
     const generated = generatedExperiences[id];
     const experience = sourceRecords.get(id) ?? (generated ? { ...generated, indonesian: generatedDialogueOverrides[id] ?? generated.indonesian } : undefined);

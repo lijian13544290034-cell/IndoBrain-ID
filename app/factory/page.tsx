@@ -3,11 +3,15 @@ import LocalizedLabel from '@/components/LocalizedLabel';
 
 const roles = [
   { indonesian: 'Manajer Pabrik', chinese: '工厂经理', href: '/factory/manager', count: 50 },
-  { indonesian: 'Produksi', chinese: '生产', href: '/module/production', count: 8 },
-  { indonesian: 'Gudang', chinese: '仓库', href: '/module/warehouse', count: 8 },
-  { indonesian: 'QC', chinese: '品质管理', href: '/module/qc', count: 8 },
-  { indonesian: 'Purchasing', chinese: '采购', href: '/module/purchasing', count: 8 },
-  { indonesian: 'Operator', chinese: '操作员', href: '/module/operator', count: 8 },
+  { indonesian: 'Produksi', chinese: '生产', href: '/module/production', count: 15 },
+  { indonesian: 'Gudang', chinese: '仓库', href: '/module/warehouse', count: 15 },
+  { indonesian: 'QC', chinese: '品质管理', href: '/module/qc', count: 15 },
+  { indonesian: 'Purchasing', chinese: '采购', href: '/module/purchasing', count: 15 },
+  { indonesian: 'Operator', chinese: '操作员', href: '/module/operator', count: 15 },
+  { indonesian: 'Logistik', chinese: '物流', href: '/module/logistics', count: 6 },
+  { indonesian: 'Pengiriman', chinese: '运输与发货', href: '/module/shipping', count: 6 },
+  { indonesian: 'Ekspor', chinese: '出口', href: '/module/export', count: 6 },
+  { indonesian: 'Layanan Pelanggan', chinese: '客户服务', href: '/module/customerService', count: 6 },
 ];
 
 export default function FactoryPage() {

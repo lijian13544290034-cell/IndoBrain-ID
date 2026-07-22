@@ -65,6 +65,11 @@ const additionalExperiences: Record<string, NannyExperience> = {
   'EXP-NAN-053': { id: 'EXP-NAN-053', task: '家里的洗衣液快没有了。', chinese: '家里的洗衣液快没有了。', indonesian: 'Sabun cuci di rumah hampir habis.', explanation: '生活用品快用完时，提醒及时补充。', harvest: ['sabun cuci（洗衣液）', 'di rumah（在家里）', 'hampir habis（快用完）'] },
   'EXP-NAN-054': { id: 'EXP-NAN-054', task: '下午有客人来。', chinese: '下午有客人来。', indonesian: 'Sore ini ada tamu datang.', explanation: '有访客来之前，提醒保姆做好接待准备。', harvest: ['sore ini（今天下午）', 'tamu（客人）', 'datang（来）'] },
   'EXP-NAN-055': { id: 'EXP-NAN-055', task: '孩子今晚早点睡。', chinese: '孩子今晚早点睡。', indonesian: 'Malam ini anak tidur lebih awal ya.', explanation: '需要调整孩子作息时使用，不涉及医疗判断。', harvest: ['malam ini（今晚）', 'anak（孩子）', 'tidur lebih awal（早点睡）'] },
+  'EXP-NAN-056': { id: 'EXP-NAN-056', task: '白色衣服分开洗。', chinese: '白色衣服分开洗。', indonesian: 'Pakaian putih dicuci terpisah ya.', explanation: '洗衣时将白色衣物分开，避免染色。', harvest: ['pakaian putih（白色衣服）', 'dicuci（洗）', 'terpisah（分开）'] },
+  'EXP-NAN-057': { id: 'EXP-NAN-057', task: '孩子今天有点不舒服，请注意观察。', chinese: '孩子今天有点不舒服，请注意观察。', indonesian: 'Anak hari ini kurang enak badan, tolong diperhatikan ya.', explanation: '孩子状态不佳时，请保姆留意情况；不作医疗诊断。', harvest: ['anak（孩子）', 'kurang enak badan（有点不舒服）', 'diperhatikan（注意观察）'] },
+  'EXP-NAN-058': { id: 'EXP-NAN-058', task: '客人十点来，准备茶水。', chinese: '客人十点来，准备茶水。', indonesian: 'Tamu datang jam sepuluh, siapkan teh ya.', explanation: '有访客来之前，提前准备简单茶水。', harvest: ['tamu（客人）', 'jam sepuluh（十点）', 'siapkan teh（准备茶）'] },
+  'EXP-NAN-059': { id: 'EXP-NAN-059', task: '今天不要给孩子喝甜饮料。', chinese: '今天不要给孩子喝甜饮料。', indonesian: 'Hari ini jangan kasih anak minuman manis ya.', explanation: '家庭对当天饮食有要求时使用。', harvest: ['jangan kasih（不要给）', 'anak（孩子）', 'minuman manis（甜饮料）'] },
+  'EXP-NAN-060': { id: 'EXP-NAN-060', task: '下雨的话，衣服晾在里面。', chinese: '下雨的话，衣服晾在里面。', indonesian: 'Kalau hujan, jemur pakaian di dalam ya.', explanation: '雨天将衣物晾在室内，避免再次淋湿。', harvest: ['kalau hujan（如果下雨）', 'jemur pakaian（晾衣服）', 'di dalam（在里面）'] },
 };
 
 function between(source: string, heading: string, stops: string[]) {
@@ -112,7 +117,7 @@ function parse(id: string): NannyExperience | undefined {
 }
 
 export function getNannyExperiences(): NannyExperience[] {
-  return Array.from({ length: 55 }, (_, index) => {
+  return Array.from({ length: 60 }, (_, index) => {
     const id = `EXP-NAN-${String(index + 1).padStart(3, '0')}`;
     const experience = parse(id) ?? additionalExperiences[id];
     return experience ? { ...experience, harvest: formatHarvest(experience.harvest, experience.indonesian) } : { id, task: '', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
