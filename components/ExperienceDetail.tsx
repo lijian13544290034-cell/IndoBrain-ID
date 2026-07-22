@@ -1,5 +1,6 @@
 import ExperienceActions from '@/components/ExperienceActions';
 import HarvestSection from '@/components/HarvestSection';
+import IndonesianSpeechButton from '@/components/IndonesianSpeechButton';
 
 export type ExperienceDetailItem = {
   id: string;
@@ -16,7 +17,7 @@ export default function ExperienceDetail({ experience }: { experience: Experienc
     {experience.missing ? <><h1 className="mt-2 text-2xl font-semibold">Belum tersedia</h1><p className="mt-5 text-sm leading-6 text-stone-500">该内容将在后续版本补充。</p></> : <>
       <h1 className="mt-2 text-2xl font-semibold">{experience.task}</h1>
       <p className="mt-5 text-xs text-stone-400">Bahasa Indonesia（印尼语）</p>
-      <p className="mt-2 rounded-xl bg-stone-50 p-4 text-lg leading-8">{experience.indonesian || 'Belum tersedia.'}</p>
+      <div className="mt-2 rounded-xl bg-stone-50 p-4"><p className="text-lg leading-8">{experience.indonesian || 'Belum tersedia.'}</p>{experience.indonesian && <IndonesianSpeechButton text={experience.indonesian} />}</div>
       {experience.explanation && <><p className="mt-5 text-xs text-stone-400">Penjelasan（中文说明）</p><p className="mt-2 text-sm leading-6 text-stone-700">{experience.explanation}</p></>}
       <HarvestSection harvest={experience.harvest} />
       <ExperienceActions experienceId={experience.id} indonesian={experience.indonesian || ''} />

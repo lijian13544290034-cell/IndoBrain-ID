@@ -2,6 +2,7 @@ export type ModuleRole = 'driver' | 'nanny' | 'production' | 'warehouse' | 'qc' 
 
 import { getDriverExperiences, type DriverExperience } from '@/lib/driver-experiences';
 import { getNannyExperiences } from '@/lib/nanny-experiences';
+import { formatHarvest } from '@/lib/harvest';
 
 export type ModuleExperience = DriverExperience & {
   id: string;
@@ -63,6 +64,36 @@ const factoryRoleExperiences: Record<'production' | 'warehouse' | 'qc' | 'purcha
     { id: 'EXP-OPR-008', task: '整理一下工作区域。', chinese: '整理一下工作区域。', indonesian: 'Rapikan area kerja ya.', explanation: '结束工作前保持操作区域整洁。', harvest: ['rapikan', 'area kerja', 'ya'] },
   ],
 };
+
+factoryRoleExperiences.production.push(
+  { id: 'EXP-PRO-009', task: '这个订单很急，先做。', chinese: '这个订单很急，先做。', indonesian: 'Pesanan ini mendesak, kerjakan dulu ya.', explanation: '遇到紧急订单时，明确要求生产线优先处理。', harvest: ['pesanan ini（这个订单）', 'mendesak（紧急）', 'kerjakan dulu（先做）'] },
+  { id: 'EXP-PRO-010', task: '机器停了多久？', chinese: '机器停了多久？', indonesian: 'Mesinnya berhenti berapa lama?', explanation: '发生停机后，先确认停机时长以评估对产量的影响。', harvest: ['mesinnya（机器）', 'berhenti（停止）', 'berapa lama（多久）'] },
+  { id: 'EXP-PRO-011', task: '今天的产量报给我。', chinese: '今天的产量报给我。', indonesian: 'Laporkan hasil produksi hari ini ya.', explanation: '每天收工前汇报实际完成的产量。', harvest: ['laporkan（报告）', 'hasil produksi（生产结果）', 'hari ini（今天）'] },
+);
+factoryRoleExperiences.warehouse.push(
+  { id: 'EXP-WHS-009', task: '这批材料收到了吗？', chinese: '这批材料收到了吗？', indonesian: 'Bahan ini sudah diterima?', explanation: '材料到厂后，仓库确认是否已完成收货。', harvest: ['bahan ini（这批材料）', 'sudah diterima（已收到）', 'ya（语气词）'] },
+  { id: 'EXP-WHS-010', task: '这个材料库存不够。', chinese: '这个材料库存不够。', indonesian: 'Stok bahan ini tidak cukup.', explanation: '库存不足时，仓库及时通知相关人员。', harvest: ['stok（库存）', 'bahan ini（这个材料）', 'tidak cukup（不够）'] },
+  { id: 'EXP-WHS-011', task: '出货前把货准备好。', chinese: '出货前把货准备好。', indonesian: 'Siapkan barang sebelum kirim ya.', explanation: '发货前确认货物、包装和单据都已备好。', harvest: ['siapkan barang（准备货物）', 'sebelum（之前）', 'kirim（发货）'] },
+);
+factoryRoleExperiences.qc.push(
+  { id: 'EXP-QC-009', task: '不良率是多少？', chinese: '不良率是多少？', indonesian: 'Persentase barang cacatnya berapa?', explanation: 'QC 用不良率判断当天品质是否异常。', harvest: ['persentase（百分比）', 'barang cacat（不良品）', 'berapa（多少）'] },
+  { id: 'EXP-QC-010', task: '这个样品批准了吗？', chinese: '这个样品批准了吗？', indonesian: 'Sampel ini sudah disetujui?', explanation: '量产前先确认样品是否获得批准。', harvest: ['sampel ini（这个样品）', 'sudah disetujui（已批准）', 'ya（语气词）'] },
+  { id: 'EXP-QC-011', task: '这个产品要重新检查。', chinese: '这个产品要重新检查。', indonesian: 'Produk ini perlu diperiksa ulang.', explanation: '品质异常或返工后，安排复检确认。', harvest: ['produk ini（这个产品）', 'perlu（需要）', 'diperiksa ulang（重新检查）'] },
+);
+factoryRoleExperiences.purchasing.push(
+  { id: 'EXP-PUR-009', task: '供应商几点送到？', chinese: '供应商几点送到？', indonesian: 'Pemasok datang jam berapa?', explanation: '采购确认供应商的具体到货时间。', harvest: ['pemasok（供应商）', 'datang（到达）', 'jam berapa（几点）'] },
+  { id: 'EXP-PUR-010', task: '确认一下这个材料的价格。', chinese: '确认一下这个材料的价格。', indonesian: 'Konfirmasi harga bahan ini ya.', explanation: '下单前再次确认材料价格，避免预算偏差。', harvest: ['konfirmasi（确认）', 'harga（价格）', 'bahan ini（这个材料）'] },
+  { id: 'EXP-PUR-011', task: '这个材料要紧急采购。', chinese: '这个材料要紧急采购。', indonesian: 'Bahan ini harus dibeli segera.', explanation: '缺料可能停线时，采购需要立即处理。', harvest: ['bahan ini（这个材料）', 'harus（必须）', 'segera（马上）'] },
+);
+factoryRoleExperiences.operator.push(
+  { id: 'EXP-OPR-009', task: '把机器调慢一点。', chinese: '把机器调慢一点。', indonesian: 'Atur mesin lebih pelan ya.', explanation: '调整设备速度时，给出清晰直接的操作指令。', harvest: ['atur mesin（调整机器）', 'lebih pelan（慢一点）', 'ya（语气词）'] },
+  { id: 'EXP-OPR-010', task: '换一下这个材料。', chinese: '换一下这个材料。', indonesian: 'Ganti bahan ini ya.', explanation: '需要切换原材料时使用。', harvest: ['ganti（更换）', 'bahan ini（这个材料）', 'ya（语气词）'] },
+  { id: 'EXP-OPR-011', task: '机器有问题，叫主管来。', chinese: '机器有问题，叫主管来。', indonesian: 'Mesinnya bermasalah, panggil supervisornya ya.', explanation: '操作员发现机器异常时，立即请主管到现场处理。', harvest: ['mesinnya bermasalah（机器有问题）', 'panggil（叫来）', 'supervisornya（主管）'] },
+);
+
+for (const experiences of Object.values(factoryRoleExperiences)) {
+  for (const experience of experiences) experience.harvest = formatHarvest(experience.harvest, experience.indonesian);
+}
 
 const nannyTasks = [
   '今天做什么菜？', '不要放辣椒', '帮我买水果', '今天打扫房间', '孩子放学几点？',

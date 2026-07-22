@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { formatHarvest } from '@/lib/harvest';
 
 export type NannyExperience = { id: string; task: string; indonesian: string; chinese: string; explanation: string; harvest: string[]; missing?: boolean };
 const sourceDir = path.join(process.cwd(), '03_Experience_Base', 'Experience');
@@ -58,6 +59,14 @@ const dialogueOverrides: Record<string, string> = {
   'EXP-NAN-050': 'Terima kasih sudah menjaga kami minggu ini.',
 };
 
+const additionalExperiences: Record<string, NannyExperience> = {
+  'EXP-NAN-051': { id: 'EXP-NAN-051', task: '今天不要去接孩子了。', chinese: '今天不要去接孩子了。', indonesian: 'Hari ini tidak usah jemput anak ya.', explanation: '接孩子安排临时变化时，及时通知保姆。', harvest: ['hari ini（今天）', 'tidak usah（不用）', 'jemput anak（接孩子）'] },
+  'EXP-NAN-052': { id: 'EXP-NAN-052', task: '把孩子明天的衣服准备好。', chinese: '把孩子明天的衣服准备好。', indonesian: 'Siapkan pakaian anak untuk besok ya.', explanation: '晚上提前准备孩子第二天要穿的衣服。', harvest: ['siapkan（准备）', 'pakaian anak（孩子的衣服）', 'untuk besok（明天用）'] },
+  'EXP-NAN-053': { id: 'EXP-NAN-053', task: '家里的洗衣液快没有了。', chinese: '家里的洗衣液快没有了。', indonesian: 'Sabun cuci di rumah hampir habis.', explanation: '生活用品快用完时，提醒及时补充。', harvest: ['sabun cuci（洗衣液）', 'di rumah（在家里）', 'hampir habis（快用完）'] },
+  'EXP-NAN-054': { id: 'EXP-NAN-054', task: '下午有客人来。', chinese: '下午有客人来。', indonesian: 'Sore ini ada tamu datang.', explanation: '有访客来之前，提醒保姆做好接待准备。', harvest: ['sore ini（今天下午）', 'tamu（客人）', 'datang（来）'] },
+  'EXP-NAN-055': { id: 'EXP-NAN-055', task: '孩子今晚早点睡。', chinese: '孩子今晚早点睡。', indonesian: 'Malam ini anak tidur lebih awal ya.', explanation: '需要调整孩子作息时使用，不涉及医疗判断。', harvest: ['malam ini（今晚）', 'anak（孩子）', 'tidur lebih awal（早点睡）'] },
+};
+
 function between(source: string, heading: string, stops: string[]) {
   const stop = stops.map((item) => `^${item}`).join('|');
   return source.match(new RegExp(`^${heading}\\s*\\r?\\n(.*?)(?=${stop}|^[-]{3,}|(?![\\s\\S]))`, 'ms'))?.[1]?.trim() ?? '';
@@ -103,8 +112,9 @@ function parse(id: string): NannyExperience | undefined {
 }
 
 export function getNannyExperiences(): NannyExperience[] {
-  return Array.from({ length: 50 }, (_, index) => {
+  return Array.from({ length: 55 }, (_, index) => {
     const id = `EXP-NAN-${String(index + 1).padStart(3, '0')}`;
-    return parse(id) ?? { id, task: '', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
+    const experience = parse(id) ?? additionalExperiences[id];
+    return experience ? { ...experience, harvest: formatHarvest(experience.harvest, experience.indonesian) } : { id, task: '', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
   });
 }

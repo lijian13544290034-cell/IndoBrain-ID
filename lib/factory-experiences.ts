@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { factorySupplemental } from '@/lib/factory-supplemental';
+import { formatHarvest } from '@/lib/harvest';
 
 export type FactoryExperience = {
   id: string;
@@ -106,7 +107,7 @@ export function getFactoryExperiences(): FactoryExperience[] {
         .map((line) => line.replace(/^-\s*/, '').trim())
         .filter(Boolean);
       const supplemental = factorySupplemental[match[1]];
-      const harvest = harvestFromDialogue(sourceHarvest.length ? sourceHarvest : (supplemental?.harvest ?? []), indonesian);
+      const harvest = formatHarvest(sourceHarvest.length ? sourceHarvest : (supplemental?.harvest ?? []), indonesian);
 
       const displayExplanation = explanation ?? supplemental?.explanation ?? '';
       return {

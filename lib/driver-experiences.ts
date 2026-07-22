@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { formatHarvest } from '@/lib/harvest';
 
 export type DriverExperience = {
   id: string;
@@ -55,6 +56,14 @@ const generatedExperiences: Record<string, DriverExperience> = {
   'EXP-DRV-028': { id: 'EXP-DRV-028', task: '今晚需要加班。', chinese: '今晚需要加班。', indonesian: 'Malam ini kita perlu lembur ya.', explanation: '当天工作延长，需要司机配合晚间加班安排。', harvest: ['malam ini', 'perlu', 'lembur'] },
   'EXP-DRV-029': { id: 'EXP-DRV-029', task: '把车停在门口。', chinese: '把车停在门口。', indonesian: 'Parkir mobil di depan ya.', explanation: '到达地点后，老板安排车辆停在门口。', harvest: ['parkir', 'mobil', 'di depan'] },
 };
+
+Object.assign(generatedExperiences, {
+  'EXP-DRV-031': { id: 'EXP-DRV-031', task: '明天改成八点来接我。', chinese: '明天改成八点来接我。', indonesian: 'Besok jemput saya jam delapan ya.', explanation: '第二天的接送时间有变化时，及时告知司机。', harvest: ['besok（明天）', 'jemput saya（接我）', 'jam delapan（八点）'] },
+  'EXP-DRV-032': { id: 'EXP-DRV-032', task: '在大堂等我。', chinese: '在大堂等我。', indonesian: 'Tunggu saya di lobi ya.', explanation: '在酒店或公寓时，请司机在大堂等待。', harvest: ['tunggu saya（等我）', 'di lobi（在大堂）', 'ya（语气词）'] },
+  'EXP-DRV-033': { id: 'EXP-DRV-033', task: '今天不要走收费公路。', chinese: '今天不要走收费公路。', indonesian: 'Hari ini jangan lewat jalan tol ya.', explanation: '希望避开收费公路时使用。', harvest: ['hari ini（今天）', 'jangan lewat（不要走）', 'jalan tol（收费公路）'] },
+  'EXP-DRV-034': { id: 'EXP-DRV-034', task: '先去洗车。', chinese: '先去洗车。', indonesian: 'Kita cuci mobil dulu ya.', explanation: '车辆需要清洁时，安排司机先去洗车。', harvest: ['cuci mobil（洗车）', 'dulu（先）', 'ya（语气词）'] },
+  'EXP-DRV-035': { id: 'EXP-DRV-035', task: '航站楼改了吗？', chinese: '航站楼改了吗？', indonesian: 'Terminalnya berubah?', explanation: '去机场前确认航站楼是否发生变化。', harvest: ['terminal（航站楼）', 'berubah（改变）'] },
+} satisfies Record<string, DriverExperience>);
 
 const generatedDialogueOverrides: Record<string, string> = {
   'EXP-DRV-028': 'Malam ini perlu lembur ya.',
@@ -127,9 +136,10 @@ function parseSource(): Map<string, DriverExperience> {
 
 export function getDriverExperiences(): DriverExperience[] {
   const sourceRecords = parseSource();
-  return Array.from({ length: 30 }, (_, index) => {
+  return Array.from({ length: 35 }, (_, index) => {
     const id = `EXP-DRV-${String(index + 1).padStart(3, '0')}`;
     const generated = generatedExperiences[id];
-    return sourceRecords.get(id) ?? (generated ? { ...generated, indonesian: generatedDialogueOverrides[id] ?? generated.indonesian } : undefined) ?? { id, task: '正式内容尚未导入', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
+    const experience = sourceRecords.get(id) ?? (generated ? { ...generated, indonesian: generatedDialogueOverrides[id] ?? generated.indonesian } : undefined);
+    return experience ? { ...experience, harvest: formatHarvest(experience.harvest, experience.indonesian) } : { id, task: '正式内容尚未导入', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
   });
 }
