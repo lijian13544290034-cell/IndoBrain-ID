@@ -1,69 +1,65 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useIndonesianAudio } from '@/components/IndonesianAudioProvider';
 
-let activeButton: (() => void) | undefined;
+let activeAudio: HTMLAudioElement | undefined;
+const audioUrlCache = new Map<string, string>();
+const pendingAudio = new Map<string, Promise<string>>();
 
-const unavailableMessage = 'Suara Bahasa Indonesia belum tersedia di browser ini.（当前浏览器没有可用的印尼语音色。）';
-
-function selectIndonesianVoice(voices: SpeechSynthesisVoice[]) {
-  const exact = voices.find((voice) => voice.lang.toLowerCase() === 'id-id');
-  const locale = voices.find((voice) => voice.lang.toLowerCase().startsWith('id'));
-  const named = voices.find((voice) => /bahasa indonesia|indonesian|indonesia/i.test(voice.name));
-  return { voice: exact ?? locale ?? named ?? null, exact: Boolean(exact), indonesianVoices: voices.filter((voice) => voice.lang.toLowerCase().startsWith('id')) };
+async function getAudioUrl(text: string) {
+  const cached = audioUrlCache.get(text);
+  if (cached) return cached;
+  const pending = pendingAudio.get(text);
+  if (pending) return pending;
+  const request = fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) })
+    .then(async (response) => {
+      if (!response.ok) throw new Error('TTS request failed');
+      const url = URL.createObjectURL(await response.blob());
+      audioUrlCache.set(text, url);
+      pendingAudio.delete(text);
+      return url;
+    })
+    .catch((error) => { pendingAudio.delete(text); throw error; });
+  pendingAudio.set(text, request);
+  return request;
 }
 
 export default function IndonesianSpeechButton({ text, compact = false }: { text: string; compact?: boolean }) {
+  const enabled = useIndonesianAudio();
   const [playing, setPlaying] = useState(false);
-  const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
-  const [supported, setSupported] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | undefined>(undefined);
 
-  function stop() {
-    window.speechSynthesis?.cancel();
-    setPlaying(false);
-  }
-
-  useEffect(() => {
-    if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) { setSupported(false); return; }
-    const refreshVoices = () => {
-      const selection = selectIndonesianVoice(window.speechSynthesis.getVoices());
-      setVoice(selection.voice);
-      setSupported(true);
-      if (process.env.NODE_ENV !== 'production') console.debug('[IndoBrain Indonesian speech]', {
-        selectedVoice: selection.voice?.name ?? null,
-        selectedLocale: selection.voice?.lang ?? null,
-        exactIdIdMatch: selection.exact,
-        availableIndonesianVoices: selection.indonesianVoices.map((item) => ({ name: item.name, lang: item.lang })),
-      });
-    };
-    refreshVoices();
-    window.speechSynthesis.addEventListener('voiceschanged', refreshVoices);
-    return () => {
-      window.speechSynthesis.removeEventListener('voiceschanged', refreshVoices);
-      window.speechSynthesis.cancel();
-      if (activeButton === stop) activeButton = undefined;
-    };
-  // stop is intentionally stable for the active button cleanup below.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => () => {
+    if (activeAudio === audioRef.current) activeAudio?.pause();
   }, []);
 
-  const play = () => {
-    if (!voice || !supported || /[\u3400-\u9FFF]/.test(text)) return;
-    if (playing) { stop(); return; }
-    activeButton?.();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.voice = voice;
-    utterance.lang = voice.lang || 'id-ID';
-    utterance.rate = 0.9;
-    utterance.pitch = 1;
-    utterance.onend = () => setPlaying(false);
-    utterance.onerror = () => setPlaying(false);
-    activeButton = stop;
-    setPlaying(true);
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+  const stop = () => {
+    audioRef.current?.pause();
+    setPlaying(false);
   };
 
-  const unavailable = supported === false || (supported === true && !voice);
-  return <span className="inline-flex items-center gap-2"><button type="button" onClick={play} disabled={!voice || !supported} aria-label="Dengarkan（听一听）" title="Dengarkan（听一听）" className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${voice && supported ? 'cursor-pointer hover:bg-stone-100' : 'cursor-not-allowed opacity-50'} ${compact ? '' : 'mt-2'}`}>{playing ? '■ Memutar（播放中）' : '🔊 Dengarkan（听一听）'}</button>{unavailable && <span className="text-xs text-stone-500">{unavailableMessage}</span>}</span>;
+  const play = async () => {
+    if (enabled !== true || /[\u3400-\u9FFF]/.test(text)) return;
+    if (playing || loading) { stop(); return; }
+    activeAudio?.pause();
+    setLoading(true);
+    try {
+      const audio = new Audio(await getAudioUrl(text));
+      audioRef.current = audio;
+      activeAudio = audio;
+      audio.onended = () => { if (activeAudio === audio) activeAudio = undefined; setPlaying(false); };
+      audio.onerror = () => { if (activeAudio === audio) activeAudio = undefined; setPlaying(false); };
+      await audio.play();
+      setPlaying(true);
+    } catch {
+      setPlaying(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (enabled !== true) return null;
+  return <button type="button" onClick={play} aria-label="Dengarkan（听一听）" title="Dengarkan（听一听）" className={`min-h-8 cursor-pointer rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 hover:bg-stone-100 ${compact ? '' : 'mt-2'}`}>{loading ? 'Memuat…（加载中）' : playing ? '■ Memutar（播放中）' : '🔊 Dengarkan（听一听）'}</button>;
 }
