@@ -22,6 +22,10 @@ export default function FactoryPage() {
         <p className="text-sm text-stone-400">IndoBrain</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Pabrik</h1>
         <p className="mt-3 text-sm text-stone-500">Pilih peran untuk melihat situasi kerja.<br />选择角色浏览工作场景。</p>
+        <nav className="mt-5 grid gap-2 sm:grid-cols-2" aria-label="Mode Pabrik">
+          <Link href="/factory" className="min-h-12 rounded-xl border border-stone-900 bg-stone-900 px-4 py-3 text-sm font-medium text-white">Pengalaman（真实场景）<span className="mt-1 block text-xs font-normal text-stone-300">149 situasi</span></Link>
+          <Link href="/factory/essentials" className="min-h-12 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-medium text-stone-600 transition duration-200 hover:bg-stone-100 hover:shadow-sm">Essentials（高频必备）<span className="mt-1 block text-xs font-normal text-stone-400">100 ungkapan</span></Link>
+        </nav>
       </header>
 
       <section className="mt-9 grid gap-3 sm:grid-cols-2" aria-label="Factory roles">
