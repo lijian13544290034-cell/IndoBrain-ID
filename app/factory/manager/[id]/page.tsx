@@ -73,7 +73,7 @@ export default async function FactoryManagerPage({ params }: { params: Promise<{
       </nav>
 
       <MarkdownExperience content={experience.content} />
-      <ExperienceActions experienceId={experience.id} indonesian={experience.content} />
+      <ExperienceActions experienceId={experience.id} indonesian={experience.indonesian} />
 
       <div className="mt-6 flex items-center justify-between gap-3">
         {previous ? (

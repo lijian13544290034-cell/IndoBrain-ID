@@ -5,6 +5,7 @@ export type FactoryExperience = {
   id: string;
   content: string;
   task: string;
+  indonesian: string;
 };
 
 const experiencePath = path.join(
@@ -27,8 +28,11 @@ export function getFactoryExperiences(): FactoryExperience[] {
 
       const content = section.trim();
       const task = content.match(/## Task\s*\n\s*([^\n]+)/)?.[1]?.trim() ?? '';
+      const indonesian = [...content.matchAll(/\*\*🇮🇩\*\*\s*\n\s*([\s\S]*?)(?=\n---)/g)]
+        .map((match) => match[1].trim())
+        .join('\n');
 
-      return { id: match[1], content, task };
+      return { id: match[1], content, task, indonesian };
     })
     .filter(({ id }) => Number(id.slice(-3)) >= 1)
     .sort((a, b) => a.id.localeCompare(b.id));
