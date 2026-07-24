@@ -25,7 +25,7 @@ export default async function ModuleExperiencePage({ params }: { params: Promise
       <p className="text-sm text-stone-400">{item.id}</p>
       <h1 className="mt-3 text-2xl font-semibold">{item.task}</h1>
       <p className="mt-7 text-xs text-stone-400">Bahasa Indonesia（印尼语）</p>
-      <p className="mt-2 rounded-xl bg-stone-50 p-4 text-lg leading-8">{item.indonesian}</p>
+      <div className="mt-2 rounded-xl bg-stone-50 p-4"><p className="text-lg leading-8">{item.indonesian}</p><div className="mt-3"><IndonesianAudioButton text={item.indonesian} /></div></div>
       <p className="mt-5 text-xs text-stone-400">中文说明</p>
       <p className="mt-2 text-stone-700">{item.chinese}</p>
       <h2 className="mt-8 font-semibold">Kata Penting Hari Ini（今日重点词汇）</h2>

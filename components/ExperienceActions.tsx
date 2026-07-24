@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import IndonesianAudioButton from '@/components/IndonesianAudioButton';
 import { getSessionId } from '@/lib/session';
 
 export default function ExperienceActions({ experienceId, indonesian }: { experienceId: string; indonesian: string }) {
@@ -33,7 +32,6 @@ export default function ExperienceActions({ experienceId, indonesian }: { experi
 
   return <div className="mt-7 flex flex-wrap gap-2">
     <button onClick={copy} className="rounded-xl border border-stone-300 px-4 py-2 text-sm hover:bg-stone-50">Salin Bahasa Indonesia（复制印尼语）</button>
-    <IndonesianAudioButton text={indonesian} />
     <button onClick={() => feedback(true)} className="rounded-xl border border-stone-300 px-4 py-2 text-sm hover:bg-stone-50">Membantu（有帮助）</button>
     <button onClick={() => feedback(false)} className="rounded-xl border border-stone-300 px-4 py-2 text-sm hover:bg-stone-50">Belum Membantu（没帮助）</button>
     {status && <span className="self-center text-sm text-stone-500">{status}</span>}
