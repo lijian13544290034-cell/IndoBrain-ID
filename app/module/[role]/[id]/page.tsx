@@ -1,42 +1,23 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import ExperienceActions from '@/components/ExperienceActions';
-import IndonesianAudioButton from '@/components/IndonesianAudioButton';
+import ExperienceDetail from '@/components/ExperienceDetail';
+import NavigationButtons from '@/components/NavigationButtons';
 import { moduleExperiences, moduleMeta, type ModuleRole } from '@/lib/module-experiences';
-
-function indonesianFromHarvest(value: string) {
-  return value.split(/[（(]/)[0].trim();
-}
 
 export default async function ModuleExperiencePage({ params }: { params: Promise<{ role: string; id: string }> }) {
   const { role, id } = await params;
   if (!(role in moduleMeta)) notFound();
   const key = role as ModuleRole;
   const entries = moduleExperiences[key];
-  const item = entries.find((entry) => entry.id.endsWith(id));
+  const item = entries.find((entry) => entry.id.endsWith('-' + id));
   if (!item) notFound();
   const index = entries.indexOf(item);
   const previous = entries[index - 1];
   const next = entries[index + 1];
 
-  return <main className="mx-auto min-h-screen w-full max-w-2xl px-5 py-10 sm:px-8">
-    <Link href={`/module/${key}`} className="text-sm text-stone-500">← {moduleMeta[key].indonesian}</Link>
-    <article className="mt-7 rounded-2xl border border-stone-200 px-6 py-8 shadow-sm">
-      <p className="text-sm text-stone-400">{item.id}</p>
-      <h1 className="mt-3 text-2xl font-semibold">{item.task}</h1>
-      <p className="mt-7 text-xs text-stone-400">Bahasa Indonesia（印尼语）</p>
-      <div className="mt-2 rounded-xl bg-stone-50 p-4"><p className="text-lg leading-8">{item.indonesian}</p><div className="mt-3"><IndonesianAudioButton text={item.indonesian} /></div></div>
-      <p className="mt-5 text-xs text-stone-400">中文说明</p>
-      <p className="mt-2 text-stone-700">{item.chinese}</p>
-      <h2 className="mt-8 font-semibold">Kata Penting Hari Ini（今日重点词汇）</h2>
-      <ul className="mt-3 space-y-2 text-sm text-stone-600">
-        {item.harvest.map((word) => <li key={word} className="flex flex-wrap items-center gap-2">• {word}<IndonesianAudioButton text={indonesianFromHarvest(word)} compact /></li>)}
-      </ul>
-      <ExperienceActions experienceId={item.id} indonesian={item.indonesian} />
-    </article>
-    <nav className="mt-6 flex justify-between">
-      {previous ? <Link href={`/module/${key}/${previous.id.slice(-3)}`} className="rounded-xl border px-4 py-2 text-sm">← Sebelumnya（上一条）</Link> : <span />}
-      {next ? <Link href={`/module/${key}/${next.id.slice(-3)}`} className="rounded-xl border px-4 py-2 text-sm">Berikutnya（下一条）→</Link> : <span />}
-    </nav>
+  return <main className="mx-auto min-h-screen w-full max-w-4xl px-5 pb-12 pt-10 sm:px-8 sm:pt-14">
+    <Link href={'/module/' + key} className="text-sm text-stone-500 hover:text-stone-900">← {moduleMeta[key].indonesian}（{moduleMeta[key].chinese}）</Link>
+    <ExperienceDetail experience={item} />
+    <NavigationButtons experienceId={item.id} previous={previous ? { href: '/module/' + key + '/' + previous.id.slice(-3), id: previous.id } : undefined} next={next ? { href: '/module/' + key + '/' + next.id.slice(-3), id: next.id } : undefined} />
   </main>;
 }
