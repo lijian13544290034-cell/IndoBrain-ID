@@ -73,6 +73,29 @@ const socialExperiences: SocialExperience[] = [
   experience('EXP-SOC-048', 'budaya', '我先告辞回去了。', 'Saya izin pulang dulu ya.', '聚会结束准备先离开时，礼貌地向大家告辞。', ['izin（告辞、请允许）', 'pulang（回去）', 'dulu（先）']),
   experience('EXP-SOC-049', 'budaya', '路上小心。', 'Hati-hati di jalan ya.', '对方离开或回家时，常用的关心告别语。', ['hati-hati（小心）', 'di jalan（在路上）', 'ya（语气词）']),
   experience('EXP-SOC-050', 'budaya', '谢谢你邀请我。', 'Terima kasih, sudah mengundang saya.', '参加聚会或到别人家做客时，感谢对方邀请。', ['terima kasih（谢谢）', 'sudah（已经）', 'mengundang（邀请）']),
+  experience('EXP-SOC-051', 'kenalan', '你是怎么知道这个活动的？', 'Kamu tahu acara ini dari mana?', '刚认识时，可以从对方如何得知活动开始聊天。', ['kamu（你）', 'tahu（知道）', 'acara ini（这个活动）', 'dari mana（从哪里）']),
+  experience('EXP-SOC-052', 'kenalan', '我刚搬到这附近。', 'Saya baru pindah ke daerah sini.', '向新认识的人说明自己最近搬到附近时使用。', ['baru pindah（刚搬来）', 'daerah sini（这附近）', 'saya（我）']),
+  experience('EXP-SOC-053', 'kenalan', '如果你不介意，我们认识一下吧。', 'Kalau nggak keberatan, kita kenalan ya.', '在活动或社区里想自然地开启认识时使用。', ['kalau nggak keberatan（如果你不介意）', 'kita（我们）', 'kenalan（认识）']),
+  experience('EXP-SOC-054', 'kenalan', '可以推荐附近的咖啡店吗？', 'Ada rekomendasi tempat ngopi di sekitar sini?', '向本地朋友询问附近咖啡店时使用。', ['ada rekomendasi（有推荐吗）', 'tempat ngopi（喝咖啡的地方）', 'di sekitar sini（这附近）']),
+  experience('EXP-SOC-055', 'kenalan', '这是我的名片。', 'Ini kartu nama saya.', '商务活动或初次认识后交换名片时使用。', ['ini（这是）', 'kartu nama（名片）', 'saya（我）']),
+
+  experience('EXP-SOC-056', 'obrolan-santai', '今天路上顺利吗？', 'Perjalanannya lancar?', '见面后可以轻松问对方路上是否顺利。', ['perjalanan（路程）', 'lancar（顺利）']),
+  experience('EXP-SOC-057', 'obrolan-santai', '最近工作还适应吗？', 'Sudah mulai cocok sama kerjaannya?', '和同事或新朋友聊近况时，关心对方是否适应工作。', ['sudah mulai（已经开始）', 'cocok（适应、合适）', 'kerjaannya（工作）']),
+  experience('EXP-SOC-058', 'obrolan-santai', '你午休通常在哪里吃饭？', 'Biasanya makan siang di mana?', '午休时自然地询问对方常去哪里吃饭。', ['biasanya（通常）', 'makan siang（午饭）', 'di mana（在哪里）']),
+  experience('EXP-SOC-059', 'obrolan-santai', '我先回复一下消息。', 'Saya balas chat dulu ya.', '聊天中需要暂时回复其他消息时使用。', ['balas chat（回复消息）', 'dulu（先）', 'ya（语气词）']),
+  experience('EXP-SOC-060', 'obrolan-santai', '谢谢你提醒我。', 'Makasih sudah ingetin ya.', '朋友或同事提醒你事情后，用轻松的方式表达感谢。', ['makasih（谢谢）', 'sudah（已经）', 'ingetin（提醒）']),
+
+  experience('EXP-SOC-061', 'ngopi-makan', '明天中午一起吃饭吗？', 'Besok makan siang bareng yuk?', '想约朋友在第二天午休一起吃饭时使用。', ['besok（明天）', 'makan siang（午饭）', 'bareng（一起）', 'yuk（一起吧）']),
+  experience('EXP-SOC-062', 'ngopi-makan', '我已经到咖啡店了。', 'Saya sudah sampai di kafe.', '在 WhatsApp 上通知朋友自己已经到咖啡店时使用。', ['sudah sampai（已经到了）', 'di kafe（在咖啡店）', 'saya（我）']),
+  experience('EXP-SOC-063', 'ngopi-makan', '你想坐里面还是外面？', 'Mau duduk di dalam atau di luar?', '到餐厅或咖啡店后询问对方座位偏好。', ['mau duduk（想坐）', 'di dalam（里面）', 'di luar（外面）']),
+  experience('EXP-SOC-064', 'ngopi-makan', '这家店人很多，我们换一家吧。', 'Di sini ramai, kita cari tempat lain ya.', '发现店内很拥挤时，自然提议换一家。', ['di sini（这里）', 'ramai（人多）', 'tempat lain（别的地方）']),
+  experience('EXP-SOC-065', 'ngopi-makan', '我把位置发给你。', 'Saya kirim lokasinya ya.', '约见面时通过 WhatsApp 把定位发给对方。', ['kirim（发送）', 'lokasinya（位置）', 'ya（语气词）']),
+
+  experience('EXP-SOC-066', 'budaya', '到家后告诉我一声。', 'Kalau sudah sampai rumah, kabari ya.', '印尼朋友常在道别后关心对方是否平安到家。', ['kalau（如果）', 'sampai rumah（到家）', 'kabari（告诉、通知）']),
+  experience('EXP-SOC-067', 'budaya', '不用着急，慢慢来。', 'Nggak usah buru-buru, santai aja.', '别人担心迟到或做事太赶时，用这句安抚很自然。', ['nggak usah（不用）', 'buru-buru（着急）', 'santai aja（放轻松）']),
+  experience('EXP-SOC-068', 'budaya', '我先走了，明天见。', 'Saya duluan ya, sampai besok.', '聚会、办公室或活动结束时，先离开的人常这样告别。', ['duluan（先走）', 'sampai besok（明天见）', 'ya（语气词）']),
+  experience('EXP-SOC-069', 'budaya', '谢谢你帮忙。', 'Makasih ya sudah bantu.', '接受朋友或同事帮助后，这是一句很自然的感谢。', ['makasih（谢谢）', 'sudah bantu（已经帮忙）', 'ya（语气词）']),
+  experience('EXP-SOC-070', 'budaya', '没事，需要帮忙就说。', 'Nggak apa-apa, kalau perlu bantuan bilang aja.', '对方感谢或遇到小困难时，用这句表达愿意继续帮忙。', ['nggak apa-apa（没事）', 'perlu bantuan（需要帮忙）', 'bilang aja（直接说）']),
 ];
 
 const socialEnhancements: Record<string, Required<Pick<SocialExperience, 'momentTitle' | 'insight'>>> = {
@@ -126,6 +149,26 @@ const socialEnhancements: Record<string, Required<Pick<SocialExperience, 'moment
   'EXP-SOC-048': { momentTitle: '先行告辞', insight: { indonesian: 'Mengatakan izin pulang membuat kepergianmu terdengar sopan kepada tuan rumah atau kelompok.', chinese: '离开前说先告辞，会让主人或大家感到被尊重。' } },
   'EXP-SOC-049': { momentTitle: '离别关心', insight: { indonesian: '“Hati-hati di jalan” adalah ucapan perpisahan yang sangat umum dan hangat.', chinese: '“路上小心”是非常常见又温暖的告别语。' } },
   'EXP-SOC-050': { momentTitle: '感谢邀请', insight: { indonesian: 'Mengucapkan terima kasih atas undangan membantu menjaga hubungan sosial yang baik.', chinese: '感谢邀请，有助于维持良好的社交关系。' } },
+  'EXP-SOC-051': { momentTitle: '从活动开始聊天', insight: { indonesian: 'Menanyakan asal informasi acara adalah pembuka yang ringan dan tidak terlalu pribadi.', chinese: '从活动信息聊起很轻松，也不会显得太私人。' } },
+  'EXP-SOC-052': { momentTitle: '刚搬到附近', insight: { indonesian: 'Setelah tahu kamu baru pindah, orang sering memberi rekomendasi area atau tempat makan.', chinese: '知道你刚搬来后，对方常会主动推荐周边或餐厅。' } },
+  'EXP-SOC-053': { momentTitle: '自然认识', insight: { indonesian: '“Kalau nggak keberatan” membuat ajakan berkenalan terdengar sopan dan santai.', chinese: '“如果你不介意”会让认识的邀请听起来礼貌又轻松。' } },
+  'EXP-SOC-054': { momentTitle: '问咖啡店推荐', insight: { indonesian: 'Meminta rekomendasi lokal sering membuka percakapan lebih lanjut tentang lingkungan sekitar.', chinese: '请对方推荐本地咖啡店，很容易延续到周边生活话题。' } },
+  'EXP-SOC-055': { momentTitle: '交换名片', insight: { indonesian: 'Di acara kerja, berikan kartu nama setelah percakapan singkat agar terasa lebih alami.', chinese: '在商务活动中，先聊几句再递名片，会显得更自然。' } },
+  'EXP-SOC-056': { momentTitle: '问路上顺不顺', insight: { indonesian: 'Pertanyaan ini cocok setelah bertemu dan tidak menuntut jawaban panjang.', chinese: '见面后问路上顺不顺很自然，也不要求对方回答很长。' } },
+  'EXP-SOC-057': { momentTitle: '关心适应工作', insight: { indonesian: '“Cocok” di sini berarti merasa pas atau mulai nyaman dengan pekerjaan.', chinese: '这里的“cocok”表示是否觉得适合、开始适应这份工作。' } },
+  'EXP-SOC-058': { momentTitle: '午休吃什么', insight: { indonesian: 'Pertanyaan tentang makan siang mudah berubah menjadi ajakan makan bersama tanpa tekanan.', chinese: '聊午饭很容易自然延伸成一起吃饭的邀请，不会有压力。' } },
+  'EXP-SOC-059': { momentTitle: '先回消息', insight: { indonesian: '“Balas chat dulu” memberi tahu teman bahwa kamu hanya berhenti sebentar, bukan mengabaikan percakapan.', chinese: '“先回个消息”是在说明你只是暂时处理一下，不是在忽略对话。' } },
+  'EXP-SOC-060': { momentTitle: '谢谢提醒', insight: { indonesian: '“Makasih” dan “ingetin” terdengar sangat alami dalam chat sehari-hari.', chinese: '“makasih”和“ingetin”在日常聊天里非常自然。' } },
+  'EXP-SOC-061': { momentTitle: '约明天午饭', insight: { indonesian: 'Ajakan makan siang biasanya terasa santai, terutama di antara rekan kerja.', chinese: '约午饭通常很轻松，尤其适合同事之间。' } },
+  'EXP-SOC-062': { momentTitle: '到咖啡店后通知', insight: { indonesian: 'Kirim pesan setelah tiba membantu teman menemukanmu tanpa perlu menelepon.', chinese: '到了后发消息能让朋友更容易找到你，不需要特地打电话。' } },
+  'EXP-SOC-063': { momentTitle: '选座位', insight: { indonesian: 'Menawarkan pilihan duduk menunjukkan perhatian sederhana pada kenyamanan teman.', chinese: '询问坐里面还是外面，是简单又自然的体贴。' } },
+  'EXP-SOC-064': { momentTitle: '换一家店', insight: { indonesian: '“Ramai” bisa berarti banyak orang; tawarkan alternatif dengan nada ringan.', chinese: '“ramai”可以指人很多；轻松提出换地方即可。' } },
+  'EXP-SOC-065': { momentTitle: '发送定位', insight: { indonesian: 'Mengirim lokasi lewat WhatsApp lebih praktis daripada menjelaskan alamat panjang.', chinese: '通过 WhatsApp 发定位，比详细解释地址更实用。' } },
+  'EXP-SOC-066': { momentTitle: '到家报平安', insight: { indonesian: 'Meminta kabar setelah sampai rumah adalah bentuk perhatian yang umum, bukan kontrol berlebihan.', chinese: '请对方到家后说一声是常见的关心，不代表过度打扰。' } },
+  'EXP-SOC-067': { momentTitle: '别着急', insight: { indonesian: '“Santai aja” membuat kalimat penenang terdengar lebih santai dan lisan.', chinese: '“santai aja”让安慰听起来更口语、更放松。' } },
+  'EXP-SOC-068': { momentTitle: '先走告别', insight: { indonesian: '“Saya duluan” menyampaikan bahwa kamu pulang lebih dulu sambil tetap sopan.', chinese: '“saya duluan”清楚表达自己先走，同时仍然礼貌。' } },
+  'EXP-SOC-069': { momentTitle: '感谢帮忙', insight: { indonesian: 'Kalimat singkat ini cocok untuk bantuan kecil maupun bantuan di tempat kerja.', chinese: '这句简短感谢既适合小忙，也适合工作中的帮助。' } },
+  'EXP-SOC-070': { momentTitle: '愿意帮忙', insight: { indonesian: '“Bilang aja” berarti orang lain boleh meminta bantuan tanpa perlu terlalu sungkan.', chinese: '“bilang aja”表示对方可以直接说，不必太客气。' } },
 };
 
 export function getSocialExperiences() {

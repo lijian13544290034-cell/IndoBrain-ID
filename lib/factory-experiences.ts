@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { factorySupplemental } from '@/lib/factory-supplemental';
 import { formatHarvest } from '@/lib/harvest';
+import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
 export type FactoryExperience = {
   id: string;
@@ -10,6 +11,7 @@ export type FactoryExperience = {
   indonesian: string;
   explanation?: string;
   harvest: string[];
+  pattern: WorkplacePattern;
 };
 
 const experiencePath = path.join(process.cwd(), 'experience', 'factory', 'manager', 'Factory_Manager_Experience.md');
@@ -133,6 +135,7 @@ export function getFactoryExperiences(): FactoryExperience[] {
         indonesian,
         explanation: displayExplanation,
         harvest,
+        pattern: getWorkplacePattern(indonesian),
       };
     })
     .filter(({ id }) => Number(id.slice(-3)) >= 1)

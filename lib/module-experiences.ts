@@ -3,6 +3,7 @@ export type ModuleRole = 'driver' | 'nanny' | 'production' | 'warehouse' | 'qc' 
 import { getDriverExperiences, type DriverExperience } from '@/lib/driver-experiences';
 import { getNannyExperiences } from '@/lib/nanny-experiences';
 import { formatHarvest } from '@/lib/harvest';
+import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
 export type ModuleExperience = DriverExperience & {
   id: string;
@@ -10,6 +11,7 @@ export type ModuleExperience = DriverExperience & {
   indonesian: string;
   chinese: string;
   harvest: string[];
+  pattern?: WorkplacePattern;
 };
 
 const factoryRoleExperiences: Record<'production' | 'warehouse' | 'qc' | 'purchasing' | 'operator', ModuleExperience[]> = {
@@ -157,8 +159,50 @@ const additionalFactoryRoleExperiences: Record<'logistics' | 'shipping' | 'expor
   ],
 };
 
+factoryRoleExperiences.production.push(
+  { id: 'EXP-PRO-016', task: '这批先做首件确认。', chinese: '这批先做首件确认。', indonesian: 'Batch ini cek contoh pertama dulu ya.', explanation: '新批次开始时，先确认首件是否符合要求，再继续生产。', harvest: ['batch ini（这批）', 'contoh pertama（首件）', 'dulu（先）'] },
+  { id: 'EXP-PRO-017', task: '今天下午换生产线。', chinese: '今天下午换生产线。', indonesian: 'Sore ini ganti jalur produksi ya.', explanation: '生产安排调整时，提前通知班组下午需要换线。', harvest: ['sore ini（今天下午）', 'ganti（更换）', 'jalur produksi（生产线）'] },
+  { id: 'EXP-PRO-018', task: '把停机时间记下来。', chinese: '把停机时间记下来。', indonesian: 'Catat waktu mesin berhentinya ya.', explanation: '发生停机时记录具体时长，便于后续分析产能影响。', harvest: ['catat（记录）', 'waktu（时间）', 'mesin berhenti（机器停机）'] },
+);
+factoryRoleExperiences.warehouse.push(
+  { id: 'EXP-WHS-016', task: '先进的货先出。', chinese: '先进的货先出。', indonesian: 'Yang masuk dulu, keluarkan dulu ya.', explanation: '仓库按先进先出的原则安排发料或出货。', harvest: ['masuk dulu（先进）', 'keluarkan（出库）', 'dulu（先）'] },
+  { id: 'EXP-WHS-017', task: '收货前核对送货单。', chinese: '收货前核对送货单。', indonesian: 'Cocokkan surat jalannya sebelum terima barang ya.', explanation: '收货前先将实物与送货单核对，减少数量或品项差异。', harvest: ['cocokkan（核对）', 'surat jalan（送货单）', 'terima barang（收货）'] },
+  { id: 'EXP-WHS-018', task: '这个位置满了，换一个位置。', chinese: '这个位置满了，换一个位置。', indonesian: 'Lokasi ini sudah penuh, pindah ke lokasi lain ya.', explanation: '库位已满时，明确要求将货物转移到其他可用位置。', harvest: ['lokasi ini（这个位置）', 'penuh（满）', 'lokasi lain（其他位置）'] },
+);
+factoryRoleExperiences.qc.push(
+  { id: 'EXP-QC-016', task: '这个尺寸不对。', chinese: '这个尺寸不对。', indonesian: 'Ukuran ini tidak sesuai.', explanation: 'QC 发现尺寸与要求不符时，应立即标记并反馈。', harvest: ['ukuran（尺寸）', 'ini（这个）', 'tidak sesuai（不符合）'] },
+  { id: 'EXP-QC-017', task: '先量十个样品。', chinese: '先量十个样品。', indonesian: 'Ukur sepuluh sampel dulu ya.', explanation: '抽检时先测量十个样品，确认批次尺寸情况。', harvest: ['ukur（测量）', 'sepuluh sampel（十个样品）', 'dulu（先）'] },
+  { id: 'EXP-QC-018', task: '把不良品数量写下来。', chinese: '把不良品数量写下来。', indonesian: 'Catat jumlah barang cacatnya ya.', explanation: '检验结束后记录不良品数量，便于追踪质量趋势。', harvest: ['catat（记录）', 'jumlah（数量）', 'barang cacat（不良品）'] },
+);
+factoryRoleExperiences.purchasing.push(
+  { id: 'EXP-PUR-016', task: '先确认最少订购量。', chinese: '先确认最少订购量。', indonesian: 'Cek jumlah minimal pesan dulu ya.', explanation: '采购前先确认供应商的最少订购数量，避免无法下单。', harvest: ['cek（确认）', 'jumlah minimal（最少数量）', 'pesan（订购）'] },
+  { id: 'EXP-PUR-017', task: '这个材料要找替代品。', chinese: '这个材料要找替代品。', indonesian: 'Cari bahan pengganti untuk bahan ini ya.', explanation: '原材料供应不稳定时，采购开始寻找可用的替代材料。', harvest: ['cari（寻找）', 'bahan pengganti（替代材料）', 'bahan ini（这个材料）'] },
+  { id: 'EXP-PUR-018', task: '供应商还没回复。', chinese: '供应商还没回复。', indonesian: 'Pemasoknya belum balas.', explanation: '催问价格、交期或规格后，说明供应商仍未回复。', harvest: ['pemasoknya（供应商）', 'belum（还没）', 'balas（回复）'] },
+);
+factoryRoleExperiences.operator.push(
+  { id: 'EXP-OPR-016', task: '先做一件给 QC 看。', chinese: '先做一件给 QC 看。', indonesian: 'Buat satu dulu, kasih QC lihat ya.', explanation: '换款或开新批次时，先做一件让 QC 确认。', harvest: ['buat satu（做一件）', 'dulu（先）', 'kasih QC lihat（给 QC 看）'] },
+  { id: 'EXP-OPR-017', task: '机器声音不对，先停。', chinese: '机器声音不对，先停。', indonesian: 'Suara mesinnya aneh, matikan dulu ya.', explanation: '发现机器声音异常时，先停机并通知主管检查。', harvest: ['suara mesin（机器声音）', 'aneh（不对劲）', 'matikan（关掉）'] },
+  { id: 'EXP-OPR-018', task: '每做完一箱就登记。', chinese: '每做完一箱就登记。', indonesian: 'Setiap selesai satu karton, catat ya.', explanation: '操作员每完成一箱就记录，方便追踪实时产量。', harvest: ['setiap selesai（每完成）', 'satu karton（一箱）', 'catat（登记）'] },
+);
+additionalFactoryRoleExperiences.logistics.push(
+  { id: 'EXP-LOG-007', task: '货车在门口等多久了？', chinese: '货车在门口等多久了？', indonesian: 'Truknya sudah menunggu di depan berapa lama?', explanation: '装货或卸货延迟时，确认货车已在门口等待多久。', harvest: ['truknya（货车）', 'menunggu（等待）', 'berapa lama（多久）'] },
+  { id: 'EXP-LOG-008', task: '这票货需要冷藏车。', chinese: '这票货需要冷藏车。', indonesian: 'Barang ini perlu truk berpendingin.', explanation: '对温度有要求的货物，物流需要安排冷藏车辆。', harvest: ['barang ini（这票货）', 'perlu（需要）', 'truk berpendingin（冷藏车）'] },
+);
+additionalFactoryRoleExperiences.shipping.push(
+  { id: 'EXP-SHP-007', task: '封条号码拍照留档。', chinese: '封条号码拍照留档。', indonesian: 'Foto nomor segelnya untuk arsip ya.', explanation: '装柜后拍下封条号码，作为出货记录留存。', harvest: ['foto（拍照）', 'nomor segel（封条号码）', 'arsip（留档）'] },
+);
+additionalFactoryRoleExperiences.export.push(
+  { id: 'EXP-EXP-007', task: '海关要补充文件。', chinese: '海关要补充文件。', indonesian: 'Bea cukai minta dokumen tambahan.', explanation: '海关要求补件时，应尽快准备并发送所需文件。', harvest: ['bea cukai（海关）', 'minta（要求）', 'dokumen tambahan（补充文件）'] },
+);
+additionalFactoryRoleExperiences.customerService.push(
+  { id: 'EXP-CS-007', task: '客户要改送货地址。', chinese: '客户要改送货地址。', indonesian: 'Pelanggan minta ganti alamat kirim.', explanation: '客户变更收货地址时，及时同步物流和相关单据。', harvest: ['pelanggan（客户）', 'ganti（更改）', 'alamat kirim（送货地址）'] },
+);
+
 for (const experiences of [...Object.values(factoryRoleExperiences), ...Object.values(additionalFactoryRoleExperiences)]) {
-  for (const experience of experiences) experience.harvest = formatHarvest(experience.harvest, experience.indonesian);
+  for (const experience of experiences) {
+    experience.harvest = formatHarvest(experience.harvest, experience.indonesian);
+    experience.pattern = getWorkplacePattern(experience.indonesian);
+  }
 }
 
 const nannyTasks = [
