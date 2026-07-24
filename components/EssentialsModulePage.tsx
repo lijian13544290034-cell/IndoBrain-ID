@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import EssentialsHub from '@/components/EssentialsHub';
 import LocalizedLabel from '@/components/LocalizedLabel';
+import IndonesianAudioProvider from '@/components/IndonesianAudioProvider';
 import type { Essential, EssentialCategory } from '@/lib/essentials';
 
 type Props = {
@@ -27,9 +28,9 @@ export default function EssentialsModulePage({ title, chinese, experienceHref, e
         <span className="min-h-12 rounded-xl border border-stone-900 bg-stone-900 px-4 py-3 text-sm font-medium text-white">Essentials（高频必备）<span className="mt-1 block text-xs font-normal text-stone-300">{items.length} ungkapan</span></span>
       </nav>
     </header>
-    <section className="mt-7" aria-label={`Essentials ${title}`}>
+    <IndonesianAudioProvider><section className="mt-7" aria-label={`Essentials ${title}`}>
       <h1 className="text-lg font-semibold">Essentials {title} <span className="text-sm font-normal text-stone-500">（高频必备）</span></h1>
       <div className="mt-5"><Suspense fallback={<p className="text-sm text-stone-500">Memuat Essentials（正在加载高频表达）</p>}><EssentialsHub items={items} categories={categories} /></Suspense></div>
-    </section>
+    </section></IndonesianAudioProvider>
   </main>;
 }
