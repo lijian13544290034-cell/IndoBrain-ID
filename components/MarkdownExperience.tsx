@@ -10,6 +10,15 @@ function harvestIndonesian(line: string) {
   return line.slice(2).split(/[（(]/)[0].trim();
 }
 
+function isUnmarkedIndonesianLine(line: string) {
+  return line.length > 1
+    && /^[\x00-\x7F]+$/.test(line)
+    && /[A-Za-z]/.test(line)
+    && !line.startsWith('#')
+    && !line.startsWith('**')
+    && line !== '---';
+}
+
 export default function MarkdownExperience({ content }: Props) {
   let inIndonesian = false;
   let inHarvest = false;
@@ -49,6 +58,9 @@ export default function MarkdownExperience({ content }: Props) {
           return <div key={key} className="ml-5 flex flex-wrap items-center gap-2 text-[15px] leading-7 text-stone-700">• {line.slice(2)}<IndonesianAudioButton text={indonesian} compact /></div>;
         }
         if (inIndonesian) {
+          return <div key={key} className="flex flex-wrap items-center gap-2 rounded-xl bg-stone-50 px-4 py-3 text-[15px] leading-7 text-stone-900 sm:text-base">{line}<IndonesianAudioButton text={line} compact /></div>;
+        }
+        if (isUnmarkedIndonesianLine(line)) {
           return <div key={key} className="flex flex-wrap items-center gap-2 rounded-xl bg-stone-50 px-4 py-3 text-[15px] leading-7 text-stone-900 sm:text-base">{line}<IndonesianAudioButton text={line} compact /></div>;
         }
         if (line.startsWith('- ')) return <p key={key} className="ml-5 text-[15px] leading-7 text-stone-700">• {line.slice(2)}</p>;

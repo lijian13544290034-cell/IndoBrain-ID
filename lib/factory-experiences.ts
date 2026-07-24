@@ -16,6 +16,17 @@ const experiencePath = path.join(
   'Factory_Manager_Experience.md',
 );
 
+function unmarkedIndonesianLines(content: string) {
+  return content
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 1)
+    .filter((line) => /^[\x00-\x7F]+$/.test(line))
+    .filter((line) => /[A-Za-z]/.test(line))
+    .filter((line) => !line.startsWith('#') && !line.startsWith('**') && line !== '---')
+    .join('\n');
+}
+
 export function getFactoryExperiences(): FactoryExperience[] {
   const source = fs.readFileSync(experiencePath, 'utf8').trim();
 
@@ -28,9 +39,10 @@ export function getFactoryExperiences(): FactoryExperience[] {
 
       const content = section.trim();
       const task = content.match(/## Task\s*\n\s*([^\n]+)/)?.[1]?.trim() ?? '';
-      const indonesian = [...content.matchAll(/\*\*🇮🇩\*\*\s*\n\s*([\s\S]*?)(?=\n---)/g)]
+      const markedIndonesian = [...content.matchAll(/\*\*🇮🇩\*\*\s*\n\s*([\s\S]*?)(?=\n---)/g)]
         .map((match) => match[1].trim())
         .join('\n');
+      const indonesian = markedIndonesian || unmarkedIndonesianLines(content);
 
       return { id: match[1], content, task, indonesian };
     })
