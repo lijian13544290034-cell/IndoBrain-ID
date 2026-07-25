@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useIndonesianAudio } from '@/components/IndonesianAudioProvider';
+import { track } from '@/lib/learning-profile';
 
 let activeAudio: HTMLAudioElement | undefined;
 let stopActiveAudio: (() => void) | undefined;
@@ -56,6 +57,7 @@ export default function IndonesianSpeechButton({ text, compact = false }: { text
       audio.onended = () => { if (activeAudio === audio) activeAudio = undefined; if (stopActiveAudio === stop) stopActiveAudio = undefined; setPlaying(false); };
       audio.onerror = () => { if (activeAudio === audio) activeAudio = undefined; if (stopActiveAudio === stop) stopActiveAudio = undefined; setPlaying(false); setFailed(true); };
       await audio.play();
+      track('audio_played', 'audio');
       setPlaying(true);
     } catch {
       setPlaying(false);

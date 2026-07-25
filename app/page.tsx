@@ -62,7 +62,7 @@ export default function Home() {
         </article>
       </section>
 
-      <footer className="mt-8 flex justify-between text-xs text-gray-400"><span>MVP V0.1</span><Link href="/patterns" className="underline">Pattern 练习</Link></footer>
+      <footer className="mt-8 flex justify-between text-xs text-gray-400"><span>MVP V0.1</span><Link href="/about" className="underline">Tentang Saya（关于我）</Link></footer>
     </main>
   );
 }

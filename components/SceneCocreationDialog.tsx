@@ -1,0 +1,11 @@
+'use client';
+
+import { useState } from 'react';
+import { inferModule, submitScene, track } from '@/lib/learning-profile';
+
+export default function SceneCocreationDialog({ experienceId, onClose }: { experienceId: string; onClose: () => void }) {
+  const [happened, setHappened] = useState(''); const [wantedToSay, setWantedToSay] = useState(''); const [note, setNote] = useState(''); const [submitted, setSubmitted] = useState(false);
+  function submit(event: React.FormEvent) { event.preventDefault(); if (!happened.trim() || !wantedToSay.trim()) return; submitScene({ experienceId, module: inferModule(experienceId), happened: happened.trim(), wantedToSay: wantedToSay.trim(), note: note.trim() || undefined }); setSubmitted(true); }
+  if (submitted) return <div className="mt-4 rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm leading-6 text-stone-600">已提交，等待审核。<br />Terkirim dan sedang menunggu peninjauan.</div>;
+  return <form onSubmit={submit} className="mt-4 space-y-3 rounded-xl border border-stone-200 bg-stone-50 p-4"><label className="block text-sm font-medium">今天发生了什么？<textarea required value={happened} onChange={(event) => setHappened(event.target.value)} className="mt-2 min-h-20 w-full rounded-lg border border-stone-300 bg-white p-3 text-sm outline-none focus:border-stone-600" /></label><label className="block text-sm font-medium">你当时想表达什么？<textarea required value={wantedToSay} onChange={(event) => setWantedToSay(event.target.value)} className="mt-2 min-h-20 w-full rounded-lg border border-stone-300 bg-white p-3 text-sm outline-none focus:border-stone-600" /></label><label className="block text-sm font-medium">补充说明 <span className="font-normal text-stone-400">（可选）</span><textarea value={note} onChange={(event) => setNote(event.target.value)} className="mt-2 min-h-16 w-full rounded-lg border border-stone-300 bg-white p-3 text-sm outline-none focus:border-stone-600" /></label><div className="flex flex-wrap gap-2"><button type="submit" className="min-h-10 rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white">提交场景</button><button type="button" onClick={onClose} className="min-h-10 rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium">取消</button></div></form>;
+}
