@@ -25,7 +25,7 @@ export default function ExperienceDetail({ experience }: { experience: Experienc
       <div className="mt-2 rounded-xl bg-stone-50 p-4"><p className="text-lg leading-8">{experience.indonesian || 'Belum tersedia.'}</p>{experience.indonesian && <IndonesianSpeechButton text={experience.indonesian} />}</div>
       {experience.explanation && <><p className="mt-5 text-xs text-stone-400">Penjelasan（中文说明）</p><p className="mt-2 text-sm leading-6 text-stone-700">{experience.explanation}</p></>}
       <HarvestSection harvest={experience.harvest} />
-      {experience.pattern && <><p className="mt-5 text-xs text-stone-400">Pola yang Bisa Dipakai（可复用表达）</p><div className="mt-2 rounded-xl bg-stone-50 p-4"><p className="text-sm font-medium text-stone-800">{experience.pattern.indonesian}</p><p className="mt-1 text-sm leading-6 text-stone-600">{experience.pattern.chinese}</p></div></>}
+      {experience.pattern && <><p className="mt-5 text-xs text-stone-400">Pola yang Bisa Dipakai（可复用表达）</p><div className="mt-2 rounded-xl bg-stone-50 p-4"><p className="text-sm font-medium text-stone-800">{experience.pattern.indonesian}</p><IndonesianSpeechButton text={experience.pattern.indonesian} compact /><p className="mt-1 text-sm leading-6 text-stone-600">{experience.pattern.chinese}</p></div></>}
       {experience.insight && <IndoBrainInsight insight={experience.insight} />}
       <ExperienceActions experienceId={experience.id} indonesian={experience.indonesian || ''} /></IndonesianAudioProvider>
     </>}

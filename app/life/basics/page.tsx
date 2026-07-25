@@ -1,0 +1,6 @@
+import Link from 'next/link';
+import { lifeBasics } from '@/lib/life-basics';
+
+export default function LifeBasicsPage() {
+  return <main className="mx-auto min-h-screen w-full max-w-4xl px-5 pb-12 pt-10 sm:px-8 sm:pt-14"><Link href="/life" className="text-sm text-stone-500 hover:text-stone-900">← Life（生活）</Link><header className="mt-7 rounded-2xl border border-stone-200 bg-stone-50 px-5 py-5"><p className="text-xs text-stone-400">Life（生活）</p><h1 className="mt-1 text-2xl font-semibold">Dasar <span className="text-base font-normal text-stone-500">（基础）</span></h1><p className="mt-2 text-sm leading-6 text-stone-500">快速查找、立即开口的印尼语基础表达。</p></header><section className="mt-7 grid gap-3 sm:grid-cols-2" aria-label="Life basics topics">{lifeBasics.map((topic) => <Link key={topic.slug} href={`/life/basics/${topic.slug}`} className="flex min-h-36 cursor-pointer flex-col rounded-xl border border-stone-200 bg-white px-5 py-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-stone-50 hover:shadow-md"><h2 className="font-semibold">{topic.indonesian} <span className="text-sm font-normal text-stone-500">（{topic.chinese}）</span></h2><p className="mt-3 text-sm leading-6 text-stone-600">{topic.description}</p></Link>)}</section></main>;
+}

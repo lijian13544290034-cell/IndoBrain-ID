@@ -1,12 +1,14 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import ExperienceDetail from '@/components/ExperienceDetail';
 import NavigationButtons from '@/components/NavigationButtons';
 import { getLifeExperiences } from '@/lib/life-experiences';
+import { legacyBasicsRoute } from '@/lib/life-basics';
 import { getLifeWorkflow, isLifeWorkflow, lifeWorkflow } from '@/lib/life-workflow';
 
 export default async function LifeDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ category?: string }> }) {
   const { id } = await params; const { category } = await searchParams;
+  const legacyTopic = legacyBasicsRoute[id]; if (legacyTopic) redirect(`/life/basics/${legacyTopic}`);
   const experiences = getLifeExperiences(); const item = experiences.find((entry) => entry.id.endsWith(`-${id}`));
   if (!item) notFound();
   const index = experiences.indexOf(item); const previous = experiences[index - 1]; const next = experiences[index + 1];

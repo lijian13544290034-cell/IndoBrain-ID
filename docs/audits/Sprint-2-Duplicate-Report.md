@@ -8,8 +8,8 @@ Scope: Driver, Nanny, Factory Manager, Factory roles, Life, Harvest, and the cur
 - Nanny: 60
 - Factory Manager: 50
 - Factory role lessons: 119
-- Life: 103
-- Total lessons: 372
+- Life: 91
+- Total lessons: 360
 - Pattern templates: 3
 
 ## Audit Result
