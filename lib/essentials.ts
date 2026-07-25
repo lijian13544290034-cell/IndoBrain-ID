@@ -169,7 +169,7 @@ const factoryEssentials = seeds('factory', 'ESS-FAC', [
     '有脏污。|Ada kotoran.', '品质合格。|Mutunya lolos.', '品质不合格。|Mutunya tidak lolos.', '做改善措施。|Lakukan perbaikan ya.',
   ] },
   { category: 'gudang-stok', lines: [
-    '检查库存。|Cek stok ya.', '盘点库存。|Hitung stok ya.', '材料到了。|Bahannya sudah datang.', '材料不够。|Bahannya kurang.',
+    '检查库存。|Cek stok ya.', '盘点库存。|Hitung stok ya.', '材料已经到了。|Bahannya sudah datang.', '材料不够。|Bahannya kurang.',
     '放在什么位置？|Taruh di lokasi mana?', '放到A区。|Taruh di area A ya.', '收货。|Terima barangnya ya.', '发货。|Keluarkan barangnya ya.',
     '准备装货。|Siapkan untuk muat ya.', '数量不对。|Jumlahnya tidak sesuai.', '包装破了。|Kemasannya rusak.', '这个托盘。|Palet ini.',
     '贴标签。|Kasih label ya.', '做库存记录。|Catat inventarisnya ya.', '仓库文件。|Dokumen gudangnya.', '库存余额。|Sisa stoknya.',

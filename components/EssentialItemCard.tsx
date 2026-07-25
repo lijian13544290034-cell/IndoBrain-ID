@@ -18,7 +18,7 @@ export default function EssentialItemCard({ item }: { item: Essential }) {
     <p className="mt-2 text-base font-semibold text-stone-900">{item.chinese}</p>
     <p className="mt-2 break-words text-sm leading-6 text-stone-700">{item.indonesian}</p>
     <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
-      <button type="button" onClick={copy} className="min-h-8 cursor-pointer rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 hover:bg-stone-100">{copied ? 'Tersalin（已复制）' : 'Salin（复制）'}</button>
+      <button type="button" onClick={copy} className="min-h-8 cursor-pointer rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 hover:bg-stone-100">{copied ? '已复制' : '复制'}</button>
       <IndonesianSpeechButton text={item.indonesian} compact />
     </div>
   </article>;

@@ -1,8 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { formatHarvest } from '@/lib/harvest';
+import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
-export type NannyExperience = { id: string; task: string; indonesian: string; chinese: string; explanation: string; harvest: string[]; missing?: boolean };
+export type NannyExperience = { id: string; task: string; indonesian: string; chinese: string; explanation: string; harvest: string[]; pattern?: WorkplacePattern; missing?: boolean };
 const sourceDir = path.join(process.cwd(), '03_Experience_Base', 'Experience');
 const actorMarkers = [String.fromCodePoint(0x1f468), String.fromCodePoint(0x1f469)];
 const indonesianFlag = String.fromCodePoint(0x1f1ee, 0x1f1e9);
@@ -14,7 +15,7 @@ const dialogueOverrides: Record<string, string> = {
   'EXP-NAN-005': 'Malam ini enaknya masak apa ya?',
   'EXP-NAN-006': 'Hari ini jangan pakai cabai ya.',
   'EXP-NAN-007': 'Hari ini garamnya sedikit saja ya.',
-  'EXP-NAN-008': 'Hari ini tidak usah masak makan malam ya.',
+  'EXP-NAN-008': 'Hari ini nggak usah masak makan malam ya.',
   'EXP-NAN-009': 'Tolong beli sayur ya.',
   'EXP-NAN-010': 'Tolong pesan gas satu tabung ya.',
   'EXP-NAN-011': 'Hari ini tolong bersihkan dapur ya.',
@@ -59,8 +60,15 @@ const dialogueOverrides: Record<string, string> = {
   'EXP-NAN-050': 'Terima kasih sudah menjaga kami minggu ini.',
 };
 
+const contentOverrides: Record<string, Pick<NannyExperience, 'explanation' | 'harvest'>> = {
+  'EXP-NAN-008': {
+    explanation: '今天不用做晚饭了。',
+    harvest: ['hari ini（今天）', 'nggak usah（不用）', 'masak（做饭）', 'makan malam（晚饭）'],
+  },
+};
+
 const additionalExperiences: Record<string, NannyExperience> = {
-  'EXP-NAN-051': { id: 'EXP-NAN-051', task: '今天不要去接孩子了。', chinese: '今天不要去接孩子了。', indonesian: 'Hari ini tidak usah jemput anak ya.', explanation: '接孩子安排临时变化时，及时通知保姆。', harvest: ['hari ini（今天）', 'tidak usah（不用）', 'jemput anak（接孩子）'] },
+  'EXP-NAN-051': { id: 'EXP-NAN-051', task: '今天不要去接孩子了。', chinese: '今天不要去接孩子了。', indonesian: 'Hari ini nggak usah jemput anak ya.', explanation: '接孩子安排临时变化时，及时通知保姆。', harvest: ['hari ini（今天）', 'nggak usah（不用）', 'jemput anak（接孩子）'] },
   'EXP-NAN-052': { id: 'EXP-NAN-052', task: '把孩子明天的衣服准备好。', chinese: '把孩子明天的衣服准备好。', indonesian: 'Siapkan pakaian anak untuk besok ya.', explanation: '晚上提前准备孩子第二天要穿的衣服。', harvest: ['siapkan（准备）', 'pakaian anak（孩子的衣服）', 'untuk besok（明天用）'] },
   'EXP-NAN-053': { id: 'EXP-NAN-053', task: '家里的洗衣液快没有了。', chinese: '家里的洗衣液快没有了。', indonesian: 'Sabun cuci di rumah hampir habis.', explanation: '生活用品快用完时，提醒及时补充。', harvest: ['sabun cuci（洗衣液）', 'di rumah（在家里）', 'hampir habis（快用完）'] },
   'EXP-NAN-054': { id: 'EXP-NAN-054', task: '下午有客人来。', chinese: '下午有客人来。', indonesian: 'Sore ini ada tamu datang.', explanation: '有访客来之前，提醒保姆做好接待准备。', harvest: ['sore ini（今天下午）', 'tamu（客人）', 'datang（来）'] },
@@ -95,12 +103,7 @@ function harvestFromDialogue(harvest: string[], dialogue: string) {
   const sourced = harvest
     .map((entry) => entry.replace(/^[-*\s]+/, '').split(/[（(]/)[0]?.trim())
     .filter((term) => Boolean(term) && normalizedDialogue.includes(term.toLocaleLowerCase()));
-  const words = dialogue.toLocaleLowerCase().match(/[a-zà-ÿ]+(?:'[a-zà-ÿ]+)?/g) ?? [];
-  const directPhrases = [
-    ...words.flatMap((_, index) => words.slice(index, index + 2).length === 2 ? [words.slice(index, index + 2).join(' ')] : []),
-    ...words,
-  ];
-  return [...new Set([...sourced, ...directPhrases])].slice(0, 6);
+  return [...new Set(sourced)].slice(0, 6);
 }
 
 function parse(id: string): NannyExperience | undefined {
@@ -110,16 +113,17 @@ function parse(id: string): NannyExperience | undefined {
   const sceneStops = ['User Goal', 'Business Value', 'Frequency', 'Difficulty', ...actorMarkers, indonesianFlag];
   const task = between(source, 'Task', sceneStops);
   const indonesian = dialogueOverrides[id] ?? firstIndonesianLine(source);
-  const explanation = between(source, 'Story Background', ['Task', 'User Goal']) || between(source, 'User Goal', ['Business Value', 'Frequency', 'Difficulty', ...actorMarkers]) || task;
+  const explanation = contentOverrides[id]?.explanation ?? (between(source, 'Story Background', ['Task', 'User Goal']) || between(source, 'User Goal', ['Business Value', 'Frequency', 'Difficulty', ...actorMarkers]) || task);
   const sourceHarvest = between(source, "Today's Harvest", ['Chinese Common Mistakes', 'Culture Tips', 'Real Tips', 'Emotional Intelligence', 'AI Coach', 'Why This Matters', 'Related Experience', 'Next Scene'])
     .split(/\r?\n/).map((line) => line.replace(/^-\s*/, '').trim()).filter((line) => Boolean(line) && !line.startsWith('---'));
-  return task && indonesian && sourceHarvest.length ? { id, task, indonesian, chinese: task, explanation, harvest: harvestFromDialogue(sourceHarvest, indonesian) } : undefined;
+  const harvest = contentOverrides[id]?.harvest ?? harvestFromDialogue(sourceHarvest, indonesian);
+  return task && indonesian && harvest.length ? { id, task, indonesian, chinese: task, explanation, harvest } : undefined;
 }
 
 export function getNannyExperiences(): NannyExperience[] {
   return Array.from({ length: 60 }, (_, index) => {
     const id = `EXP-NAN-${String(index + 1).padStart(3, '0')}`;
     const experience = parse(id) ?? additionalExperiences[id];
-    return experience ? { ...experience, harvest: formatHarvest(experience.harvest, experience.indonesian) } : { id, task: '', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
+    return experience ? { ...experience, harvest: formatHarvest(experience.harvest, experience.indonesian), pattern: getWorkplacePattern(experience.indonesian) } : { id, task: '', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
   });
 }

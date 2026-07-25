@@ -1,5 +1,5 @@
 import { getSocialExperiences, type SocialExperience } from '@/lib/social-experiences';
-import { type WorkplacePattern } from '@/lib/workplace-patterns';
+import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
 export type LifeCategory = 'friends' | 'basics' | 'supermarket' | 'restaurant';
 export type LifeExperience = Omit<SocialExperience, 'category'> & { category: LifeCategory; pattern: WorkplacePattern };
@@ -21,7 +21,7 @@ const life = (
 const friends: LifeExperience[] = getSocialExperiences().map((item) => ({
   ...item,
   category: 'friends',
-  pattern: pattern(item.indonesian, '这句可直接套用；替换其中的人、地点或时间即可。'),
+  pattern: getWorkplacePattern(item.indonesian),
 }));
 
 const newLifeExperiences: LifeExperience[] = [

@@ -27,7 +27,7 @@ const factoryRoleExperiences: Record<'production' | 'warehouse' | 'qc' | 'purcha
   ],
   warehouse: [
     { id: 'EXP-WHS-001', task: '查一下这个材料的库存。', chinese: '查一下这个材料的库存。', indonesian: 'Cek stok bahan ini ya.', explanation: '发料或采购前先确认材料库存。', harvest: ['cek stok', 'bahan ini', 'ya'] },
-    { id: 'EXP-WHS-002', task: '这批材料已经到了。', chinese: '这批材料已经到了。', indonesian: 'Bahan batch ini sudah datang.', explanation: '仓库通知相关人员材料已到厂。', harvest: ['bahan', 'batch ini', 'sudah datang'] },
+    { id: 'EXP-WHS-002', task: '这批材料已经到了。', chinese: '这批材料已经到了。', indonesian: 'Bahan batch ini sudah datang.', explanation: '仓库通知相关人员这批材料已经到了。', harvest: ['bahan（材料）', 'batch ini（这个批次）', 'sudah datang（已经到了）'] },
     { id: 'EXP-WHS-003', task: '把坏掉的材料分开。', chinese: '把坏掉的材料分开。', indonesian: 'Pisahkan bahan yang rusak ya.', explanation: '避免受损材料被误发到生产线。', harvest: ['pisahkan', 'bahan', 'yang rusak'] },
     { id: 'EXP-WHS-004', task: '把材料送到生产线。', chinese: '把材料送到生产线。', indonesian: 'Kirim bahan ke jalur produksi ya.', explanation: '生产线需要材料时，仓库安排发料。', harvest: ['kirim bahan', 'ke jalur produksi', 'produksi'] },
     { id: 'EXP-WHS-005', task: '这个货放在哪个位置？', chinese: '这个货放在哪个位置？', indonesian: 'Barang ini ditaruh di lokasi mana?', explanation: '入库时确认货物的存放位置。', harvest: ['barang ini', 'ditaruh', 'lokasi mana'] },
@@ -46,7 +46,7 @@ const factoryRoleExperiences: Record<'production' | 'warehouse' | 'qc' | 'purcha
     { id: 'EXP-QC-008', task: '客户的品质要求是什么？', chinese: '客户的品质要求是什么？', indonesian: 'Standar mutu dari pelanggan apa?', explanation: '生产前确认客户的品质标准。', harvest: ['standar mutu', 'dari pelanggan', 'apa'] },
   ],
   purchasing: [
-    { id: 'EXP-PUR-001', task: '原材料不够。', chinese: '原材料不够。', indonesian: 'Bahan bakunya tidak cukup.', explanation: '采购收到缺料信息后需要安排补货。', harvest: ['bahan baku', 'tidak cukup', 'cukup'] },
+    { id: 'EXP-PUR-001', task: '原材料不够。', chinese: '原材料不够。', indonesian: 'Bahan bakunya nggak cukup.', explanation: '采购收到缺料信息后需要安排补货。', harvest: ['bahan baku', 'nggak cukup', 'cukup'] },
     { id: 'EXP-PUR-002', task: '问一下供应商什么时候送到。', chinese: '问一下供应商什么时候送到。', indonesian: 'Tanya ke pemasok, kapan kirim ya.', explanation: '材料未到时，采购向供应商确认到货时间。', harvest: ['tanya ke pemasok', 'kapan kirim', 'ya'] },
     { id: 'EXP-PUR-003', task: '订购这个材料。', chinese: '订购这个材料。', indonesian: 'Pesan bahan ini ya.', explanation: '确认需求后向供应商下采购单。', harvest: ['pesan', 'bahan ini', 'ya'] },
     { id: 'EXP-PUR-004', task: '供应商送晚了。', chinese: '供应商送晚了。', indonesian: 'Pemasoknya terlambat.', explanation: '供应商延误会影响材料供应。', harvest: ['pemasok', 'terlambat', 'pemasoknya'] },
@@ -58,7 +58,7 @@ const factoryRoleExperiences: Record<'production' | 'warehouse' | 'qc' | 'purcha
   operator: [
     { id: 'EXP-OPR-001', task: '开始开机器。', chinese: '开始开机器。', indonesian: 'Nyalakan mesinnya ya.', explanation: '操作员在确认安全后启动设备。', harvest: ['nyalakan', 'mesinnya', 'ya'] },
     { id: 'EXP-OPR-002', task: '操作机器要戴手套。', chinese: '操作机器要戴手套。', indonesian: 'Kalau pakai mesin, harus pakai sarung tangan.', explanation: '操作设备时使用手套保护双手。', harvest: ['pakai mesin', 'harus pakai', 'sarung tangan'] },
-    { id: 'EXP-OPR-003', task: '机器不正常。', chinese: '机器不正常。', indonesian: 'Mesinnya tidak normal.', explanation: '操作员发现设备异常时及时报告。', harvest: ['mesinnya', 'tidak normal', 'normal'] },
+    { id: 'EXP-OPR-003', task: '机器不正常。', chinese: '机器不正常。', indonesian: 'Mesinnya nggak normal.', explanation: '操作员发现设备异常时及时报告。', harvest: ['mesinnya', 'nggak normal', 'normal'] },
     { id: 'EXP-OPR-004', task: '今天做这个产品。', chinese: '今天做这个产品。', indonesian: 'Hari ini buat produk ini ya.', explanation: '班组按当天安排生产指定产品。', harvest: ['hari ini', 'buat', 'produk ini'] },
     { id: 'EXP-OPR-005', task: '数一下做了多少件。', chinese: '数一下做了多少件。', indonesian: 'Tolong hitung, sudah buat berapa pcs ya.', explanation: '操作员记录当前完成数量。', harvest: ['tolong hitung', 'buat berapa', 'pcs'] },
     { id: 'EXP-OPR-006', task: '先关掉机器。', chinese: '先关掉机器。', indonesian: 'Matikan mesinnya dulu ya.', explanation: '异常或换线前按要求关闭设备。', harvest: ['matikan', 'mesinnya', 'dulu'] },
@@ -74,7 +74,7 @@ factoryRoleExperiences.production.push(
 );
 factoryRoleExperiences.warehouse.push(
   { id: 'EXP-WHS-009', task: '这批材料收到了吗？', chinese: '这批材料收到了吗？', indonesian: 'Bahan ini sudah diterima?', explanation: '材料到厂后，仓库确认是否已完成收货。', harvest: ['bahan ini（这批材料）', 'sudah diterima（已收到）', 'ya（语气词）'] },
-  { id: 'EXP-WHS-010', task: '这个材料库存不够。', chinese: '这个材料库存不够。', indonesian: 'Stok bahan ini tidak cukup.', explanation: '库存不足时，仓库及时通知相关人员。', harvest: ['stok（库存）', 'bahan ini（这个材料）', 'tidak cukup（不够）'] },
+  { id: 'EXP-WHS-010', task: '这个材料库存不够。', chinese: '这个材料库存不够。', indonesian: 'Stok bahan ini nggak cukup.', explanation: '库存不足时，仓库及时通知相关人员。', harvest: ['stok（库存）', 'bahan ini（这个材料）', 'nggak cukup（不够）'] },
   { id: 'EXP-WHS-011', task: '出货前把货准备好。', chinese: '出货前把货准备好。', indonesian: 'Siapkan barang sebelum kirim ya.', explanation: '发货前确认货物、包装和单据都已备好。', harvest: ['siapkan barang（准备货物）', 'sebelum（之前）', 'kirim（发货）'] },
 );
 factoryRoleExperiences.qc.push(
@@ -95,7 +95,7 @@ factoryRoleExperiences.operator.push(
 
 factoryRoleExperiences.production.push(
   { id: 'EXP-PRO-012', task: '这个订单的优先级改了。', chinese: '这个订单的优先级改了。', indonesian: 'Prioritas pesanan ini berubah.', explanation: '客户交期变化后，及时调整订单的生产顺序。', harvest: ['prioritas（优先级）', 'pesanan ini（这个订单）', 'berubah（改变）'] },
-  { id: 'EXP-PRO-013', task: '上午前完成这批。', chinese: '上午前完成这批。', indonesian: 'Selesaikan batch ini sebelum siang ya.', explanation: '有明确完成时限时，用于提醒生产班组。', harvest: ['selesaikan（完成）', 'batch ini（这批）', 'sebelum siang（中午前）'] },
+  { id: 'EXP-PRO-013', task: '上午前完成这批。', chinese: '上午前完成这批。', indonesian: 'Selesaikan batch ini sebelum siang ya.', explanation: '有明确完成时限时，用于提醒生产班组。', harvest: ['selesaikan（完成）', 'batch ini（这个批次）', 'sebelum siang（中午前）'] },
   { id: 'EXP-PRO-014', task: '产量不够，增加一台机器。', chinese: '产量不够，增加一台机器。', indonesian: 'Produksinya kurang, tambah satu mesin ya.', explanation: '产量落后时，通过增加设备来补足产能。', harvest: ['produksinya kurang（产量不够）', 'tambah（增加）', 'satu mesin（一台机器）'] },
   { id: 'EXP-PRO-015', task: '先确认原材料够不够。', chinese: '先确认原材料够不够。', indonesian: 'Cek dulu bahan bakunya cukup atau tidak.', explanation: '开工前先确认原材料，避免生产中断。', harvest: ['cek dulu（先检查）', 'bahan baku（原材料）', 'cukup atau tidak（够不够）'] },
 );
@@ -119,7 +119,7 @@ factoryRoleExperiences.purchasing.push(
 );
 factoryRoleExperiences.operator.push(
   { id: 'EXP-OPR-012', task: '换材料前先停机器。', chinese: '换材料前先停机器。', indonesian: 'Matikan mesin dulu sebelum ganti bahan ya.', explanation: '更换材料前先按流程关机，避免安全和品质问题。', harvest: ['matikan mesin（关机器）', 'sebelum（之前）', 'ganti bahan（换材料）'] },
-  { id: 'EXP-OPR-013', task: '机器设置不对。', chinese: '机器设置不对。', indonesian: 'Setelan mesinnya tidak tepat.', explanation: '发现设备参数设置异常时，及时报告。', harvest: ['setelan（设置）', 'mesinnya（机器）', 'tidak tepat（不对）'] },
+  { id: 'EXP-OPR-013', task: '机器设置不对。', chinese: '机器设置不对。', indonesian: 'Setelan mesinnya nggak tepat.', explanation: '发现设备参数设置异常时，及时报告。', harvest: ['setelan（设置）', 'mesinnya（机器）', 'nggak tepat（不对）'] },
   { id: 'EXP-OPR-014', task: '今天做完多少件，告诉主管。', chinese: '今天做完多少件，告诉主管。', indonesian: 'Kalau sudah tahu jumlah hari ini, kabari supervisor ya.', explanation: '完成数量确认后，及时向主管汇报。', harvest: ['jumlah hari ini（今天的数量）', 'kabari（通知）', 'supervisor（主管）'] },
   { id: 'EXP-OPR-015', task: '下班前清理机器。', chinese: '下班前清理机器。', indonesian: 'Bersihkan mesin sebelum pulang ya.', explanation: '下班前清洁设备，保持基本现场管理。', harvest: ['bersihkan mesin（清理机器）', 'sebelum pulang（下班前）', 'pulang（下班、回家）'] },
 );
@@ -160,7 +160,7 @@ const additionalFactoryRoleExperiences: Record<'logistics' | 'shipping' | 'expor
 };
 
 factoryRoleExperiences.production.push(
-  { id: 'EXP-PRO-016', task: '这批先做首件确认。', chinese: '这批先做首件确认。', indonesian: 'Batch ini cek contoh pertama dulu ya.', explanation: '新批次开始时，先确认首件是否符合要求，再继续生产。', harvest: ['batch ini（这批）', 'contoh pertama（首件）', 'dulu（先）'] },
+  { id: 'EXP-PRO-016', task: '这批先做首件确认。', chinese: '这批先做首件确认。', indonesian: 'Batch ini cek contoh pertama dulu ya.', explanation: '新批次开始时，先确认首件是否符合要求，再继续生产。', harvest: ['batch ini（这个批次）', 'contoh pertama（首件）', 'dulu（先）'] },
   { id: 'EXP-PRO-017', task: '今天下午换生产线。', chinese: '今天下午换生产线。', indonesian: 'Sore ini ganti jalur produksi ya.', explanation: '生产安排调整时，提前通知班组下午需要换线。', harvest: ['sore ini（今天下午）', 'ganti（更换）', 'jalur produksi（生产线）'] },
   { id: 'EXP-PRO-018', task: '把停机时间记下来。', chinese: '把停机时间记下来。', indonesian: 'Catat waktu mesin berhentinya ya.', explanation: '发生停机时记录具体时长，便于后续分析产能影响。', harvest: ['catat（记录）', 'waktu（时间）', 'mesin berhenti（机器停机）'] },
 );
@@ -170,7 +170,7 @@ factoryRoleExperiences.warehouse.push(
   { id: 'EXP-WHS-018', task: '这个位置满了，换一个位置。', chinese: '这个位置满了，换一个位置。', indonesian: 'Lokasi ini sudah penuh, pindah ke lokasi lain ya.', explanation: '库位已满时，明确要求将货物转移到其他可用位置。', harvest: ['lokasi ini（这个位置）', 'penuh（满）', 'lokasi lain（其他位置）'] },
 );
 factoryRoleExperiences.qc.push(
-  { id: 'EXP-QC-016', task: '这个尺寸不对。', chinese: '这个尺寸不对。', indonesian: 'Ukuran ini tidak sesuai.', explanation: 'QC 发现尺寸与要求不符时，应立即标记并反馈。', harvest: ['ukuran（尺寸）', 'ini（这个）', 'tidak sesuai（不符合）'] },
+  { id: 'EXP-QC-016', task: '这个尺寸不对。', chinese: '这个尺寸不对。', indonesian: 'Ukuran ini nggak sesuai.', explanation: 'QC 发现尺寸与要求不符时，应立即标记并反馈。', harvest: ['ukuran（尺寸）', 'ini（这个）', 'nggak sesuai（不符合）'] },
   { id: 'EXP-QC-017', task: '先量十个样品。', chinese: '先量十个样品。', indonesian: 'Ukur sepuluh sampel dulu ya.', explanation: '抽检时先测量十个样品，确认批次尺寸情况。', harvest: ['ukur（测量）', 'sepuluh sampel（十个样品）', 'dulu（先）'] },
   { id: 'EXP-QC-018', task: '把不良品数量写下来。', chinese: '把不良品数量写下来。', indonesian: 'Catat jumlah barang cacatnya ya.', explanation: '检验结束后记录不良品数量，便于追踪质量趋势。', harvest: ['catat（记录）', 'jumlah（数量）', 'barang cacat（不良品）'] },
 );

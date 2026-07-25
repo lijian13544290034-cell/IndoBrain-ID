@@ -28,7 +28,7 @@ export default function ExperienceActions({ experienceId, indonesian }: { experi
   function openCocreation() { setShowCocreation(true); track('scene_cocreation_opened', experienceId); }
   return <section className="mt-7">
     <div className="flex flex-wrap gap-2">
-    <button onClick={copy} className="min-h-10 cursor-pointer rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium transition duration-200 hover:bg-stone-50 hover:shadow-sm">Salin Bahasa Indonesia（复制印尼语）</button>
+    <button onClick={copy} className="min-h-10 cursor-pointer rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium transition duration-200 hover:bg-stone-50 hover:shadow-sm">复制</button>
     <button onClick={favorite} className={`min-h-10 cursor-pointer rounded-xl border px-4 py-2 text-sm font-medium transition duration-200 hover:shadow-sm ${favorited ? 'border-stone-900 bg-stone-900 text-white' : 'border-stone-300 hover:bg-stone-50'}`}>{favorited ? '已收藏' : '收藏'}</button>
     <button onClick={openCocreation} className="min-h-10 cursor-pointer rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium transition duration-200 hover:bg-stone-50 hover:shadow-sm">场景共创</button>
     </div>

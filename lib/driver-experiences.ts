@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { formatHarvest } from '@/lib/harvest';
+import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
 export type DriverExperience = {
   id: string;
@@ -9,6 +10,7 @@ export type DriverExperience = {
   chinese: string;
   explanation: string;
   harvest: string[];
+  pattern?: WorkplacePattern;
   missing?: boolean;
 };
 
@@ -99,12 +101,7 @@ function harvestFromDialogue(harvest: string[], dialogue: string) {
   const sourced = harvest
     .map((entry) => entry.replace(/^[-*\s]+/, '').split(/[（(]/)[0]?.trim())
     .filter((term) => Boolean(term) && normalizedDialogue.includes(term.toLocaleLowerCase()));
-  const words = dialogue.toLocaleLowerCase().match(/[a-zà-ÿ]+(?:'[a-zà-ÿ]+)?/g) ?? [];
-  const directPhrases = [
-    ...words.flatMap((_, index) => words.slice(index, index + 2).length === 2 ? [words.slice(index, index + 2).join(' ')] : []),
-    ...words,
-  ];
-  return [...new Set([...sourced, ...directPhrases])].slice(0, 6);
+  return [...new Set(sourced)].slice(0, 6);
 }
 
 function parseSource(): Map<string, DriverExperience> {
@@ -145,6 +142,6 @@ export function getDriverExperiences(): DriverExperience[] {
     const id = `EXP-DRV-${String(index + 1).padStart(3, '0')}`;
     const generated = generatedExperiences[id];
     const experience = sourceRecords.get(id) ?? (generated ? { ...generated, indonesian: generatedDialogueOverrides[id] ?? generated.indonesian } : undefined);
-    return experience ? { ...experience, harvest: formatHarvest(experience.harvest, experience.indonesian) } : { id, task: '正式内容尚未导入', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
+    return experience ? { ...experience, harvest: formatHarvest(experience.harvest, experience.indonesian), pattern: getWorkplacePattern(experience.indonesian) } : { id, task: '正式内容尚未导入', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
   });
 }

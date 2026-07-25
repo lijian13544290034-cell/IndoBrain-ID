@@ -1,5 +1,6 @@
 const meanings: Record<string, string> = {
   'hari ini': '今天', 'besok': '明天', 'pagi': '早上', 'sore': '下午', 'malam ini': '今晚', 'dulu': '先', 'ya': '语气词', 'saja': '就、即可',
+  'batch ini': '这个批次', 'sudah datang': '已经到了', 'pesanan ini': '这个订单', 'bahan ini': '这个材料', 'nggak usah': '不用', 'nggak cukup': '不够', 'nggak normal': '不正常', 'nggak tepat': '不对', 'nggak sesuai': '不符合', 'yang rusak': '损坏的、有问题的',
   'jemput': '接人', 'tolong jemput': '请接', 'tunggu': '等', 'di sini': '在这里', 'di bawah': '在楼下', 'sudah sampai': '已经到了', 'sampai': '到达',
   'bank': '银行', 'kantor': '公司、办公室', 'klien': '客户', 'jalan tol': '收费公路', 'macet': '堵车', 'bensin': '汽油', 'isi bensin': '加油', 'pom bensin': '加油站',
   'koper': '行李箱', 'bandara': '机场', 'terminal': '航站楼', 'lobi': '大堂', 'parkir': '停车', 'mobil': '车', 'cuci mobil': '洗车',
@@ -8,7 +9,7 @@ const meanings: Record<string, string> = {
   'tamu': '客人', 'datang': '来、到达', 'belanja': '购物', 'stok': '库存', 'laundry': '洗衣', 'tidur': '睡觉', 'demam': '发烧', 'laporkan': '报告',
   'produksi': '生产', 'pesanan': '订单', 'jalur produksi': '生产线', 'sasaran': '目标', 'masih kurang': '还差', 'lembur': '加班', 'jadwalkan': '安排时间',
   'selesaikan': '完成', 'laporkan produksi': '报告产量', 'mesin': '机器', 'berhenti': '停止', 'lebih lambat': '更慢', 'perlu': '需要',
-  'cek stok': '查库存', 'bahan': '材料', 'bahan baku': '原材料', 'batch': '批次', 'yang rusak': '损坏的', 'pisahkan': '分开',
+  'cek stok': '查库存', 'bahan': '材料', 'bahan baku': '原材料', 'batch': '批次', 'pisahkan': '分开',
   'kirim bahan': '发材料', 'lokasi': '位置', 'hitung stok': '盘点库存', 'kotak': '箱子', 'label': '标签', 'barang': '货物', 'sudah siap': '已经准备好',
   'periksa': '检查', 'produk': '产品', 'barang cacat': '不良品', 'dikerjakan ulang': '返工', 'sampel': '样品', 'mutu': '品质',
   'hasil pemeriksaan': '检查结果', 'standar mutu': '品质标准', 'pelanggan': '客户', 'pemasok': '供应商', 'kirim': '送货、发货', 'pesan': '订购',
