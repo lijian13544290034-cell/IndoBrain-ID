@@ -5,7 +5,7 @@ const entries = [
   { href: '/nanny', icon: '👩', title: '保姆', subtitle: 'ART', priority: true },
   { href: '/factory', icon: '🏭', title: '工厂', subtitle: 'Pabrik', priority: false },
   { href: '/chat/ai-chat', icon: '💬', title: '自由聊天', subtitle: 'Chat Bebas', priority: false },
-  { href: '/social', icon: '🤝', title: 'Social', subtitle: '社交', description: 'Bahasa Indonesia untuk berteman dan berkomunikasi sehari-hari.', chineseDescription: '认识朋友、日常聊天和自然社交', priority: false },
+  { href: '/life', icon: '🌿', title: '生活', subtitle: 'Life', description: 'Bahasa Indonesia untuk kehidupan sehari-hari.', chineseDescription: '朋友、基础、超市与餐厅的自然表达', priority: false },
 ];
 
 export default function Home() {

@@ -66,8 +66,8 @@ const moduleExperiences = loadTs(path.join(root, 'lib/module-experiences.ts')).m
 const factoryRoles = Object.entries(moduleExperiences)
   .filter(([role]) => !['driver', 'nanny'].includes(role))
   .flatMap(([role, experiences]) => experiences.map((item) => ({ ...item, module: `Factory ${role}` })));
-const social = loadTs(path.join(root, 'lib/social-experiences.ts')).getSocialExperiences().map((item) => ({ ...item, module: 'Social' }));
-const all = [...driver, ...nanny, ...factoryManager, ...factoryRoles, ...social];
+const life = loadTs(path.join(root, 'lib/life-experiences.ts')).getLifeExperiences().map((item) => ({ ...item, module: 'Life' }));
+const all = [...driver, ...nanny, ...factoryManager, ...factoryRoles, ...life];
 
 const sameTask = groups(all, 'chinese');
 const sameIndonesian = groups(all, 'indonesian');
@@ -87,14 +87,14 @@ const placeholder = all.filter((item) => [item.task, item.indonesian, item.expla
   .some((value) => /belum tersedia|tolong bantu urus rumah/i.test(String(value)) || /^\s*--\s*$/.test(String(value))));
 const missingHarvest = all.filter((item) => !(item.harvest ?? []).length);
 const factoryWithoutPattern = [...factoryManager, ...factoryRoles].filter((item) => !item.pattern);
-const socialWithoutInsight = social.filter((item) => !item.insight);
+const lifeWithoutPattern = life.filter((item) => !item.pattern);
 const patterns = fs.readFileSync(path.join(root, 'components/PatternBuilder.tsx'), 'utf8');
 const patternMatches = [...patterns.matchAll(/\{ id:\s*'([^']+)',\s*sentence:\s*`([^`]+)`/g)].map((match) => `${match[1]}: ${match[2]}`);
 
 const lines = [
   '# IndoBrain Content Inventory & Duplicate Report',
   '',
-  'Scope: Driver, Nanny, Factory Manager, Factory roles, Social, Harvest, and the current Pattern page.',
+  'Scope: Driver, Nanny, Factory Manager, Factory roles, Life, Harvest, and the current Pattern page.',
   '',
   '## Inventory',
   '',
@@ -102,7 +102,7 @@ const lines = [
   `- Nanny: ${nanny.length}`,
   `- Factory Manager: ${factoryManager.length}`,
   `- Factory role lessons: ${factoryRoles.length}`,
-  `- Social: ${social.length}`,
+  `- Life: ${life.length}`,
   `- Total lessons: ${all.length}`,
   `- Pattern templates: ${patternMatches.length}`,
   '',
@@ -111,7 +111,7 @@ const lines = [
   `- Placeholder or fallback lessons: ${placeholder.length}`,
   `- Lessons without Harvest: ${missingHarvest.length}`,
   `- Factory lessons without reusable Pattern: ${factoryWithoutPattern.length}`,
-  `- Social lessons without IndoBrain Insight: ${socialWithoutInsight.length}`,
+  `- Life lessons without reusable Pattern: ${lifeWithoutPattern.length}`,
   `- Exact duplicate Chinese titles: ${sameTask.length} groups`,
   `- Exact duplicate Indonesian lines: ${sameIndonesian.length} groups`,
   `- Exact duplicate complete Harvest sets: ${sameHarvest.length} groups`,
@@ -130,4 +130,4 @@ const lines = [
 
 fs.mkdirSync(path.join(root, 'docs', 'audits'), { recursive: true });
 fs.writeFileSync(path.join(root, 'docs', 'audits', 'Sprint-2-Duplicate-Report.md'), `${lines.join('\n')}\n`);
-console.log(JSON.stringify({ counts: { driver: driver.length, nanny: nanny.length, factoryManager: factoryManager.length, factoryRoles: factoryRoles.length, social: social.length, total: all.length, patterns: patternMatches.length }, duplicateChineseGroups: sameTask.length, duplicateIndonesianGroups: sameIndonesian.length, duplicateHarvestGroups: sameHarvest.length, placeholder: placeholder.map((item) => item.id), missingHarvest: missingHarvest.map((item) => item.id), factoryWithoutPattern: factoryWithoutPattern.map((item) => item.id), socialWithoutInsight: socialWithoutInsight.map((item) => item.id) }, null, 2));
+console.log(JSON.stringify({ counts: { driver: driver.length, nanny: nanny.length, factoryManager: factoryManager.length, factoryRoles: factoryRoles.length, life: life.length, total: all.length, patterns: patternMatches.length }, duplicateChineseGroups: sameTask.length, duplicateIndonesianGroups: sameIndonesian.length, duplicateHarvestGroups: sameHarvest.length, placeholder: placeholder.map((item) => item.id), missingHarvest: missingHarvest.map((item) => item.id), factoryWithoutPattern: factoryWithoutPattern.map((item) => item.id), lifeWithoutPattern: lifeWithoutPattern.map((item) => item.id) }, null, 2));

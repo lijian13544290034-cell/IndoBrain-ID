@@ -1,6 +1,6 @@
 # IndoBrain Content Inventory & Duplicate Report
 
-Scope: Driver, Nanny, Factory Manager, Factory roles, Social, Harvest, and the current Pattern page.
+Scope: Driver, Nanny, Factory Manager, Factory roles, Life, Harvest, and the current Pattern page.
 
 ## Inventory
 
@@ -8,8 +8,8 @@ Scope: Driver, Nanny, Factory Manager, Factory roles, Social, Harvest, and the c
 - Nanny: 60
 - Factory Manager: 50
 - Factory role lessons: 119
-- Social: 70
-- Total lessons: 339
+- Life: 103
+- Total lessons: 372
 - Pattern templates: 3
 
 ## Audit Result
@@ -17,7 +17,7 @@ Scope: Driver, Nanny, Factory Manager, Factory roles, Social, Harvest, and the c
 - Placeholder or fallback lessons: 0
 - Lessons without Harvest: 0
 - Factory lessons without reusable Pattern: 0
-- Social lessons without IndoBrain Insight: 0
+- Life lessons without reusable Pattern: 0
 - Exact duplicate Chinese titles: 2 groups
 - Exact duplicate Indonesian lines: 5 groups
 - Exact duplicate complete Harvest sets: 3 groups
