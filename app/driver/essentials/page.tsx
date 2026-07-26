@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import EssentialsHub from '@/components/EssentialsHub';
 import LocalizedLabel from '@/components/LocalizedLabel';
+import IndonesianAudioProvider from '@/components/IndonesianAudioProvider';
 import { driverEssentialCategories, getEssentials } from '@/lib/essentials';
 
 export default function DriverEssentialsPage() {
@@ -17,10 +18,12 @@ export default function DriverEssentialsPage() {
         <Link href="/driver/essentials" className="min-h-12 rounded-xl border border-stone-900 bg-stone-900 px-4 py-3 text-sm font-medium text-white">Essentials（高频必备）<span className="mt-1 block text-xs font-normal text-stone-300">60 ungkapan</span></Link>
       </nav>
     </header>
-    <section className="mt-7" aria-label="Essentials Sopir">
-      <h1 className="text-lg font-semibold">Essentials Sopir <span className="text-sm font-normal text-stone-500">（司机高频必备）</span></h1>
-      <p className="mt-2 text-sm leading-6 text-stone-500">Cari dan gunakan ungkapan singkat untuk perjalanan sehari-hari.<br />查找并直接使用日常出行短句。</p>
-      <div className="mt-5"><Suspense fallback={<p className="text-sm text-stone-500">Memuat Essentials（正在加载高频表达）</p>}><EssentialsHub items={essentials} categories={driverEssentialCategories} /></Suspense></div>
-    </section>
+    <IndonesianAudioProvider>
+      <section className="mt-7" aria-label="Essentials Sopir">
+        <h1 className="text-lg font-semibold">Essentials Sopir <span className="text-sm font-normal text-stone-500">（司机高频必备）</span></h1>
+        <p className="mt-2 text-sm leading-6 text-stone-500">Cari dan gunakan ungkapan singkat untuk perjalanan sehari-hari.<br />查找并直接使用日常出行短句。</p>
+        <div className="mt-5"><Suspense fallback={<p className="text-sm text-stone-500">Memuat Essentials（正在加载高频表达）</p>}><EssentialsHub items={essentials} categories={driverEssentialCategories} /></Suspense></div>
+      </section>
+    </IndonesianAudioProvider>
   </main>;
 }
