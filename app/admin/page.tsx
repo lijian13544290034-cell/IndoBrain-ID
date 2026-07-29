@@ -14,7 +14,7 @@ export default async function AdminPage() {
     redirect('/account');
   }
   return <main className="mx-auto min-h-screen w-full max-w-6xl px-5 py-10 sm:px-8">
-    <Link href="/account" className="text-sm text-gray-400 hover:text-gray-700">← Akun Saya（我的账户）</Link>
+    <Link href="/" className="text-sm text-gray-400 hover:text-gray-700">← Masuk ke Belajar（进入学习端）</Link>
     <header className="mt-7">
       <p className="text-sm text-gray-400">IndoBrain Commercial</p>
       <h1 className="mt-2 text-3xl font-semibold">Admin（管理后台）</h1>

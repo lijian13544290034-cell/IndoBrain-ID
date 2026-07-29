@@ -1,7 +1,5 @@
 import Link from 'next/link';
 import { getCurrentAccountUser } from '@/lib/account/auth';
-import { getUserRoles } from '@/lib/account/repository';
-import type { AccountRole } from '@/lib/account/types';
 
 const entries = [
   { href: '/life', icon: '🌍', title: '生活', subtitle: 'Life', description: 'Bahasa Indonesia untuk kehidupan sehari-hari.', chineseDescription: '朋友、基础、超市与餐厅的自然表达。', priority: false },
@@ -15,10 +13,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const user = await getCurrentAccountUser();
-  const isSuperAdmin = user ? (await getUserRoles(user.id).catch((): AccountRole[] => [])).includes('SUPER_ADMIN') : false;
   return <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 pb-8 pt-12 sm:px-8 sm:pb-12 sm:pt-16">
     <header>
-      <div className="flex items-center justify-between gap-4"><div className="text-3xl font-semibold tracking-tight text-gray-950">IndoBrain</div><nav className="flex items-center gap-2 text-sm">{user ? <Link href="/account" className="rounded-lg px-3 py-2 text-gray-500 hover:bg-stone-100 hover:text-gray-900">Akun Saya（我的账户）</Link> : <Link href="/login" className="rounded-lg px-3 py-2 text-gray-500 hover:bg-stone-100 hover:text-gray-900">Masuk（登录）</Link>}{isSuperAdmin && <Link href="/admin" className="rounded-lg bg-stone-900 px-3 py-2 font-medium text-white hover:bg-stone-700">Admin（管理后台）</Link>}</nav></div>
+      <div className="flex items-center justify-between gap-4"><div className="text-3xl font-semibold tracking-tight text-gray-950">IndoBrain</div><nav className="flex items-center gap-2 text-sm">{user ? <Link href="/account" className="rounded-lg px-3 py-2 text-gray-500 hover:bg-stone-100 hover:text-gray-900">Akun Saya（我的账户）</Link> : <Link href="/login" className="rounded-lg px-3 py-2 text-gray-500 hover:bg-stone-100 hover:text-gray-900">Masuk（登录）</Link>}</nav></div>
       <p className="mt-3 text-sm font-medium text-gray-600">印尼生活助手</p>
       <p className="mt-2 text-sm leading-6 text-gray-400">解决问题。<br />顺带学习语言。</p>
     </header>

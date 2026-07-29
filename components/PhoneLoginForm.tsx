@@ -28,10 +28,10 @@ export default function PhoneLoginForm() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, password, deviceId: browserDeviceId() }),
     });
-    const data = await response.json() as { error?: string; user?: { learningDirection?: string } };
+    const data = await response.json() as { error?: string; user?: { learningDirection?: string; isSuperAdmin?: boolean } };
     setSubmitting(false);
     if (!response.ok) return setMessage(data.error ?? 'Unable to sign in.');
-    router.push(data.user?.learningDirection === 'ID_TO_ZH' ? '/?direction=id-to-zh' : '/');
+    router.push(data.user?.isSuperAdmin ? '/admin' : data.user?.learningDirection === 'ID_TO_ZH' ? '/?direction=id-to-zh' : '/');
     router.refresh();
   }
 

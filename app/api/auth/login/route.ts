@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { accountSessionCookieName } from '@/lib/account/config';
-import { bindDevice, clearLoginFailures, createServerSession, findUserByPhone, getLoginLock, normalizePhone, recordLoginHistory, registerLoginFailure, updateUser } from '@/lib/account/repository';
+import { bindDevice, clearLoginFailures, createServerSession, findUserByPhone, getLoginLock, getUserRoles, normalizePhone, recordLoginHistory, registerLoginFailure, updateUser } from '@/lib/account/repository';
 import { verifyPassword } from '@/lib/account/password';
 import { requestMetadata } from '@/lib/account/request-metadata';
 
@@ -45,8 +45,14 @@ export async function POST(request: Request) {
     await bindDevice(user.id, deviceId);
     await recordLoginHistory({ user_id: user.id, phone, session_id: session.sessionId, login_at: new Date().toISOString(), device_id: deviceId, login_status: 'SUCCESS', failure_reason: null, ...metadata });
 
+    const roles = await getUserRoles(user.id);
     const response = NextResponse.json({
-      user: { publicId: user.public_id, membership: user.membership_code, learningDirection: user.learning_direction },
+      user: {
+        publicId: user.public_id,
+        membership: user.membership_code,
+        learningDirection: user.learning_direction,
+        isSuperAdmin: roles.includes('SUPER_ADMIN'),
+      },
     });
     response.cookies.set(accountSessionCookieName(), session.token, {
       httpOnly: true,
