@@ -1,6 +1,6 @@
 export const MEMBERSHIP_LEVELS = ['BASIC', 'PRO', 'VIP', 'ENTERPRISE', 'SVIP'] as const;
 export const LEARNING_DIRECTIONS = ['ZH_TO_ID', 'ID_TO_ZH'] as const;
-export const ACCOUNT_STATUSES = ['ACTIVE', 'SUSPENDED'] as const;
+export const ACCOUNT_STATUSES = ['ACTIVE', 'SUSPENDED', 'DELETED'] as const;
 export const ACCOUNT_ROLES = ['SUPER_ADMIN', 'ADMIN', 'REVIEWER', 'USER'] as const;
 
 export type MembershipLevel = (typeof MEMBERSHIP_LEVELS)[number];
@@ -13,9 +13,11 @@ export type AccountUser = {
   public_id: string;
   phone: string;
   membership_code: MembershipLevel;
+  member_level?: MembershipLevel;
   learning_direction: LearningDirection;
   account_status: AccountStatus;
   expires_at: string | null;
+  expire_at?: string | null;
   device_id: string | null;
   last_login_at: string | null;
   consecutive_learning_days: number;
@@ -23,6 +25,9 @@ export type AccountUser = {
   favorites_count: number;
   scene_contributions: number;
   register_source: string | null;
+  created_by?: string | null;
+  updated_by?: string | null;
+  deleted_at?: string | null;
   created_at: string;
 };
 
@@ -49,6 +54,9 @@ export type AdminStats = {
   newUsers: number;
   membershipDistribution: Record<MembershipLevel, number>;
   expiringWithin30Days: number;
+  expiredMembers: number;
+  loginsToday: number;
+  loginsThisWeek: number;
   learningTimeToday: number;
   completedExperiencesToday: number;
   favoritesToday: number;

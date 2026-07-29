@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server';
-import { requirePermission } from '@/lib/account/auth';
+import { requireSuperAdmin } from '@/lib/account/auth';
 import { hashPassword, validatePassword } from '@/lib/account/password';
-import { assignRole, audit, findUserById, revokeSessionsForUser, unbindDevice, updateUser } from '@/lib/account/repository';
+import { assignRole, audit, findUserById, revokeSessionsForUser, softDeleteUser, unbindDevice, updateUser } from '@/lib/account/repository';
 import { ACCOUNT_ROLES, LEARNING_DIRECTIONS, MEMBERSHIP_LEVELS } from '@/lib/account/types';
 
 export const runtime = 'nodejs';
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
-    const admin = await requirePermission('users.manage');
+    const admin = await requireSuperAdmin();
     const { userId } = await params;
-    const body = (await request.json()) as { action?: string; password?: string; membership?: string; expiresAt?: string | null; learningDirection?: string; role?: string };
+    const body = (await request.json()) as { action?: string; password?: string; membership?: string; expiresAt?: string | null; learningDirection?: string; role?: string; phone?: string };
     const values: Record<string, unknown> = {};
 
     if (body.action === 'reset_password') {
@@ -21,6 +21,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
       await revokeSessionsForUser(userId);
     } else if (body.action === 'change_membership' && MEMBERSHIP_LEVELS.includes(body.membership as (typeof MEMBERSHIP_LEVELS)[number])) {
       values.membership_code = body.membership;
+    } else if (body.action === 'edit') {
+      if (body.phone) values.phone = body.phone;
+      if (body.membership && MEMBERSHIP_LEVELS.includes(body.membership as (typeof MEMBERSHIP_LEVELS)[number])) values.membership_code = body.membership;
+      if (body.learningDirection && LEARNING_DIRECTIONS.includes(body.learningDirection as (typeof LEARNING_DIRECTIONS)[number])) values.learning_direction = body.learningDirection;
+      if (body.expiresAt !== undefined) values.expires_at = body.expiresAt || null;
     } else if (body.action === 'extend_membership') {
       values.expires_at = body.expiresAt || null;
     } else if (body.action === 'suspend') {
@@ -32,16 +37,20 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
       values.device_id = null;
       await revokeSessionsForUser(userId);
       await unbindDevice(userId);
+    } else if (body.action === 'soft_delete') {
+      const user = await softDeleteUser(userId, admin.id);
+      await audit(admin.id, 'soft_delete', userId);
+      return NextResponse.json({ user });
     } else if (body.action === 'learning_direction' && LEARNING_DIRECTIONS.includes(body.learningDirection as (typeof LEARNING_DIRECTIONS)[number])) {
       values.learning_direction = body.learningDirection;
     } else if (body.action === 'assign_role' && ACCOUNT_ROLES.includes(body.role as (typeof ACCOUNT_ROLES)[number])) {
-      await requirePermission('roles.assign');
+      await requireSuperAdmin();
       await assignRole(userId, body.role as (typeof ACCOUNT_ROLES)[number]);
     } else {
       return NextResponse.json({ error: 'Unsupported administrator action.' }, { status: 400 });
     }
 
-    const user = Object.keys(values).length ? await updateUser(userId, values) : await findUserById(userId);
+    const user = Object.keys(values).length ? await updateUser(userId, values, admin.id) : await findUserById(userId, true);
     await audit(admin.id, body.action, userId, { ...values, password_hash: undefined });
     return NextResponse.json({ user });
   } catch (error) {

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!storedUser || !(await verifyPassword(body.currentPassword, storedUser.password_hash))) {
       return NextResponse.json({ error: 'Current password is incorrect.' }, { status: 401 });
     }
-    await updateUser(current.id, { password_hash: await hashPassword(body.newPassword) });
+    await updateUser(current.id, { password_hash: await hashPassword(body.newPassword) }, current.id);
     await revokeSessionsForUser(current.id);
     return NextResponse.json({ ok: true, message: 'Password updated. Please sign in again.' });
   } catch {

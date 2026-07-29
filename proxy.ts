@@ -14,10 +14,10 @@ async function hasLearningAccess(token: string) {
   if (!url || !key) return false;
   const headers = { apikey: key, Authorization: `Bearer ${key}` };
   const tokenHash = await sha256(token);
-  const sessionResponse = await fetch(`${url}/rest/v1/account_sessions?token_hash=eq.${tokenHash}&revoked_at=is.null&select=expires_at,users(account_status,expires_at,membership_code)&limit=1`, { headers, cache: 'no-store' });
+  const sessionResponse = await fetch(`${url}/rest/v1/account_sessions?token_hash=eq.${tokenHash}&revoked_at=is.null&select=expires_at,users(account_status,expires_at,membership_code,deleted_at)&limit=1`, { headers, cache: 'no-store' });
   if (!sessionResponse.ok) return false;
-  const [session] = await sessionResponse.json() as Array<{ expires_at: string; users: { account_status: string; expires_at: string | null; membership_code: string } | null }>;
-  if (!session?.users || new Date(session.expires_at) <= new Date() || session.users.account_status !== 'ACTIVE') return false;
+  const [session] = await sessionResponse.json() as Array<{ expires_at: string; users: { account_status: string; expires_at: string | null; membership_code: string; deleted_at?: string | null } | null }>;
+  if (!session?.users || new Date(session.expires_at) <= new Date() || session.users.account_status !== 'ACTIVE' || session.users.deleted_at) return false;
   if (session.users.expires_at && new Date(session.users.expires_at) <= new Date()) return false;
   const permissionResponse = await fetch(`${url}/rest/v1/membership_permissions?membership_code=eq.${session.users.membership_code}&permission_key=eq.learning.access&is_allowed=eq.true&select=permission_key&limit=1`, { headers, cache: 'no-store' });
   return permissionResponse.ok && (await permissionResponse.json() as unknown[]).length > 0;

@@ -28,10 +28,10 @@ export default function PhoneLoginForm() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, password, deviceId: browserDeviceId() }),
     });
-    const data = await response.json() as { error?: string };
+    const data = await response.json() as { error?: string; user?: { learningDirection?: string } };
     setSubmitting(false);
     if (!response.ok) return setMessage(data.error ?? 'Unable to sign in.');
-    router.push('/account');
+    router.push(data.user?.learningDirection === 'ID_TO_ZH' ? '/?direction=id-to-zh' : '/');
     router.refresh();
   }
 

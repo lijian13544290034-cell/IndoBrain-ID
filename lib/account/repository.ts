@@ -66,12 +66,12 @@ async function dailyActivityTotal(eventType: 'LEARNING_SECONDS' | 'EXPERIENCE_CO
 export async function findUserByPhone(phone: string) {
   const normalized = normalizePhone(phone);
   return first<(AccountUser & { password_hash: string })>(
-    `users?phone=eq.${encode(normalized)}&select=*&limit=1`,
+    `users?phone=eq.${encode(normalized)}&deleted_at=is.null&select=*&limit=1`,
   );
 }
 
-export async function findUserById(userId: string) {
-  return first<AccountUser>(`users?id=eq.${encode(userId)}&select=*&limit=1`);
+export async function findUserById(userId: string, includeDeleted = false) {
+  return first<AccountUser>(`users?id=eq.${encode(userId)}${includeDeleted ? '' : '&deleted_at=is.null'}&select=*&limit=1`);
 }
 
 export async function createUser(input: {
@@ -80,7 +80,9 @@ export async function createUser(input: {
   membership: MembershipLevel;
   learningDirection: LearningDirection;
   expiresAt?: string | null;
+  accountStatus?: 'ACTIVE' | 'SUSPENDED';
   registerSource?: string;
+  createdBy?: string;
 }) {
   const response = await request('users', {
     method: 'POST',
@@ -90,9 +92,11 @@ export async function createUser(input: {
       password_hash: input.passwordHash,
       membership_code: input.membership,
       learning_direction: input.learningDirection,
-      account_status: 'ACTIVE',
+      account_status: input.accountStatus ?? 'ACTIVE',
       expires_at: input.expiresAt ?? null,
       register_source: input.registerSource ?? 'ADMIN',
+      created_by: input.createdBy ?? null,
+      updated_by: input.createdBy ?? null,
     }),
   });
   const rows = (await response.json()) as AccountUser[];
@@ -101,21 +105,22 @@ export async function createUser(input: {
   return user;
 }
 
-export async function updateUser(userId: string, values: Row) {
+export async function updateUser(userId: string, values: Row, updatedBy?: string) {
   const response = await request(`users?id=eq.${encode(userId)}`, {
     method: 'PATCH',
     headers: { Prefer: 'return=representation' },
-    body: JSON.stringify(values),
+    body: JSON.stringify({ ...values, ...(updatedBy ? { updated_by: updatedBy } : {}) }),
   });
   const rows = (await response.json()) as AccountUser[];
   return rows[0] ?? null;
 }
 
-export async function listUsers(query = '') {
+export async function listUsers(query = '', includeDeleted = false) {
   const filter = query
     ? `&or=(phone.ilike.*${encode(query)}*,public_id.ilike.*${encode(query)}*)`
     : '';
-  const response = await request(`users?select=*&order=created_at.desc&limit=100${filter}`);
+  const deleted = includeDeleted ? '' : '&deleted_at=is.null';
+  const response = await request(`users?select=*&order=created_at.desc&limit=100${deleted}${filter}`);
   return (await response.json()) as AccountUser[];
 }
 
@@ -179,6 +184,22 @@ export async function unbindDevice(userId: string) {
     method: 'PATCH',
     body: JSON.stringify({ unbound_at: new Date().toISOString() }),
   });
+}
+
+export async function listUserDevices(userId: string) {
+  const response = await request(`user_devices?user_id=eq.${encode(userId)}&select=*&order=last_seen_at.desc`);
+  return (await response.json()) as Array<{ id: string; device_id: string; device_label: string | null; last_seen_at: string; unbound_at: string | null; created_at: string }>;
+}
+
+export async function softDeleteUser(userId: string, actorUserId: string) {
+  await revokeSessionsForUser(userId);
+  await unbindDevice(userId);
+  return updateUser(userId, {
+    account_status: 'DELETED',
+    device_id: null,
+    deleted_at: new Date().toISOString(),
+    deleted_by: actorUserId,
+  }, actorUserId);
 }
 
 /** Use this only in server routes; plan labels are never authorization. */
@@ -282,7 +303,7 @@ export async function getAdminStats(): Promise<AdminStats> {
   const blank: AdminStats = {
     totalUsers: 0, onlineUsers: 0, activeUsersToday: 0, activeUsersSevenDays: 0, newUsers: 0,
     membershipDistribution: { BASIC: 0, PRO: 0, VIP: 0, ENTERPRISE: 0, SVIP: 0 },
-    expiringWithin30Days: 0, learningTimeToday: 0, completedExperiencesToday: 0,
+    expiringWithin30Days: 0, expiredMembers: 0, loginsToday: 0, loginsThisWeek: 0, learningTimeToday: 0, completedExperiencesToday: 0,
     favoritesToday: 0, sceneContributionsToday: 0, pendingReviews: 0,
   };
   if (!isAccountDatabaseConfigured()) return blank;
@@ -291,10 +312,13 @@ export async function getAdminStats(): Promise<AdminStats> {
   const startOfToday = new Date(`${today}T00:00:00.000Z`).toISOString();
   const expiresWithin30Days = new Date(now + 30 * 24 * 60 * 60 * 1000).toISOString();
   const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
-  const [users, onlineUserIds, expiringWithin30Days, learningSeconds, completedExperiencesToday, favoritesToday, sceneContributionsToday, pendingReviews] = await Promise.all([
+  const [users, onlineUserIds, expiringWithin30Days, expiredMembers, loginsToday, loginsThisWeek, learningSeconds, completedExperiencesToday, favoritesToday, sceneContributionsToday, pendingReviews] = await Promise.all([
     listUsers(),
     getOnlineUserIds(),
     count(`users?expires_at=gte.${encode(new Date(now).toISOString())}&expires_at=lte.${encode(expiresWithin30Days)}&select=id`),
+    count(`users?expires_at=lt.${encode(new Date(now).toISOString())}&deleted_at=is.null&select=id`),
+    count(`login_history?login_status=eq.SUCCESS&login_at=gte.${encode(startOfToday)}&select=id`),
+    count(`login_history?login_status=eq.SUCCESS&login_at=gte.${encode(new Date(sevenDaysAgo).toISOString())}&select=id`),
     dailyActivityTotal('LEARNING_SECONDS', startOfToday),
     dailyActivityTotal('EXPERIENCE_COMPLETED', startOfToday),
     dailyActivityTotal('FAVORITE_ADDED', startOfToday),
@@ -310,6 +334,9 @@ export async function getAdminStats(): Promise<AdminStats> {
     activeUsersSevenDays: users.filter((user) => user.last_login_at && new Date(user.last_login_at).getTime() >= sevenDaysAgo).length,
     newUsers: users.filter((user) => user.created_at.slice(0, 10) === today).length,
     expiringWithin30Days,
+    expiredMembers,
+    loginsToday,
+    loginsThisWeek,
     learningTimeToday: Math.floor(learningSeconds / 60),
     completedExperiencesToday,
     favoritesToday,

@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { requirePermission } from '@/lib/account/auth';
+import { requireSuperAdmin } from '@/lib/account/auth';
 import { listLoginHistory } from '@/lib/account/repository';
 
 export async function GET(request: Request) {
   try {
-    await requirePermission('users.manage');
+    await requireSuperAdmin();
     const userId = new URL(request.url).searchParams.get('userId') ?? undefined;
     return NextResponse.json({ history: await listLoginHistory(userId) });
   } catch {
