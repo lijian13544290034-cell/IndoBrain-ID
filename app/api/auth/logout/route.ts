@@ -11,6 +11,13 @@ export async function POST(request: Request) {
     } catch { /* Logout always clears the local cookie. */ }
   }
   const response = NextResponse.json({ ok: true });
-  response.cookies.set(accountSessionCookieName(), '', { httpOnly: true, expires: new Date(0), path: '/' });
+  response.cookies.set(accountSessionCookieName(), '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    expires: new Date(0),
+    maxAge: 0,
+    path: '/',
+  });
   return response;
 }
