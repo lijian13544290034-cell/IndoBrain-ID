@@ -1,10 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function AccountLogoutActions() {
-  const router = useRouter();
   const [pending, setPending] = useState(false);
 
   async function signOut() {
@@ -15,8 +13,9 @@ export default function AccountLogoutActions() {
       // Keep the device identifier: it is the stable key used for the single-device rule.
       // Account identity is held only by the revoked HTTP-only session cookie.
       window.localStorage.removeItem('indobrain_session_id');
-      router.replace('/login');
-      router.refresh();
+      window.sessionStorage.removeItem('indobrain_session_id');
+      // A document navigation discards any cached client-side account state before login.
+      window.location.replace('/login');
     }
   }
 
