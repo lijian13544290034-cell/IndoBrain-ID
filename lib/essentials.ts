@@ -12,6 +12,15 @@ export type Essential = {
   indonesian: string;
   aliases: string[];
   sortOrder: number;
+  example?: string;
+  exampleChinese?: string;
+  pattern?: EssentialPattern;
+};
+
+export type EssentialPattern = {
+  indonesian: string;
+  chinese: string;
+  substitutions: Array<{ indonesian: string; chinese: string }>;
 };
 
 export const driverEssentialCategories: EssentialCategory[] = [
@@ -152,9 +161,77 @@ export const factoryEssentialCategories: EssentialCategory[] = [
   { slug: 'gudang-stok', indonesian: 'Gudang & Stok', chinese: '仓库与库存' }, { slug: 'purchasing-supplier', indonesian: 'Purchasing & Supplier', chinese: '采购与供应商' },
   { slug: 'operator-mesin', indonesian: 'Operator & Mesin', chinese: '操作与机器' }, { slug: 'pengiriman-ekspor', indonesian: 'Pengiriman & Ekspor', chinese: '出货与出口' },
   { slug: 'keamanan-koordinasi', indonesian: 'Keamanan & Koordinasi', chinese: '安全与协调' },
+  { slug: 'alat-keselamatan', indonesian: 'Alat & Keselamatan', chinese: '工具与安全' },
+  { slug: 'peralatan-gudang', indonesian: 'Peralatan Gudang', chinese: '仓库工具' },
 ];
 
-const factoryEssentials = seeds('factory', 'ESS-FAC', [
+const factoryToolPattern: EssentialPattern = {
+  indonesian: 'Tolong pakai [alat] dulu.', chinese: '请先使用[工具]。', substitutions: [
+    { indonesian: 'Tolong pakai helm safety dulu.', chinese: '请先戴好安全帽。' },
+    { indonesian: 'Tolong pakai sarung tangan dulu.', chinese: '请先戴好手套。' },
+    { indonesian: 'Tolong ambil obengnya.', chinese: '请拿一下螺丝刀。' },
+    { indonesian: 'Periksa kabelnya dulu.', chinese: '先检查电缆。' },
+  ],
+};
+const warehousePattern: EssentialPattern = {
+  indonesian: 'Tolong taruh [barang] di [lokasi].', chinese: '请把[货物]放在[位置]。', substitutions: [
+    { indonesian: 'Tolong taruh kardus ini di rak.', chinese: '请把这个纸箱放到货架上。' },
+    { indonesian: 'Tolong pindahkan pallet ini.', chinese: '请移动这个托盘。' },
+    { indonesian: 'Barang sudah masuk gudang.', chinese: '货物已经入库。' },
+    { indonesian: 'Stok bahan ini tinggal sedikit.', chinese: '这种材料库存只剩一点。' },
+  ],
+};
+const factoryVocabulary = (category: string, prefix: 'TOOL' | 'WH', rows: Array<[string, string, string, string]>, pattern: EssentialPattern) => rows.map(([chinese, indonesian, example, exampleChinese], index): Essential => ({
+  id: `ESS-FAC-${prefix}-${String(index + 1).padStart(3, '0')}`,
+  module: 'factory', category, chinese, indonesian, example, exampleChinese, pattern,
+  aliases: [chinese, indonesian, example], sortOrder: 200 + index,
+}));
+const factoryToolEssentials = factoryVocabulary('alat-keselamatan', 'TOOL', [
+  ['安全帽', 'helm safety', 'Tolong pakai helm safety sebelum masuk area produksi.', '进入生产区域前请戴好安全帽。'],
+  ['手套', 'sarung tangan', 'Pakai sarung tangan saat pegang bahan ini.', '拿这种材料时请戴手套。'],
+  ['口罩', 'masker', 'Pakai masker di area yang banyak debu.', '在灰尘多的区域请戴口罩。'],
+  ['工作服', 'seragam kerja', 'Seragam kerja harus dipakai selama kerja.', '工作期间必须穿工作服。'],
+  ['安全鞋', 'sepatu safety', 'Jangan masuk area mesin tanpa sepatu safety.', '不穿安全鞋不要进入机器区域。'],
+  ['护目镜', 'kacamata pelindung', 'Pakai kacamata pelindung waktu potong bahan.', '切割材料时请戴护目镜。'],
+  ['扳手', 'kunci pas', 'Kunci pasnya ada di kotak peralatan.', '扳手在工具箱里。'],
+  ['活动扳手', 'kunci inggris', 'Ambil kunci inggris untuk baut yang besar.', '拿活动扳手处理大的螺栓。'],
+  ['螺丝刀', 'obeng', 'Tolong ambil obeng untuk buka penutup mesin.', '请拿螺丝刀打开机器外盖。'],
+  ['锤子', 'palu', 'Jangan pakai palu dekat mesin yang menyala.', '机器运转时不要在旁边使用锤子。'],
+  ['钳子', 'tang', 'Pakai tang untuk pegang kawat ini.', '用钳子夹住这根铁丝。'],
+  ['电钻', 'bor listrik', 'Bor listriknya rusak, jangan dipakai dulu.', '电钻坏了，先不要用。'],
+  ['卷尺', 'meteran', 'Ukur panjangnya pakai meteran dulu.', '先用卷尺量长度。'],
+  ['梯子', 'tangga', 'Pastikan tangganya stabil sebelum naik.', '上去前确认梯子稳固。'],
+  ['工具箱', 'kotak peralatan', 'Simpan alatnya kembali ke kotak peralatan.', '把工具放回工具箱。'],
+  ['螺丝', 'sekrup', 'Sekrupnya longgar, tolong kencangkan.', '螺丝松了，请拧紧。'],
+  ['螺母', 'mur', 'Mur ini kurang satu, cari yang ukurannya sama.', '这个螺母少了一个，找同尺寸的。'],
+  ['机器', 'mesin', 'Mesinnya bunyinya tidak normal.', '机器声音不正常。'],
+  ['开关', 'sakelar', 'Jangan sentuh sakelar dengan tangan basah.', '手湿时不要碰开关。'],
+  ['电缆', 'kabel', 'Periksa kabelnya dulu, ada bagian yang terkelupas.', '先检查电缆，有一段外皮破了。'],
+], factoryToolPattern);
+const warehouseToolEssentials = factoryVocabulary('peralatan-gudang', 'WH', [
+  ['仓库', 'gudang', 'Barang ini sudah masuk gudang.', '这批货已经入库。'],
+  ['货架', 'rak', 'Tolong taruh kardus ini di rak paling atas.', '请把这个纸箱放到最上层货架。'],
+  ['托盘', 'pallet', 'Pallet ini sudah penuh, pakai yang baru.', '这个托盘已经满了，换一个新的。'],
+  ['纸箱', 'kardus', 'Kardusnya basah, jangan dipakai untuk kirim.', '纸箱湿了，不要用于发货。'],
+  ['包装箱', 'kotak kemasan', 'Kotak kemasannya belum siap semua.', '包装箱还没全部准备好。'],
+  ['标签', 'label', 'Labelnya salah, tolong ganti sebelum barang keluar.', '标签错了，货物出库前请更换。'],
+  ['条码', 'barcode', 'Barcode ini tidak terbaca di scanner.', '这个条码扫描枪读不出来。'],
+  ['扫描枪', 'scanner barcode', 'Scanner barcode-nya sedang dicas.', '扫描枪正在充电。'],
+  ['叉车', 'forklift', 'Forklift sedang dipakai di area bongkar.', '叉车正在卸货区使用。'],
+  ['手推车', 'troli', 'Pindahkan kotaknya pakai troli.', '用手推车搬这个箱子。'],
+  ['托盘车', 'hand pallet', 'Hand pallet-nya ada di dekat pintu gudang.', '托盘车在仓库门口旁边。'],
+  ['库存', 'stok', 'Stok bahan ini tinggal tiga kotak.', '这种材料库存只剩三箱。'],
+  ['集装箱', 'kontainer', 'Kontainernya sudah sampai di depan gudang.', '集装箱已经到仓库前面。'],
+  ['包装膜', 'plastik wrapping', 'Bungkus pallet ini dengan plastik wrapping.', '用包装膜包好这个托盘。'],
+  ['封箱胶带', 'lakban', 'Lakbannya habis, ambil yang baru.', '封箱胶带用完了，拿新的来。'],
+  ['秤', 'timbangan', 'Timbang dulu sebelum barang keluar.', '货物出库前先称重。'],
+  ['送货单', 'surat jalan', 'Surat jalannya sudah ditandatangani?', '送货单签好了吗？'],
+  ['入库单', 'formulir barang masuk', 'Isi formulir barang masuk setelah barang diterima.', '收货后填写入库单。'],
+  ['出库单', 'formulir barang keluar', 'Formulir barang keluar harus cocok dengan jumlahnya.', '出库单必须和数量一致。'],
+  ['数量', 'jumlah', 'Jumlahnya tidak sesuai dengan surat jalan.', '数量和送货单不一致。'],
+], warehousePattern);
+
+const factoryBaseEssentials = seeds('factory', 'ESS-FAC', [
   { category: 'produksi', lines: [
     '开始生产。|Mulai produksi ya.', '停止生产。|Hentikan produksi dulu.', '今天的生产目标。|Sasaran produksi hari ini.', '这个订单很急。|Pesanan ini mendesak.',
     '生产晚了。|Produksinya terlambat.', '改变优先顺序。|Ubah prioritasnya ya.', '今晚要加班。|Malam ini perlu lembur.', '今天的产量。|Produksi hari ini.',
@@ -197,6 +274,7 @@ const factoryEssentials = seeds('factory', 'ESS-FAC', [
     '灭火器在哪里？|Alat pemadam di mana?', '安全说明会。|Briefing keselamatan.', '报告事故。|Laporkan kecelakaannya ya.', '停止不安全的工作。|Hentikan kerja yang tidak aman.',
   ] },
 ]);
+const factoryEssentials = [...factoryBaseEssentials, ...factoryToolEssentials, ...warehouseToolEssentials];
 
 export const socialEssentialCategories: EssentialCategory[] = [
   { slug: 'sapaan-kenalan', indonesian: 'Sapaan & Kenalan', chinese: '问候与认识' }, { slug: 'obrolan-santai', indonesian: 'Obrolan Santai', chinese: '日常聊天' },
