@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { accountSessionCookieName } from '@/lib/account/config';
-import { bindDevice, clearLoginFailures, createServerSession, findUserByPhone, getLoginLock, getUserRoles, normalizePhone, recordLoginHistory, registerLoginFailure, updateUser } from '@/lib/account/repository';
+import { bindDevice, clearLoginFailures, createServerSession, findUserByPhone, getLoginLock, getUserRoles, hasActiveSessionOnOtherDevice, normalizePhone, recordLoginHistory, registerLoginFailure, releaseDeviceBinding, updateUser } from '@/lib/account/repository';
 import { verifyPassword } from '@/lib/account/password';
 import { requestMetadata } from '@/lib/account/request-metadata';
 
@@ -34,14 +34,16 @@ export async function POST(request: Request) {
     }
 
     const deviceId = body.deviceId?.trim() || null;
-    if (user.device_id && deviceId && user.device_id !== deviceId) {
+    if (await hasActiveSessionOnOtherDevice(user.id, deviceId)) {
       await recordLoginHistory({ user_id: user.id, phone, login_at: new Date().toISOString(), device_id: deviceId, login_status: 'FAILED', failure_reason: 'DEVICE_BOUND', ...metadata });
       return NextResponse.json({ error: 'This account is bound to another device. Ask an administrator to unbind it.' }, { status: 409 });
     }
 
+    // An explicit logout, expired session, or old browser must not leave a permanent device lock.
+    await releaseDeviceBinding(user.id);
     const session = await createServerSession(user.id, deviceId, metadata);
     await clearLoginFailures(phone);
-    await updateUser(user.id, { device_id: user.device_id ?? deviceId, last_login_at: new Date().toISOString() });
+    await updateUser(user.id, { device_id: deviceId, last_login_at: new Date().toISOString() });
     await bindDevice(user.id, deviceId);
     await recordLoginHistory({ user_id: user.id, phone, session_id: session.sessionId, login_at: new Date().toISOString(), device_id: deviceId, login_status: 'SUCCESS', failure_reason: null, ...metadata });
 

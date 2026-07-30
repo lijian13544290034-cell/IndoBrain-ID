@@ -186,6 +186,22 @@ export async function unbindDevice(userId: string) {
   });
 }
 
+/** Release a device only after the account has explicitly signed out or an administrator has recovered it. */
+export async function releaseDeviceBinding(userId: string) {
+  await updateUser(userId, { device_id: null });
+  await unbindDevice(userId);
+}
+
+/** A stale device field must never block a new login; only another live session may do that. */
+export async function hasActiveSessionOnOtherDevice(userId: string, deviceId: string | null) {
+  if (!deviceId) return false;
+  const now = new Date().toISOString();
+  const response = await request(
+    `account_sessions?user_id=eq.${encode(userId)}&revoked_at=is.null&expires_at=gt.${encode(now)}&device_id=neq.${encode(deviceId)}&select=id&limit=1`,
+  );
+  return ((await response.json()) as Array<{ id: string }>).length > 0;
+}
+
 export async function listUserDevices(userId: string) {
   const response = await request(`user_devices?user_id=eq.${encode(userId)}&select=*&order=last_seen_at.desc`);
   return (await response.json()) as Array<{ id: string; device_id: string; device_label: string | null; last_seen_at: string; unbound_at: string | null; created_at: string }>;
