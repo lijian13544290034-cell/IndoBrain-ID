@@ -3507,6 +3507,1046 @@ Oke.
 
 Besok pagi kita cek lagi ya.
 
+------------------------------------------------
+
+# EXP-FAC-051
+
+## Scenario
+
+Machine Readiness（开机准备）
+
+## Task
+
+开始生产前，机器都准备好了吗？
+
+🇮🇩
+
+Mesin semua sudah siap buat mulai produksi?
+
+## Story Background
+
+班前先确认设备状态，避免刚开工就停线。
+
+## Today's Harvest
+
+- mesin（机器）
+- siap（准备好）
+- mulai produksi（开始生产）
+
+------------------------------------------------
+
+# EXP-FAC-052
+
+## Scenario
+
+First Piece Check（首件检查）
+
+## Task
+
+第一件产品检查了吗？
+
+🇮🇩
+
+Barang pertama sudah dicek belum?
+
+## Story Background
+
+量产前先确认首件，及时发现偏差。
+
+## Today's Harvest
+
+- barang pertama（第一件产品）
+- sudah（已经）
+- dicek（检查）
+
+------------------------------------------------
+
+# EXP-FAC-053
+
+## Scenario
+
+Hourly Target（每小时目标）
+
+## Task
+
+每小时目标是多少？
+
+🇮🇩
+
+Target per jamnya berapa?
+
+## Story Background
+
+主管用小时目标追踪当天的产出节奏。
+
+## Today's Harvest
+
+- target（目标）
+- per jam（每小时）
+- berapa（多少）
+
+------------------------------------------------
+
+# EXP-FAC-054
+
+## Scenario
+
+Production Changeover（换单生产）
+
+## Task
+
+这一单之后换做哪一单？
+
+🇮🇩
+
+Setelah ini ganti ke pesanan yang mana?
+
+## Story Background
+
+换单前确认顺序，避免物料和模具准备错误。
+
+## Today's Harvest
+
+- setelah ini（之后）
+- ganti（更换）
+- pesanan（订单）
+
+------------------------------------------------
+
+# EXP-FAC-055
+
+## Scenario
+
+Defect Trend（不良趋势）
+
+## Task
+
+不良品从刚才开始变多了吗？
+
+🇮🇩
+
+Cacatnya naik dari tadi?
+
+## Story Background
+
+发现不良率上升时，要立即确认趋势和原因。
+
+## Today's Harvest
+
+- cacat（不良）
+- naik（上升）
+- dari tadi（从刚才开始）
+
+------------------------------------------------
+
+# EXP-FAC-056
+
+## Scenario
+
+Sample Comparison（样品对比）
+
+## Task
+
+样品和标准对比过了吗？
+
+🇮🇩
+
+Sampelnya sudah dibandingkan sama standar?
+
+## Story Background
+
+品质检查时，把样品与标准样进行对比。
+
+## Today's Harvest
+
+- sampel（样品）
+- dibandingkan（对比）
+- standar（标准）
+
+------------------------------------------------
+
+# EXP-FAC-057
+
+## Scenario
+
+Rework Decision（返工判断）
+
+## Task
+
+这个还能返工吗？
+
+🇮🇩
+
+Yang ini bisa diperbaiki lagi nggak?
+
+## Story Background
+
+发现异常品后，先判断是否可以修复再决定报废。
+
+## Today's Harvest
+
+- yang ini（这个）
+- bisa（可以）
+- diperbaiki（修复）
+
+------------------------------------------------
+
+# EXP-FAC-058
+
+## Scenario
+
+Hold Product（暂停放行）
+
+## Task
+
+这批货先暂停放行。
+
+🇮🇩
+
+Barang ini tahan dulu ya.
+
+## Story Background
+
+品质或资料未确认时，先阻止货物继续流转。
+
+## Today's Harvest
+
+- barang（货物）
+- tahan（暂扣）
+- dulu（先）
+
+------------------------------------------------
+
+# EXP-FAC-059
+
+## Scenario
+
+Label Check（标签检查）
+
+## Task
+
+标签都对吗？
+
+🇮🇩
+
+Labelnya sudah sesuai belum?
+
+## Story Background
+
+出货前核对标签，避免型号或客户信息贴错。
+
+## Today's Harvest
+
+- label（标签）
+- sesuai（符合）
+- belum（还没）
+
+------------------------------------------------
+
+# EXP-FAC-060
+
+## Scenario
+
+Quality Record（品质记录）
+
+## Task
+
+品质检查结果记录了吗？
+
+🇮🇩
+
+Hasil cek mutu sudah dicatat?
+
+## Story Background
+
+检查完成后及时留下记录，方便追溯。
+
+## Today's Harvest
+
+- hasil（结果）
+- cek mutu（品质检查）
+- dicatat（记录）
+
+------------------------------------------------
+
+# EXP-FAC-061
+
+## Scenario
+
+Material Remaining（物料余量）
+
+## Task
+
+这张订单的材料还剩多少？
+
+🇮🇩
+
+Bahan untuk pesanan ini masih ada berapa?
+
+## Story Background
+
+生产中确认余料，避免中途缺料。
+
+## Today's Harvest
+
+- bahan（材料）
+- pesanan（订单）
+- masih ada（还剩）
+
+------------------------------------------------
+
+# EXP-FAC-062
+
+## Scenario
+
+Material Shortage（物料不足）
+
+## Task
+
+这些材料够用到几点？
+
+🇮🇩
+
+Bahan ini cukup sampai jam berapa?
+
+## Story Background
+
+当库存紧张时，先估计能够支撑多久。
+
+## Today's Harvest
+
+- bahan（材料）
+- cukup（够）
+- sampai jam berapa（到几点）
+
+------------------------------------------------
+
+# EXP-FAC-063
+
+## Scenario
+
+Supplier Delay（供应商延误）
+
+## Task
+
+供应商的材料还没到吗？
+
+🇮🇩
+
+Bahan dari pemasok masih belum datang?
+
+## Story Background
+
+物料迟到会影响排产，需要及时确认供应商状态。
+
+## Today's Harvest
+
+- bahan（材料）
+- pemasok（供应商）
+- belum datang（还没到）
+
+------------------------------------------------
+
+# EXP-FAC-064
+
+## Scenario
+
+Alternative Material（替代物料）
+
+## Task
+
+有已经批准的替代材料吗？
+
+🇮🇩
+
+Ada bahan pengganti yang sudah disetujui?
+
+## Story Background
+
+原材料不足时，只有经过批准的替代材料才能使用。
+
+## Today's Harvest
+
+- bahan pengganti（替代材料）
+- sudah（已经）
+- disetujui（批准）
+
+------------------------------------------------
+
+# EXP-FAC-065
+
+## Scenario
+
+Packing Ready（包装待发）
+
+## Task
+
+要发的货准备好了吗？
+
+🇮🇩
+
+Barang untuk dikirim sudah siap belum?
+
+## Story Background
+
+装车前确认包装、数量和单据是否准备完成。
+
+## Today's Harvest
+
+- barang（货物）
+- dikirim（发货）
+- siap（准备好）
+
+------------------------------------------------
+
+# EXP-FAC-066
+
+## Scenario
+
+Truck Arrival（货车到厂）
+
+## Task
+
+货车几点进来？
+
+🇮🇩
+
+Truknya masuk jam berapa?
+
+## Story Background
+
+安排装货人员前，先确认货车到达时间。
+
+## Today's Harvest
+
+- truk（货车）
+- masuk（进来）
+- jam berapa（几点）
+
+------------------------------------------------
+
+# EXP-FAC-067
+
+## Scenario
+
+Shipping Quantity（出货数量）
+
+## Task
+
+发货数量对了吗？
+
+🇮🇩
+
+Jumlah yang dikirim sudah cocok?
+
+## Story Background
+
+装车后再次核对数量，避免多发或少发。
+
+## Today's Harvest
+
+- jumlah（数量）
+- dikirim（发货）
+- cocok（相符）
+
+------------------------------------------------
+
+# EXP-FAC-068
+
+## Scenario
+
+Damaged Carton（破损纸箱）
+
+## Task
+
+破损的纸箱先分开。
+
+🇮🇩
+
+Kardus yang rusak dipisahkan dulu ya.
+
+## Story Background
+
+发现外箱破损时，先隔离并安排换箱。
+
+## Today's Harvest
+
+- kardus（纸箱）
+- rusak（损坏）
+- dipisahkan（分开）
+
+------------------------------------------------
+
+# EXP-FAC-069
+
+## Scenario
+
+PPE Check（劳保检查）
+
+## Task
+
+大家都戴安全帽和穿安全鞋了吗？
+
+🇮🇩
+
+Semua sudah pakai helm dan sepatu keselamatan?
+
+## Story Background
+
+进入作业区前确认个人防护装备是否齐全。
+
+## Today's Harvest
+
+- pakai（穿戴）
+- helm（安全帽）
+- sepatu keselamatan（安全鞋）
+
+------------------------------------------------
+
+# EXP-FAC-070
+
+## Scenario
+
+Machine Shutdown（清洁前停机）
+
+## Task
+
+清洁前机器关了吗？
+
+🇮🇩
+
+Mesinnya sudah dimatikan sebelum dibersihkan?
+
+## Story Background
+
+清洁或维护设备前，必须确认机器已关闭。
+
+## Today's Harvest
+
+- dimatikan（关闭）
+- sebelum（之前）
+- dibersihkan（清洁）
+
+------------------------------------------------
+
+# EXP-FAC-071
+
+## Scenario
+
+Near Miss（险些出事）
+
+## Task
+
+今天有险些发生事故的情况吗？
+
+🇮🇩
+
+Ada kejadian yang hampir celaka hari ini?
+
+## Story Background
+
+即使没有受伤，险情也需要记录并预防再次发生。
+
+## Today's Harvest
+
+- kejadian（事件）
+- hampir（差点）
+- celaka（出事故）
+
+------------------------------------------------
+
+# EXP-FAC-072
+
+## Scenario
+
+Emergency Stop（急停按钮）
+
+## Task
+
+急停按钮检查了吗？
+
+🇮🇩
+
+Tombol berhenti daruratnya sudah dicek?
+
+## Story Background
+
+例行安全检查时，确认急停按钮可正常使用。
+
+## Today's Harvest
+
+- tombol（按钮）
+- berhenti darurat（紧急停止）
+- dicek（检查）
+
+------------------------------------------------
+
+# EXP-FAC-073
+
+## Scenario
+
+Unusual Machine Sound（机器异响）
+
+## Task
+
+这台机器声音不对。
+
+🇮🇩
+
+Mesin ini bunyinya nggak biasa.
+
+## Story Background
+
+发现设备异响时，先报告并避免继续强行使用。
+
+## Today's Harvest
+
+- mesin（机器）
+- bunyi（声音）
+- nggak biasa（不正常）
+
+------------------------------------------------
+
+# EXP-FAC-074
+
+## Scenario
+
+Maintenance Schedule（保养安排）
+
+## Task
+
+这台机器什么时候保养？
+
+🇮🇩
+
+Jadwal perawatan mesin ini kapan?
+
+## Story Background
+
+提前安排保养，减少突发停机。
+
+## Today's Harvest
+
+- jadwal（安排）
+- perawatan（保养）
+- kapan（什么时候）
+
+------------------------------------------------
+
+# EXP-FAC-075
+
+## Scenario
+
+Machine Downtime（停机时间）
+
+## Task
+
+机器从几点停的？
+
+🇮🇩
+
+Mesin berhenti dari jam berapa?
+
+## Story Background
+
+故障发生后先记录停机起始时间，评估影响。
+
+## Today's Harvest
+
+- mesin（机器）
+- berhenti（停止）
+- dari jam berapa（从几点）
+
+------------------------------------------------
+
+# EXP-FAC-076
+
+## Scenario
+
+Call Technician（联系维修员）
+
+## Task
+
+维修员联系了吗？
+
+🇮🇩
+
+Teknisi sudah dihubungi belum?
+
+## Story Background
+
+设备异常无法现场排除时，及时联系维修人员。
+
+## Today's Harvest
+
+- teknisi（维修员）
+- sudah（已经）
+- dihubungi（联系）
+
+------------------------------------------------
+
+# EXP-FAC-077
+
+## Scenario
+
+Spare Parts（备件库存）
+
+## Task
+
+备件还有吗？
+
+🇮🇩
+
+Suku cadangnya masih ada?
+
+## Story Background
+
+维修前确认关键备件库存，避免等待配件。
+
+## Today's Harvest
+
+- suku cadang（备件）
+- masih ada（还剩）
+- ada（有）
+
+------------------------------------------------
+
+# EXP-FAC-078
+
+## Scenario
+
+Tool Calibration（工具校准）
+
+## Task
+
+测量工具校准了吗？
+
+🇮🇩
+
+Alat ukurnya sudah dikalibrasi?
+
+## Story Background
+
+使用量具前确认校准状态，保证测量准确。
+
+## Today's Harvest
+
+- alat ukur（测量工具）
+- sudah（已经）
+- dikalibrasi（校准）
+
+------------------------------------------------
+
+# EXP-FAC-079
+
+## Scenario
+
+Shift Handover（交接班问题）
+
+## Task
+
+上一班有需要继续跟进的问题吗？
+
+🇮🇩
+
+Tim sebelumnya ada masalah yang harus diteruskan?
+
+## Story Background
+
+交接班时说明未完成事项，避免信息中断。
+
+## Today's Harvest
+
+- tim sebelumnya（上一班人员）
+- masalah（问题）
+- diteruskan（继续跟进）
+
+------------------------------------------------
+
+# EXP-FAC-080
+
+## Scenario
+
+Handover Notes（交接记录）
+
+## Task
+
+交接记录完整了吗？
+
+🇮🇩
+
+Catatan serah terimanya sudah lengkap?
+
+## Story Background
+
+班组交接前确认记录完整，方便下一班接手。
+
+## Today's Harvest
+
+- catatan（记录）
+- serah terima（交接）
+- lengkap（完整）
+
+------------------------------------------------
+
+# EXP-FAC-081
+
+## Scenario
+
+Leave Planning（请假安排）
+
+## Task
+
+明天还有人请假吗？
+
+🇮🇩
+
+Besok ada yang izin lagi?
+
+## Story Background
+
+提前了解请假人数，安排好替补人员。
+
+## Today's Harvest
+
+- besok（明天）
+- izin（请假）
+- lagi（又）
+
+------------------------------------------------
+
+# EXP-FAC-082
+
+## Scenario
+
+Night Shift Cover（夜班替补）
+
+## Task
+
+夜班的替补有人了吗？
+
+🇮🇩
+
+Pengganti untuk giliran malam sudah ada?
+
+## Story Background
+
+夜班有人缺席时，确认是否已安排替补。
+
+## Today's Harvest
+
+- pengganti（替补）
+- giliran malam（夜班）
+- sudah ada（已经有了）
+
+------------------------------------------------
+
+# EXP-FAC-083
+
+## Scenario
+
+Pre-Shift Briefing（班前说明）
+
+## Task
+
+开始前大家都听过说明了吗？
+
+🇮🇩
+
+Sebelum mulai, semua sudah dapat pengarahan?
+
+## Story Background
+
+班前说明让员工清楚当天目标和注意事项。
+
+## Today's Harvest
+
+- sebelum mulai（开始前）
+- semua（大家）
+- pengarahan（说明）
+
+------------------------------------------------
+
+# EXP-FAC-084
+
+## Scenario
+
+Meeting Follow-up（会议跟进）
+
+## Task
+
+刚才会议的结果谁来跟进？
+
+🇮🇩
+
+Hasil rapat tadi siapa yang tindak lanjuti?
+
+## Story Background
+
+会议结束时明确负责人，避免事项无人处理。
+
+## Today's Harvest
+
+- hasil rapat（会议结果）
+- siapa（谁）
+- tindak lanjuti（跟进）
+
+------------------------------------------------
+
+# EXP-FAC-085
+
+## Scenario
+
+Deadline Check（完成时限）
+
+## Task
+
+这个最晚几点完成？
+
+🇮🇩
+
+Yang ini harus selesai sebelum jam berapa?
+
+## Story Background
+
+紧急任务需要先明确完成时限。
+
+## Today's Harvest
+
+- harus（必须）
+- selesai（完成）
+- sebelum jam berapa（最晚几点）
+
+------------------------------------------------
+
+# EXP-FAC-086
+
+## Scenario
+
+Customer Visit（客户来访）
+
+## Task
+
+明天客户来，哪些区域要准备？
+
+🇮🇩
+
+Besok pelanggan datang, area mana yang perlu disiapkan?
+
+## Story Background
+
+客户来厂前，提前确认需要整理和展示的区域。
+
+## Today's Harvest
+
+- pelanggan（客户）
+- area（区域）
+- disiapkan（准备）
+
+------------------------------------------------
+
+# EXP-FAC-087
+
+## Scenario
+
+Inspection Documents（检查资料）
+
+## Task
+
+检查需要的资料都准备好了吗？
+
+🇮🇩
+
+Dokumen untuk pemeriksaan sudah siap semua?
+
+## Story Background
+
+外部检查前确认资料齐全，避免临时遗漏。
+
+## Today's Harvest
+
+- dokumen（资料）
+- pemeriksaan（检查）
+- siap（准备好）
+
+------------------------------------------------
+
+# EXP-FAC-088
+
+## Scenario
+
+Complaint Cause（投诉原因）
+
+## Task
+
+这次投诉的原因清楚了吗？
+
+🇮🇩
+
+Penyebab keluhan ini sudah jelas?
+
+## Story Background
+
+收到投诉后先确认根本原因，再安排改善。
+
+## Today's Harvest
+
+- penyebab（原因）
+- keluhan（投诉）
+- jelas（清楚）
+
+------------------------------------------------
+
+# EXP-FAC-089
+
+## Scenario
+
+Issue Escalation（问题上报）
+
+## Task
+
+这个问题需要报告给谁？
+
+🇮🇩
+
+Masalah ini perlu dilaporkan ke siapa?
+
+## Story Background
+
+超出现场处理权限的问题，要及时向正确负责人报告。
+
+## Today's Harvest
+
+- masalah（问题）
+- perlu（需要）
+- dilaporkan（报告）
+
+------------------------------------------------
+
+# EXP-FAC-090
+
+## Scenario
+
+End-of-Day Check（下班前确认）
+
+## Task
+
+下班前还有没完成的吗？
+
+🇮🇩
+
+Sebelum pulang, masih ada yang belum selesai?
+
+## Story Background
+
+下班前确认未完成事项，安排后续跟进。
+
+## Today's Harvest
+
+- sebelum pulang（下班前）
+- masih ada（还有）
+- belum selesai（还没完成）
+
 ---
 
 # EXP-FAC-039

@@ -17,7 +17,7 @@ export default async function FactoryManagerIndexPage({ searchParams }: { search
     <header className="mt-7 rounded-2xl border border-stone-200 bg-stone-50 px-5 py-5">
       <p className="text-xs text-stone-400">Peran（角色）</p>
       <LocalizedLabel indonesian="Manajer Pabrik" chinese="工厂经理" className="mt-1 font-semibold" />
-      <p className="mt-2 text-sm text-stone-500">50 situasi kerja tersedia<br />已完成 50 个工作场景</p>
+      <p className="mt-2 text-sm text-stone-500">90 situasi kerja tersedia<br />已完成 90 个工作场景</p>
       <p className="mt-5 text-xs text-stone-400">Alur Kerja（工作流程）</p>
       <nav className="mt-3 grid gap-2 sm:grid-cols-4" aria-label="Alur kerja">
         <Link href="/factory/manager" className={`flex min-h-10 min-w-0 cursor-pointer items-center break-words rounded-lg border px-3 py-2 text-xs font-medium transition duration-200 ${!selected ? 'border-stone-900 bg-stone-900 text-white' : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-100 hover:shadow-sm'}`}>Semua（全部）</Link>

@@ -1,7 +1,10 @@
+const range = (start: number, end: number) => Array.from({ length: end - start + 1 }, (_, index) => start + index);
+
 export const lifeWorkflow = [
-  { slug: 'friends', indonesian: 'Teman', chinese: '朋友', ids: Array.from({ length: 70 }, (_, index) => index + 1) },
-  { slug: 'supermarket', indonesian: 'Supermarket', chinese: '超市', ids: Array.from({ length: 10 }, (_, index) => index + 83) },
-  { slug: 'restaurant', indonesian: 'Restoran', chinese: '餐厅', ids: Array.from({ length: 11 }, (_, index) => index + 93) },
+  { slug: 'friends', indonesian: 'Teman', chinese: '朋友', ids: [...range(1, 70), 140, 141, 142, 143] },
+  { slug: 'basics', indonesian: 'Layanan Harian', chinese: '日常服务', ids: range(104, 132) },
+  { slug: 'supermarket', indonesian: 'Supermarket', chinese: '超市', ids: [...range(83, 92), 133, 134, 135, 136] },
+  { slug: 'restaurant', indonesian: 'Restoran', chinese: '餐厅', ids: [...range(93, 103), 137, 138, 139] },
 ] as const;
 
 export type LifeWorkflowSlug = (typeof lifeWorkflow)[number]['slug'];
