@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 const entries = [
+  { href: '/pronunciation', icon: '🔊', title: '印尼语发音基础', subtitle: 'Bahasa Indonesia Pronunciation Basics', description: '从元音、音节到组合发音，建立拼读信心。', chineseDescription: '可直接跳过，不改变后续课程结构', priority: true },
   { href: '/life', icon: '🏠', title: '生活', subtitle: 'Life', description: 'Bahasa Indonesia untuk kehidupan sehari-hari.', chineseDescription: '朋友、基础、超市与餐厅的自然表达', priority: false },
   { href: '/driver', icon: '🚗', title: '司机', subtitle: 'Sopir', priority: true },
   { href: '/nanny', icon: '👩', title: '保姆', subtitle: 'ART', priority: true },
