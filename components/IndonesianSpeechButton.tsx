@@ -9,25 +9,28 @@ let stopActiveAudio: (() => void) | undefined;
 const audioUrlCache = new Map<string, string>();
 const pendingAudio = new Map<string, Promise<string>>();
 
-async function getAudioUrl(text: string) {
-  const cached = audioUrlCache.get(text);
+type SpeechRate = 'normal' | 'slow';
+
+async function getAudioUrl(text: string, rate: SpeechRate) {
+  const cacheKey = `${rate}:${text}`;
+  const cached = audioUrlCache.get(cacheKey);
   if (cached) return cached;
-  const pending = pendingAudio.get(text);
+  const pending = pendingAudio.get(cacheKey);
   if (pending) return pending;
-  const request = fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) })
+  const request = fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, rate }) })
     .then(async (response) => {
       if (!response.ok) throw new Error('TTS request failed');
       const url = URL.createObjectURL(await response.blob());
-      audioUrlCache.set(text, url);
-      pendingAudio.delete(text);
+      audioUrlCache.set(cacheKey, url);
+      pendingAudio.delete(cacheKey);
       return url;
     })
-    .catch((error) => { pendingAudio.delete(text); throw error; });
-  pendingAudio.set(text, request);
+    .catch((error) => { pendingAudio.delete(cacheKey); throw error; });
+  pendingAudio.set(cacheKey, request);
   return request;
 }
 
-export default function IndonesianSpeechButton({ text, compact = false }: { text: string; compact?: boolean }) {
+export default function IndonesianSpeechButton({ text, compact = false, rate = 'normal' }: { text: string; compact?: boolean; rate?: SpeechRate }) {
   const enabled = useIndonesianAudio();
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,7 +53,7 @@ export default function IndonesianSpeechButton({ text, compact = false }: { text
     setFailed(false);
     setLoading(true);
     try {
-      const audio = new Audio(await getAudioUrl(text));
+      const audio = new Audio(await getAudioUrl(text, rate));
       audioRef.current = audio;
       activeAudio = audio;
       stopActiveAudio = stop;
