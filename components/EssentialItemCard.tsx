@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import IndonesianSpeechButton from '@/components/IndonesianSpeechButton';
+import HarvestSection from '@/components/HarvestSection';
 import type { Essential } from '@/lib/essentials';
 import { readLearningProfile, subscribeProfile, toggleFavorite } from '@/lib/learning-profile';
 
@@ -26,7 +27,7 @@ export default function EssentialItemCard({ item }: { item: Essential }) {
     <p className="text-[11px] font-medium text-stone-400">{item.id}</p>
     <p className="mt-2 text-base font-semibold text-stone-900">{item.chinese}</p>
     <p className="mt-2 break-words text-sm leading-6 text-stone-700">{item.indonesian}</p>
-    {item.example && <div className="mt-3 rounded-lg bg-stone-50 px-3 py-3"><p className="text-sm leading-6 text-stone-700">{item.example}</p><p className="mt-1 text-xs leading-5 text-stone-500">{item.exampleChinese}</p><IndonesianSpeechButton text={item.example} compact /></div>}
+    {item.example && <div className="mt-3 rounded-lg bg-stone-50 px-3 py-3"><p className="text-sm leading-6 text-stone-700">{item.example}</p><p className="mt-1 text-xs leading-5 text-stone-500">{item.exampleChinese}</p><IndonesianSpeechButton text={item.example} compact />{item.exampleHarvest && <HarvestSection harvest={item.exampleHarvest} />}</div>}
     {item.pattern && <div className="mt-3 border-l-2 border-stone-300 pl-3"><p className="text-xs font-medium text-stone-500">Pola（句型）</p><p className="mt-1 text-sm font-medium text-stone-800">{item.pattern.indonesian}</p><p className="mt-1 text-xs text-stone-500">{item.pattern.chinese}</p><ul className="mt-2 space-y-1 text-xs leading-5 text-stone-600">{item.pattern.substitutions.map((line) => <li key={line.indonesian}>• {line.indonesian} <span className="text-stone-400">（{line.chinese}）</span></li>)}</ul></div>}
     <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
       <button type="button" onClick={copy} className="min-h-8 cursor-pointer rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 hover:bg-stone-100">{copied ? '已复制' : '复制'}</button>
