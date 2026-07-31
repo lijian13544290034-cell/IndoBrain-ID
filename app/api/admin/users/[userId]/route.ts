@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireSuperAdmin } from '@/lib/account/auth';
+import { initialStudentPassword } from '@/lib/account/config';
 import { hashPassword, validatePassword } from '@/lib/account/password';
 import { assignRole, audit, findUserById, revokeSessionsForUser, softDeleteUser, unbindDevice, updateUser } from '@/lib/account/repository';
 import { ACCOUNT_ROLES, LEARNING_DIRECTIONS, MEMBERSHIP_LEVELS } from '@/lib/account/types';
@@ -10,19 +11,22 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
   try {
     const admin = await requireSuperAdmin();
     const { userId } = await params;
-    const body = (await request.json()) as { action?: string; password?: string; membership?: string; expiresAt?: string | null; learningDirection?: string; role?: string; phone?: string };
+    const body = (await request.json()) as { action?: string; password?: string; membership?: string; expiresAt?: string | null; learningDirection?: string; role?: string; phone?: string; name?: string; accountStatus?: string };
     const values: Record<string, unknown> = {};
 
     if (body.action === 'reset_password') {
-      if (!body.password) return NextResponse.json({ error: 'New password is required.' }, { status: 400 });
-      const validation = validatePassword(body.password);
+      const resetPassword = initialStudentPassword();
+      const validation = validatePassword(resetPassword);
       if (validation) return NextResponse.json({ error: validation }, { status: 400 });
-      values.password_hash = await hashPassword(body.password);
+      values.password_hash = await hashPassword(resetPassword);
+      values.must_change_password = true;
+      values.initial_password_issued_at = new Date().toISOString();
       await revokeSessionsForUser(userId);
     } else if (body.action === 'change_membership' && MEMBERSHIP_LEVELS.includes(body.membership as (typeof MEMBERSHIP_LEVELS)[number])) {
       values.membership_code = body.membership;
     } else if (body.action === 'edit') {
       if (body.phone) values.phone = body.phone;
+      if (body.name !== undefined) values.display_name = body.name.trim() || null;
       if (body.membership && MEMBERSHIP_LEVELS.includes(body.membership as (typeof MEMBERSHIP_LEVELS)[number])) values.membership_code = body.membership;
       if (body.learningDirection && LEARNING_DIRECTIONS.includes(body.learningDirection as (typeof LEARNING_DIRECTIONS)[number])) values.learning_direction = body.learningDirection;
       if (body.expiresAt !== undefined) values.expires_at = body.expiresAt || null;
@@ -57,6 +61,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
     if (error instanceof Error && error.message === 'ADMIN_AUTH_REQUIRED') {
       return NextResponse.json({ error: 'Administrator permission is required.' }, { status: 403 });
     }
-    return NextResponse.json({ error: 'Unable to update user.' }, { status: 503 });
+    const message = error instanceof Error && error.message === 'INITIAL_STUDENT_PASSWORD_NOT_CONFIGURED'
+      ? 'The server initial password is not configured.'
+      : 'Unable to update user.';
+    return NextResponse.json({ error: message }, { status: 503 });
   }
 }

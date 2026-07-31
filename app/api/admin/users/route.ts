@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const admin = await requireSuperAdmin();
-    const body = (await request.json()) as { phone?: string; password?: string; membership?: string; learningDirection?: string; expiresAt?: string; accountStatus?: string };
+    const body = (await request.json()) as { name?: string; phone?: string; password?: string; membership?: string; learningDirection?: string; expiresAt?: string; accountStatus?: string };
     if (!body.phone || !body.password) return NextResponse.json({ error: 'Phone and initial password are required.' }, { status: 400 });
     const passwordError = validatePassword(body.password);
     if (passwordError) return NextResponse.json({ error: passwordError }, { status: 400 });
@@ -31,6 +31,7 @@ export async function POST(request: Request) {
     const user = await createUser({
       phone: body.phone,
       passwordHash: await hashPassword(body.password),
+      displayName: body.name,
       membership: body.membership as (typeof MEMBERSHIP_LEVELS)[number],
       learningDirection: body.learningDirection as (typeof LEARNING_DIRECTIONS)[number],
       expiresAt: body.expiresAt || null,

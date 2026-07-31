@@ -12,6 +12,7 @@ export type AccountUser = {
   id: string;
   public_id: string;
   phone: string;
+  display_name?: string | null;
   membership_code: MembershipLevel;
   member_level?: MembershipLevel;
   learning_direction: LearningDirection;
@@ -28,6 +29,9 @@ export type AccountUser = {
   created_by?: string | null;
   updated_by?: string | null;
   deleted_at?: string | null;
+  must_change_password?: boolean;
+  created_by_batch_id?: string | null;
+  initial_password_issued_at?: string | null;
   created_at: string;
 };
 

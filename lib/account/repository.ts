@@ -77,18 +77,22 @@ export async function findUserById(userId: string, includeDeleted = false) {
 export async function createUser(input: {
   phone: string;
   passwordHash: string;
+  displayName?: string;
   membership: MembershipLevel;
   learningDirection: LearningDirection;
   expiresAt?: string | null;
   accountStatus?: 'ACTIVE' | 'SUSPENDED';
   registerSource?: string;
   createdBy?: string;
+  mustChangePassword?: boolean;
+  createdByBatchId?: string | null;
 }) {
   const response = await request('users', {
     method: 'POST',
     headers: { Prefer: 'return=representation' },
     body: JSON.stringify({
       phone: normalizePhone(input.phone),
+      display_name: input.displayName?.trim() || null,
       password_hash: input.passwordHash,
       membership_code: input.membership,
       learning_direction: input.learningDirection,
@@ -97,12 +101,30 @@ export async function createUser(input: {
       register_source: input.registerSource ?? 'ADMIN',
       created_by: input.createdBy ?? null,
       updated_by: input.createdBy ?? null,
+      must_change_password: input.mustChangePassword ?? false,
+      created_by_batch_id: input.createdByBatchId ?? null,
+      initial_password_issued_at: input.mustChangePassword ? new Date().toISOString() : null,
     }),
   });
   const rows = (await response.json()) as AccountUser[];
   const user = rows[0];
   await assignRole(user.id, 'USER');
   return user;
+}
+
+export async function createStudentImportBatch(input: { actorUserId: string; sourceFileName?: string | null; totalRows: number }) {
+  const response = await request('student_import_batches', {
+    method: 'POST', headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ actor_user_id: input.actorUserId, source_file_name: input.sourceFileName ?? null, total_rows: input.totalRows }),
+  });
+  return ((await response.json()) as Array<{ id: string }>)[0];
+}
+
+export async function completeStudentImportBatch(batchId: string, values: { validRows: number; createdRows: number; failedRows: number; skippedRows: number; failureRecords: unknown[] }) {
+  await request(`student_import_batches?id=eq.${encode(batchId)}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ valid_rows: values.validRows, created_rows: values.createdRows, failed_rows: values.failedRows, skipped_rows: values.skippedRows, failure_records: values.failureRecords, completed_at: new Date().toISOString() }),
+  });
 }
 
 export async function updateUser(userId: string, values: Row, updatedBy?: string) {

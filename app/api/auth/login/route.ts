@@ -54,6 +54,7 @@ export async function POST(request: Request) {
         membership: user.membership_code,
         learningDirection: user.learning_direction,
         isSuperAdmin: roles.includes('SUPER_ADMIN'),
+        mustChangePassword: Boolean(user.must_change_password),
       },
     });
     response.cookies.set(accountSessionCookieName(), session.token, {
