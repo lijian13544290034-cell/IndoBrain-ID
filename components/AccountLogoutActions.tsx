@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { clearLearningProfileScope } from '@/lib/learning-profile';
 
 export default function AccountLogoutActions() {
   const [pending, setPending] = useState(false);
@@ -14,6 +15,7 @@ export default function AccountLogoutActions() {
       // Account identity is held only by the revoked HTTP-only session cookie.
       window.localStorage.removeItem('indobrain_session_id');
       window.sessionStorage.removeItem('indobrain_session_id');
+      clearLearningProfileScope();
       // A document navigation discards any cached client-side account state before login.
       window.location.replace('/login');
     }

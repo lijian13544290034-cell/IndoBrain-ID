@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { setLearningProfileScope } from '@/lib/learning-profile';
 
 function browserDeviceId() {
   const key = 'indobrain_account_device_id';
@@ -28,10 +29,14 @@ export default function PhoneLoginForm() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, password, deviceId: browserDeviceId() }),
     });
-    const data = await response.json() as { error?: string; user?: { learningDirection?: string; isSuperAdmin?: boolean } };
+    const data = await response.json() as { error?: string; user?: { publicId?: string; learningDirection?: string; isSuperAdmin?: boolean } };
     setSubmitting(false);
     if (!response.ok) return setMessage(data.error ?? 'Unable to sign in.');
-    router.push(data.user?.isSuperAdmin ? '/admin' : data.user?.learningDirection === 'ID_TO_ZH' ? '/?direction=id-to-zh' : '/');
+    if (!data.user?.isSuperAdmin && data.user?.learningDirection !== 'ZH_TO_ID' && data.user?.learningDirection !== 'ID_TO_ZH') {
+      return setMessage('Learning direction is not configured. Please contact an administrator.');
+    }
+    if (data.user?.publicId && data.user.learningDirection) setLearningProfileScope(`${data.user.publicId}:${data.user.learningDirection}`);
+    router.push(data.user?.isSuperAdmin ? '/admin' : data.user?.learningDirection === 'ID_TO_ZH' ? '/chinese' : '/');
     router.refresh();
   }
 

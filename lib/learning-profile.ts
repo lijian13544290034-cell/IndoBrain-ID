@@ -26,8 +26,27 @@ export type LearningProfile = {
 };
 
 const storageKey = 'indobrain_learning_profile_v1';
+const scopeKey = 'indobrain_learning_profile_scope';
 const updateEvent = 'indobrain-learning-profile-updated';
 const emptyProfile = (): LearningProfile => ({ version: 1, favorites: [], completed: [], currentStreak: 0, longestStreak: 0, submissions: [] });
+
+function scopedStorageKey() {
+  if (typeof window === 'undefined') return `${storageKey}:guest`;
+  const scope = window.localStorage.getItem(scopeKey);
+  return `${storageKey}:${scope || 'guest'}`;
+}
+
+/** Keep device-local learning records isolated by the authenticated account and learning direction. */
+export function setLearningProfileScope(scope: string) {
+  window.localStorage.setItem(scopeKey, scope);
+  window.dispatchEvent(new Event(updateEvent));
+}
+
+/** Logout clears the current identity pointer without deleting that account's private device-local records. */
+export function clearLearningProfileScope() {
+  window.localStorage.removeItem(scopeKey);
+  window.dispatchEvent(new Event(updateEvent));
+}
 
 function localDate() {
   const now = new Date();
@@ -51,7 +70,7 @@ export function inferModule(experienceId: string) {
 export function readLearningProfile(): LearningProfile {
   if (typeof window === 'undefined') return emptyProfile();
   try {
-    const saved = window.localStorage.getItem(storageKey);
+    const saved = window.localStorage.getItem(scopedStorageKey());
     if (!saved) return emptyProfile();
     const parsed = JSON.parse(saved) as Partial<LearningProfile>;
     return { ...emptyProfile(), ...parsed, favorites: Array.from(new Set(parsed.favorites ?? [])), completed: Array.from(new Set(parsed.completed ?? [])), submissions: parsed.submissions ?? [] };
@@ -59,7 +78,7 @@ export function readLearningProfile(): LearningProfile {
 }
 
 function save(profile: LearningProfile) {
-  window.localStorage.setItem(storageKey, JSON.stringify(profile));
+  window.localStorage.setItem(scopedStorageKey(), JSON.stringify(profile));
   window.dispatchEvent(new Event(updateEvent));
   return profile;
 }

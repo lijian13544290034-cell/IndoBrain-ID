@@ -1,12 +1,16 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getCurrentAccountUser } from '@/lib/account/auth';
 
 const entries = [
-  { href: '/chinese', icon: '🀄', title: '中文沟通', subtitle: 'Komunikasi Mandarin', description: 'Bahasa Mandarin untuk kerja dan komunikasi dengan rekan Tiongkok.', chineseDescription: '为印尼学习者准备的真实中文工作沟通。', priority: true },
   { href: '/life', icon: '🌍', title: '生活', subtitle: 'Life', description: 'Bahasa Indonesia untuk kehidupan sehari-hari.', chineseDescription: '朋友、基础、超市与餐厅的自然表达。', priority: false },
   { href: '/driver', icon: '🚗', title: '司机', subtitle: 'Sopir', priority: true },
   { href: '/nanny', icon: '👩', title: '保姆', subtitle: 'ART', priority: true },
+  { href: '/life/basics/office', icon: '🏢', title: '办公室', subtitle: 'Kantor', priority: false },
   { href: '/factory', icon: '🏭', title: '工厂', subtitle: 'Pabrik', priority: false },
+  { href: '/module/warehouse', icon: '📦', title: '仓库', subtitle: 'Gudang', priority: false },
+  { href: '/patterns', icon: '🧩', title: '常用句型', subtitle: 'Pola Kalimat', priority: false },
+  { href: '/life/basics/indonesia', icon: '🇮🇩', title: '认识印尼', subtitle: 'Mengenal Indonesia', priority: false },
   { href: '/chat/ai-chat', icon: '💬', title: '自由聊天', subtitle: 'Chat Bebas', priority: false },
 ];
 
@@ -14,6 +18,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const user = await getCurrentAccountUser();
+  if (user?.learning_direction === 'ID_TO_ZH') redirect('/chinese');
+  if (user && user.learning_direction !== 'ZH_TO_ID') {
+    return <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-5 py-12"><section className="w-full rounded-3xl border border-stone-200 bg-white p-6 shadow-sm"><h1 className="text-2xl font-semibold">学习方向尚未配置</h1><p className="mt-3 text-sm leading-6 text-stone-500">请联系管理员为此账号设置正确的学习方向。</p><Link href="/account" className="mt-6 inline-flex rounded-xl bg-stone-900 px-4 py-2.5 text-sm font-medium text-white">我的账户</Link></section></main>;
+  }
   return <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 pb-8 pt-12 sm:px-8 sm:pb-12 sm:pt-16">
     <header>
       <div className="flex items-center justify-between gap-4"><div className="text-3xl font-semibold tracking-tight text-gray-950">IndoBrain</div><nav className="flex items-center gap-2 text-sm">{user ? <Link href="/account" className="rounded-lg px-3 py-2 text-gray-500 hover:bg-stone-100 hover:text-gray-900">Akun Saya（我的账户）</Link> : <Link href="/login" className="rounded-lg px-3 py-2 text-gray-500 hover:bg-stone-100 hover:text-gray-900">Masuk（登录）</Link>}</nav></div>
