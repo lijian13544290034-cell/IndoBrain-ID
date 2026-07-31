@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { previewQaCookieName, verifyPreviewQaSession } from './lib/account/preview-qa';
 
 const SESSION_COOKIE = 'indobrain_account_session';
 
@@ -28,6 +29,11 @@ async function getLearningAccess(token: string): Promise<LearningAccess | null> 
 }
 
 export async function proxy(request: NextRequest) {
+  const previewQa = await verifyPreviewQaSession(request.cookies.get(previewQaCookieName())?.value);
+  if (previewQa) {
+    if (request.nextUrl.pathname.startsWith('/chinese')) return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.next();
+  }
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   const access = token ? await getLearningAccess(token) : null;
   if (!access) {
@@ -44,6 +50,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/', '/about', '/driver/:path*', '/nanny/:path*', '/factory/:path*', '/life/:path*', '/social/:path*', '/patterns/:path*', '/module/:path*', '/chat/:path*',
+    '/', '/about', '/driver/:path*', '/nanny/:path*', '/factory/:path*', '/life/:path*', '/social/:path*', '/patterns/:path*', '/module/:path*', '/chat/:path*', '/chinese/:path*',
   ],
 };
