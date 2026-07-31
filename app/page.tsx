@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getCurrentAccountUser } from '@/lib/account/auth';
 
 const entries = [
+  { href: '/chinese', icon: '🀄', title: '中文沟通', subtitle: 'Komunikasi Mandarin', description: 'Bahasa Mandarin untuk kerja dan komunikasi dengan rekan Tiongkok.', chineseDescription: '为印尼学习者准备的真实中文工作沟通。', priority: true },
   { href: '/life', icon: '🌍', title: '生活', subtitle: 'Life', description: 'Bahasa Indonesia untuk kehidupan sehari-hari.', chineseDescription: '朋友、基础、超市与餐厅的自然表达。', priority: false },
   { href: '/driver', icon: '🚗', title: '司机', subtitle: 'Sopir', priority: true },
   { href: '/nanny', icon: '👩', title: '保姆', subtitle: 'ART', priority: true },
