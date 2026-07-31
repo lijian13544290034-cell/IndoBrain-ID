@@ -11,9 +11,12 @@ const pendingAudio = new Map<string, Promise<string>>();
 
 type SpeechRate = 'normal' | 'slow';
 export type PronunciationAudioInput = {
+  provider?: 'azure' | 'google';
   audioMode: 'phoneme' | 'text' | 'example';
+  alphabet?: 'ipa';
   phoneme?: string;
   audioText?: string;
+  fallbackText?: string;
   exampleWords?: string[];
 };
 

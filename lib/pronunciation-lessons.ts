@@ -10,14 +10,22 @@ export type PronunciationExample = {
 
 export type PronunciationSyllable = {
   text: string;
+  provider: 'azure' | 'google';
   audioMode: 'phoneme' | 'text' | 'example';
+  alphabet?: 'ipa';
   phoneme?: string;
   audioText?: string;
+  fallbackText?: string;
   exampleWords?: string[];
 };
 
 export type PronunciationFocusCombination = {
   text: string;
+  provider: 'google';
+  audioMode: 'phoneme';
+  alphabet: 'ipa';
+  phoneme: string;
+  teachingAudioVariants: string[];
   exampleWords: string[];
 };
 
@@ -39,13 +47,23 @@ export type PronunciationLesson = {
 
 type SyllableInput = string | PronunciationSyllable;
 
-const syllable = (text: string, audio?: Omit<PronunciationSyllable, 'text'>): PronunciationSyllable => ({ text, audioMode: 'text', ...audio });
+const syllable = (text: string, audio?: Omit<PronunciationSyllable, 'text'>): PronunciationSyllable => ({ text, provider: 'azure', audioMode: 'text', ...audio });
 const manualSyllables = (items: SyllableInput[]) => items.map((item) => typeof item === 'string' ? syllable(item) : item);
-const phonemeSyllable = (text: string, phoneme: string, exampleWord: string) => syllable(text, { audioMode: 'phoneme', phoneme, exampleWords: [exampleWord] });
+const phonemeSyllable = (text: string, phoneme: string, exampleWord: string) => syllable(text, { provider: 'google', audioMode: 'phoneme', alphabet: 'ipa', phoneme, fallbackText: text, exampleWords: [exampleWord] });
 
 const example = (word: string, chinese: string, syllables: SyllableInput[], ruleNote: string, focusCombination?: string, vowelCount?: string[]): PronunciationExample => ({
-  word, chinese, syllables: manualSyllables(syllables), ruleNote, focusCombination: focusCombination ? { text: focusCombination, exampleWords: [word] } : undefined, vowelCount, audioText: word,
+  word, chinese, syllables: manualSyllables(syllables), ruleNote, focusCombination: focusCombination ? focusConfig(focusCombination, word) : undefined, vowelCount, audioText: word,
 });
+
+const focusConfig = (text: string, word: string): PronunciationFocusCombination => ({
+  ng: { text, provider: 'google', audioMode: 'phoneme', alphabet: 'ipa', phoneme: 'ŋə', teachingAudioVariants: ['ŋə', 'ŋa'], exampleWords: ['ngengat', word] },
+  ny: { text, provider: 'google', audioMode: 'phoneme', alphabet: 'ipa', phoneme: 'ɲa', teachingAudioVariants: ['ɲa'], exampleWords: ['nyamuk', word] },
+  sy: { text, provider: 'google', audioMode: 'phoneme', alphabet: 'ipa', phoneme: 'ʃa', teachingAudioVariants: ['ʃa'], exampleWords: [word] },
+  kh: { text, provider: 'google', audioMode: 'phoneme', alphabet: 'ipa', phoneme: 'xa', teachingAudioVariants: ['xa'], exampleWords: [word, 'akhir'] },
+  ai: { text, provider: 'google', audioMode: 'phoneme', alphabet: 'ipa', phoneme: 'aɪ', teachingAudioVariants: ['aɪ'], exampleWords: [word] },
+  au: { text, provider: 'google', audioMode: 'phoneme', alphabet: 'ipa', phoneme: 'aʊ', teachingAudioVariants: ['aʊ'], exampleWords: [word, 'kacau'] },
+  oi: { text, provider: 'google', audioMode: 'phoneme', alphabet: 'ipa', phoneme: 'ɔɪ', teachingAudioVariants: ['ɔɪ'], exampleWords: [word] },
+}[text] as PronunciationFocusCombination | undefined) ?? { text, provider: 'google', audioMode: 'phoneme', alphabet: 'ipa', phoneme: text, teachingAudioVariants: [text], exampleWords: [word] };
 
 export const pronunciationLessons: PronunciationLesson[] = [
   {

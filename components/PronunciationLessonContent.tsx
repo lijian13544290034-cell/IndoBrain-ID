@@ -43,7 +43,8 @@ export default function PronunciationLessonContent({ lesson, total }: { lesson: 
               <span className="text-xs font-medium text-stone-400">重点组合</span>
               <span className="rounded-md bg-stone-100 px-2 py-1 text-sm">{example.focusCombination.text}</span>
               </div>
-              <div className="mt-2 flex flex-wrap gap-2">{example.focusCombination.exampleWords.map((word) => <span key={word} className="inline-flex items-center gap-1 rounded-lg bg-stone-50 px-2 py-1 text-sm"><span>{word}</span><IndonesianSpeechButton text={example.focusCombination?.text ?? word} rate="slow" pronunciation={{ audioMode: 'example', exampleWords: [word] }} label="听例词" compact /></span>)}</div>
+              <div className="mt-2 flex flex-wrap gap-2"><span className="inline-flex items-center gap-1 rounded-lg bg-stone-50 px-2 py-1 text-sm"><span>{example.focusCombination.teachingAudioVariants.join(' / ')}</span><IndonesianSpeechButton text={example.focusCombination.text} rate="slow" pronunciation={example.focusCombination} label="听发音" compact /></span></div>
+              <div className="mt-2 flex flex-wrap gap-2">{example.focusCombination.exampleWords.map((word) => <span key={word} className="inline-flex items-center gap-1 rounded-lg bg-stone-50 px-2 py-1 text-sm"><span>{word}</span><IndonesianSpeechButton text={word} rate="slow" pronunciation={{ provider: 'google', audioMode: 'example', exampleWords: [word] }} label="听例词" compact /></span>)}</div>
             </div>}
 
             {example.vowelCount && <p className="mt-4 text-sm"><span className="text-stone-400">元音：</span>{example.vowelCount.join('、')}</p>}
