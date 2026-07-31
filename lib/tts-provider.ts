@@ -1,9 +1,10 @@
 export type TtsAudio = { audio: Uint8Array; voice: string };
+export type TtsSynthesisOptions = { rate?: 'normal' | 'slow'; phoneme?: string };
 
 export type TtsProvider = {
   configured: boolean;
   voice: string | null;
-  synthesize: (text: string, options?: { rate?: 'normal' | 'slow' }) => Promise<TtsAudio>;
+  synthesize: (text: string, options?: TtsSynthesisOptions) => Promise<TtsAudio>;
 };
 
 const azureVoice = 'id-ID-GadisNeural';
@@ -24,9 +25,7 @@ export function getTtsProvider(): TtsProvider {
       const response = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
         method: 'POST',
         headers: { 'Ocp-Apim-Subscription-Key': key, 'Content-Type': 'application/ssml+xml', 'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3', 'User-Agent': 'IndoBrain' },
-        body: options?.rate === 'slow'
-          ? `<speak version="1.0" xml:lang="id-ID"><voice name="${azureVoice}"><prosody rate="-10%"><break time="200ms"/>${escapeXml(text)}<break time="300ms"/></prosody></voice></speak>`
-          : `<speak version="1.0" xml:lang="id-ID"><voice name="${azureVoice}">${escapeXml(text)}</voice></speak>`,
+        body: `<speak version="1.0" xml:lang="id-ID"><voice name="${azureVoice}">${options?.rate === 'slow' ? '<prosody rate="-10%"><break time="200ms"/>' : ''}${options?.phoneme ? `<phoneme alphabet="ipa" ph="${escapeXml(options.phoneme)}">${escapeXml(text)}</phoneme>` : escapeXml(text)}${options?.rate === 'slow' ? '<break time="300ms"/></prosody>' : ''}</voice></speak>`,
       });
       if (!response.ok) throw new Error('TTS provider request failed');
       return { audio: new Uint8Array(await response.arrayBuffer()), voice: azureVoice };

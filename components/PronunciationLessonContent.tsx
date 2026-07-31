@@ -27,8 +27,9 @@ export default function PronunciationLessonContent({ lesson, total }: { lesson: 
 
             <div className="mt-4">
               <p className="text-xs font-medium text-stone-400">人工确认音节</p>
+              <p className="mt-1 text-xs leading-5 text-stone-400">音节播放用于帮助拆分，完整单词发音更自然，请以整词播放为准。</p>
               <div className="mt-2 flex flex-wrap gap-2">
-                {example.syllables.map((part, index) => <span key={`${part}-${index}`} className="inline-flex items-center gap-1 rounded-lg bg-stone-50 px-2 py-1 text-sm"><span>{part}</span><IndonesianSpeechButton text={part} rate="slow" compact /></span>)}
+                {example.syllables.map((part, index) => <span key={`${part.text}-${index}`} className="inline-flex items-center gap-1 rounded-lg bg-stone-50 px-2 py-1 text-sm"><span>{part.text}</span><IndonesianSpeechButton text={part.text} rate="slow" pronunciation={part} compact /></span>)}
               </div>
             </div>
 
@@ -37,10 +38,12 @@ export default function PronunciationLessonContent({ lesson, total }: { lesson: 
               <IndonesianSpeechButton text={example.audioText} rate="slow" compact />
             </div>
 
-            {example.focusCombination && <div className="mt-4 flex items-center gap-2">
+            {example.focusCombination && <div className="mt-4">
+              <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-stone-400">重点组合</span>
-              <span className="rounded-md bg-stone-100 px-2 py-1 text-sm">{example.focusCombination}</span>
-              <IndonesianSpeechButton text={example.focusCombination} rate="slow" compact />
+              <span className="rounded-md bg-stone-100 px-2 py-1 text-sm">{example.focusCombination.text}</span>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-2">{example.focusCombination.exampleWords.map((word) => <span key={word} className="inline-flex items-center gap-1 rounded-lg bg-stone-50 px-2 py-1 text-sm"><span>{word}</span><IndonesianSpeechButton text={example.focusCombination?.text ?? word} rate="slow" pronunciation={{ audioMode: 'example', exampleWords: [word] }} label="听例词" compact /></span>)}</div>
             </div>}
 
             {example.vowelCount && <p className="mt-4 text-sm"><span className="text-stone-400">元音：</span>{example.vowelCount.join('、')}</p>}
@@ -55,7 +58,7 @@ export default function PronunciationLessonContent({ lesson, total }: { lesson: 
       <p className="mt-3 text-sm leading-7 text-stone-600">{lesson.practice.prompt}</p>
       <p className="mt-3 text-sm font-medium">{lesson.practice.answer}</p>
       <div className="mt-4 flex items-center gap-2"><span className="text-xs font-medium text-stone-400">完整播放</span><IndonesianSpeechButton text={lesson.practice.audioText} rate="slow" compact /></div>
-      <div className="mt-4 flex flex-wrap gap-2">{lesson.practice.chunks.map((part, index) => <span key={`${part}-${index}`} className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-white px-2 py-1 text-sm">{part}<IndonesianSpeechButton text={part} rate="slow" compact /></span>)}</div>
+      <div className="mt-4 flex flex-wrap gap-2">{lesson.practice.chunks.map((part, index) => <span key={`${part.text}-${index}`} className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-white px-2 py-1 text-sm">{part.text}<IndonesianSpeechButton text={part.text} rate="slow" pronunciation={part} compact /></span>)}</div>
     </section>}
 
     {lesson.id === total && <Link href="/" className="mt-8 inline-flex rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white hover:bg-stone-700">开始正式课程</Link>}

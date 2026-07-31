@@ -10,14 +10,24 @@ const audioUrlCache = new Map<string, string>();
 const pendingAudio = new Map<string, Promise<string>>();
 
 type SpeechRate = 'normal' | 'slow';
+export type PronunciationAudioInput = {
+  audioMode: 'phoneme' | 'text' | 'example';
+  phoneme?: string;
+  audioText?: string;
+  exampleWords?: string[];
+};
 
-async function getAudioUrl(text: string, rate: SpeechRate) {
-  const cacheKey = `${rate}:${text}`;
+async function getAudioUrl(text: string, rate: SpeechRate, pronunciation?: PronunciationAudioInput) {
+  const cacheKey = JSON.stringify({ text, rate, pronunciation: pronunciation ?? null });
   const cached = audioUrlCache.get(cacheKey);
   if (cached) return cached;
   const pending = pendingAudio.get(cacheKey);
   if (pending) return pending;
-  const request = fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, rate }) })
+  const request = fetch('/api/tts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, rate, pronunciation }),
+  })
     .then(async (response) => {
       if (!response.ok) throw new Error('TTS request failed');
       const url = URL.createObjectURL(await response.blob());
@@ -30,7 +40,7 @@ async function getAudioUrl(text: string, rate: SpeechRate) {
   return request;
 }
 
-export default function IndonesianSpeechButton({ text, compact = false, rate = 'normal' }: { text: string; compact?: boolean; rate?: SpeechRate }) {
+export default function IndonesianSpeechButton({ text, compact = false, rate = 'normal', pronunciation, label = '🔊 听一听' }: { text: string; compact?: boolean; rate?: SpeechRate; pronunciation?: PronunciationAudioInput; label?: string }) {
   const enabled = useIndonesianAudio();
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -53,7 +63,7 @@ export default function IndonesianSpeechButton({ text, compact = false, rate = '
     setFailed(false);
     setLoading(true);
     try {
-      const audio = new Audio(await getAudioUrl(text, rate));
+      const audio = new Audio(await getAudioUrl(text, rate, pronunciation));
       audioRef.current = audio;
       activeAudio = audio;
       stopActiveAudio = stop;
@@ -71,5 +81,5 @@ export default function IndonesianSpeechButton({ text, compact = false, rate = '
   };
 
   const unavailable = enabled !== true;
-  return <button type="button" onClick={play} disabled={unavailable} aria-label="听一听" title={unavailable ? '语音功能正在配置中' : '听一听'} className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${unavailable ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-stone-100'} ${compact ? '' : 'mt-2'}`}>{loading ? '加载中…' : playing ? '■ 播放中' : failed ? '重试' : '🔊 听一听'}</button>;
+  return <button type="button" onClick={play} disabled={unavailable} aria-label={label} title={unavailable ? '语音功能正在配置中' : label} className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${unavailable ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-stone-100'} ${compact ? '' : 'mt-2'}`}>{loading ? '加载中…' : playing ? '■ 播放中' : failed ? '重试' : label}</button>;
 }

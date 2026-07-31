@@ -1,11 +1,24 @@
 export type PronunciationExample = {
   word: string;
   chinese: string;
-  syllables: string[];
-  focusCombination?: string;
+  syllables: PronunciationSyllable[];
+  focusCombination?: PronunciationFocusCombination;
   ruleNote: string;
   audioText: string;
   vowelCount?: string[];
+};
+
+export type PronunciationSyllable = {
+  text: string;
+  audioMode: 'phoneme' | 'text' | 'example';
+  phoneme?: string;
+  audioText?: string;
+  exampleWords?: string[];
+};
+
+export type PronunciationFocusCombination = {
+  text: string;
+  exampleWords: string[];
 };
 
 export type PronunciationSection = {
@@ -21,11 +34,17 @@ export type PronunciationLesson = {
   indonesianTitle: string;
   introduction: string;
   sections: PronunciationSection[];
-  practice?: { prompt: string; answer: string; audioText: string; chunks: string[] };
+  practice?: { prompt: string; answer: string; audioText: string; chunks: PronunciationSyllable[] };
 };
 
-const example = (word: string, chinese: string, syllables: string[], ruleNote: string, focusCombination?: string, vowelCount?: string[]): PronunciationExample => ({
-  word, chinese, syllables, ruleNote, focusCombination, vowelCount, audioText: word,
+type SyllableInput = string | PronunciationSyllable;
+
+const syllable = (text: string, audio?: Omit<PronunciationSyllable, 'text'>): PronunciationSyllable => ({ text, audioMode: 'text', ...audio });
+const manualSyllables = (items: SyllableInput[]) => items.map((item) => typeof item === 'string' ? syllable(item) : item);
+const phonemeSyllable = (text: string, phoneme: string, exampleWord: string) => syllable(text, { audioMode: 'phoneme', phoneme, exampleWords: [exampleWord] });
+
+const example = (word: string, chinese: string, syllables: SyllableInput[], ruleNote: string, focusCombination?: string, vowelCount?: string[]): PronunciationExample => ({
+  word, chinese, syllables: manualSyllables(syllables), ruleNote, focusCombination: focusCombination ? { text: focusCombination, exampleWords: [word] } : undefined, vowelCount, audioText: word,
 });
 
 export const pronunciationLessons: PronunciationLesson[] = [
@@ -38,7 +57,7 @@ export const pronunciationLessons: PronunciationLesson[] = [
       title: 'Mulai dari huruf', chineseTitle: '从字母开始',
       rule: '看到新单词时，先找元音，再看是否有常见组合音。',
       examples: [
-        example('makan', '吃', ['ma', 'kan'], '两个清晰的自然音节。'),
+        example('makan', '吃', [phonemeSyllable('ma', 'ma', 'makan'), 'kan'], '两个清晰的自然音节。'),
         example('belajar', '学习', ['be', 'la', 'jar'], '按自然音节慢慢读。'),
         example('selamat', '你好／祝贺', ['se', 'la', 'mat'], '常见问候语，按三个音节练习。'),
       ],
@@ -69,13 +88,13 @@ export const pronunciationLessons: PronunciationLesson[] = [
       title: 'Cari vokal', chineseTitle: '先找元音',
       rule: '用人工确认的自然音节练习：先听整词，再逐块跟读。',
       examples: [
-        example('makan', '吃', ['ma', 'kan'], 'A、A 是两个元音核心。', undefined, ['A', 'A']),
+        example('makan', '吃', [phonemeSyllable('ma', 'ma', 'makan'), 'kan'], 'A、A 是两个元音核心。', undefined, ['A', 'A']),
         example('belajar', '学习', ['be', 'la', 'jar'], '自然分为三个音节。'),
         example('keluar', '出去', ['ke', 'lu', 'ar'], '注意元音的顺序。'),
         example('selamat', '你好／祝贺', ['se', 'la', 'mat'], '自然分为三个音节。'),
       ],
     }],
-    practice: { prompt: '数一数 makan 里的元音，再按自然音节读。', answer: '元音：A、A；自然音节：ma-kan。', audioText: 'makan', chunks: ['ma', 'kan'] },
+    practice: { prompt: '数一数 makan 里的元音，再按自然音节读。', answer: '元音：A、A；自然音节：ma-kan。', audioText: 'makan', chunks: manualSyllables([phonemeSyllable('ma', 'ma', 'makan'), 'kan']) },
   },
   {
     id: 4,
@@ -90,7 +109,7 @@ export const pronunciationLessons: PronunciationLesson[] = [
         example('duduk', '坐', ['du', 'duk'], '注意 D 的位置。'),
         example('kantor', '办公室', ['kan', 'tor'], '注意 K 和 R。'),
         example('lima', '五', ['li', 'ma'], '注意 L 的位置。'),
-        example('makan', '吃', ['ma', 'kan'], '注意 M 的位置。'),
+        example('makan', '吃', [phonemeSyllable('ma', 'ma', 'makan'), 'kan'], '注意 M 的位置。'),
         example('nama', '名字', ['na', 'ma'], '注意 N 的位置。'),
         example('pagi', '早上', ['pa', 'gi'], '注意 P 的位置。'),
         example('tiga', '三', ['ti', 'ga'], '注意 T 的位置。'),
@@ -108,7 +127,7 @@ export const pronunciationLessons: PronunciationLesson[] = [
       rule: '每个例词都先播放整词，再自己重复。',
       examples: [
         example('cari', '找', ['ca', 'ri'], '注意 C 的发音。'),
-        example('jalan', '路／走', ['ja', 'lan'], '注意 J 的发音。'),
+        example('jalan', '路／走', [phonemeSyllable('ja', 'dʒa', 'jalan'), 'lan'], '注意 J 的发音。'),
         example('gaji', '工资', ['ga', 'ji'], '注意 G 的发音。'),
         example('yakin', '确定／相信', ['ya', 'kin'], '注意 Y 的发音。'),
         example('waktu', '时间', ['wak', 'tu'], '注意 W 的发音。'),
@@ -126,11 +145,11 @@ export const pronunciationLessons: PronunciationLesson[] = [
       rule: '组合音不要机械拆开读；先以完整例词为单位练习，再听重点组合。',
       examples: [
         example('tangan', '手', ['ta', 'ngan'], 'ng 在第二个音节里一起发音。', 'ng'),
-        example('banyak', '很多', ['ba', 'nyak'], 'ny 在第二个音节里一起发音。', 'ny'),
+        example('banyak', '很多', [phonemeSyllable('ba', 'ba', 'banyak'), 'nyak'], 'ny 在第二个音节里一起发音。', 'ny'),
         example('syarat', '条件', ['sya', 'rat'], 'sy 在第一个音节里一起发音。', 'sy'),
         example('khusus', '特别／专门', ['khu', 'sus'], 'kh 在第一个音节里一起发音。', 'kh'),
-        example('baik', '好', ['ba', 'ik'], 'ai 是重点组合，完整音节仍然是 ba-ik。', 'ai'),
-        example('pulau', '岛', ['pu', 'lau'], 'au 是重点组合，完整音节仍然是 pu-lau。', 'au'),
+        example('baik', '好', [phonemeSyllable('ba', 'ba', 'baik'), 'ik'], 'ai 是重点组合，完整音节仍然是 ba-ik。', 'ai'),
+        example('pulau', '岛', [phonemeSyllable('pu', 'pu', 'pulau'), phonemeSyllable('lau', 'lau', 'pulau')], 'au 是重点组合，完整音节仍然是 pu-lau。', 'au'),
         example('boikot', '抵制', ['boi', 'kot'], 'oi 是重点组合，先听完整单词。', 'oi'),
       ],
     }],
@@ -151,7 +170,7 @@ export const pronunciationLessons: PronunciationLesson[] = [
         example('sekolah', '学校', ['se', 'ko', 'lah'], '人工确认音节。'),
       ],
     }],
-    practice: { prompt: '先听完整的 terima kasih，再逐个音节跟读。', answer: 'te-ri-ma-ka-sih', audioText: 'terima kasih', chunks: ['te', 'ri', 'ma', 'ka', 'sih'] },
+    practice: { prompt: '先听完整的 terima kasih，再逐个音节跟读。', answer: 'te-ri-ma-ka-sih', audioText: 'terima kasih', chunks: manualSyllables(['te', 'ri', phonemeSyllable('ma', 'ma', 'terima kasih'), phonemeSyllable('ka', 'ka', 'terima kasih'), 'sih']) },
   },
   {
     id: 8,
