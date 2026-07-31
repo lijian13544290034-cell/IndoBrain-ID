@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import PhoneLoginForm from '@/components/PhoneLoginForm';
+import { isPreviewTestLoginEnabled } from '@/lib/preview-test-session';
 
 export const metadata = { title: 'Masuk | IndoBrain' };
+export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
   return <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-5 py-12">
@@ -9,7 +11,7 @@ export default function LoginPage() {
       <Link href="/" className="text-sm text-gray-400 hover:text-gray-700">← IndoBrain</Link>
       <h1 className="mt-7 text-3xl font-semibold tracking-tight">Masuk</h1>
       <p className="mt-2 text-sm text-gray-500">登录你的 IndoBrain 账户</p>
-      <PhoneLoginForm />
+      <PhoneLoginForm previewTestEnabled={isPreviewTestLoginEnabled()} />
     </section>
   </main>;
 }

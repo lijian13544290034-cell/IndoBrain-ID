@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const SESSION_COOKIE = 'indobrain_account_session';
+const PREVIEW_TEST_COOKIE = 'indobrain_preview_test_session';
 
 async function sha256(value: string) {
   const bytes = new TextEncoder().encode(value);
@@ -27,7 +28,27 @@ async function getLearningAccess(token: string): Promise<LearningAccess | null> 
   return { isIdToZh: session.users.learning_direction === 'ID_TO_ZH', isSuperAdmin: rolesResponse.ok && (await rolesResponse.json() as unknown[]).length > 0 };
 }
 
+function previewTestLoginEnabled() {
+  return process.env.VERCEL_ENV === 'preview'
+    && process.env.ENABLE_PREVIEW_TEST_LOGIN === 'true'
+    && Boolean(process.env.PREVIEW_TEST_SESSION_SECRET);
+}
+
+async function validPreviewTestSession(token?: string) {
+  if (!previewTestLoginEnabled() || !token) return false;
+  const [version, expiry, received] = token.split('.');
+  if (version !== 'preview-v1' || !expiry || !received || !/^\d+$/.test(expiry) || Number(expiry) <= Math.floor(Date.now() / 1000)) return false;
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(process.env.PREVIEW_TEST_SESSION_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const bytes = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${version}.${expiry}`));
+  const expected = Array.from(new Uint8Array(bytes)).map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  if (received.length !== expected.length) return false;
+  let mismatch = 0;
+  for (let index = 0; index < expected.length; index += 1) mismatch |= expected.charCodeAt(index) ^ received.charCodeAt(index);
+  return mismatch === 0;
+}
+
 export async function proxy(request: NextRequest) {
+  if (await validPreviewTestSession(request.cookies.get(PREVIEW_TEST_COOKIE)?.value)) return NextResponse.next();
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   const access = token ? await getLearningAccess(token) : null;
   if (!access) {
