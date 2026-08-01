@@ -27,7 +27,7 @@ async function getAudioUrl(text: string) {
   return request;
 }
 
-export default function IndonesianSpeechButton({ text, compact = false }: { text: string; compact?: boolean }) {
+export default function IndonesianSpeechButton({ text, compact = false, iconOnly = false }: { text: string; compact?: boolean; iconOnly?: boolean }) {
   const enabled = useIndonesianAudio();
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -68,5 +68,6 @@ export default function IndonesianSpeechButton({ text, compact = false }: { text
   };
 
   const unavailable = enabled !== true;
-  return <button type="button" onClick={play} disabled={unavailable} aria-label="听一听" title={unavailable ? '语音功能正在配置中' : '听一听'} className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${unavailable ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-stone-100'} ${compact ? '' : 'mt-2'}`}>{loading ? '加载中…' : playing ? '■ 播放中' : failed ? '重试' : '🔊 听一听'}</button>;
+  const buttonText = loading ? '加载中…' : playing ? '■ 播放中' : failed ? '重试' : iconOnly ? '🔊' : '🔊 听一听';
+  return <button type="button" onClick={play} disabled={unavailable} aria-label="听一听" title={unavailable ? '语音功能正在配置中' : '听一听'} className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${unavailable ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-stone-100'} ${compact ? '' : 'mt-2'}`}>{buttonText}</button>;
 }

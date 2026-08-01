@@ -2,6 +2,7 @@ import { normalizeHarvestForAchievement } from '@/lib/learning-achievements';
 import { vocabularyCategoryLabels, type VocabularyCategory, type VocabularyV2 } from '@/lib/v2/vocabulary';
 
 export type VocabularyLibraryItem = VocabularyV2 & { usageNoteZh?: string };
+export type VocabularyFrequency = '超高频' | '高频' | '常用';
 type Seed = readonly [id: string, textId: string, textZh: string, tags?: string[], usageNoteZh?: string];
 
 const seed = (category: VocabularyCategory, rows: readonly Seed[]): VocabularyLibraryItem[] => rows.map(([id, textId, textZh, tags = [], usageNoteZh]) => ({
@@ -48,6 +49,54 @@ const vocabularyByNormalizedKey = new Map(vocabularyLibrary.map((item) => [item.
 /** Compatibility bridge for gradual Harvest → stable vocabularyId migration. */
 export function findVocabularyForHarvest(harvestText: string): VocabularyLibraryItem | undefined {
   return vocabularyByNormalizedKey.get(normalizeHarvestForAchievement(harvestText));
+}
+
+/** UX-only editorial configuration. It deliberately does not alter V2 VocabularyV2 records. */
+const ultraHighFrequencyIds = new Set([
+  'VOC-TIME-001','VOC-TIME-002','VOC-TIME-004','VOC-TIME-007','VOC-TIME-014',
+  'VOC-NUM-002','VOC-NUM-003','VOC-NUM-005','VOC-NUM-011','VOC-NUM-021',
+  'VOC-DIRECTION-001','VOC-DIRECTION-003','VOC-DIRECTION-007','VOC-DIRECTION-008','VOC-DIRECTION-012',
+  'VOC-PERSON-001','VOC-PERSON-003','VOC-PERSON-005','VOC-PERSON-006','VOC-PERSON-007','VOC-PERSON-011',
+  'VOC-VERB-001','VOC-VERB-003','VOC-VERB-006','VOC-VERB-012','VOC-VERB-025','VOC-VERB-026',
+  'VOC-OFFICE-001','VOC-OFFICE-004','VOC-OFFICE-014','VOC-OFFICE-015','VOC-OFFICE-016',
+  'VOC-KITCHEN-001','VOC-KITCHEN-002','VOC-KITCHEN-006','VOC-KITCHEN-011','VOC-KITCHEN-015',
+  'VOC-TRANSPORT-001','VOC-TRANSPORT-003','VOC-TRANSPORT-010','VOC-TRANSPORT-012','VOC-TRANSPORT-014',
+  'VOC-AIRPORT-001','VOC-AIRPORT-003','VOC-AIRPORT-005','VOC-AIRPORT-006','VOC-AIRPORT-011',
+]);
+const highFrequencyIds = new Set([
+  'VOC-TIME-005','VOC-TIME-006','VOC-TIME-008','VOC-TIME-019','VOC-TIME-020',
+  'VOC-NUM-007','VOC-NUM-009','VOC-NUM-015','VOC-NUM-018','VOC-NUM-023',
+  'VOC-DIRECTION-004','VOC-DIRECTION-005','VOC-DIRECTION-006','VOC-DIRECTION-013','VOC-DIRECTION-014',
+  'VOC-PERSON-002','VOC-PERSON-004','VOC-PERSON-012','VOC-PERSON-013','VOC-PERSON-014','VOC-PERSON-016',
+  'VOC-VERB-004','VOC-VERB-005','VOC-VERB-007','VOC-VERB-008','VOC-VERB-009','VOC-VERB-019','VOC-VERB-020',
+  'VOC-OFFICE-002','VOC-OFFICE-003','VOC-OFFICE-006','VOC-OFFICE-008','VOC-OFFICE-009','VOC-OFFICE-017',
+  'VOC-KITCHEN-003','VOC-KITCHEN-004','VOC-KITCHEN-008','VOC-KITCHEN-009','VOC-KITCHEN-013','VOC-KITCHEN-016',
+  'VOC-TRANSPORT-004','VOC-TRANSPORT-011','VOC-TRANSPORT-016','VOC-TRANSPORT-017','VOC-TRANSPORT-020','VOC-TRANSPORT-021',
+  'VOC-AIRPORT-004','VOC-AIRPORT-007','VOC-AIRPORT-008','VOC-AIRPORT-009','VOC-AIRPORT-015','VOC-AIRPORT-016','VOC-AIRPORT-019',
+]);
+const categoryPriorityIds: Partial<Record<VocabularyCategory, readonly string[]>> = {
+  PEOPLE_AND_TITLES: ['VOC-PERSON-001','VOC-PERSON-003','VOC-PERSON-005','VOC-PERSON-006','VOC-PERSON-007','VOC-PERSON-002','VOC-PERSON-004','VOC-PERSON-011'],
+};
+
+export function getVocabularyFrequency(id: string): VocabularyFrequency {
+  if (ultraHighFrequencyIds.has(id)) return '超高频';
+  if (highFrequencyIds.has(id)) return '高频';
+  return '常用';
+}
+
+const frequencyOrder: Record<VocabularyFrequency, number> = { '超高频': 0, '高频': 1, '常用': 2 };
+export function sortVocabularyForDisplay(items: readonly VocabularyLibraryItem[]) {
+  return [...items].sort((left, right) => {
+    const frequencyDifference = frequencyOrder[getVocabularyFrequency(left.id)] - frequencyOrder[getVocabularyFrequency(right.id)];
+    if (frequencyDifference) return frequencyDifference;
+    const priority = categoryPriorityIds[left.category];
+    if (left.category === right.category && priority) {
+      const leftPriority = priority.indexOf(left.id);
+      const rightPriority = priority.indexOf(right.id);
+      if (leftPriority !== rightPriority) return (leftPriority === -1 ? Number.MAX_SAFE_INTEGER : leftPriority) - (rightPriority === -1 ? Number.MAX_SAFE_INTEGER : rightPriority);
+    }
+    return left.id.localeCompare(right.id);
+  });
 }
 
 export function isVocabularyFavorite(favoriteId: string) { return favoriteId.startsWith('VOC-'); }
