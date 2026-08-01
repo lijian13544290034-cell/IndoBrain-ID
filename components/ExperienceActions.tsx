@@ -13,7 +13,7 @@ export default function ExperienceActions({ experienceId, indonesian, harvest, a
   const [favorited, setFavorited] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [showCocreation, setShowCocreation] = useState(false);
-  const [achievement, setAchievement] = useState<{ stats: LearningAchievementStats; newlyMasteredHarvestCount: number; alreadyCompleted: boolean } | null>(null);
+  const [achievement, setAchievement] = useState<{ stats: LearningAchievementStats; newlyMasteredHarvestCount: number; alreadyCompleted: boolean; streakDays?: number } | null>(null);
   const event = async (action: string) => {
     await fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: getSessionId(), experience_id: experienceId, action }) });
   };
@@ -24,7 +24,7 @@ export default function ExperienceActions({ experienceId, indonesian, harvest, a
       const wasCompleted = profile.completed.includes(experienceId);
       setFavorited(profile.favorites.includes(experienceId));
       setCompleted(wasCompleted);
-      if (wasCompleted) setAchievement({ stats: getLearningAchievementStats(profile.completed, achievementCatalog), newlyMasteredHarvestCount: 0, alreadyCompleted: true });
+      if (wasCompleted) setAchievement({ stats: getLearningAchievementStats(profile.completed, achievementCatalog), newlyMasteredHarvestCount: 0, alreadyCompleted: true, streakDays: profile.currentStreak });
     };
     sync(); return subscribeProfile(sync);
   }, [experienceId]);
@@ -43,6 +43,7 @@ export default function ExperienceActions({ experienceId, indonesian, harvest, a
       stats: getLearningAchievementStats(result.profile.completed, achievementCatalog),
       newlyMasteredHarvestCount: alreadyCompleted ? 0 : getNewlyMasteredHarvestCount(before.completed, harvest, achievementCatalog),
       alreadyCompleted,
+      streakDays: result.profile.currentStreak,
     });
     setStatus(result.completed ? '学习已完成。' : '这条 Experience 已完成。');
   }

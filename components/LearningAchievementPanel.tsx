@@ -1,17 +1,20 @@
 'use client';
 
 import Link from 'next/link';
+import AchievementCardLauncher from '@/components/achievement-card/AchievementCardLauncher';
 import type { LearningAchievementStats } from '@/lib/learning-achievements';
 
 export default function LearningAchievementPanel({
   stats,
   newlyMasteredHarvestCount,
   alreadyCompleted = false,
+  streakDays,
   onContinue,
 }: {
   stats: LearningAchievementStats;
   newlyMasteredHarvestCount: number;
   alreadyCompleted?: boolean;
+  streakDays?: number;
   onContinue?: () => void;
 }) {
   return <section className="mt-5 rounded-2xl border border-stone-200 bg-stone-50 px-5 py-5" aria-live="polite">
@@ -23,6 +26,7 @@ export default function LearningAchievementPanel({
     </div>
     <div className="mt-5 flex flex-wrap gap-2">
       {onContinue && <button type="button" onClick={onContinue} className="min-h-10 rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium transition duration-200 hover:bg-white hover:shadow-sm">继续学习</button>}
+      <AchievementCardLauncher stats={stats} streakDays={streakDays} compact />
       <Link href="/about#learning-achievement" className="min-h-10 rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white transition duration-200 hover:bg-stone-700">查看学习成果</Link>
     </div>
   </section>;

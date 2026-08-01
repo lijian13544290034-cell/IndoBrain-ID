@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import IndonesianAudioProvider from '@/components/IndonesianAudioProvider';
 import IndonesianSpeechButton from '@/components/IndonesianSpeechButton';
+import AchievementCardLauncher from '@/components/achievement-card/AchievementCardLauncher';
 import type { CatalogExperience } from '@/lib/experience-catalog';
 import { getLearningAchievementStats } from '@/lib/learning-achievements';
 import { readLearningProfile, subscribeProfile, toggleFavorite, type LearningProfile } from '@/lib/learning-profile';
@@ -49,6 +50,7 @@ export default function AboutMeWorkspace({ catalog, total }: { catalog: CatalogE
         <article className="rounded-xl border border-stone-200 bg-white p-4"><p className="text-xs text-stone-400">已完成真实场景</p><p className="mt-2 text-2xl font-semibold">{achievements.completedExperienceCount}</p></article>
         <article className="rounded-xl border border-stone-200 bg-white p-4"><p className="text-xs text-stone-400">已掌握印尼语词汇/词组</p><p className="mt-2 text-2xl font-semibold">{achievements.masteredHarvestCount}</p></article>
       </div>
+      <div className="mt-5"><AchievementCardLauncher stats={achievements} streakDays={profile.currentStreak} /></div>
       {achievements.recentlyCompleted.length > 0 && <div className="mt-5"><p className="text-sm font-medium">最近完成</p><ul className="mt-2 space-y-2">{achievements.recentlyCompleted.map((experience) => <li key={experience.id}><Link href={experience.href} className="text-sm text-stone-700 hover:underline">{experience.id} · {experience.task}</Link></li>)}</ul></div>}
     </section>
 
