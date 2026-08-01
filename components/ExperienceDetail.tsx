@@ -3,6 +3,7 @@ import HarvestSection from '@/components/HarvestSection';
 import IndonesianSpeechButton from '@/components/IndonesianSpeechButton';
 import IndonesianAudioProvider from '@/components/IndonesianAudioProvider';
 import IndoBrainInsight from '@/components/IndoBrainInsight';
+import { getExperienceCatalog } from '@/lib/experience-catalog';
 import type { WorkplacePattern } from '@/lib/workplace-patterns';
 
 export type ExperienceDetailItem = {
@@ -27,7 +28,7 @@ export default function ExperienceDetail({ experience }: { experience: Experienc
       <HarvestSection harvest={experience.harvest} />
       {experience.pattern && <><p className="mt-5 text-xs text-stone-400">Pola yang Bisa Dipakai（可复用表达）</p><div className="mt-2 rounded-xl bg-stone-50 p-4"><p className="text-sm font-medium text-stone-800">{experience.pattern.indonesian}</p><IndonesianSpeechButton text={experience.pattern.indonesian} compact /><p className="mt-1 text-sm leading-6 text-stone-600">{experience.pattern.chinese}</p></div></>}
       {experience.insight && <IndoBrainInsight insight={experience.insight} />}
-      <ExperienceActions experienceId={experience.id} indonesian={experience.indonesian || ''} /></IndonesianAudioProvider>
+      <ExperienceActions experienceId={experience.id} indonesian={experience.indonesian || ''} harvest={experience.harvest} achievementCatalog={getExperienceCatalog()} /></IndonesianAudioProvider>
     </>}
   </section>;
 }
