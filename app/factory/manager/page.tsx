@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import ExperienceCard from '@/components/ExperienceCard';
 import LocalizedLabel from '@/components/LocalizedLabel';
+import { filterExperiencesByCategory, getExperienceCategoryCounts } from '@/lib/experience-category-counts';
 import { getFactoryExperiences } from '@/lib/factory-experiences';
 import { factoryWorkflow, isFactoryWorkflow } from '@/lib/factory-workflow';
 
@@ -8,9 +9,8 @@ export default async function FactoryManagerIndexPage({ searchParams }: { search
   const { workflow } = await searchParams;
   const selected = isFactoryWorkflow(workflow) ? workflow : undefined;
   const allExperiences = getFactoryExperiences();
-  const experiences = selected
-    ? allExperiences.filter((experience) => (factoryWorkflow.find((stage) => stage.slug === selected)?.ids as readonly number[] | undefined)?.includes(Number(experience.id.slice(-3))))
-    : allExperiences;
+  const categoryCounts = getExperienceCategoryCounts(allExperiences, factoryWorkflow);
+  const experiences = filterExperiencesByCategory(allExperiences, factoryWorkflow, selected);
 
   return <main className="mx-auto min-h-screen w-full max-w-4xl px-5 pb-12 pt-10 sm:px-8 sm:pt-14">
     <Link href="/factory" className="text-sm text-stone-500 hover:text-stone-900">← Pabrik（工厂）</Link>
@@ -20,8 +20,8 @@ export default async function FactoryManagerIndexPage({ searchParams }: { search
       <p className="mt-2 text-sm text-stone-500">90 situasi kerja tersedia<br />已完成 90 个工作场景</p>
       <p className="mt-5 text-xs text-stone-400">Alur Kerja（工作流程）</p>
       <nav className="mt-3 grid gap-2 sm:grid-cols-4" aria-label="Alur kerja">
-        <Link href="/factory/manager" className={`flex min-h-10 min-w-0 cursor-pointer items-center break-words rounded-lg border px-3 py-2 text-xs font-medium transition duration-200 ${!selected ? 'border-stone-900 bg-stone-900 text-white' : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-100 hover:shadow-sm'}`}>Semua（全部）</Link>
-        {factoryWorkflow.map((stage, index) => <Link key={stage.slug} href={`/factory/manager?workflow=${stage.slug}`} className={`flex min-h-10 min-w-0 cursor-pointer items-center break-words rounded-lg border px-3 py-2 text-xs font-medium transition duration-200 ${selected === stage.slug ? 'border-stone-900 bg-stone-900 text-white' : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-100 hover:shadow-sm'}`}><span className="mr-1 text-stone-400">{index + 1}.</span>{stage.indonesian}<span className="ml-1 text-stone-400">（{stage.chinese}）</span></Link>)}
+        <Link href="/factory/manager" className={`flex min-h-10 min-w-0 cursor-pointer items-center justify-between gap-3 rounded-lg border px-3 py-2 text-xs font-medium transition duration-200 ${!selected ? 'border-stone-900 bg-stone-900 text-white' : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-100 hover:shadow-sm'}`}><span>Semua（全部）</span><span className={`shrink-0 ${!selected ? 'text-stone-200' : 'text-stone-400'}`}>{categoryCounts.all}</span></Link>
+        {factoryWorkflow.map((stage, index) => <Link key={stage.slug} href={`/factory/manager?workflow=${stage.slug}`} className={`flex min-h-10 min-w-0 cursor-pointer items-center justify-between gap-3 rounded-lg border px-3 py-2 text-xs font-medium transition duration-200 ${selected === stage.slug ? 'border-stone-900 bg-stone-900 text-white' : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-100 hover:shadow-sm'}`}><span className="min-w-0 break-words"><span className={`mr-1 ${selected === stage.slug ? 'text-stone-300' : 'text-stone-400'}`}>{index + 1}.</span>{stage.indonesian}<span className={`ml-1 ${selected === stage.slug ? 'text-stone-300' : 'text-stone-400'}`}>（{stage.chinese}）</span></span><span className={`shrink-0 ${selected === stage.slug ? 'text-stone-200' : 'text-stone-400'}`}>{categoryCounts.byCategory[stage.slug]}</span></Link>)}
       </nav>
     </header>
     <section className="mt-7" aria-label="Situasi kerja">
