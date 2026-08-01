@@ -5,6 +5,8 @@ export const lifeWorkflow = [
   { slug: 'basics', indonesian: 'Layanan Harian', chinese: '日常服务', ids: range(104, 132) },
   { slug: 'supermarket', indonesian: 'Supermarket', chinese: '超市', ids: [...range(83, 92), 133, 134, 135, 136] },
   { slug: 'restaurant', indonesian: 'Restoran', chinese: '餐厅', ids: [...range(93, 103), 137, 138, 139] },
+  { slug: 'business', indonesian: 'Bisnis', chinese: '商务沟通', ids: range(144, 173) },
+  { slug: 'dating', indonesian: 'Kencan', chinese: '恋爱交友', ids: range(174, 223) },
 ] as const;
 
 export type LifeWorkflowSlug = (typeof lifeWorkflow)[number]['slug'];

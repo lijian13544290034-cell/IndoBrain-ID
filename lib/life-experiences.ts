@@ -1,7 +1,8 @@
 import { getSocialExperiences, type SocialExperience } from '@/lib/social-experiences';
+import { businessExperiences, datingExperiences } from '@/lib/life-business-dating-experiences';
 import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
-export type LifeCategory = 'friends' | 'basics' | 'supermarket' | 'restaurant';
+export type LifeCategory = 'friends' | 'basics' | 'supermarket' | 'restaurant' | 'business' | 'dating';
 export type LifeExperience = Omit<SocialExperience, 'category'> & { category: LifeCategory; pattern: WorkplacePattern };
 
 const pattern = (indonesian: string, chinese: string): WorkplacePattern => ({ indonesian, chinese });
@@ -91,7 +92,7 @@ const newLifeExperiences: LifeExperience[] = [
 ];
 
 export function getLifeExperiences() {
-  return [...friends, ...newLifeExperiences];
+  return [...friends, ...newLifeExperiences, ...businessExperiences, ...datingExperiences];
 }
 
 export function getLifeExperience(id: string) {
