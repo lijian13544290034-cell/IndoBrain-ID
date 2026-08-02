@@ -2,15 +2,18 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ExperienceDetail from '@/components/ExperienceDetail';
 import NavigationButtons from '@/components/NavigationButtons';
+import { filterExperiencesByCategory } from '@/lib/experience-category-counts';
 import { getDriverExperiences } from '@/lib/driver-experiences';
 import { driverWorkflow, getDriverWorkflow, isDriverWorkflow } from '@/lib/driver-workflow';
 
 export default async function DriverDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ workflow?: string }> }) {
   const { id } = await params; const { workflow } = await searchParams;
-  const experiences = getDriverExperiences(); const item = experiences.find((entry) => entry.id === `EXP-DRV-${id}`);
+  const allExperiences = getDriverExperiences(); const item = allExperiences.find((entry) => entry.id === `EXP-DRV-${id}`);
   if (!item) notFound();
+  const selected = isDriverWorkflow(workflow) ? workflow : undefined;
+  const experiences = filterExperiencesByCategory(allExperiences, driverWorkflow, selected, (entry) => !entry.missing);
   const index = experiences.indexOf(item); const previous = experiences[index - 1]; const next = experiences[index + 1];
-  const currentWorkflow = getDriverWorkflow(item.id); const selected = isDriverWorkflow(workflow) ? workflow : currentWorkflow?.slug;
+  const currentWorkflow = getDriverWorkflow(item.id);
   const listHref = selected ? `/driver?workflow=${selected}` : '/driver';
   return <main className="mx-auto min-h-screen w-full max-w-4xl px-5 pb-12 pt-10 sm:px-8 sm:pt-14">
     <Link href={listHref} className="text-sm text-stone-500 hover:text-stone-900">← Sopir（司机）</Link>

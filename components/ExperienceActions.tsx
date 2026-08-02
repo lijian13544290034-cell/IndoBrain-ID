@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import LearningAchievementPanel from '@/components/LearningAchievementPanel';
 import type { CatalogExperience } from '@/lib/experience-catalog';
 import { getLearningAchievementStats, getNewlyMasteredHarvestCount, type LearningAchievementStats } from '@/lib/learning-achievements';
@@ -8,7 +9,9 @@ import { getSessionId } from '@/lib/session';
 import SceneCocreationDialog from '@/components/SceneCocreationDialog';
 import { completeExperience, readLearningProfile, subscribeProfile, toggleFavorite, track } from '@/lib/learning-profile';
 
-export default function ExperienceActions({ experienceId, indonesian, harvest, achievementCatalog }: { experienceId: string; indonesian: string; harvest: string[]; achievementCatalog: CatalogExperience[] }) {
+export default function ExperienceActions({ experienceId, indonesian, harvest, achievementCatalog, nextHref }: { experienceId: string; indonesian: string; harvest: string[]; achievementCatalog: CatalogExperience[]; nextHref?: string }) {
+  const router = useRouter();
+  const [resolvedNextHref, setResolvedNextHref] = useState(nextHref);
   const [status, setStatus] = useState('');
   const [favorited, setFavorited] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -17,6 +20,9 @@ export default function ExperienceActions({ experienceId, indonesian, harvest, a
   const event = async (action: string) => {
     await fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: getSessionId(), experience_id: experienceId, action }) });
   };
+  useEffect(() => {
+    setResolvedNextHref(nextHref ?? document.querySelector<HTMLElement>('[data-next-experience-href]')?.dataset.nextExperienceHref);
+  }, [experienceId, nextHref]);
   useEffect(() => {
     event('viewed');
     const sync = () => {
@@ -55,7 +61,7 @@ export default function ExperienceActions({ experienceId, indonesian, harvest, a
     <button onClick={openCocreation} className="min-h-10 cursor-pointer rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium transition duration-200 hover:bg-stone-50 hover:shadow-sm">场景共创</button>
     </div>
     <div className="mt-4"><button onClick={complete} disabled={completed} className={`min-h-10 rounded-xl px-4 py-2 text-sm font-medium ${completed ? 'cursor-default border border-stone-200 bg-stone-100 text-stone-500' : 'cursor-pointer bg-stone-900 text-white hover:bg-stone-700'}`}>{completed ? '已完成学习' : '完成学习'}</button></div>
-    {achievement && <LearningAchievementPanel {...achievement} onContinue={() => setAchievement(null)} />}
+    {achievement && <LearningAchievementPanel {...achievement} onContinue={resolvedNextHref ? () => { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); router.push(resolvedNextHref); } : undefined} />}
     {showCocreation && <SceneCocreationDialog experienceId={experienceId} onClose={() => setShowCocreation(false)} />}
     {status && <p className="mt-3 text-sm text-stone-500">{status}</p>}
   </section>;

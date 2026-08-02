@@ -4,6 +4,7 @@ import ExperienceDetail from '@/components/ExperienceDetail';
 import LocalizedLabel from '@/components/LocalizedLabel';
 import MarkdownExperience from '@/components/MarkdownExperience';
 import NavigationButtons from '@/components/NavigationButtons';
+import { filterExperiencesByCategory } from '@/lib/experience-category-counts';
 import { getFactoryExperience, getFactoryExperiences } from '@/lib/factory-experiences';
 import { factoryWorkflow, getWorkflowForExperience, isFactoryWorkflow } from '@/lib/factory-workflow';
 
@@ -13,12 +14,14 @@ export function generateStaticParams() {
 
 export default async function FactoryManagerPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ workflow?: string }> }) {
   const { id } = await params; const { workflow } = await searchParams;
-  const experience = getFactoryExperience(id); const experiences = getFactoryExperiences();
-  const currentIndex = experiences.findIndex((item) => item.id === experience?.id);
-  if (!experience || currentIndex === -1) notFound();
+  const experience = getFactoryExperience(id); const allExperiences = getFactoryExperiences();
+  if (!experience) notFound();
+  const selectedWorkflow = isFactoryWorkflow(workflow) ? workflow : undefined;
+  const experiences = filterExperiencesByCategory(allExperiences, factoryWorkflow, selectedWorkflow);
+  const currentIndex = experiences.findIndex((item) => item.id === experience.id);
+  if (currentIndex === -1) notFound();
   const previous = experiences[currentIndex - 1]; const next = experiences[currentIndex + 1];
   const currentWorkflow = getWorkflowForExperience(experience.id);
-  const selectedWorkflow = isFactoryWorkflow(workflow) ? workflow : currentWorkflow?.slug;
   const managerHref = selectedWorkflow ? `/factory/manager?workflow=${selectedWorkflow}` : '/factory/manager';
   return <main className="mx-auto min-h-screen w-full max-w-4xl px-5 pb-12 pt-10 sm:px-8 sm:pt-14">
     <Link href={managerHref} className="text-sm text-stone-500 hover:text-stone-900">← Manajer Pabrik（工厂经理）</Link>

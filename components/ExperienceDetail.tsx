@@ -17,7 +17,7 @@ export type ExperienceDetailItem = {
   pattern?: WorkplacePattern;
 };
 
-export default function ExperienceDetail({ experience }: { experience: ExperienceDetailItem }) {
+export default function ExperienceDetail({ experience, nextHref }: { experience: ExperienceDetailItem; nextHref?: string }) {
   return <section className="mt-7 rounded-2xl border border-stone-200 bg-white px-6 py-7 shadow-sm sm:px-8">
     <p className="text-sm text-stone-400">{experience.id}</p>
     {experience.missing ? <><h1 className="mt-2 text-2xl font-semibold">Belum tersedia</h1><p className="mt-5 text-sm leading-6 text-stone-500">该内容将在后续版本补充。</p></> : <>
@@ -28,7 +28,7 @@ export default function ExperienceDetail({ experience }: { experience: Experienc
       <HarvestSection harvest={experience.harvest} />
       {experience.pattern && <><p className="mt-5 text-xs text-stone-400">Pola yang Bisa Dipakai（可复用表达）</p><div className="mt-2 rounded-xl bg-stone-50 p-4"><p className="text-sm font-medium text-stone-800">{experience.pattern.indonesian}</p><IndonesianSpeechButton text={experience.pattern.indonesian} compact /><p className="mt-1 text-sm leading-6 text-stone-600">{experience.pattern.chinese}</p></div></>}
       {experience.insight && <IndoBrainInsight insight={experience.insight} />}
-      <ExperienceActions experienceId={experience.id} indonesian={experience.indonesian || ''} harvest={experience.harvest} achievementCatalog={getExperienceCatalog()} /></IndonesianAudioProvider>
+      <ExperienceActions experienceId={experience.id} indonesian={experience.indonesian || ''} harvest={experience.harvest} achievementCatalog={getExperienceCatalog()} nextHref={nextHref} /></IndonesianAudioProvider>
     </>}
   </section>;
 }
