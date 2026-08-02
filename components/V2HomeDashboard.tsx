@@ -19,24 +19,14 @@ function Icon({ name }: { name: IconName }) {
   return <svg {...common}><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>;
 }
 
-function greeting() {
-  const hour = new Date().getHours();
-  if (hour < 11) return 'Selamat pagi · 早上好';
-  if (hour < 15) return 'Selamat siang · 下午好';
-  if (hour < 19) return 'Selamat sore · 傍晚好';
-  return 'Selamat malam · 晚上好';
-}
-
 export default function V2HomeDashboard({ catalog }: { catalog: readonly CatalogExperience[] }) {
   const [profile, setProfile] = useState<ProfileState | null>(null);
   const [query, setQuery] = useState('');
-  const [hello, setHello] = useState('Selamat datang · 欢迎回来');
 
   useEffect(() => {
     setProfile(readLearningProfile());
     return subscribeProfile(() => setProfile(readLearningProfile()));
   }, []);
-  useEffect(() => { setHello(greeting()); }, []);
 
   const completed = profile?.completed ?? [];
   const favorites = profile?.favorites ?? [];
@@ -58,33 +48,34 @@ export default function V2HomeDashboard({ catalog }: { catalog: readonly Catalog
     return [...experiences, ...vocabulary].slice(0, 8);
   }, [catalog, query]);
 
-  const entryCards = [
-    { href: '/life', title: '场景速查', subtitle: `${lifeSceneCount} 条`, icon: 'scene' as const },
-    { href: '/vocabulary', title: '基础词库', subtitle: `${vocabularyLibrary.length} 条`, icon: 'book' as const },
-    { href: '/about#favorites', title: '我的收藏', subtitle: `${favorites.length} 条`, icon: 'heart' as const },
+  const quickLinks = [
+    { href: '/life', label: '场景速查', count: `${lifeSceneCount} 个场景`, icon: 'scene' as const },
+    { href: '/vocabulary', label: '基础词库', count: `${vocabularyLibrary.length} 个词汇`, icon: 'book' as const },
+    { href: '/about#favorites', label: '我的收藏', count: `${favorites.length} 条收藏`, icon: 'heart' as const },
   ];
 
-  return <main className="v2-home mx-auto min-h-[100dvh] w-full max-w-6xl overflow-hidden px-5 pb-3 pt-3 sm:px-8 sm:pb-10 sm:pt-8">
-    <header data-home-part="header" className="relative z-10 flex h-[58px] items-start justify-between sm:h-[76px]">
-      <div><p className="font-serif text-[38px] font-bold leading-[0.92] tracking-tight text-[var(--ib-primary-strong)] sm:text-5xl">IndoBrain</p><p className="mt-1 text-[15px] leading-4 tracking-wide text-[var(--ib-text-secondary)] sm:text-base">会说，机会更多。</p></div>
-      <Link href="/about" aria-label="打开菜单" className="flex size-11 items-center justify-center rounded-2xl text-[var(--ib-primary-strong)] transition hover:bg-[var(--ib-primary-soft)] active:bg-[#dce8ff]"><Icon name="menu" /></Link>
+  return <main className="v2-home mx-auto min-h-[100dvh] w-full max-w-6xl overflow-hidden px-5 pb-4 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-8 sm:pb-10 sm:pt-8">
+    <header data-home-part="brand-header" className="relative z-10 flex h-[64px] items-start justify-between sm:h-[76px]">
+      <div><p className="font-serif text-[38px] font-bold leading-[0.94] tracking-tight text-[var(--ib-primary-strong)] sm:text-5xl">IndoBrain</p><p className="mt-1 text-[15px] leading-4 tracking-wide text-[var(--ib-text-secondary)] sm:text-base">会说，机会更多。</p></div>
+      <Link href="/about" aria-label="打开菜单" className="flex size-11 items-center justify-center rounded-2xl text-[var(--ib-primary-strong)] transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)]"><Icon name="menu" /></Link>
     </header>
 
-    <section data-home-part="greeting" className="mt-2 flex h-8 items-center"><h1 className="text-[18px] font-semibold leading-8 tracking-tight text-[var(--ib-text-primary)] sm:text-2xl">{hello}</h1></section>
-
-    <section data-home-part="search" className="relative mt-2">
-      <label className="flex h-[52px] items-center gap-3 rounded-[20px] border border-white bg-white/90 px-4 text-[var(--ib-text-secondary)] shadow-[var(--ib-shadow-card)] sm:h-[58px] sm:px-5"><Icon name="search" /><span className="sr-only">统一搜索</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索印尼语、中文、场景、词汇…" className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--ib-text-muted)] sm:text-base" /></label>
-      {query.trim() && <div className="absolute z-30 mt-2 w-full overflow-hidden rounded-2xl border border-[var(--ib-border-soft)] bg-[var(--ib-bg-card)] p-2 shadow-xl">{results.length ? results.map((result) => <Link key={result.key} href={result.href} className="block rounded-xl px-4 py-3 transition hover:bg-[var(--ib-primary-soft)]"><p className="text-sm font-semibold text-[var(--ib-text-primary)]">{result.title}<span className="ml-2 text-xs font-normal text-[var(--ib-text-secondary)]">{result.type}</span></p><p className="mt-1 text-xs text-[var(--ib-text-secondary)]">{result.detail}</p></Link>) : <p className="px-4 py-5 text-sm text-[var(--ib-text-secondary)]">没有找到相关内容。</p>}</div>}
+    <section data-home-part="search" className="relative mt-3">
+      <label className="flex h-[52px] items-center gap-3 rounded-[18px] border border-[var(--ib-border-soft)] bg-[var(--ib-bg-card)] px-4 text-[var(--ib-text-secondary)] shadow-[var(--ib-shadow-card)] sm:px-5"><Icon name="search" /><span className="sr-only">统一搜索</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索场景、句子、词汇" className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--ib-text-muted)] sm:text-base" /></label>
+      {query.trim() && <div className="absolute z-30 mt-2 w-full overflow-hidden rounded-[18px] border border-[var(--ib-border-soft)] bg-[var(--ib-bg-card)] p-2 shadow-xl">{results.length ? results.map((result) => <Link key={result.key} href={result.href} className="block rounded-xl px-4 py-3 transition hover:bg-[var(--ib-primary-soft)]"><p className="text-sm font-semibold text-[var(--ib-text-primary)]">{result.title}<span className="ml-2 text-xs font-normal text-[var(--ib-text-secondary)]">{result.type}</span></p><p className="mt-1 text-xs text-[var(--ib-text-secondary)]">{result.detail}</p></Link>) : <p className="px-4 py-5 text-sm text-[var(--ib-text-secondary)]">没有找到相关内容。</p>}</div>}
     </section>
 
-    {continueExperience && <Link data-home-part="continue-task" href={continueExperience.href} className="group relative mt-2.5 flex h-[110px] overflow-hidden rounded-[20px] border border-white bg-[var(--ib-bg-card)] px-4 py-3 shadow-[var(--ib-shadow-card)] transition hover:bg-[var(--ib-primary-soft)] active:bg-[#dce8ff] sm:mt-5 sm:h-[116px] sm:px-5">
-      <div className="min-w-0 pr-9"><p className="text-sm font-semibold text-[var(--ib-primary)]">继续学习</p><h2 className="mt-1 line-clamp-2 text-[18px] font-semibold leading-[1.28] text-[var(--ib-text-primary)]">{continueExperience.task}</h2><p className="mt-1 truncate text-xs text-[var(--ib-text-secondary)]">{continueExperience.category} · {continueExperience.id} · 进度 {progress}%</p></div>
+    {continueExperience && <Link data-home-part="continue-learning" href={continueExperience.href} className="group relative mt-3 flex h-[88px] overflow-hidden rounded-[18px] border border-[var(--ib-border-soft)] bg-[var(--ib-bg-card)] px-4 py-2.5 shadow-[var(--ib-shadow-card)] transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)]">
+      <div className="min-w-0 pr-9"><p className="text-[13px] font-semibold leading-4 text-[var(--ib-primary)]">继续学习</p><h1 className="mt-1 truncate text-[18px] font-semibold leading-5 text-[var(--ib-text-primary)]">{continueExperience.task}</h1><p className="mt-1 truncate text-xs leading-4 text-[var(--ib-text-secondary)]">{continueExperience.module} · {continueExperience.id} · 进度 {progress}%</p></div>
       <span aria-hidden="true" className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--ib-primary)] transition group-hover:translate-x-1"><Icon name="arrow" /></span>
-      <span aria-hidden="true" className="absolute inset-x-4 bottom-0 h-[3px] overflow-hidden rounded-full bg-[#dce7f8]"><span className="block h-full rounded-full bg-[var(--ib-primary)]" style={{ width: `${progress}%` }} /></span>
+      <span aria-hidden="true" className="absolute inset-x-4 bottom-0 h-[2px] overflow-hidden bg-[var(--ib-border-soft)]"><span className="block h-full bg-[var(--ib-primary)]" style={{ width: `${progress}%` }} /></span>
     </Link>}
 
-    <section data-home-part="entries" className="mt-2.5 grid grid-cols-3 gap-2 sm:mt-5 sm:gap-3">
-      {entryCards.map((entry) => <Link data-home-entry key={entry.href} href={entry.href} className="flex h-[110px] min-w-0 flex-col items-center justify-center rounded-[20px] border border-white bg-[var(--ib-bg-card)] px-2 text-center shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:bg-[var(--ib-primary-soft)] active:bg-[#dce8ff] sm:h-[116px] sm:px-4"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--ib-primary-soft)] text-[#1558db] sm:size-11"><Icon name={entry.icon} /></span><h2 className="mt-2 truncate text-[15px] font-bold leading-4 text-[var(--ib-text-primary)]">{entry.title}</h2><p className="mt-1 text-xs leading-3 text-[var(--ib-text-secondary)]">{entry.subtitle}</p></Link>)}
+    <section data-home-part="quick-start" className="mt-4">
+      <h2 className="h-6 text-[16px] font-semibold leading-6 text-[var(--ib-text-primary)]">快速开始</h2>
+      <div data-home-part="quick-links" className="mt-2 overflow-hidden rounded-[18px] border border-[var(--ib-border-soft)] bg-[var(--ib-bg-card)] shadow-[var(--ib-shadow-card)]">
+        {quickLinks.map((link, index) => <Link key={link.href} href={link.href} className={`flex h-[60px] items-center gap-3 px-4 transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] ${index ? 'border-t border-[var(--ib-border-soft)]' : ''}`}><span className="shrink-0 text-[var(--ib-primary)]"><Icon name={link.icon} /></span><span className="min-w-0 flex-1"><span className="block truncate text-[16px] font-semibold leading-5 text-[var(--ib-text-primary)]">{link.label}</span></span><span className="shrink-0 text-[13px] text-[var(--ib-text-secondary)]">{link.count}</span><span aria-hidden="true" className="shrink-0 text-[var(--ib-text-secondary)]"><Icon name="arrow" /></span></Link>)}
+      </div>
     </section>
   </main>;
 }
