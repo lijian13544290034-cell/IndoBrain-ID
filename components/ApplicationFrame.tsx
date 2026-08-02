@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 function NavIcon({ kind }: { kind: 'home' | 'scenes' | 'favorites' | 'account' }) {
   const common = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
@@ -21,7 +21,26 @@ const items = [
 
 export default function ApplicationFrame({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const isHome = pathname === '/';
-  if (isHome) return <>{children}</>;
-  return <div className="min-h-screen pb-24">{children}<nav aria-label="主导航" className="fixed inset-x-0 bottom-0 z-50 border-t border-blue-100 bg-white/95 px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-10px_30px_rgba(24,61,132,0.08)] backdrop-blur"><div className="mx-auto grid max-w-md grid-cols-4">{items.map((item) => { const active = item.href === '/' ? false : pathname === item.href || pathname.startsWith(`${item.href}/`); return <Link key={item.href} href={item.href} className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[11px] font-medium transition ${active ? 'text-[#1358e8]' : 'text-slate-500 hover:text-[#1358e8]'}`}><NavIcon kind={item.kind} /><span>{item.label}</span></Link>; })}</div></nav></div>;
+  const [hash, setHash] = useState('');
+  useEffect(() => {
+    const syncHash = () => setHash(window.location.hash);
+    syncHash();
+    window.addEventListener('hashchange', syncHash);
+    return () => window.removeEventListener('hashchange', syncHash);
+  }, []);
+  if (pathname === '/') return <>{children}</>;
+
+  return <div className="ib-app-shell min-h-screen pb-24">
+    {children}
+    <nav aria-label="主导航" className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--ib-border-soft)] bg-white/95 px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-10px_30px_rgba(24,61,132,0.08)] backdrop-blur">
+      <div className="mx-auto grid max-w-md grid-cols-4">
+        {items.map((item) => {
+          const active = item.href === '/about#favorites'
+            ? pathname === '/about' && hash === '#favorites'
+            : pathname === item.href || (item.href !== '/' && pathname.startsWith(`${item.href}/`));
+          return <Link key={item.href} href={item.href} className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[11px] font-medium transition focus-visible:outline-none ${active ? 'bg-[var(--ib-primary-soft)] text-[var(--ib-primary)]' : 'text-[var(--ib-nav-inactive)] hover:bg-[var(--ib-primary-soft)] hover:text-[var(--ib-primary)] active:bg-[#dce8ff]'}`}><NavIcon kind={item.kind} /><span>{item.label}</span></Link>;
+        })}
+      </div>
+    </nav>
+  </div>;
 }

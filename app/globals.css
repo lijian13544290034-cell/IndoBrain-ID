@@ -1,9 +1,22 @@
 @import 'tailwindcss';
 
 :root {
-  --foreground: #171717;
-  --muted: #6b7280;
-  --line: #e5e7eb;
+  --ib-bg-page: #f5f8fe;
+  --ib-bg-card: #ffffff;
+  --ib-primary: #123e91;
+  --ib-primary-strong: #0b2f76;
+  --ib-primary-soft: #eaf1ff;
+  --ib-text-primary: #102a5c;
+  --ib-text-secondary: #63769b;
+  --ib-text-muted: #8d9ab3;
+  --ib-border-soft: #e4ebf7;
+  --ib-nav-inactive: #73839f;
+  --ib-shadow-card: 0 8px 22px rgba(28, 77, 171, 0.09);
+  --ib-radius-card: 1.4rem;
+  --ib-radius-control: 1.25rem;
+  --foreground: var(--ib-text-primary);
+  --muted: var(--ib-text-secondary);
+  --line: var(--ib-border-soft);
 }
 
 * { box-sizing: border-box; }
@@ -11,8 +24,35 @@
 body {
   margin: 0;
   color: var(--foreground);
-  background: #f7faff;
+  background: var(--ib-bg-page);
   font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 button, input { font: inherit; }
+
+.ib-app-shell {
+  min-height: 100vh;
+  background: var(--ib-bg-page);
+  color: var(--ib-text-primary);
+}
+
+.ib-app-shell .bg-stone-50 { background-color: var(--ib-primary-soft) !important; }
+.ib-app-shell .bg-stone-100 { background-color: #f2f6ff !important; }
+.ib-app-shell .border-stone-200,
+.ib-app-shell .border-stone-300 { border-color: var(--ib-border-soft) !important; }
+.ib-app-shell .text-stone-900,
+.ib-app-shell .text-stone-800,
+.ib-app-shell .text-stone-700 { color: var(--ib-text-primary) !important; }
+.ib-app-shell .text-stone-600,
+.ib-app-shell .text-stone-500 { color: var(--ib-text-secondary) !important; }
+.ib-app-shell .text-stone-400,
+.ib-app-shell .text-stone-300 { color: var(--ib-text-muted) !important; }
+.ib-app-shell .bg-stone-900 { background-color: var(--ib-primary) !important; }
+.ib-app-shell :is(a, button)[class*="hover:bg-stone"]:hover { background-color: var(--ib-primary-soft) !important; }
+.ib-app-shell :is(a, button).bg-stone-900:hover { background-color: var(--ib-primary-strong) !important; }
+.ib-app-shell :is(a, button):active { background-color: #dce8ff; }
+.ib-app-shell :is(a, button).bg-stone-900:active { background-color: var(--ib-primary-strong); }
+.ib-app-shell :is(a, button, input):focus-visible {
+  outline: 2px solid var(--ib-primary);
+  outline-offset: 2px;
+}
