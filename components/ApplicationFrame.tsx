@@ -21,6 +21,9 @@ const items = [
 
 export default function ApplicationFrame({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  // Do not create the global navigation until a non-home route is confirmed.
+  // This also prevents an initial client-path hydration gap from flashing it on "/".
+  const isHome = pathname == null || pathname === '/';
   const [hash, setHash] = useState('');
   useEffect(() => {
     const syncHash = () => setHash(window.location.hash);
@@ -28,7 +31,7 @@ export default function ApplicationFrame({ children }: { children: ReactNode }) 
     window.addEventListener('hashchange', syncHash);
     return () => window.removeEventListener('hashchange', syncHash);
   }, []);
-  if (pathname === '/') return <>{children}</>;
+  if (isHome) return <>{children}</>;
 
   return <div className="ib-app-shell min-h-screen pb-24">
     {children}
