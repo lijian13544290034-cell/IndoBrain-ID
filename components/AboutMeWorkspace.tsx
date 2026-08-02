@@ -7,7 +7,9 @@ import IndonesianSpeechButton from '@/components/IndonesianSpeechButton';
 import AchievementCardLauncher from '@/components/achievement-card/AchievementCardLauncher';
 import type { CatalogExperience } from '@/lib/experience-catalog';
 import { getLearningAchievementStats } from '@/lib/learning-achievements';
+import { getIndonesiaPowerFromLearning, getIndonesiaLevel, getIndonesiaLevelDisplayId, getNextIndonesiaLevel } from '@/lib/v2/indonesia-power';
 import { readLearningProfile, subscribeProfile, toggleFavorite, type LearningProfile } from '@/lib/learning-profile';
+import IndonesiaPowerBadge from '@/components/IndonesiaPowerBadge';
 
 const statusLabel = { pending: '待审核', accepted: '已接受', published: '已发布', rejected: '未采用' } as const;
 
@@ -24,6 +26,10 @@ export default function AboutMeWorkspace({ catalog, total }: { catalog: CatalogE
     [profile.favorites, catalog],
   );
   const achievements = useMemo(() => getLearningAchievementStats(profile.completed, catalog), [profile.completed, catalog]);
+  const indonesiaPower = useMemo(() => getIndonesiaPowerFromLearning(achievements.completedExperienceCount, achievements.masteredHarvestCount), [achievements]);
+  const currentLevel = getIndonesiaLevel(indonesiaPower);
+  const nextLevel = getNextIndonesiaLevel(indonesiaPower);
+  const pointsToNextLevel = nextLevel ? Math.max(0, nextLevel.min - indonesiaPower) : 0;
 
   async function copy(text: string) {
     if (navigator.clipboard) await navigator.clipboard.writeText(text);
@@ -44,11 +50,14 @@ export default function AboutMeWorkspace({ catalog, total }: { catalog: CatalogE
     </section>
 
     <section id="learning-achievement" className="mt-8 rounded-2xl border border-stone-200 bg-stone-50 px-5 py-5">
-      <h2 className="text-lg font-semibold">我的学习成果</h2>
+      <h2 className="text-lg font-semibold">成长中心</h2>
       <p className="mt-1 text-sm text-stone-500">当前设备学习成果</p>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-4"><IndonesiaPowerBadge totalIndonesiaPower={indonesiaPower} size="detail" /></div>
+      <div className="mt-3 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-600"><p>{getIndonesiaLevelDisplayId(indonesiaPower)} · {currentLevel.nameZh}</p>{nextLevel ? <p className="mt-1">距离下一等级还差 {pointsToNextLevel} 印尼力 · 下一等级门槛 {nextLevel.min}</p> : <p className="mt-1">已达到最高等级</p>}</div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <article className="rounded-xl border border-stone-200 bg-white p-4"><p className="text-xs text-stone-400">已完成真实场景</p><p className="mt-2 text-2xl font-semibold">{achievements.completedExperienceCount}</p></article>
         <article className="rounded-xl border border-stone-200 bg-white p-4"><p className="text-xs text-stone-400">已掌握印尼语词汇/词组</p><p className="mt-2 text-2xl font-semibold">{achievements.masteredHarvestCount}</p></article>
+        <article className="rounded-xl border border-stone-200 bg-white p-4"><p className="text-xs text-stone-400">连续学习天数</p><p className="mt-2 text-2xl font-semibold">{profile.currentStreak} 天</p></article>
       </div>
       <div className="mt-5"><AchievementCardLauncher stats={achievements} streakDays={profile.currentStreak} /></div>
       {achievements.recentlyCompleted.length > 0 && <div className="mt-5"><p className="text-sm font-medium">最近完成</p><ul className="mt-2 space-y-2">{achievements.recentlyCompleted.map((experience) => <li key={experience.id}><Link href={experience.href} className="text-sm text-stone-700 hover:underline">{experience.id} · {experience.task}</Link></li>)}</ul></div>}

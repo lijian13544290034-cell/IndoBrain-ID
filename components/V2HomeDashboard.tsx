@@ -4,7 +4,10 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { CatalogExperience } from '@/lib/experience-catalog';
 import { readLearningProfile, subscribeProfile } from '@/lib/learning-profile';
+import { getLearningAchievementStats } from '@/lib/learning-achievements';
+import { getIndonesiaPowerFromLearning } from '@/lib/v2/indonesia-power';
 import { vocabularyLibrary } from '@/lib/vocabulary-library';
+import IndonesiaPowerBadge from '@/components/IndonesiaPowerBadge';
 
 type ProfileState = ReturnType<typeof readLearningProfile>;
 type IconName = 'menu' | 'search' | 'scene' | 'book' | 'heart' | 'arrow';
@@ -33,6 +36,8 @@ export default function V2HomeDashboard({ catalog }: { catalog: readonly Catalog
   const continueExperience = useMemo(() => catalog.find((item) => !completed.includes(item.id)) ?? catalog[0], [catalog, completed]);
   const progress = catalog.length ? Math.round((completed.length / catalog.length) * 100) : 0;
   const lifeSceneCount = useMemo(() => catalog.filter((item) => item.module === 'Life').length, [catalog]);
+  const achievements = useMemo(() => getLearningAchievementStats(completed, catalog), [catalog, completed]);
+  const indonesiaPower = useMemo(() => getIndonesiaPowerFromLearning(achievements.completedExperienceCount, achievements.masteredHarvestCount), [achievements]);
 
   const results = useMemo(() => {
     const term = query.trim().toLocaleLowerCase('id-ID');
@@ -57,7 +62,7 @@ export default function V2HomeDashboard({ catalog }: { catalog: readonly Catalog
   return <main className="v2-home mx-auto min-h-[100dvh] w-full max-w-6xl overflow-hidden px-5 pb-4 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-8 sm:pb-10 sm:pt-8">
     <header data-home-part="brand-header" className="relative z-10 flex h-[64px] items-start justify-between sm:h-[76px]">
       <div><p className="font-serif text-[38px] font-bold leading-[0.94] tracking-tight text-[var(--ib-primary-strong)] sm:text-5xl">IndoBrain</p><p className="mt-1 text-[15px] leading-4 tracking-wide text-[var(--ib-text-secondary)] sm:text-base">会说，机会更多。</p></div>
-      <Link href="/about" aria-label="打开菜单" className="flex size-11 items-center justify-center rounded-2xl text-[var(--ib-primary-strong)] transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)]"><Icon name="menu" /></Link>
+      <div className="flex items-center gap-1"><IndonesiaPowerBadge totalIndonesiaPower={indonesiaPower} size="compact" href="/about#learning-achievement" /><Link href="/about" aria-label="打开菜单" className="flex size-11 items-center justify-center rounded-2xl text-[var(--ib-primary-strong)] transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)]"><Icon name="menu" /></Link></div>
     </header>
 
     <section data-home-part="search" className="relative mt-3">

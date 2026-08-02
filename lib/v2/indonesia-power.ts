@@ -22,6 +22,25 @@ export function getIndonesiaLevel(totalIndonesiaPower: number) {
   return levelConfiguration.find((level) => totalIndonesiaPower >= level.min && totalIndonesiaPower <= level.max) ?? levelConfiguration[0];
 }
 
+export function getIndonesiaPowerFromLearning(completedExperienceCount: number, masteredHarvestCount: number) {
+  return calculateIndonesiaPower({
+    newlyCompletedExperienceCount: completedExperienceCount,
+    newlyMasteredHarvestCount: masteredHarvestCount,
+    newlyMasteredPatternCount: 0,
+  });
+}
+
+export function getIndonesiaLevelDisplayId(totalIndonesiaPower: number) {
+  const level = getIndonesiaLevel(totalIndonesiaPower);
+  return level.id === 'STARTING' ? 'L0' : level.id;
+}
+
+export function getNextIndonesiaLevel(totalIndonesiaPower: number) {
+  const current = getIndonesiaLevel(totalIndonesiaPower);
+  const index = levelConfiguration.indexOf(current);
+  return levelConfiguration[index + 1] ?? null;
+}
+
 export function createCompletionOutcome(input: IndonesiaPowerInput, totalBefore: number): CompletionOutcomeV2 {
   const indonesiaPowerAdded = calculateIndonesiaPower(input);
   const totalIndonesiaPower = totalBefore + indonesiaPowerAdded;
