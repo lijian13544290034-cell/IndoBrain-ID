@@ -47,7 +47,9 @@ export default function V2HomeDashboard({ catalog }: { catalog: readonly Catalog
   const [profile, setProfile] = useState<ProfileState | null>(null);
   const [query, setQuery] = useState('');
   const [heroImageFailed, setHeroImageFailed] = useState(false);
+  const [hello, setHello] = useState({ id: 'Selamat datang.', zh: '欢迎回来！' });
   useEffect(() => { setProfile(readLearningProfile()); return subscribeProfile(() => setProfile(readLearningProfile())); }, []);
+  useEffect(() => { setHello(greeting()); }, []);
 
   const completed = profile?.completed ?? [];
   const favorites = profile?.favorites ?? [];
@@ -69,8 +71,6 @@ export default function V2HomeDashboard({ catalog }: { catalog: readonly Catalog
     { href: '/vocabulary', title: '基础词库', subtitle: `${vocabularyLibrary.length} 个高频词汇`, icon: 'book' as const },
     { href: '/about#favorites', title: '我的收藏', subtitle: `${favorites.length} 条收藏`, icon: 'heart' as const },
   ];
-  const hello = greeting();
-
   return <main className="v2-home mx-auto min-h-screen w-full max-w-6xl overflow-hidden px-5 pb-12 pt-9 sm:px-8 sm:pt-12">
     <header className="relative z-10 flex items-start justify-between"><div><p className="font-serif text-4xl font-bold tracking-tight text-[#0b2769] sm:text-5xl">IndoBrain</p><p className="mt-2 text-base tracking-wide text-[#52658f]">会说，机会更多。</p></div><Link href="/about" aria-label="打开菜单" className="mt-1 flex size-12 items-center justify-center rounded-2xl text-[#0b2769] transition hover:bg-blue-50"><Icon name="menu" /></Link></header>
 
