@@ -5,20 +5,22 @@ import NavigationButtons from '@/components/NavigationButtons';
 import { filterExperiencesByCategory } from '@/lib/experience-category-counts';
 import { getDriverExperiences } from '@/lib/driver-experiences';
 import { driverWorkflow, getDriverWorkflow, isDriverWorkflow } from '@/lib/driver-workflow';
+import { getExperienceCatalog } from '@/lib/experience-catalog';
+import { getSearchNavigation } from '@/lib/experience-navigation';
 
-export default async function DriverDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ workflow?: string }> }) {
-  const { id } = await params; const { workflow } = await searchParams;
+export default async function DriverDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ workflow?: string; search?: string }> }) {
+  const { id } = await params; const { workflow, search } = await searchParams;
   const allExperiences = getDriverExperiences(); const item = allExperiences.find((entry) => entry.id === `EXP-DRV-${id}`);
   if (!item) notFound();
   const selected = isDriverWorkflow(workflow) ? workflow : undefined;
   const experiences = filterExperiencesByCategory(allExperiences, driverWorkflow, selected, (entry) => !entry.missing);
-  const index = experiences.indexOf(item); const previous = experiences[index - 1]; const next = experiences[index + 1];
+  const index = experiences.indexOf(item); const searchNavigation = getSearchNavigation(getExperienceCatalog(), item.id, search); const previous = searchNavigation?.previous ?? (experiences[index - 1] ? { id: experiences[index - 1].id, href: `/driver/${experiences[index - 1].id.slice(-3)}?workflow=${selected ?? ''}` } : undefined); const next = searchNavigation?.next ?? (experiences[index + 1] ? { id: experiences[index + 1].id, href: `/driver/${experiences[index + 1].id.slice(-3)}?workflow=${selected ?? ''}` } : undefined);
   const currentWorkflow = getDriverWorkflow(item.id);
   const listHref = selected ? `/driver?workflow=${selected}` : '/driver';
   return <main className="mx-auto min-h-screen w-full max-w-4xl px-5 pb-12 pt-10 sm:px-8 sm:pt-14">
     <Link href={listHref} className="text-sm text-stone-500 hover:text-stone-900">← Sopir（司机）</Link>
     <header className="mt-7 rounded-2xl border border-stone-200 bg-stone-50 px-5 py-5"><p className="text-xs text-stone-400">Alur Perjalanan（行程分类）</p><nav className="mt-3 grid gap-2 sm:grid-cols-3">{driverWorkflow.map((stage) => <Link key={stage.slug} href={`/driver?workflow=${stage.slug}`} className={`flex min-h-10 items-center rounded-lg border px-3 py-2 text-xs font-medium transition duration-200 ${currentWorkflow?.slug === stage.slug ? 'border-stone-900 bg-stone-900 text-white' : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-100 hover:shadow-sm'}`}>{stage.indonesian}<span className="ml-1 text-stone-400">（{stage.chinese}）</span></Link>)}</nav></header>
     <ExperienceDetail experience={item} />
-    <NavigationButtons experienceId={item.id} previous={previous ? { href: `/driver/${previous.id.slice(-3)}?workflow=${selected ?? ''}`, id: previous.id } : undefined} next={next ? { href: `/driver/${next.id.slice(-3)}?workflow=${selected ?? ''}`, id: next.id } : undefined} />
+    <NavigationButtons experienceId={item.id} previous={previous} next={next} />
   </main>;
 }

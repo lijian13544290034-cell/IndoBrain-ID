@@ -6,6 +6,7 @@ import type { CatalogExperience } from '@/lib/experience-catalog';
 import { readLearningProfile, subscribeProfile } from '@/lib/learning-profile';
 import { getLearningAchievementStats } from '@/lib/learning-achievements';
 import { getIndonesiaPowerFromLearning } from '@/lib/v2/indonesia-power';
+import { withSearchContext } from '@/lib/experience-navigation';
 import { vocabularyLibrary } from '@/lib/vocabulary-library';
 import IndonesiaPowerBadge from '@/components/IndonesiaPowerBadge';
 
@@ -45,7 +46,7 @@ export default function V2HomeDashboard({ catalog }: { catalog: readonly Catalog
     const experiences = catalog
       .filter((item) => [item.id, item.task, item.indonesian, ...item.harvest].join(' ').toLocaleLowerCase('id-ID').includes(term))
       .slice(0, 5)
-      .map((item) => ({ key: item.id, title: item.indonesian, detail: `${item.id} · ${item.task}`, href: item.href, type: 'Experience' }));
+      .map((item) => ({ key: item.id, title: item.indonesian, detail: `${item.id} · ${item.task}`, href: withSearchContext(item.href, query), type: 'Experience' }));
     const vocabulary = vocabularyLibrary
       .filter((item) => [item.textId, item.textZh, ...item.tags].join(' ').toLocaleLowerCase('id-ID').includes(term))
       .slice(0, 5)
