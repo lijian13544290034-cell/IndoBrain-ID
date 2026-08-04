@@ -9,6 +9,10 @@ let stopActiveAudio: (() => void) | undefined;
 const audioUrlCache = new Map<string, string>();
 const pendingAudio = new Map<string, Promise<string>>();
 
+function SpeakerIcon() {
+  return <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M5 9v6h4l5 4V5L9 9Z" /><path d="M18 9.5a4 4 0 0 1 0 5" /><path d="M20.5 7a7 7 0 0 1 0 10" /></svg>;
+}
+
 async function getAudioUrl(text: string) {
   const cached = audioUrlCache.get(text);
   if (cached) return cached;
@@ -68,6 +72,6 @@ export default function IndonesianSpeechButton({ text, compact = false, iconOnly
   };
 
   const unavailable = enabled !== true;
-  const buttonText = loading ? '加载中…' : playing ? '■ 播放中' : failed ? '重试' : iconOnly ? '🔊' : '🔊 听一听';
-  return <button type="button" onClick={play} disabled={unavailable} aria-label="听一听" title={unavailable ? '语音功能正在配置中' : '听一听'} className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${unavailable ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-stone-100'} ${compact ? '' : 'mt-2'}`}>{buttonText}</button>;
+  const buttonText = loading ? '加载中…' : playing ? '播放中' : failed ? '重试' : '听一听';
+  return <button type="button" onClick={play} disabled={unavailable} aria-label="听一听" title={unavailable ? '语音功能正在配置中' : '听一听'} className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${unavailable ? 'cursor-not-allowed text-[var(--ib-text-secondary)] opacity-60' : 'cursor-pointer text-[#5b82c5] hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] active:text-[var(--ib-primary-strong)]'} ${compact ? '' : 'mt-2'}`}><span className="inline-flex items-center gap-1.5"><SpeakerIcon />{!iconOnly && <span>{buttonText}</span>}</span></button>;
 }
