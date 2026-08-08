@@ -1,9 +1,11 @@
 import { getSocialExperiences, type SocialExperience } from '@/lib/social-experiences';
 import { businessExperiences, datingExperiences } from '@/lib/life-business-dating-experiences';
 import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
+import type { GoldenSceneContent } from '@/lib/golden-scenes';
+import { goldenLifeExperiences } from '@/lib/life-golden-scenes';
 
-export type LifeCategory = 'friends' | 'basics' | 'supermarket' | 'restaurant' | 'business' | 'dating';
-export type LifeExperience = Omit<SocialExperience, 'category'> & { category: LifeCategory; pattern: WorkplacePattern };
+export type LifeCategory = 'friends' | 'basics' | 'supermarket' | 'restaurant' | 'business' | 'dating' | 'rumah-harian';
+export type LifeExperience = Omit<SocialExperience, 'category'> & { category: LifeCategory; pattern: WorkplacePattern; goldenScene?: GoldenSceneContent };
 
 const pattern = (indonesian: string, chinese: string): WorkplacePattern => ({ indonesian, chinese });
 
@@ -92,7 +94,7 @@ const newLifeExperiences: LifeExperience[] = [
 ];
 
 export function getLifeExperiences() {
-  return [...friends, ...newLifeExperiences, ...businessExperiences, ...datingExperiences];
+  return [...friends, ...newLifeExperiences, ...businessExperiences, ...datingExperiences, ...goldenLifeExperiences];
 }
 
 export function getLifeExperience(id: string) {
