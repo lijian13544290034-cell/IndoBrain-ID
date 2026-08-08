@@ -1,9 +1,17 @@
 import { getSocialExperiences, type SocialExperience } from '@/lib/social-experiences';
 import { businessExperiences, datingExperiences } from '@/lib/life-business-dating-experiences';
+import { livingHomeExperiences } from '@/lib/living-home-experiences';
 import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
-export type LifeCategory = 'friends' | 'basics' | 'supermarket' | 'restaurant' | 'business' | 'dating';
-export type LifeExperience = Omit<SocialExperience, 'category'> & { category: LifeCategory; pattern: WorkplacePattern };
+export type LifeCategory = 'friends' | 'basics' | 'supermarket' | 'restaurant' | 'business' | 'dating' | 'home';
+export type LifeExperience = Omit<SocialExperience, 'category'> & {
+  category: LifeCategory;
+  pattern: WorkplacePattern;
+  tags?: string[];
+  difficultyLevel?: 'L1' | 'L2' | 'L3';
+  requiredMembershipTier?: 'TRIAL';
+  status?: 'PUBLISHED';
+};
 
 const pattern = (indonesian: string, chinese: string): WorkplacePattern => ({ indonesian, chinese });
 
@@ -92,7 +100,7 @@ const newLifeExperiences: LifeExperience[] = [
 ];
 
 export function getLifeExperiences() {
-  return [...friends, ...newLifeExperiences, ...businessExperiences, ...datingExperiences];
+  return [...friends, ...newLifeExperiences, ...businessExperiences, ...datingExperiences, ...livingHomeExperiences];
 }
 
 export function getLifeExperience(id: string) {
