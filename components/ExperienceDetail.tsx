@@ -1,9 +1,11 @@
 import ExperienceActions from '@/components/ExperienceActions';
+import GoldenSceneTemplate from '@/components/GoldenSceneTemplate';
 import HarvestSection from '@/components/HarvestSection';
 import IndonesianSpeechButton from '@/components/IndonesianSpeechButton';
 import IndonesianAudioProvider from '@/components/IndonesianAudioProvider';
 import IndoBrainInsight from '@/components/IndoBrainInsight';
 import { getExperienceCatalog } from '@/lib/experience-catalog';
+import type { GoldenSceneContent } from '@/lib/golden-scenes';
 import type { WorkplacePattern } from '@/lib/workplace-patterns';
 
 export type ExperienceDetailItem = {
@@ -15,20 +17,54 @@ export type ExperienceDetailItem = {
   missing?: boolean;
   insight?: { indonesian: string; chinese: string };
   pattern?: WorkplacePattern;
+  goldenScene?: GoldenSceneContent;
 };
 
-export default function ExperienceDetail({ experience, nextHref }: { experience: ExperienceDetailItem; nextHref?: string }) {
-  return <section className="mt-7 rounded-2xl border border-stone-200 bg-white px-6 py-7 shadow-sm sm:px-8">
-    <p className="text-sm text-stone-400">{experience.id}</p>
-    {experience.missing ? <><h1 className="mt-2 text-2xl font-semibold">Belum tersedia</h1><p className="mt-5 text-sm leading-6 text-stone-500">该内容将在后续版本补充。</p></> : <>
-      <IndonesianAudioProvider><h1 className="mt-2 text-2xl font-semibold">{experience.task}</h1>
-      <p className="mt-5 text-xs text-stone-400">Bahasa Indonesia（印尼语）</p>
-      <div className="mt-2 rounded-xl bg-stone-50 p-4"><p className="text-lg leading-8">{experience.indonesian || 'Belum tersedia.'}</p>{experience.indonesian && <IndonesianSpeechButton text={experience.indonesian} />}</div>
-      {experience.explanation && <><p className="mt-5 text-xs text-stone-400">Penjelasan（中文说明）</p><p className="mt-2 text-sm leading-6 text-stone-700">{experience.explanation}</p></>}
-      <HarvestSection harvest={experience.harvest} />
-      {experience.pattern && <><p className="mt-5 text-xs text-stone-400">Pola yang Bisa Dipakai（可复用表达）</p><div className="mt-2 rounded-xl bg-stone-50 p-4"><p className="text-sm font-medium text-stone-800">{experience.pattern.indonesian}</p><IndonesianSpeechButton text={experience.pattern.indonesian} compact /><p className="mt-1 text-sm leading-6 text-stone-600">{experience.pattern.chinese}</p></div></>}
-      {experience.insight && <IndoBrainInsight insight={experience.insight} />}
-      <ExperienceActions experienceId={experience.id} indonesian={experience.indonesian || ''} harvest={experience.harvest} achievementCatalog={getExperienceCatalog()} nextHref={nextHref} /></IndonesianAudioProvider>
-    </>}
-  </section>;
+export default function ExperienceDetail({ experience }: { experience: ExperienceDetailItem }) {
+  return (
+    <section className="mt-7 rounded-2xl border border-stone-200 bg-white px-6 py-7 shadow-sm sm:px-8">
+      <p className="text-sm text-stone-400">{experience.id}</p>
+      {experience.missing ? (
+        <>
+          <h1 className="mt-2 text-2xl font-semibold">Belum tersedia</h1>
+          <p className="mt-5 text-sm leading-6 text-stone-500">该内容将在后续版本补充。</p>
+        </>
+      ) : (
+        <IndonesianAudioProvider>
+          <h1 className="mt-2 text-2xl font-semibold">{experience.task}</h1>
+          {experience.goldenScene ? (
+            <GoldenSceneTemplate content={experience.goldenScene} harvest={experience.harvest} />
+          ) : (
+            <>
+              <p className="mt-5 text-xs text-stone-400">Bahasa Indonesia（印尼语）</p>
+              <div className="mt-2 rounded-xl bg-stone-50 p-4">
+                <p className="text-lg leading-8">{experience.indonesian || 'Belum tersedia.'}</p>
+                {experience.indonesian && <IndonesianSpeechButton text={experience.indonesian} />}
+              </div>
+              {experience.explanation && (
+                <>
+                  <p className="mt-5 text-xs text-stone-400">Penjelasan（中文说明）</p>
+                  <p className="mt-2 text-sm leading-6 text-stone-700">{experience.explanation}</p>
+                </>
+              )}
+              <HarvestSection harvest={experience.harvest} />
+              {experience.pattern && (
+                <>
+                  <p className="mt-5 text-xs text-stone-400">Pola yang Bisa Dipakai（可复用表达）</p>
+                  <div className="mt-2 rounded-xl bg-stone-50 p-4">
+                    <p className="text-sm font-medium text-stone-800">{experience.pattern.indonesian}</p>
+                    <IndonesianSpeechButton text={experience.pattern.indonesian} compact />
+                    <p className="mt-1 text-sm leading-6 text-stone-600">{experience.pattern.chinese}</p>
+                  </div>
+                </>
+              )}
+              {experience.insight && <IndoBrainInsight insight={experience.insight} />}
+            </>
+          )}
+          <ExperienceActions experienceId={experience.id} indonesian={experience.indonesian || ''} harvest={experience.harvest} achievementCatalog={getExperienceCatalog()} />
+        </IndonesianAudioProvider>
+      )}
+    </section>
+  );
 }
+

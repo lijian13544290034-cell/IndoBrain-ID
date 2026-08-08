@@ -1,16 +1,18 @@
 import { getSocialExperiences, type SocialExperience } from '@/lib/social-experiences';
 import { businessExperiences, datingExperiences } from '@/lib/life-business-dating-experiences';
+import { goldenLifeExperiences, type GoldenSceneContent } from '@/lib/golden-scenes';
 import { livingHomeExperiences } from '@/lib/living-home-experiences';
 import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
-export type LifeCategory = 'friends' | 'basics' | 'supermarket' | 'restaurant' | 'business' | 'dating' | 'home';
+export type LifeCategory = 'friends' | 'basics' | 'supermarket' | 'restaurant' | 'business' | 'dating' | 'home' | 'gold';
 export type LifeExperience = Omit<SocialExperience, 'category'> & {
   category: LifeCategory;
   pattern: WorkplacePattern;
+  goldenScene?: GoldenSceneContent;
   tags?: string[];
   difficultyLevel?: 'L1' | 'L2' | 'L3';
-  requiredMembershipTier?: 'TRIAL';
-  status?: 'PUBLISHED';
+  requiredMembershipTier?: 'TRIAL' | 'PREMIUM' | 'VIP' | 'ENTERPRISE';
+  status?: 'PUBLISHED' | 'DRAFT';
 };
 
 const pattern = (indonesian: string, chinese: string): WorkplacePattern => ({ indonesian, chinese });
@@ -100,7 +102,7 @@ const newLifeExperiences: LifeExperience[] = [
 ];
 
 export function getLifeExperiences() {
-  return [...friends, ...newLifeExperiences, ...businessExperiences, ...datingExperiences, ...livingHomeExperiences];
+  return [...friends, ...newLifeExperiences, ...businessExperiences, ...datingExperiences, ...livingHomeExperiences, ...goldenLifeExperiences];
 }
 
 export function getLifeExperience(id: string) {
