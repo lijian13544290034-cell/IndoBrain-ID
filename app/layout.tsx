@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import ApplicationFrame from '@/components/ApplicationFrame';
+import PwaInstallButton from '@/components/PwaInstallButton';
 import WeChatBrowserNotice from '@/components/WeChatBrowserNotice';
 import './globals.css';
 
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <ApplicationFrame>
           <WeChatBrowserNotice />
+          <PwaInstallButton />
           {children}
         </ApplicationFrame>
       </body>

@@ -4,10 +4,14 @@ import { useEffect, useState } from 'react';
 
 const DISMISS_KEY = 'indobrain-wechat-browser-notice-dismissed';
 
-function isStandaloneMode() {
+export function isStandaloneMode() {
   if (typeof window === 'undefined') return false;
   const nav = window.navigator as Navigator & { standalone?: boolean };
   return window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true;
+}
+
+export function isWeChatBrowser(userAgent: string) {
+  return /MicroMessenger/i.test(userAgent);
 }
 
 export default function WeChatBrowserNotice() {
@@ -16,9 +20,8 @@ export default function WeChatBrowserNotice() {
   useEffect(() => {
     try {
       const ua = navigator.userAgent || '';
-      const inWechat = /MicroMessenger/i.test(ua);
       const dismissed = window.localStorage.getItem(DISMISS_KEY) === '1';
-      setVisible(inWechat && !dismissed && !isStandaloneMode());
+      setVisible(isWeChatBrowser(ua) && !dismissed && !isStandaloneMode());
     } catch {
       setVisible(false);
     }
@@ -30,7 +33,7 @@ export default function WeChatBrowserNotice() {
     try {
       window.localStorage.setItem(DISMISS_KEY, '1');
     } catch {
-      // ignore storage failures
+      // Ignore storage failures; the notice can still be dismissed for this session.
     }
     setVisible(false);
   };
