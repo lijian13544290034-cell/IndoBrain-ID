@@ -3,6 +3,9 @@ import { businessExperiences, datingExperiences } from '@/lib/life-business-dati
 import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 import type { GoldenSceneContent } from '@/lib/golden-scenes';
 import { goldenLifeExperiences } from '@/lib/life-golden-scenes';
+import { lifeGoldenBatch4 } from '@/lib/golden-batch-4-scenes';
+import { lifeGoldenBatch5 } from '@/lib/golden-batch-5-scenes';
+import { lifeGoldenBatch6, type GoldenExperiencePatch } from '@/lib/golden-batch-6-scenes';
 
 export type LifeCategory = 'friends' | 'basics' | 'supermarket' | 'restaurant' | 'business' | 'dating' | 'rumah-harian';
 export type LifeExperience = Omit<SocialExperience, 'category'> & { category: LifeCategory; pattern: WorkplacePattern; goldenScene?: GoldenSceneContent };
@@ -94,7 +97,22 @@ const newLifeExperiences: LifeExperience[] = [
 ];
 
 export function getLifeExperiences() {
-  return [...friends, ...newLifeExperiences, ...businessExperiences, ...datingExperiences, ...goldenLifeExperiences];
+  const applyGoldenPatch = (experience: LifeExperience, goldenPatch?: GoldenExperiencePatch): LifeExperience => {
+    return goldenPatch ? {
+      ...experience,
+      ...goldenPatch,
+      chinese: goldenPatch.task,
+      pattern: getWorkplacePattern(goldenPatch.indonesian),
+    } : experience;
+  };
+
+  const businessWithGoldenScenes = businessExperiences.map((experience) =>
+    applyGoldenPatch(experience, lifeGoldenBatch4[experience.id] ?? lifeGoldenBatch5[experience.id] ?? lifeGoldenBatch6[experience.id])
+  );
+  const datingWithGoldenScenes = datingExperiences.map((experience) =>
+    applyGoldenPatch(experience, lifeGoldenBatch6[experience.id])
+  );
+  return [...friends, ...newLifeExperiences, ...businessWithGoldenScenes, ...datingWithGoldenScenes, ...goldenLifeExperiences];
 }
 
 export function getLifeExperience(id: string) {

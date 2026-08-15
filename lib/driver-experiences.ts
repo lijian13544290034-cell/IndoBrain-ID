@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { driverGoldenBatch2 } from '@/lib/golden-batch-2-scenes';
+import { driverGoldenBatch3 } from '@/lib/golden-batch-3-scenes';
 import { formatHarvest } from '@/lib/harvest';
 import type { GoldenSceneContent } from '@/lib/golden-scenes';
 import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
@@ -145,8 +146,8 @@ export function getDriverExperiences(): DriverExperience[] {
     const id = `EXP-DRV-${String(index + 1).padStart(3, '0')}`;
     const generated = generatedExperiences[id];
     const experience = sourceRecords.get(id) ?? (generated ? { ...generated, indonesian: generatedDialogueOverrides[id] ?? generated.indonesian } : undefined);
-    const goldenPatch = driverGoldenBatch2[id];
-    const merged = experience && goldenPatch ? { ...experience, ...goldenPatch } : experience;
+    const goldenPatch = driverGoldenBatch2[id] ?? driverGoldenBatch3[id];
+    const merged = experience && goldenPatch ? { ...experience, ...goldenPatch, chinese: goldenPatch.task } : experience;
     return merged ? { ...merged, harvest: formatHarvest(merged.harvest, merged.indonesian), pattern: getWorkplacePattern(merged.indonesian) } : { id, task: '正式内容尚未导入', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
   });
 }

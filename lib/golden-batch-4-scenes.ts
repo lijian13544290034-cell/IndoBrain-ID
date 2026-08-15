@@ -1,0 +1,897 @@
+import type { GoldenSceneContent } from '@/lib/golden-scenes';
+
+export type GoldenExperiencePatch = {
+  task: string;
+  indonesian: string;
+  explanation: string;
+  harvest: string[];
+  goldenScene: GoldenSceneContent;
+};
+
+const line = (speaker: string, indonesian: string, chinese: string) => ({ speaker, indonesian, chinese });
+const pair = (indonesian: string, chinese: string) => ({ indonesian, chinese });
+
+export const factoryGoldenBatch4: Record<string, GoldenExperiencePatch> = {
+  'EXP-FAC-036': {
+    task: '今天产量没达标，我要现场问原因',
+    indonesian: 'Kemarin target seribu pcs, tapi realisasinya hanya tujuh ratus dua puluh. Penyebab utamanya apa?',
+    explanation: '生产目标没达成时，不只问“为什么”，而是追到机器、材料、人手、效率和今天补救目标。',
+    harvest: ['target seribu pcs', 'realisasinya hanya', 'penyebab utama', 'siapa yang pegang'],
+    goldenScene: {
+      situation: '你看到昨天生产报表：目标 1000 件，实际只有 720 件。现场主管只说“kemarin agak lambat”，但你需要找到真正原因。',
+      goal: '成功问清产量差距、主要原因、今天补多少、谁负责。',
+      dialogue: [
+        line('我', 'Kemarin target seribu pcs, tapi realisasinya hanya tujuh ratus dua puluh.', '昨天目标 1000 件，但实际只有 720 件。'),
+        line('主管', 'Iya Pak, kemarin memang agak lambat.', '是的 Pak，昨天确实有点慢。'),
+        line('我', 'Jangan jawab umum dulu. Kurangnya dua ratus delapan puluh pcs. Penyebab utamanya apa?', '先不要笼统回答。少了 280 件，主要原因是什么？'),
+        line('主管', 'Mesin nomor dua sempat berhenti hampir dua jam.', '二号机器曾经停了差不多两个小时。'),
+        line('我', 'Selain mesin, bahan dan orang cukup nggak?', '除了机器，材料和人手够不够？'),
+        line('主管', 'Bahan cukup. Orang cukup, tapi operator baru masih lambat.', '材料够。人也够，但新操作员还比较慢。'),
+        line('我', 'Jadi penyebab utama mesin berhenti dan operator baru. Hari ini bisa kejar berapa?', '所以主要原因是机器停机和新操作员慢。今天能补多少？'),
+        line('主管', 'Hari ini kami target seribu seratus pcs, Pak. Saya yang pegang kontrolnya.', '今天我们目标 1100 件，Pak。我负责盯进度。'),
+      ],
+      replies: [
+        pair('Masalah utamanya di mesin, bukan di bahan.', '主要问题在机器，不在材料。'),
+        pair('Operator baru perlu didampingi orang lama.', '新操作员需要老员工带一下。'),
+        pair('Kalau jam dua belum naik, kami tambah orang.', '如果两点产量还没上来，我们加人。'),
+      ],
+      variations: [
+        pair('Hari ini target minimal seribu seratus pcs.', '今天最低目标 1100 件。'),
+        pair('Tolong pisahkan masalah mesin, bahan, dan orang.', '请把机器、材料、人手问题分开说。'),
+        pair('Saya butuh angka, bukan jawaban umum.', '我要具体数字，不要笼统回答。'),
+        pair('Siapa yang pegang kontrol progres hari ini?', '今天谁负责盯进度？'),
+      ],
+      decisions: [
+        {
+          situation: '主管说“hari ini kita usahakan”，但没有数字。',
+          options: [
+            pair('Saya perlu target jelas. Jam empat harus sudah berapa pcs?', '我需要明确目标。四点必须做到多少件？'),
+            pair('Kalau tidak yakin, sebutkan kapasitas yang paling realistis.', '如果没把握，就说最现实的产能。'),
+          ],
+        },
+      ],
+      localUsage: pair('在印尼现场管理里，问 penyebab utama 比反复问 kenapa 更容易把话题拉到解决问题。', '重点是追原因，不是追责。'),
+      easyMistake: pair('不要只说 kenapa bisa begitu? 对方容易继续讲大概原因。要追数字、责任人和下一步。', '问题要落到 angka、orang、rencana。'),
+      trySay: pair('Kurangnya dua ratus delapan puluh pcs. Penyebab utamanya apa?', '少了 280 件，主要原因是什么？'),
+    },
+  },
+  'EXP-FAC-037': {
+    task: '发现产品质量问题，要求检查整批货',
+    indonesian: 'Ada cacat di sampel ini. Tolong tahan pengiriman dulu dan cek satu batch.',
+    explanation: '抽检发现次品时，先暂停出货，分开合格/不合格，再查原因和决定返工。',
+    harvest: ['ada cacat', 'tahan pengiriman', 'cek satu batch', 'pisahkan yang bagus'],
+    goldenScene: {
+      situation: '你在抽检时发现几个产品有划痕。仓库已经准备出货，但你必须先控制风险。',
+      goal: '成功暂停出货、检查整批货、分开问题品并安排返工。',
+      dialogue: [
+        line('我', 'Ada cacat di sampel ini. Batch ini totalnya berapa?', '这个样品有瑕疵。这一批总共多少？'),
+        line('QC', 'Totalnya lima ratus pcs, Pak. Yang kelihatan cacat baru beberapa.', '总共 500 件，Pak。现在看到有问题的只有几个。'),
+        line('我', 'Pengiriman ditahan dulu. Jangan kirim sebelum jelas.', '先暂停出货。没查清前不要发。'),
+        line('QC', 'Mau sampling lagi atau cek semua?', '要再抽检，还是全检？'),
+        line('我', 'Cek satu batch. Pisahkan yang bagus dan yang cacat.', '整批检查。把好的和有问题的分开。'),
+        line('QC', 'Kemungkinan masalahnya di proses finishing.', '可能是 finishing 环节的问题。'),
+        line('我', 'Catat jumlah cacatnya, lalu cari penyebab di finishing.', '记录次品数量，然后查 finishing 的原因。'),
+        line('QC', 'Kalau cacat ringan, bisa rework hari ini.', '如果瑕疵轻，今天可以返工。'),
+      ],
+      replies: [
+        pair('Kami pisahkan barang OK dan NG dulu.', '我们先把 OK 和 NG 货分开。'),
+        pair('Pengiriman ditahan sampai QC selesai.', '出货暂停到 QC 完成。'),
+        pair('Penyebabnya kemungkinan dari finishing.', '原因可能来自 finishing。'),
+      ],
+      variations: [
+        pair('Tolong cek dari awal proses sampai packing.', '请从前段工序到包装都查一下。'),
+        pair('Yang cacat jangan dicampur dengan barang bagus.', '有问题的不要和好货混在一起。'),
+        pair('Ambil foto dan catat nomor batch.', '拍照并记录批号。'),
+        pair('Kalau bisa rework, selesaikan sebelum kirim.', '如果能返工，发货前处理完。'),
+      ],
+      decisions: [
+        {
+          situation: '仓库说客户很急，想先发出去。',
+          options: [
+            pair('Jangan kirim dulu. Risiko ke pelanggan lebih besar.', '先不要发。给客户的风险更大。'),
+            pair('Kirim hanya barang yang sudah pasti OK.', '只发已经确认 OK 的货。'),
+          ],
+        },
+      ],
+      localUsage: pair('质量异常时，tahan pengiriman 是非常关键的现场动作，语气可以平稳但要明确。', '先控风险，再查原因。'),
+      easyMistake: pair('不要只说 kualitas jelek。要说哪里有 cacat、影响哪一批、怎么处理。', '品质问题要具体化。'),
+      trySay: pair('Tolong tahan pengiriman dulu dan cek satu batch.', '请先暂停出货，并检查整批货。'),
+    },
+  },
+  'EXP-FAC-038': {
+    task: '机器突然停了，叫技术人员马上处理',
+    indonesian: 'Mesinnya berhenti jam berapa? Panggil teknisi sekarang, saya perlu estimasi perbaikannya.',
+    explanation: '机器停机时，确认停机时间、故障、技术人员、修复时间、备用机器和产量影响。',
+    harvest: ['mesinnya berhenti', 'panggil teknisi', 'estimasi perbaikan', 'mesin cadangan'],
+    goldenScene: {
+      situation: '生产线突然停下来，员工围在机器旁边。你需要迅速让技术人员处理，并判断是否影响今天产量。',
+      goal: '成功叫到技术人员、拿到修复时间，并安排备用方案。',
+      dialogue: [
+        line('我', 'Mesinnya berhenti jam berapa?', '机器几点停的？'),
+        line('操作员', 'Sekitar jam sepuluh lewat, Pak.', '大概十点多，Pak。'),
+        line('我', 'Kerusakannya apa? Sudah ada yang cek?', '什么故障？有人检查了吗？'),
+        line('操作员', 'Belum tahu pasti. Panelnya mati tiba-tiba.', '还不确定。控制面板突然黑了。'),
+        line('我', 'Panggil teknisi sekarang. Dia ada di mana?', '现在叫技术人员。他在哪里？'),
+        line('操作员', 'Teknisi sedang di gudang, saya panggil sekarang.', '技术人员在仓库，我现在叫。'),
+        line('我', 'Kalau mesin ini belum bisa jalan, ada mesin cadangan?', '如果这台还不能开，有备用机器吗？'),
+        line('主管', 'Ada satu mesin cadangan, tapi perlu setting sekitar tiga puluh menit.', '有一台备用机，但需要调机大概 30 分钟。'),
+        line('我', 'Oke. Minta estimasi perbaikan. Kalau lebih dari satu jam, pakai mesin cadangan.', '好。要修复预估。如果超过一小时，就用备用机。'),
+      ],
+      replies: [
+        pair('Teknisi sedang cek panelnya sekarang.', '技术人员正在检查控制面板。'),
+        pair('Perbaikannya kira-kira empat puluh lima menit.', '维修大概 45 分钟。'),
+        pair('Kalau lama, kami pindah ke mesin cadangan.', '如果久，我们转到备用机器。'),
+      ],
+      variations: [
+        pair('Tolong update saya setiap tiga puluh menit.', '请每 30 分钟更新我一次。'),
+        pair('Apakah ini mempengaruhi target hari ini?', '这会影响今天目标吗？'),
+        pair('Jangan tunggu terlalu lama tanpa keputusan.', '不要没有决定地等太久。'),
+        pair('Setelah jalan lagi, kasih tahu saya.', '恢复运行后告诉我。'),
+      ],
+      decisions: [
+        {
+          situation: '技术人员说还要等，但没有明确多久。',
+          options: [
+            pair('Saya perlu estimasi. Kalau belum jelas, kita pakai mesin cadangan.', '我需要预估。如果还不清楚，我们用备用机。'),
+            pair('Tolong cek sepuluh menit lagi. Kalau belum bisa, pindah mesin.', '再检查十分钟。如果不行，就换机器。'),
+          ],
+        },
+      ],
+      localUsage: pair('现场说 estimasi 比问 kapan selesai 更商务、更可执行。', '要的是可判断的时间。'),
+      easyMistake: pair('不要只等 teknisi。要同时问备用机器和产量影响。', '停机要有 plan B。'),
+      trySay: pair('Panggil teknisi sekarang, saya perlu estimasi perbaikannya.', '现在叫技术人员，我需要维修预估时间。'),
+    },
+  },
+  'EXP-FAC-039': {
+    task: '原材料快没了，确认还能生产多久',
+    indonesian: 'Bahan baku tinggal berapa? Dengan stok ini kita masih bisa produksi berapa lama?',
+    explanation: '材料不足时，确认剩余量、可生产时长、新材料到货、备用库存和订单优先级。',
+    harvest: ['bahan baku tinggal', 'stok ini', 'produksi berapa lama', 'pesanan prioritas'],
+    goldenScene: {
+      situation: '仓库通知某个原材料快用完了，生产还在继续。你需要判断还能撑多久，以及是否要紧急采购。',
+      goal: '成功确认库存、可生产时间、到货时间和优先订单。',
+      dialogue: [
+        line('我', 'Bahan baku tinggal berapa?', '原材料还剩多少？'),
+        line('仓库', 'Tinggal sekitar dua ratus kilo, Pak.', '只剩大概 200 公斤，Pak。'),
+        line('我', 'Dengan stok ini kita masih bisa produksi berapa lama?', '这些库存还能生产多久？'),
+        line('主管', 'Kalau kecepatan normal, sampai besok siang.', '如果正常速度，到明天中午。'),
+        line('我', 'Bahan baru datang kapan?', '新材料什么时候到？'),
+        line('仓库', 'Supplier bilang besok sore, tapi belum pasti jamnya.', '供应商说明天下午，但具体时间还不确定。'),
+        line('我', 'Ada stok cadangan atau bahan pengganti?', '有备用库存或替代材料吗？'),
+        line('主管', 'Ada sedikit bahan cadangan, cukup untuk satu order kecil.', '有一点备用材料，够一个小订单。'),
+        line('我', 'Prioritaskan order yang paling urgent. Purchasing tolong follow up supplier sekarang.', '优先做最急的订单。采购现在跟进供应商。'),
+      ],
+      replies: [
+        pair('Stok sekarang cukup sampai besok siang.', '现在库存够到明天中午。'),
+        pair('Supplier belum kasih jam pasti.', '供应商还没给准确时间。'),
+        pair('Order pelanggan A harus diprioritaskan dulu.', '客户 A 的订单要先优先。'),
+      ],
+      variations: [
+        pair('Kalau bahan belum datang, produksi mana yang harus berhenti?', '如果材料没到，哪条生产要停？'),
+        pair('Tolong hitung kebutuhan sampai besok malam.', '请计算到明晚的需求。'),
+        pair('Apakah perlu pembelian darurat?', '是否需要紧急采购？'),
+        pair('Jangan pakai bahan cadangan tanpa izin.', '没有批准不要用备用材料。'),
+      ],
+      decisions: [
+        {
+          situation: '新材料可能明天下午到，但客户订单今天要继续。',
+          options: [
+            pair('Pakai stok untuk order paling urgent dulu.', '先把库存用于最急的订单。'),
+            pair('Kurangi speed produksi supaya bahan cukup sampai besok.', '降低生产速度，让材料撑到明天。'),
+          ],
+        },
+      ],
+      localUsage: pair('供应链现场沟通里，tinggal berapa 和 cukup sampai kapan 是两个必须连着问的问题。', '先算库存生命线。'),
+      easyMistake: pair('不要只问 ada bahan? 要问剩多少、能撑多久、哪张订单优先。', '库存问题要转成排产决定。'),
+      trySay: pair('Dengan stok ini kita masih bisa produksi berapa lama?', '这些库存还能生产多久？'),
+    },
+  },
+  'EXP-FAC-040': {
+    task: '仓库数量对不上，现场盘点',
+    indonesian: 'Di sistem seribu pcs, tapi fisiknya hanya sembilan ratus tiga puluh. Jangan ubah angka dulu.',
+    explanation: '库存异常时，先复盘入库/出库/登记/最后操作人，不要先乱改系统数字。',
+    harvest: ['di sistem', 'fisiknya hanya', 'jangan ubah angka', 'selisih tujuh puluh'],
+    goldenScene: {
+      situation: '系统显示 1000 件，但现场实际数只有 930 件。仓库员工想直接把系统改成 930。',
+      goal: '成功阻止乱改系统、查出 70 件差异来源，并确认库存。',
+      dialogue: [
+        line('我', 'Di sistem seribu pcs, tapi fisiknya hanya sembilan ratus tiga puluh?', '系统 1000 件，但实物只有 930 件？'),
+        line('仓库', 'Iya Pak. Mungkin sistemnya salah, mau saya ubah?', '是的 Pak。可能系统错了，我改一下？'),
+        line('我', 'Jangan ubah angka dulu. Kita cari selisih tujuh puluh pcs.', '先不要改数字。我们找 70 件差异。'),
+        line('我', 'Tolong hitung ulang fisiknya sekali lagi.', '请重新数一次实物。'),
+        line('仓库', 'Sudah dihitung ulang, tetap sembilan ratus tiga puluh.', '已经重数了，还是 930。'),
+        line('我', 'Cek barang masuk dan barang keluar hari ini.', '查今天的入库和出库。'),
+        line('仓库', 'Ada satu pengeluaran belum dicatat di sistem.', '有一笔出库还没登记到系统。'),
+        line('我', 'Siapa yang terakhir pegang transaksi itu?', '最后是谁操作那笔记录？'),
+        line('仓库', 'Pak Rudi. Saya minta dia konfirmasi sekarang.', 'Rudi 先生。我现在让他确认。'),
+      ],
+      replies: [
+        pair('Ada barang keluar yang belum dicatat.', '有出库还没登记。'),
+        pair('Selisihnya kemungkinan dari transaksi kemarin sore.', '差异可能来自昨天下午的交易。'),
+        pair('Kami cek dokumen masuk dan keluar dulu.', '我们先查入库和出库单据。'),
+      ],
+      variations: [
+        pair('Tolong jangan koreksi sistem sebelum penyebabnya jelas.', '原因清楚前不要修正系统。'),
+        pair('Cek siapa yang terakhir input data.', '查最后是谁录入数据。'),
+        pair('Pisahkan barang yang belum jelas statusnya.', '把状态不清楚的货分开。'),
+        pair('Setelah penyebab jelas, baru kita koreksi stok.', '原因清楚后再修正库存。'),
+      ],
+      decisions: [
+        {
+          situation: '仓库想先改系统，之后再查原因。',
+          options: [
+            pair('Tidak. Angka jangan diubah sebelum ada bukti.', '不行。没有证据前数字不要改。'),
+            pair('Catat selisihnya dulu, lalu cek dokumen satu per satu.', '先记录差异，再逐张查单据。'),
+          ],
+        },
+      ],
+      localUsage: pair('盘点时 fisik 指实物库存，sistem 指系统库存。两个词很常用。', '库存沟通要区分实物和系统。'),
+      easyMistake: pair('不要为了“对上”直接改系统。真实管理里要先找 selisih 的原因。', '系统数字不是橡皮泥。'),
+      trySay: pair('Jangan ubah angka dulu. Kita cari selisih tujuh puluh pcs.', '先不要改数字。我们找 70 件差异。'),
+    },
+  },
+  'EXP-FAC-041': {
+    task: '员工没有按照 SOP 操作',
+    indonesian: 'Berhenti sebentar. Kenapa langkah ini dilewati? SOP-nya harus diikuti.',
+    explanation: '员工跳过 SOP 时，严肃但不羞辱：先停、问原因、解释风险、重新演示、要求按标准重做。',
+    harvest: ['berhenti sebentar', 'langkah ini dilewati', 'SOP harus diikuti', 'ulang sesuai standar'],
+    goldenScene: {
+      situation: '你看到员工为了省时间跳过一个检查步骤。这个步骤虽然慢，但会影响质量。',
+      goal: '成功让员工停止错误操作、理解 SOP、按标准重做。',
+      dialogue: [
+        line('我', 'Berhenti sebentar. Kenapa langkah ini dilewati?', '先停一下。为什么跳过这个步骤？'),
+        line('员工', 'Biar lebih cepat, Pak. Biasanya juga aman.', '为了快一点，Pak。通常也没事。'),
+        line('我', 'Kamu tahu SOP untuk proses ini?', '你知道这个流程的 SOP 吗？'),
+        line('员工', 'Tahu, Pak, tapi tadi saya buru-buru.', '知道，Pak，但刚才我赶时间。'),
+        line('我', 'Langkah ini tidak boleh dilewati karena ini cek keamanan dan kualitas.', '这个步骤不能跳过，因为这是安全和质量检查。'),
+        line('我', 'Saya tunjukkan ulang proses yang benar.', '我重新演示正确流程。'),
+        line('员工', 'Baik Pak, saya ulang dari langkah ini.', '好的 Pak，我从这个步骤重新做。'),
+        line('我', 'Mulai sekarang ikuti SOP. Kalau waktunya kurang, lapor supervisor.', '从现在开始按 SOP。时间不够就报告主管。'),
+      ],
+      replies: [
+        pair('Saya ulang sesuai SOP, Pak.', '我按 SOP 重做，Pak。'),
+        pair('Tadi saya kira langkah itu bisa dilewati.', '刚才我以为那个步骤可以省。'),
+        pair('Nanti kalau dikejar waktu, saya lapor dulu.', '之后如果赶时间，我先报告。'),
+      ],
+      variations: [
+        pair('Ini bukan soal cepat saja, ini soal standar.', '这不只是快慢问题，这是标准问题。'),
+        pair('Tolong jangan ulangi cara seperti ini.', '请不要再这样做。'),
+        pair('Kalau SOP tidak jelas, tanya dulu.', '如果 SOP 不清楚，先问。'),
+        pair('Yang sudah terlanjur diproses harus dicek ulang.', '已经处理过的要重新检查。'),
+      ],
+      decisions: [
+        {
+          situation: '员工说“以前也这样做过”。',
+          options: [
+            pair('Mulai hari ini jangan begitu lagi. Kita pakai standar resmi.', '从今天开始不要再这样。我们按正式标准。'),
+            pair('Kalau cara lama berbeda dengan SOP, SOP yang kita ikuti.', '如果旧做法和 SOP 不同，我们按 SOP。'),
+          ],
+        },
+      ],
+      localUsage: pair('提醒员工时可以严肃，但避免 mempermalukan orang di depan umum（当众羞辱）。', '批评行为，不羞辱人。'),
+      easyMistake: pair('不要直接骂 malas 或 bodoh。要说步骤、标准和后果。', '管理要清楚，不要伤人。'),
+      trySay: pair('Langkah ini tidak boleh dilewati karena ini cek keamanan dan kualitas.', '这个步骤不能跳过，因为这是安全和质量检查。'),
+    },
+  },
+  'EXP-FAC-042': {
+    task: '客户订单很急，调整生产优先级',
+    indonesian: 'Ada order urgent dari pelanggan utama. Kita perlu ubah prioritas produksi hari ini.',
+    explanation: '紧急订单进入时，确认现有排产、可延后订单、材料、人手、加班和新计划。',
+    harvest: ['order urgent', 'ubah prioritas', 'pelanggan utama', 'rencana baru'],
+    goldenScene: {
+      situation: '重要客户突然追加急单，要求很快交货。你必须调整生产顺序，但不能让现场混乱。',
+      goal: '成功确认新优先级、材料/加班需求，并让团队统一新计划。',
+      dialogue: [
+        line('我', 'Sekarang produksi order apa?', '现在在生产什么订单？'),
+        line('主管', 'Order B dan C, Pak. Order B sudah setengah jalan.', 'B 和 C 订单，Pak。B 已经做了一半。'),
+        line('我', 'Ada order urgent dari pelanggan utama. Butuh seribu pcs sebelum Jumat.', '重要客户有急单，周五前要 1000 件。'),
+        line('主管', 'Kalau masuk sekarang, order C harus mundur.', '如果现在插进来，C 订单要往后。'),
+        line('我', 'Order mana yang bisa ditunda tanpa risiko besar?', '哪个订单可以延后且风险不大？'),
+        line('主管', 'Order C bisa mundur satu hari. B sebaiknya diselesaikan dulu.', 'C 可以延后一天。B 最好先完成。'),
+        line('我', 'Bahan untuk order urgent cukup?', '急单材料够吗？'),
+        line('仓库', 'Cukup, tapi perlu lembur malam ini.', '够，但今晚需要加班。'),
+        line('我', 'Oke. Selesaikan B, lalu pindah ke order urgent. Semua tim ikut rencana baru ini.', '好。完成 B，然后转急单。所有团队按这个新计划。'),
+      ],
+      replies: [
+        pair('Order C bisa ditunda satu hari.', 'C 订单可以延后一天。'),
+        pair('Kalau lembur, target Jumat masih bisa.', '如果加班，周五目标还能达成。'),
+        pair('Bahan untuk order urgent sudah cukup.', '急单材料已经够了。'),
+      ],
+      variations: [
+        pair('Prioritas hari ini berubah karena pelanggan utama.', '今天优先级因为重要客户改变。'),
+        pair('Tolong informasikan rencana baru ke semua shift.', '请把新计划通知所有班次。'),
+        pair('Jangan mulai order baru sebelum order B selesai.', 'B 完成前不要开始新订单。'),
+        pair('Kalau ada risiko telat, kabari saya hari ini.', '如果有延误风险，今天告诉我。'),
+      ],
+      decisions: [
+        {
+          situation: '主管担心急单会影响原计划。',
+          options: [
+            pair('Kita tunda order C satu hari, tapi order urgent harus masuk hari ini.', '我们把 C 延后一天，但急单今天必须进入。'),
+            pair('Kalau kapasitas kurang, tambah lembur dua jam malam ini.', '如果产能不够，今晚加班两小时。'),
+          ],
+        },
+      ],
+      localUsage: pair('调整优先级要说明 alasan bisnis：pelanggan utama、deadline、risiko。', '现场更容易接受有原因的调整。'),
+      easyMistake: pair('不要只说 kerjakan ini dulu。要告诉团队哪些延后、哪些不变。', '换优先级要防混乱。'),
+      trySay: pair('Kita perlu ubah prioritas produksi hari ini.', '我们今天需要调整生产优先级。'),
+    },
+  },
+  'EXP-FAC-043': {
+    task: '现场发生小型工伤 / 意外',
+    indonesian: 'Orangnya dulu. Mesin dihentikan, bantu dia, lalu panggil P3K sekarang.',
+    explanation: '小型工伤时，黄金原则是先处理人，再处理责任：停机、急救、通知、保护现场、之后复盘。',
+    harvest: ['orangnya dulu', 'mesin dihentikan', 'panggil P3K', 'lindungi area'],
+    goldenScene: {
+      situation: '现场员工手被划伤，大家开始围观。你必须先处理人和现场安全，而不是先追责。',
+      goal: '成功让机器停下、员工得到处理、现场被保护，并安排后续调查。',
+      dialogue: [
+        line('我', 'Orangnya dulu. Dia luka di mana?', '先看人。他哪里受伤？'),
+        line('员工', 'Tangannya kena pinggir material, Pak.', '手被材料边缘划到了，Pak。'),
+        line('我', 'Mesin dihentikan dulu. Jangan ada yang lanjut kerja di area ini.', '机器先停。这个区域不要继续作业。'),
+        line('我', 'Panggil P3K sekarang. Kalau perlu, antar ke klinik.', '现在叫急救。需要的话送诊所。'),
+        line('主管', 'Lukanya tidak terlalu dalam, tapi berdarah.', '伤口不太深，但在流血。'),
+        line('我', 'Bersihkan lukanya dulu. Supervisor, lindungi area ini.', '先清理伤口。主管，保护这个区域。'),
+        line('主管', 'Baik Pak. Setelah dia ditangani, kita cek penyebabnya.', '好的 Pak。他处理完后我们查原因。'),
+        line('我', 'Betul. Jangan salahkan orang dulu. Kita pastikan kejadian ini tidak terulang.', '对。先不要怪人。我们确保这件事不再发生。'),
+      ],
+      replies: [
+        pair('Saya antar dia ke klinik sekarang.', '我现在送他去诊所。'),
+        pair('Area ini sudah kami pasang tanda dulu.', '这个区域我们先放警示。'),
+        pair('Nanti setelah aman, kita cek kronologinya.', '等安全后，我们查经过。'),
+      ],
+      variations: [
+        pair('Pastikan dia ditangani dulu sebelum kita bahas penyebab.', '先确保他得到处理，再谈原因。'),
+        pair('Foto area kejadian, tapi jangan ganggu pertolongan.', '拍现场照片，但不要影响救助。'),
+        pair('Hubungi HR dan supervisor shift.', '联系 HR 和班组主管。'),
+        pair('Setelah aman, kita buat tindakan pencegahan.', '安全后，我们做预防措施。'),
+      ],
+      decisions: [
+        {
+          situation: '有人开始责怪受伤员工“不小心”。',
+          options: [
+            pair('Jangan bahas salah siapa dulu. Kita bantu orangnya dulu.', '先不要讨论谁错。我们先帮人。'),
+            pair('Setelah dia aman, baru kita cek kronologi dengan tenang.', '他安全后，我们再冷静查经过。'),
+          ],
+        },
+      ],
+      localUsage: pair('P3K 是 Pertolongan Pertama Pada Kecelakaan，印尼工厂里常用于急救箱/急救人员。', '工伤先急救。'),
+      easyMistake: pair('不要第一句就问 siapa salah? 这会让团队隐瞒问题。', '先救人，再调查。'),
+      trySay: pair('Orangnya dulu. Mesin dihentikan, bantu dia, lalu panggil P3K sekarang.', '先处理人。机器停下，帮他，然后现在叫急救。'),
+    },
+  },
+  'EXP-FAC-044': {
+    task: '货做好了，但包装不符合要求',
+    indonesian: 'Produknya OK, tapi packing-nya tidak sesuai permintaan pelanggan.',
+    explanation: '产品合格但包装错误时，确认客户要求、受影响数量、重包时间、出货影响和复检负责人。',
+    harvest: ['packing tidak sesuai', 'permintaan pelanggan', 'packing ulang', 'cek sampel lagi'],
+    goldenScene: {
+      situation: '货已经做好，但你发现包装标签和客户要求不一致。产品本身没问题，但包装会影响出货。',
+      goal: '成功指出包装问题、安排重包、确认样品和负责人。',
+      dialogue: [
+        line('我', 'Produknya OK, tapi packing-nya tidak sesuai permintaan pelanggan.', '产品 OK，但包装不符合客户要求。'),
+        line('包装主管', 'Bagian mana yang tidak sesuai, Pak?', '哪一部分不符合，Pak？'),
+        line('我', 'Label harus di sisi kanan, bukan di tengah. Warna karton juga berbeda.', '标签应该在右侧，不是在中间。纸箱颜色也不同。'),
+        line('包装主管', 'Yang sudah dipacking ada sekitar tiga ratus karton.', '已经包装的大概 300 箱。'),
+        line('我', 'Bisa packing ulang? Butuh berapa lama?', '能重新包装吗？需要多久？'),
+        line('包装主管', 'Bisa, kira-kira tiga jam kalau tambah dua orang.', '可以，如果加两个人大概三小时。'),
+        line('我', 'Apakah ini mempengaruhi jadwal kirim?', '这会影响发货时间吗？'),
+        line('包装主管', 'Kalau mulai sekarang, masih bisa kirim besok pagi.', '如果现在开始，明早还能发。'),
+        line('我', 'Oke. Buat satu sampel dulu, saya cek. Setelah OK, lanjut semua.', '好。先做一个样品，我检查。OK 后再全部继续。'),
+      ],
+      replies: [
+        pair('Packing ulang bisa selesai malam ini.', '重新包装今晚可以完成。'),
+        pair('Kami buat sampel baru dulu untuk dicek.', '我们先做新样品给你检查。'),
+        pair('Yang belum dipacking akan ikut standar baru.', '还没包装的会按新标准。'),
+      ],
+      variations: [
+        pair('Tolong pisahkan barang yang packing-nya salah.', '请把包装错误的货分开。'),
+        pair('Cek lagi requirement pelanggan sebelum lanjut.', '继续前再看一次客户要求。'),
+        pair('Siapa yang cek packing terakhir?', '最后谁检查包装？'),
+        pair('Setelah sampel OK, baru jalan semua.', '样品 OK 后再全部做。'),
+      ],
+      decisions: [
+        {
+          situation: '团队想只改标签，不换纸箱。',
+          options: [
+            pair('Kalau warna karton juga salah, harus packing ulang sesuai permintaan.', '如果纸箱颜色也错，就必须按要求重包。'),
+            pair('Tanyakan ke pelanggan dulu kalau mau pakai solusi cepat.', '如果想用快速方案，先问客户。'),
+          ],
+        },
+      ],
+      localUsage: pair('包装问题常用 tidak sesuai permintaan pelanggan，不要只说 salah。', '把标准来源说清楚。'),
+      easyMistake: pair('不要产品合格就忽略包装。很多客户把包装也当成交付标准。', '包装也是产品的一部分。'),
+      trySay: pair('Buat satu sampel dulu, saya cek. Setelah OK, lanjut semua.', '先做一个样品，我检查。OK 后再全部继续。'),
+    },
+  },
+  'EXP-FAC-045': {
+    task: '下班前确认产量、次品和明天计划',
+    indonesian: 'Sebelum pulang, kita tutup hari ini: target, hasil, barang cacat, dan prioritas besok.',
+    explanation: '一天结束时形成管理闭环：目标、实际、次品、差异、未完成订单、明天风险和目标。',
+    harvest: ['tutup hari ini', 'target dan hasil', 'barang cacat', 'prioritas besok'],
+    goldenScene: {
+      situation: '下班前你让现场负责人汇报结果。你不想听“semua aman”，而要具体数字和明天计划。',
+      goal: '成功确认当天结果、差异原因、未完成订单和明天第一优先级。',
+      dialogue: [
+        line('我', 'Sebelum pulang, kita tutup hari ini: targetnya berapa, hasilnya berapa?', '下班前我们收尾：今天目标多少，实际多少？'),
+        line('主管', 'Target seribu pcs, hasilnya sembilan ratus enam puluh pcs.', '目标 1000 件，实际 960 件。'),
+        line('我', 'Barang cacat berapa?', '次品多少？'),
+        line('QC', 'Cacat dua puluh pcs, kebanyakan dari proses packing.', '次品 20 件，大多来自包装环节。'),
+        line('我', 'Kenapa target kurang empat puluh pcs?', '为什么目标少了 40 件？'),
+        line('主管', 'Setting mesin pagi tadi lama, Pak.', '早上调机时间比较久，Pak。'),
+        line('我', 'Order mana yang belum selesai?', '哪个订单还没完成？'),
+        line('主管', 'Order C tinggal dua ratus pcs, lanjut besok pagi.', 'C 订单还剩 200 件，明早继续。'),
+        line('我', 'Besok prioritas pertama order C. Mesin dan bahan ada risiko?', '明天第一优先级是 C 订单。机器和材料有风险吗？'),
+        line('主管', 'Bahan aman. Mesin perlu dicek sebelum mulai.', '材料安全。机器开始前需要检查。'),
+      ],
+      replies: [
+        pair('Hari ini kurang empat puluh pcs dari target.', '今天比目标少 40 件。'),
+        pair('Cacat paling banyak dari packing.', '次品最多来自包装。'),
+        pair('Besok pagi prioritas pertama order C.', '明早第一优先级是 C 订单。'),
+      ],
+      variations: [
+        pair('Apa yang harus dicek sebelum shift besok mulai?', '明天班次开始前要检查什么？'),
+        pair('Target besok kita tetapkan berapa?', '明天目标定多少？'),
+        pair('Yang belum selesai jangan hilang dari daftar.', '没完成的不要从清单里消失。'),
+        pair('Tolong kirim ringkasan hari ini ke grup.', '请把今天总结发到群里。'),
+      ],
+      decisions: [
+        {
+          situation: '主管说“besok kita lanjut saja”，但没有优先级。',
+          options: [
+            pair('Besok mulai dari order C dulu, baru masuk order baru.', '明天先从 C 订单开始，再做新订单。'),
+            pair('Kalau mesin belum siap, kabari saya sebelum jam delapan.', '如果机器还没准备好，八点前告诉我。'),
+          ],
+        },
+      ],
+      localUsage: pair('tutup hari ini 是口语化的“今天收尾/结案”，适合下班前复盘。', '每天要收尾。'),
+      easyMistake: pair('不要只问 sudah selesai? 要问 target、hasil、cacat、besok apa。', '闭环要有明天计划。'),
+      trySay: pair('Sebelum pulang, kita tutup hari ini: target, hasil, barang cacat, dan prioritas besok.', '下班前我们收尾：目标、结果、次品和明天优先级。'),
+    },
+  },
+};
+
+export const lifeGoldenBatch4: Record<string, GoldenExperiencePatch> = {
+  'EXP-LIF-157': {
+    task: '第一次向供应商询价',
+    indonesian: 'Pak, saya mau tanya harga untuk produk ini. Spesifikasinya seperti ini, bisa dibantu penawaran?',
+    explanation: '第一次询价时，先说明需求，再问规格、价格、数量阶梯、交期和付款方式，不急着成交。',
+    harvest: ['tanya harga', 'spesifikasinya', 'penawaran', 'saya bandingkan dulu'],
+    goldenScene: {
+      situation: '你第一次联系一个新供应商，想了解价格，但还不想马上决定。',
+      goal: '成功拿到规格、价格、数量价、交期、付款条件，并自然保留比较空间。',
+      dialogue: [
+        line('我', 'Pak, saya mau tanya harga untuk produk ini.', 'Pak，我想问一下这个产品的价格。'),
+        line('供应商', 'Boleh Pak. Spesifikasinya yang seperti apa?', '可以 Pak。规格是什么样的？'),
+        line('我', 'Spesifikasinya seperti ini. Untuk lima ratus pcs harganya berapa?', '规格是这样的。500 件价格多少？'),
+        line('供应商', 'Untuk lima ratus pcs, harganya dua puluh ribu per pcs.', '500 件的话，每件 2 万。'),
+        line('我', 'Kalau seribu pcs dan tiga ribu pcs, harganya beda?', '如果 1000 件和 3000 件，价格不一样吗？'),
+        line('供应商', 'Iya, seribu bisa lebih murah sedikit.', '是的，1000 件可以便宜一点。'),
+        line('我', 'Waktu kirimnya kira-kira berapa lama?', '交期大概多久？'),
+        line('供应商', 'Sekitar tujuh hari setelah PO dan DP.', '下 PO 和定金后大概 7 天。'),
+        line('我', 'Baik, kirim penawaran tertulis ya. Saya bandingkan dulu dengan beberapa supplier.', '好，请发正式报价。我先和几家供应商比较一下。'),
+      ],
+      replies: [
+        pair('Untuk jumlah besar, harganya bisa lebih fleksibel.', '数量大的话，价格可以更灵活。'),
+        pair('Kami kirim penawaran lewat WhatsApp dulu ya.', '我们先通过 WhatsApp 发报价。'),
+        pair('Pembayaran biasanya DP tiga puluh persen.', '付款通常是 30% 定金。'),
+      ],
+      variations: [
+        pair('Saya belum bisa keputusan hari ini.', '我今天还不能决定。'),
+        pair('Tolong kirim harga untuk beberapa quantity.', '请发几个数量对应的价格。'),
+        pair('Apakah harga sudah termasuk pengiriman?', '价格包含送货吗？'),
+        pair('Saya cek internal dulu ya.', '我先内部确认一下。'),
+      ],
+      decisions: [
+        {
+          situation: '供应商一直催你今天确认。',
+          options: [
+            pair('Saya perlu bandingkan dulu. Nanti saya kabari lagi.', '我需要先比较一下，晚点再通知你。'),
+            pair('Kalau harganya menarik, kita bisa lanjut diskusi besok.', '如果价格有吸引力，我们明天继续谈。'),
+          ],
+        },
+      ],
+      localUsage: pair('询价时说 saya bandingkan dulu 很自然，既不失礼，也不会被迫马上成交。', '询价不等于下单。'),
+      easyMistake: pair('不要一开始就问 paling murah berapa。第一次接触先讲规格和数量。', '先专业，再谈价。'),
+      trySay: pair('Kirim penawaran tertulis ya. Saya bandingkan dulu dengan beberapa supplier.', '请发正式报价。我先和几家供应商比较一下。'),
+    },
+  },
+  'EXP-LIF-158': {
+    task: '供应商报价太高，我要砍价',
+    indonesian: 'Harganya masih terlalu tinggi untuk kami. Bisa dibantu harga yang lebih baik?',
+    explanation: '报价偏高时，先表达价格压力，再用数量、长期合作和可谈区间推进，而不是马上拒绝。',
+    harvest: ['terlalu tinggi', 'harga lebih baik', 'jumlah lebih besar', 'kerja sama panjang'],
+    goldenScene: {
+      situation: '供应商报价比你预期高 15%。你不能马上答应，也不想把关系谈僵。',
+      goal: '成功把价格从“太高”谈到一个可继续讨论的范围。',
+      dialogue: [
+        line('我', 'Harganya masih terlalu tinggi untuk kami.', '这个价格对我们来说还是太高。'),
+        line('供应商', 'Memang bahan sekarang naik, Pak.', '现在材料确实涨了，Pak。'),
+        line('我', 'Saya mengerti, tapi budget kami tidak masuk di harga ini.', '我理解，但这个价格进不了我们的预算。'),
+        line('供应商', 'Bapak maunya di angka berapa?', '您希望在什么价格？'),
+        line('我', 'Kalau quantity seribu pcs, bisa dibantu harga yang lebih baik?', '如果数量 1000 件，可以给更好的价格吗？'),
+        line('供应商', 'Kalau seribu pcs, mungkin bisa turun sedikit.', '如果 1000 件，可能可以降一点。'),
+        line('我', 'Kalau kerja sama berjalan, order berikutnya bisa lebih besar.', '如果合作顺利，下一单可以更大。'),
+        line('供应商', 'Baik Pak, saya coba ajukan harga khusus.', '好的 Pak，我试着申请特别价。'),
+        line('我', 'Kirim angka terbaik dulu. Saya belum bisa langsung approve hari ini.', '先发最好的价格。我今天还不能直接批准。'),
+      ],
+      replies: [
+        pair('Harga bahan memang sedang naik.', '材料价格确实在涨。'),
+        pair('Kalau quantity naik, kami bisa hitung ulang.', '如果数量增加，我们可以重算。'),
+        pair('Saya ajukan ke atasan dulu untuk harga khusus.', '我先向上级申请特别价。'),
+      ],
+      variations: [
+        pair('Bisa dibantu sedikit lagi?', '还能再帮一点吗？'),
+        pair('Di harga ini kami sulit jalan.', '这个价格我们很难推进。'),
+        pair('Kalau harganya masuk, kita bisa coba order pertama.', '如果价格合适，我们可以试第一单。'),
+        pair('Saya butuh harga final, bukan perkiraan.', '我需要最终价格，不是大概价格。'),
+      ],
+      decisions: [
+        {
+          situation: '对方只降一点点，仍然高于预算。',
+          options: [
+            pair('Terima kasih, tapi harga ini masih belum masuk. Tolong coba angka terbaik lagi.', '谢谢，但这个价格还是不合适。请再给最好的价格。'),
+            pair('Kalau tidak bisa turun, mungkin quantity pertama kami kurangi dulu.', '如果不能降，第一次数量可能先减少。'),
+          ],
+        },
+      ],
+      localUsage: pair('商务砍价常用 dibantu，语气比“turunin harga”更柔和。', '柔和但坚定。'),
+      easyMistake: pair('不要只说 mahal。要说价格对预算/项目不适合，并给继续谈的条件。', '砍价要给路走。'),
+      trySay: pair('Harganya masih terlalu tinggi untuk kami. Bisa dibantu harga yang lebih baik?', '这个价格对我们还是太高。可以给更好的价格吗？'),
+    },
+  },
+  'EXP-LIF-159': {
+    task: '谈 MOQ 和不同采购数量的价格',
+    indonesian: 'MOQ-nya berapa? Kalau pertama kami ambil lima ratus pcs dulu, harganya bagaimana?',
+    explanation: '供应商要求 MOQ 时，谈 500/1000/3000 件价格、试单数量和后续放量条件。',
+    harvest: ['MOQ-nya berapa', 'lima ratus pcs', 'harga untuk seribu', 'trial order'],
+    goldenScene: {
+      situation: '供应商要求最低 1000 件，但你第一次只想先买 500 件试单。',
+      goal: '成功问清 MOQ、不同数量价格，并谈出试单条件。',
+      dialogue: [
+        line('我', 'MOQ-nya berapa untuk produk ini?', '这个产品 MOQ 是多少？'),
+        line('供应商', 'Minimal seribu pcs, Pak.', '最低 1000 件，Pak。'),
+        line('我', 'Kalau pertama kami ambil lima ratus pcs dulu, bisa?', '如果第一次我们先拿 500 件，可以吗？'),
+        line('供应商', 'Lima ratus bisa, tapi harga lebih tinggi.', '500 可以，但价格更高。'),
+        line('我', 'Untuk lima ratus, seribu, dan tiga ribu pcs, tolong kasih harga masing-masing.', '500、1000、3000 件，请分别给价格。'),
+        line('供应商', 'Baik, seribu lebih murah, tiga ribu bisa harga grosir.', '好的，1000 更便宜，3000 可以批发价。'),
+        line('我', 'Kami mau trial order dulu. Kalau kualitas OK, order berikutnya naik.', '我们想先试单。如果质量 OK，下一单会增加。'),
+        line('供应商', 'Kalau begitu, lima ratus pcs bisa kami bantu untuk trial.', '这样的话，500 件试单我们可以帮忙。'),
+        line('我', 'Tolong tulis jelas MOQ, harga tiap quantity, dan syarat trial order.', '请写清 MOQ、各数量价格和试单条件。'),
+      ],
+      replies: [
+        pair('Harga lima ratus pcs lebih tinggi karena setup cost.', '500 件价格更高，因为有开机成本。'),
+        pair('Trial order bisa, tapi hanya sekali.', '试单可以，但只限一次。'),
+        pair('Order berikutnya minimal seribu pcs.', '下一单最低 1000 件。'),
+      ],
+      variations: [
+        pair('Kalau trial pertama berhasil, quantity kami naik.', '如果第一次试单成功，我们数量会增加。'),
+        pair('Bisa kasih harga bertingkat sesuai quantity?', '可以按数量给阶梯价吗？'),
+        pair('Untuk order kecil, lead time-nya sama atau beda?', '小订单交期一样还是不同？'),
+        pair('Tolong jangan campur MOQ dengan harga final.', '请不要把 MOQ 和最终价格混在一起。'),
+      ],
+      decisions: [
+        {
+          situation: '供应商坚持 MOQ 1000，不愿意 500 试单。',
+          options: [
+            pair('Kalau tidak bisa lima ratus, kami perlu pertimbangkan supplier lain dulu.', '如果不能 500，我们需要先考虑其他供应商。'),
+            pair('Bagaimana kalau lima ratus pcs dengan harga sedikit lebih tinggi untuk trial?', '500 件试单价格稍高一点可以吗？'),
+          ],
+        },
+      ],
+      localUsage: pair('MOQ 在印尼商务沟通里也直接说 MOQ，供应商通常能理解。', '试单常说 trial order。'),
+      easyMistake: pair('不要只问“能不能少买”。要把首次试单和后续放量讲清楚。', '供应商要看到未来量。'),
+      trySay: pair('Kami mau trial order dulu. Kalau kualitas OK, order berikutnya naik.', '我们想先试单。如果质量 OK，下一单会增加。'),
+    },
+  },
+  'EXP-LIF-160': {
+    task: '谈定金、尾款和账期',
+    indonesian: 'Untuk pembayaran, DP berapa persen dan pelunasan kapan?',
+    explanation: '价格谈好后，确认定金、尾款、货到付款、账期和双方风险，不做金融课，只做真实付款沟通。',
+    harvest: ['DP berapa persen', 'pelunasan kapan', 'tempo pembayaran', 'setelah barang diterima'],
+    goldenScene: {
+      situation: '价格基本谈好，供应商要求先付定金。你需要确认付款结构，并争取更安全的条件。',
+      goal: '成功谈清 DP、尾款时间、货到付款或账期条件。',
+      dialogue: [
+        line('我', 'Untuk pembayaran, DP berapa persen?', '付款方面，定金百分之多少？'),
+        line('供应商', 'Biasanya DP lima puluh persen, sisanya sebelum kirim.', '通常 50% 定金，剩下发货前付。'),
+        line('我', 'Untuk order pertama, bisa DP tiga puluh persen dulu?', '第一单可以先 30% 定金吗？'),
+        line('供应商', 'Agak sulit Pak, karena kami juga beli bahan.', '有点难 Pak，因为我们也要买材料。'),
+        line('我', 'Pelunasan bisa setelah barang selesai dicek?', '尾款可以在货检查完成后付吗？'),
+        line('供应商', 'Bisa setelah QC selesai, tapi sebelum barang keluar.', '可以 QC 完成后，但货出厂前。'),
+        line('我', 'Kalau kerja sama sudah berjalan, ada tempo tiga puluh hari?', '如果合作稳定后，有 30 天账期吗？'),
+        line('供应商', 'Untuk customer lama bisa dibicarakan.', '老客户可以谈。'),
+        line('我', 'Baik. Untuk order pertama: DP tiga puluh persen, pelunasan setelah QC, sebelum kirim. Tolong tulis di penawaran.', '好。第一单：30% 定金，QC 后发货前付尾款。请写进报价。'),
+      ],
+      replies: [
+        pair('DP terlalu kecil agak berat untuk produksi.', '定金太少对生产有点压力。'),
+        pair('Tempo pembayaran bisa setelah beberapa kali order.', '账期可以几次订单后再谈。'),
+        pair('Pelunasan sebelum barang keluar dari gudang.', '尾款在货出仓前支付。'),
+      ],
+      variations: [
+        pair('Bisa bayar sisanya setelah barang diterima?', '剩余款可以收货后付吗？'),
+        pair('Untuk kerja sama panjang, kami perlu tempo pembayaran.', '长期合作我们需要账期。'),
+        pair('Kami juga perlu mengurangi risiko order pertama.', '第一单我们也需要降低风险。'),
+        pair('Tolong cantumkan syarat pembayaran di invoice.', '请把付款条件写在发票里。'),
+      ],
+      decisions: [
+        {
+          situation: '供应商坚持 50% 定金。',
+          options: [
+            pair('Kalau DP lima puluh persen, pelunasan harus setelah QC selesai.', '如果定金 50%，尾款必须在 QC 完成后。'),
+            pair('Untuk order pertama kami bisa DP empat puluh persen, tapi perlu jadwal jelas.', '第一单我们可以 40% 定金，但需要明确时间表。'),
+          ],
+        },
+      ],
+      localUsage: pair('DP 是 down payment 的常用缩写；pelunasan 是尾款/结清。', '付款词汇要精准。'),
+      easyMistake: pair('不要只说 bayar nanti。要明确 DP、pelunasan、tempo、条件。', '付款条件要写清楚。'),
+      trySay: pair('DP tiga puluh persen, pelunasan setelah QC, sebelum kirim.', '30% 定金，QC 后、发货前付尾款。'),
+    },
+  },
+  'EXP-LIF-161': {
+    task: '供应商延期，我要正式催货',
+    indonesian: 'Saya perlu jawaban jelas. Barangnya bisa keluar hari ini jam berapa?',
+    explanation: '供应商从周一拖到周三，还一直说 masih proses。目标是拿到具体进度、原因、日期和时间。',
+    harvest: ['jawaban jelas', 'masih proses', 'keluar hari ini', 'komitmen tertulis'],
+    goldenScene: {
+      situation: '供应商原来说周一交货，现在周三还没到。他一直回复“masih proses”。',
+      goal: '成功打断模糊回答，拿到具体卡点、出货时间和承诺。',
+      dialogue: [
+        line('我', 'Pak, barang yang dijanjikan Senin sampai sekarang belum datang.', 'Pak，原来说周一到的货，到现在还没到。'),
+        line('供应商', 'Iya Pak, masih proses. Kami usahakan secepatnya.', '是的 Pak，还在处理中。我们尽快。'),
+        line('我', 'Saya perlu jawaban jelas, bukan “secepatnya”. Sekarang barangnya ada di mana?', '我需要明确答复，不是“尽快”。现在货在哪里？'),
+        line('供应商', 'Masih di produksi, tinggal finishing sedikit.', '还在生产，剩一点 finishing。'),
+        line('我', 'Finishing selesai jam berapa? Hari ini bisa keluar atau tidak?', 'finishing 几点完成？今天能不能发出？'),
+        line('供应商', 'Kalau lancar, sore ini bisa keluar.', '如果顺利，今天下午可以发。'),
+        line('我', 'Tolong jangan pakai “kalau lancar”. Saya perlu komitmen: jam berapa pickup?', '请不要用“如果顺利”。我要承诺：几点取货？'),
+        line('供应商', 'Pickup jam lima sore, Pak.', '下午五点取货，Pak。'),
+        line('我', 'Baik. Kalau jam lima belum keluar, apa solusinya?', '好。如果五点还没发出，解决方案是什么？'),
+        line('供应商', 'Kami kirim pakai kurir malam ini dan biaya dari kami.', '我们今晚用快递送，费用我们承担。'),
+      ],
+      replies: [
+        pair('Masih proses, Pak, sebentar lagi.', '还在处理中，Pak，很快。'),
+        pair('Ternyata finishing belum selesai.', '实际上 finishing 还没完成。'),
+        pair('Kami komit pickup jam lima sore.', '我们承诺下午五点取货。'),
+      ],
+      variations: [
+        pair('Saya butuh tanggal dan jam, bukan perkiraan umum.', '我需要日期和时间，不是笼统估计。'),
+        pair('Kalau mundur lagi, biaya pengiriman tambahan siapa yang tanggung?', '如果再延，额外运费谁承担？'),
+        pair('Tolong kirim update foto barang sekarang.', '请现在发货物照片更新。'),
+        pair('Saya perlu komitmen tertulis di WhatsApp.', '我需要 WhatsApp 上的书面承诺。'),
+      ],
+      decisions: [
+        {
+          situation: '供应商继续说“sebentar lagi”。',
+          options: [
+            pair('Sebentar lagi itu jam berapa? Tolong sebutkan waktunya.', '“很快”是几点？请说具体时间。'),
+            pair('Kalau belum bisa pasti, saya perlu bicara dengan PIC produksi.', '如果还不能确定，我需要和生产负责人谈。'),
+          ],
+        },
+      ],
+      localUsage: pair('催货时把 secepatnya 拉回 jam berapa，是非常实用的商务动作。', '模糊话要变成时间。'),
+      easyMistake: pair('不要被 masih proses 带走。要追 barang di mana、selesai kapan、keluar jam berapa。', '催货要追节点。'),
+      trySay: pair('Saya perlu jawaban jelas. Barangnya bisa keluar hari ini jam berapa?', '我需要明确答复。货今天几点能发出？'),
+    },
+  },
+  'EXP-LIF-162': {
+    task: '收到货发现数量少了',
+    indonesian: 'Di PO seribu pcs, tapi barang yang kami terima hanya sembilan ratus lima puluh pcs.',
+    explanation: '收货少 50 件时，对照送货单、留证据、问剩余货在哪里，并谈补货或退款。',
+    harvest: ['di PO seribu pcs', 'hanya sembilan ratus lima puluh', 'sisa lima puluh', 'kirim susulan atau refund'],
+    goldenScene: {
+      situation: '你订单 1000 件，现场清点只有 950 件。司机说他只是送货，不清楚原因。',
+      goal: '成功确认短少、联系供应商，并拿到补货/退款方案。',
+      dialogue: [
+        line('我', 'Di PO seribu pcs, tapi barang yang kami terima hanya sembilan ratus lima puluh pcs.', 'PO 是 1000 件，但我们收到只有 950 件。'),
+        line('供应商', 'Mungkin ada yang tertinggal di gudang, Pak.', '可能有些留在仓库了，Pak。'),
+        line('我', 'Kami sudah hitung ulang dan cocokkan dengan surat jalan.', '我们已经重数，并和送货单对过。'),
+        line('供应商', 'Surat jalannya tertulis berapa?', '送货单写多少？'),
+        line('我', 'Surat jalan tertulis seribu, tapi fisiknya kurang lima puluh pcs.', '送货单写 1000，但实物少 50 件。'),
+        line('供应商', 'Baik Pak, kami cek ke gudang dulu.', '好的 Pak，我们先查仓库。'),
+        line('我', 'Tolong cek sekarang. Sisa lima puluh pcs ada di mana?', '请现在查。剩下 50 件在哪里？'),
+        line('供应商', 'Kalau memang kurang, kami kirim susulan besok pagi.', '如果确实少，我们明早补发。'),
+        line('我', 'Kalau tidak bisa kirim besok, kami minta refund untuk lima puluh pcs.', '如果明天不能发，我们要求退 50 件的钱。'),
+      ],
+      replies: [
+        pair('Kami cek CCTV gudang dulu, Pak.', '我们先查仓库 CCTV，Pak。'),
+        pair('Kemungkinan salah hitung saat loading.', '可能装车时数错了。'),
+        pair('Sisa lima puluh pcs kami kirim susulan.', '剩下 50 件我们补发。'),
+      ],
+      variations: [
+        pair('Saya kirim foto hasil hitungan dan surat jalan.', '我发清点结果和送货单照片。'),
+        pair('Tolong jangan tutup invoice dulu sebelum jumlah lengkap.', '数量齐之前请不要关闭发票。'),
+        pair('Siapa yang bertanggung jawab untuk kekurangan ini?', '这次短少谁负责？'),
+        pair('Kapan paling cepat sisa barang bisa dikirim?', '剩余货最快什么时候能送？'),
+      ],
+      decisions: [
+        {
+          situation: '供应商说“nanti kami cek dulu”，没有时间。',
+          options: [
+            pair('Tolong kasih jawaban maksimal jam tiga sore ini.', '请最晚今天下午三点给答复。'),
+            pair('Kalau belum ada jawaban hari ini, kami tahan pembayaran sisa.', '如果今天没有答复，我们暂停尾款。'),
+          ],
+        },
+      ],
+      localUsage: pair('surat jalan 是印尼送货单/随货单，非常适合数量异常时对照。', '数量问题要看单据。'),
+      easyMistake: pair('不要只说 kurang。要说 PO、surat jalan、fisik 三个数字。', '三组数字一对，问题就清楚。'),
+      trySay: pair('Surat jalan tertulis seribu, tapi fisiknya kurang lima puluh pcs.', '送货单写 1000，但实物少 50 件。'),
+    },
+  },
+  'EXP-LIF-163': {
+    task: '货到了，但质量和样品不一样',
+    indonesian: 'Barang mass production ini berbeda dengan sampel yang kita approve sebelumnya.',
+    explanation: '大货与样品不一致时，拿样品对比、确认影响范围，并谈返工、换货、折价和费用承担。',
+    harvest: ['berbeda dengan sampel', 'approve sebelumnya', 'batch yang terdampak', 'biaya siapa'],
+    goldenScene: {
+      situation: '你之前确认过样品，但现在到的大货颜色和手感明显不同。',
+      goal: '成功指出差异、确认受影响批次，并推进返工/换货/折价方案。',
+      dialogue: [
+        line('我', 'Barang mass production ini berbeda dengan sampel yang kita approve sebelumnya.', '这批大货和之前批准的样品不一样。'),
+        line('供应商', 'Bedanya tidak terlalu jauh, Pak.', '差别不是很大，Pak。'),
+        line('我', 'Tolong lihat sampel ini. Warna dan finishing-nya jelas berbeda.', '请看这个样品。颜色和 finishing 明显不同。'),
+        line('供应商', 'Mungkin karena bahan dari batch baru.', '可能因为材料是新批次。'),
+        line('我', 'Batch mana saja yang terdampak?', '哪些批次受影响？'),
+        line('供应商', 'Sepertinya semua produksi minggu ini.', '看起来本周生产的都受影响。'),
+        line('我', 'Barang ini tidak bisa kami pakai tanpa solusi.', '没有解决方案，这批货我们不能用。'),
+        line('供应商', 'Opsinya rework, tukar barang, atau diskon.', '选项是返工、换货或折价。'),
+        line('我', 'Kalau rework, berapa lama dan biayanya siapa yang tanggung?', '如果返工，需要多久，费用谁承担？'),
+      ],
+      replies: [
+        pair('Kami cek ulang dengan sampel approval.', '我们用批准样品重新核对。'),
+        pair('Kalau pelanggan tidak terima, kami bisa rework.', '如果客户不能接受，我们可以返工。'),
+        pair('Untuk biaya rework, kami perlu diskusi internal.', '返工费用我们需要内部讨论。'),
+      ],
+      variations: [
+        pair('Ini bukan masalah kecil untuk pelanggan kami.', '这对我们的客户不是小问题。'),
+        pair('Tolong pisahkan batch yang berbeda dari sampel.', '请把和样品不同的批次分开。'),
+        pair('Kalau tukar barang, jadwalnya kapan?', '如果换货，时间是什么时候？'),
+        pair('Kalau diskon, angkanya harus jelas.', '如果折价，数字必须明确。'),
+      ],
+      decisions: [
+        {
+          situation: '供应商想用折扣解决，但你担心客户不能接受。',
+          options: [
+            pair('Diskon saja belum cukup. Kami perlu pastikan pelanggan bisa terima.', '只折扣还不够。我们要确认客户能接受。'),
+            pair('Prioritas kami barang sesuai sampel, bukan hanya harga lebih murah.', '我们优先要符合样品的货，不只是更便宜。'),
+          ],
+        },
+      ],
+      localUsage: pair('approve sebelumnya 很适合表达“之前已经确认/批准过”。', '样品是谈判依据。'),
+      easyMistake: pair('不要只说 kualitas beda。要拿 sampel 对照具体差异。', '样品比感觉更有说服力。'),
+      trySay: pair('Warna dan finishing-nya jelas berbeda dengan sampel.', '颜色和 finishing 明显和样品不同。'),
+    },
+  },
+  'EXP-LIF-164': {
+    task: '供应商一直找理由，我要拿到解决方案',
+    indonesian: 'Saya mengerti masalahnya. Sekarang solusinya bagaimana?',
+    explanation: '供应商不断解释运输、工厂、员工、材料问题时，把话题拉回解决方案、负责人和完成时间。',
+    harvest: ['saya mengerti masalahnya', 'solusinya bagaimana', 'siapa yang tanggung jawab', 'selesai kapan'],
+    goldenScene: {
+      situation: '供应商出问题后一直解释：运输问题、工厂问题、员工问题。你已经听够原因，需要方案。',
+      goal: '成功从“听理由”转到“拿方案”：谁做、何时完成、做不到怎么办。',
+      dialogue: [
+        line('供应商', 'Masalahnya dari ekspedisi, Pak. Mereka terlambat ambil barang.', '问题来自物流，Pak。他们取货晚了。'),
+        line('我', 'Saya mengerti masalahnya. Sekarang solusinya bagaimana?', '我理解问题。现在解决方案是什么？'),
+        line('供应商', 'Kami masih koordinasi dengan gudang.', '我们还在和仓库协调。'),
+        line('我', 'Koordinasi boleh, tapi saya perlu rencana jelas.', '协调可以，但我需要明确计划。'),
+        line('供应商', 'Kami coba kirim sebagian dulu.', '我们试着先发一部分。'),
+        line('我', 'Berapa pcs dikirim dulu, dan sisanya kapan?', '先发多少件，剩下什么时候？'),
+        line('供应商', 'Lima ratus pcs hari ini, sisanya besok siang.', '今天 500 件，剩下明天中午。'),
+        line('我', 'Siapa PIC yang bertanggung jawab sampai selesai?', '谁是负责到底的 PIC？'),
+        line('供应商', 'Saya sendiri yang pegang, Pak.', '我本人负责，Pak。'),
+        line('我', 'Kalau besok siang belum selesai, apa kompensasinya?', '如果明天中午还没完成，补偿是什么？'),
+      ],
+      replies: [
+        pair('Kami kirim sebagian dulu hari ini.', '我们今天先发一部分。'),
+        pair('Sisanya selesai besok siang.', '剩下明天中午完成。'),
+        pair('Saya yang pegang sampai masalah ini selesai.', '我负责到这个问题解决。'),
+      ],
+      variations: [
+        pair('Saya sudah paham alasannya. Sekarang saya butuh solusi.', '我已经明白原因。现在我需要方案。'),
+        pair('Tolong jangan hanya jelaskan masalah dari pihak lain.', '请不要只解释别人的问题。'),
+        pair('Apa tindakan konkret hari ini?', '今天具体动作是什么？'),
+        pair('Kalau rencana ini gagal, plan B-nya apa?', '如果这个方案失败，B 计划是什么？'),
+      ],
+      decisions: [
+        {
+          situation: '供应商继续推给第三方物流。',
+          options: [
+            pair('Ekspedisi boleh jadi masalah, tapi tanggung jawab ke kami tetap dari supplier.', '物流可能有问题，但对我们负责的仍然是供应商。'),
+            pair('Silakan urus ekspedisi, tapi saya perlu jadwal kirim yang pasti.', '请你们处理物流，但我需要确定发货时间。'),
+          ],
+        },
+      ],
+      localUsage: pair('Saya mengerti masalahnya. Sekarang solusinya bagaimana? 是非常有用的印尼商务控场句。', '理解原因，但拉回方案。'),
+      easyMistake: pair('不要陷入谁的问题。你的目标是 solusi、PIC、deadline。', '理由不能替代解决。'),
+      trySay: pair('Saya mengerti masalahnya. Sekarang solusinya bagaimana?', '我理解问题。现在解决方案是什么？'),
+    },
+  },
+  'EXP-LIF-165': {
+    task: '对账金额不一致',
+    indonesian: 'Total tagihan dari Bapak berbeda dengan catatan kami. Kita cocokkan invoice satu per satu.',
+    explanation: '月底对账金额不同，逐张核对 invoice、数量、单价、已付款、未付款、折扣和退货。',
+    harvest: ['total tagihan', 'catatan kami', 'cocokkan invoice', 'saldo akhir'],
+    goldenScene: {
+      situation: '月底供应商账单金额比你记录高。你不能直接付款，需要一张一张核对。',
+      goal: '成功找出差异 invoice，并确认正确余额。',
+      dialogue: [
+        line('我', 'Total tagihan dari Bapak berbeda dengan catatan kami.', '您的账单总额和我们记录不同。'),
+        line('供应商', 'Selisihnya berapa, Pak?', '差多少，Pak？'),
+        line('我', 'Selisihnya sekitar dua juta rupiah. Kita cocokkan invoice satu per satu.', '差大概 200 万印尼盾。我们逐张核对 invoice。'),
+        line('供应商', 'Baik, mulai dari invoice tanggal lima ya.', '好的，从 5 号 invoice 开始。'),
+        line('我', 'Di invoice ini quantity tertulis seribu, tapi kami terima sembilan ratus lima puluh.', '这张 invoice 写 1000，但我们收到 950。'),
+        line('供应商', 'Oh iya, yang lima puluh pcs dikirim susulan.', '哦对，50 件后来补发了。'),
+        line('我', 'Sudah masuk hitungan atau belum?', '这个已经算进去了吗？'),
+        line('供应商', 'Belum, Pak. Itu yang bikin selisih.', '还没有，Pak。就是这个造成差异。'),
+        line('我', 'Tolong revisi tagihan dan kirim saldo akhir yang benar.', '请修改账单并发正确余额。'),
+      ],
+      replies: [
+        pair('Selisihnya dari invoice tanggal lima.', '差异来自 5 号 invoice。'),
+        pair('Diskon belum kami masukkan.', '折扣我们还没算进去。'),
+        pair('Kami kirim revisi tagihan hari ini.', '我们今天发修改后的账单。'),
+      ],
+      variations: [
+        pair('Cek quantity, harga satuan, dan pembayaran yang sudah masuk.', '查数量、单价和已付款。'),
+        pair('Apakah retur barang sudah dikurangi?', '退货已经扣除了吗？'),
+        pair('Tolong jangan kirim tagihan final sebelum cocok.', '核对一致前不要发最终账单。'),
+        pair('Saldo akhir yang benar berapa?', '正确期末余额是多少？'),
+      ],
+      decisions: [
+        {
+          situation: '供应商说差异不大，希望你先付款。',
+          options: [
+            pair('Kami bayar setelah tagihan cocok, bukan sebelum cocok.', '账单一致后我们付款，不是一致前。'),
+            pair('Yang tidak bermasalah bisa kami bayar dulu, selisihnya ditahan dulu.', '没问题的部分可以先付，差异部分先保留。'),
+          ],
+        },
+      ],
+      localUsage: pair('对账常用 cocokkan，意思是核对到一致。saldo akhir 是最终余额。', '财务沟通要逐项核对。'),
+      easyMistake: pair('不要只争总金额。要拆 invoice、quantity、harga、payment、retur。', '总额问题要拆明细。'),
+      trySay: pair('Kita cocokkan invoice satu per satu.', '我们逐张核对 invoice。'),
+    },
+  },
+  'EXP-LIF-166': {
+    task: '谈长期合作和更好的条件',
+    indonesian: 'Kerja sama selama ini cukup baik. Ke depan volume kami akan naik, jadi kami ingin kondisi yang lebih baik.',
+    explanation: '从一次交易升级到长期合作：肯定过去合作、说明未来采购量、谈价格、交期、付款和双方条件。',
+    harvest: ['kerja sama selama ini', 'volume akan naik', 'kondisi lebih baik', 'kerja sama jangka panjang'],
+    goldenScene: {
+      situation: '你和供应商合作了一段时间，准备扩大采购，但希望拿到更好的价格、交期和付款条件。',
+      goal: '成功把谈话从单次订单推进到长期合作框架。',
+      dialogue: [
+        line('我', 'Kerja sama selama ini cukup baik.', '这段时间合作整体不错。'),
+        line('供应商', 'Terima kasih Pak, kami juga senang kerja sama dengan Bapak.', '谢谢 Pak，我们也很高兴和您合作。'),
+        line('我', 'Ke depan volume kami akan naik, jadi kami ingin kondisi yang lebih baik.', '之后我们的量会增加，所以希望有更好的条件。'),
+        line('供应商', 'Kondisi seperti apa yang Bapak harapkan?', '您希望什么条件？'),
+        line('我', 'Pertama, harga lebih kompetitif. Kedua, lead time lebih stabil.', '第一，价格更有竞争力。第二，交期更稳定。'),
+        line('供应商', 'Kalau volume naik, harga bisa kami hitung ulang.', '如果数量增加，价格可以重算。'),
+        line('我', 'Untuk pembayaran, setelah tiga kali order lancar, bisa ada tempo tiga puluh hari?', '付款方面，三次订单顺利后，可以有 30 天账期吗？'),
+        line('供应商', 'Bisa dibicarakan, tapi kami perlu komitmen quantity bulanan.', '可以谈，但我们需要月采购量承诺。'),
+        line('我', 'Baik. Kami siapkan proyeksi quantity, Bapak siapkan harga dan lead time baru.', '好。我们准备数量预测，您准备新价格和新交期。'),
+      ],
+      replies: [
+        pair('Kalau ada komitmen bulanan, harga bisa lebih baik.', '如果有月度承诺，价格可以更好。'),
+        pair('Lead time bisa kami jaga kalau forecast jelas.', '如果预测清楚，我们可以稳定交期。'),
+        pair('Tempo pembayaran bisa setelah hubungan berjalan baik.', '账期可以在合作稳定后提供。'),
+      ],
+      variations: [
+        pair('Kami ingin kerja sama jangka panjang, bukan hanya satu order.', '我们想长期合作，不只是单次订单。'),
+        pair('Kalau kualitas stabil, volume kami bisa naik bertahap.', '如果质量稳定，我们数量可以逐步增加。'),
+        pair('Apa syarat dari pihak Bapak untuk harga lebih baik?', '您这边给更好价格的条件是什么？'),
+        pair('Mari kita buat kerangka kerja sama untuk tiga bulan ke depan.', '我们做一个未来三个月的合作框架。'),
+      ],
+      decisions: [
+        {
+          situation: '供应商愿意降价，但要求固定月采购量。',
+          options: [
+            pair('Kami bisa beri forecast, tapi belum bisa guarantee semua quantity.', '我们可以给预测，但还不能保证全部数量。'),
+            pair('Kita mulai dengan komitmen kecil dulu, lalu naik bertahap.', '我们先从小承诺开始，再逐步增加。'),
+          ],
+        },
+      ],
+      localUsage: pair('长期合作谈判里，kondisi 不只是价格，也包括交期、付款、服务和稳定性。', '谈条件不是只砍价。'),
+      easyMistake: pair('不要只说 kasih harga murah。要给对方长期合作和数量增长的理由。', '关系升级要互换条件。'),
+      trySay: pair('Kami ingin kerja sama jangka panjang, bukan hanya satu order.', '我们想长期合作，不只是单次订单。'),
+    },
+  },
+};

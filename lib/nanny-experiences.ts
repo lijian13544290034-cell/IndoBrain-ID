@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { formatHarvest } from '@/lib/harvest';
 import { nannyGoldenBatch2 } from '@/lib/golden-batch-2-scenes';
+import { nannyGoldenBatch3 } from '@/lib/golden-batch-3-scenes';
 import type { GoldenSceneContent } from '@/lib/golden-scenes';
 import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
@@ -126,8 +127,8 @@ export function getNannyExperiences(): NannyExperience[] {
   return Array.from({ length: 60 }, (_, index) => {
     const id = `EXP-NAN-${String(index + 1).padStart(3, '0')}`;
     const experience = parse(id) ?? additionalExperiences[id];
-    const goldenPatch = nannyGoldenBatch2[id];
-    const merged = experience && goldenPatch ? { ...experience, ...goldenPatch } : experience;
+    const goldenPatch = nannyGoldenBatch2[id] ?? nannyGoldenBatch3[id];
+    const merged = experience && goldenPatch ? { ...experience, ...goldenPatch, chinese: goldenPatch.task } : experience;
     return merged ? { ...merged, harvest: formatHarvest(merged.harvest, merged.indonesian), pattern: getWorkplacePattern(merged.indonesian) } : { id, task: '', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
   });
 }

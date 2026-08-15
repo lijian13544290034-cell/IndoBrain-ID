@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { factorySupplemental } from '@/lib/factory-supplemental';
+import { factoryGoldenBatch3 } from '@/lib/golden-batch-3-scenes';
+import { factoryGoldenBatch4 } from '@/lib/golden-batch-4-scenes';
+import type { GoldenSceneContent } from '@/lib/golden-scenes';
 import { formatHarvest } from '@/lib/harvest';
 import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
@@ -12,6 +15,7 @@ export type FactoryExperience = {
   explanation?: string;
   harvest: string[];
   pattern: WorkplacePattern;
+  goldenScene?: GoldenSceneContent;
 };
 
 const experiencePath = path.join(process.cwd(), 'experience', 'factory', 'manager', 'Factory_Manager_Experience.md');
@@ -128,7 +132,7 @@ export function getFactoryExperiences(): FactoryExperience[] {
       );
 
       const displayExplanation = explanation ?? supplemental?.explanation ?? '';
-      return {
+      const baseExperience = {
         id: match[1],
         content: displayContent(match[1], task, indonesian, displayExplanation, harvest),
         task,
@@ -137,6 +141,13 @@ export function getFactoryExperiences(): FactoryExperience[] {
         harvest,
         pattern: getWorkplacePattern(indonesian),
       };
+      const goldenPatch = factoryGoldenBatch3[match[1]] ?? factoryGoldenBatch4[match[1]];
+      return goldenPatch ? {
+        ...baseExperience,
+        ...goldenPatch,
+        harvest: formatHarvest(goldenPatch.harvest, goldenPatch.indonesian),
+        pattern: getWorkplacePattern(goldenPatch.indonesian),
+      } : baseExperience;
     })
     .filter(({ id }) => Number(id.slice(-3)) >= 1)
     .sort((a, b) => a.id.localeCompare(b.id));
