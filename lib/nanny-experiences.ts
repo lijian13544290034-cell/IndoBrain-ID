@@ -1,9 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { formatHarvest } from '@/lib/harvest';
+import { nannyGoldenBatch2 } from '@/lib/golden-batch-2-scenes';
+import type { GoldenSceneContent } from '@/lib/golden-scenes';
 import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
 
-export type NannyExperience = { id: string; task: string; indonesian: string; chinese: string; explanation: string; harvest: string[]; pattern?: WorkplacePattern; missing?: boolean };
+export type NannyExperience = { id: string; task: string; indonesian: string; chinese: string; explanation: string; harvest: string[]; pattern?: WorkplacePattern; goldenScene?: GoldenSceneContent; missing?: boolean };
 const sourceDir = path.join(process.cwd(), '03_Experience_Base', 'Experience');
 const actorMarkers = [String.fromCodePoint(0x1f468), String.fromCodePoint(0x1f469)];
 const indonesianFlag = String.fromCodePoint(0x1f1ee, 0x1f1e9);
@@ -124,6 +126,8 @@ export function getNannyExperiences(): NannyExperience[] {
   return Array.from({ length: 60 }, (_, index) => {
     const id = `EXP-NAN-${String(index + 1).padStart(3, '0')}`;
     const experience = parse(id) ?? additionalExperiences[id];
-    return experience ? { ...experience, harvest: formatHarvest(experience.harvest, experience.indonesian), pattern: getWorkplacePattern(experience.indonesian) } : { id, task: '', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
+    const goldenPatch = nannyGoldenBatch2[id];
+    const merged = experience && goldenPatch ? { ...experience, ...goldenPatch } : experience;
+    return merged ? { ...merged, harvest: formatHarvest(merged.harvest, merged.indonesian), pattern: getWorkplacePattern(merged.indonesian) } : { id, task: '', indonesian: '', chinese: '', explanation: '', harvest: [], missing: true };
   });
 }

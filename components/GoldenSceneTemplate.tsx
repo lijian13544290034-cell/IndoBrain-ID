@@ -45,6 +45,12 @@ export default function GoldenSceneTemplate({ content, harvest }: { content: Gol
         <p className="text-sm leading-6 text-stone-700">{content.situation}</p>
       </SectionCard>
 
+      {content.goal && (
+        <SectionCard title="通关目标" tone="blue">
+          <p className="text-sm leading-6 text-blue-900">{content.goal}</p>
+        </SectionCard>
+      )}
+
       <SectionCard title="核心微对话">
         <div className="space-y-3">
           {content.dialogue.map((line) => (
@@ -82,6 +88,17 @@ export default function GoldenSceneTemplate({ content, harvest }: { content: Gol
         </div>
       </SectionCard>
 
+      {content.decisions?.map((decision) => (
+        <SectionCard key={decision.situation} title="你来决定下一步">
+          <p className="mb-3 text-sm leading-6 text-stone-600">{decision.situation}</p>
+          <div className="space-y-3">
+            {decision.options.map((option) => (
+              <ReplyBlock key={option.indonesian} indonesian={option.indonesian} chinese={option.chinese} />
+            ))}
+          </div>
+        </SectionCard>
+      ))}
+
       <HarvestSection harvest={harvest} />
 
       {content.localUsage && (
@@ -108,4 +125,3 @@ export default function GoldenSceneTemplate({ content, harvest }: { content: Gol
     </div>
   );
 }
-

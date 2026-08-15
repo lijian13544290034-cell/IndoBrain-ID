@@ -13,9 +13,14 @@ export type GoldenScenePair = {
 
 export type GoldenSceneContent = {
   situation: string;
+  goal?: string;
   dialogue: GoldenSceneLine[];
   replies: GoldenScenePair[];
   variations: GoldenScenePair[];
+  decisions?: Array<{
+    situation: string;
+    options: GoldenScenePair[];
+  }>;
   localUsage?: GoldenScenePair;
   easyMistake?: GoldenScenePair;
   trySay: GoldenScenePair;
