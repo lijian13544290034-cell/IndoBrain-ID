@@ -46,7 +46,7 @@ async function loadVoices(speech: SpeechSynthesis) {
   const currentVoices = speech.getVoices();
   if (currentVoices.length > 0) return currentVoices;
   return await new Promise<SpeechSynthesisVoice[]>((resolve) => {
-    const timeout = window.setTimeout(() => resolve(speech.getVoices()), 600);
+    const timeout = window.setTimeout(() => resolve(speech.getVoices()), 800);
     speech.addEventListener('voiceschanged', () => {
       window.clearTimeout(timeout);
       resolve(speech.getVoices());
@@ -57,12 +57,15 @@ async function loadVoices(speech: SpeechSynthesis) {
 async function speakWithBrowser(text: string, onEnd: () => void) {
   const speech = getBrowserSpeech();
   if (!speech) throw new Error('Browser speech is not available');
+  const voice = pickIndonesianVoice(await loadVoices(speech));
+  if (!voice) throw new Error('Indonesian browser voice is not available');
+
   speech.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'id-ID';
   utterance.rate = 0.92;
   utterance.pitch = 1;
-  utterance.voice = pickIndonesianVoice(await loadVoices(speech)) ?? null;
+  utterance.voice = voice;
   stopActiveAudio = () => {
     speech.cancel();
     stopActiveAudio = undefined;
@@ -143,5 +146,21 @@ export default function IndonesianSpeechButton({ text, compact = false, iconOnly
 
   const checking = azureConfigured === null;
   const buttonText = loading ? '加载中…' : playing ? '播放中' : failed ? '语音暂不可用' : '听一听';
-  return <button type="button" onClick={play} disabled={checking} aria-label="听一听" title={failed ? '语音暂不可用' : azureConfigured === false ? '使用浏览器语音朗读' : '听一听'} className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${checking ? 'cursor-wait text-[var(--ib-text-secondary)] opacity-60' : 'cursor-pointer text-[#5b82c5] hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] active:text-[var(--ib-primary-strong)]'} ${compact ? '' : 'mt-2'}`}><span className="inline-flex items-center gap-1.5"><SpeakerIcon />{!iconOnly && <span>{buttonText}</span>}</span></button>;
+  const title = failed ? '未找到可用的印尼语语音' : azureConfigured === false ? '使用浏览器印尼语语音朗读' : '听一听';
+
+  return (
+    <button
+      type="button"
+      onClick={play}
+      disabled={checking}
+      aria-label="听一听"
+      title={title}
+      className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${checking ? 'cursor-wait text-[var(--ib-text-secondary)] opacity-60' : 'cursor-pointer text-[#5b82c5] hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] active:text-[var(--ib-primary-strong)]'} ${compact ? '' : 'mt-2'}`}
+    >
+      <span className="inline-flex items-center gap-1.5">
+        <SpeakerIcon />
+        {!iconOnly && <span>{buttonText}</span>}
+      </span>
+    </button>
+  );
 }

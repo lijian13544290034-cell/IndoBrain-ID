@@ -18,9 +18,9 @@ export default function IndonesianAudioProvider({ children }: { children: React.
       {children}
       {enabled === false && (
         <p className="mt-4 text-xs leading-5 text-stone-500">
-          本地 Azure 语音不可用时，将自动使用浏览器语音朗读。
+          本地 Azure 语音不可用时，将尝试使用浏览器自带的印尼语语音朗读。
           <br />
-          Jika audio Azure belum tersedia, browser akan membantu membacakan teks.
+          Jika suara Indonesia tidak tersedia di browser ini, audio tidak akan diputar agar tidak salah bahasa.
         </p>
       )}
     </IndonesianAudioContext.Provider>
