@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useIndonesianAudio } from '@/components/IndonesianAudioProvider';
+import { isIndonesianVoice } from '@/lib/indonesian-voice';
 import { track } from '@/lib/learning-profile';
 
 let activeAudio: HTMLAudioElement | undefined;
@@ -37,9 +38,7 @@ function getBrowserSpeech(): SpeechSynthesis | undefined {
 }
 
 function pickIndonesianVoice(voices: SpeechSynthesisVoice[]) {
-  return voices.find((voice) => voice.lang.toLowerCase() === 'id-id')
-    ?? voices.find((voice) => voice.lang.toLowerCase().startsWith('id'))
-    ?? voices.find((voice) => /indones/i.test(`${voice.name} ${voice.lang}`));
+  return voices.find(isIndonesianVoice);
 }
 
 async function loadVoices(speech: SpeechSynthesis) {
