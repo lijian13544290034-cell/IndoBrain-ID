@@ -11,6 +11,7 @@
     "verify:env": "node scripts/verify-env.mjs",
     "verify:golden": "node scripts/verify-golden-scenes-integrity.mjs",
     "verify:harvest-meanings": "node scripts/verify-harvest-meanings.mjs",
+    "verify:harvest-semantics": "node scripts/verify-harvest-semantic-quality.mjs",
     "verify:tts:static": "node scripts/verify-tts-quality-gate.mjs",
     "verify:tts:real": "node scripts/tts-smoke-test.mjs",
     "verify:tts": "node scripts/verify-tts-quality-gate.mjs",

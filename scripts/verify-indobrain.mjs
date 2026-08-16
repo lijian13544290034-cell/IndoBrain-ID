@@ -5,6 +5,7 @@ const steps = [
   ['Environment contract', ['run', 'verify:env']],
   ['TTS static check', ['run', 'verify:tts:static']],
   ['Vocabulary Chinese coverage', ['run', 'verify:harvest-meanings']],
+  ['Vocabulary Chinese semantic quality', ['run', 'verify:harvest-semantics']],
   ['Golden Scene integrity', ['run', 'verify:golden']],
   ['Production build', ['run', 'build']],
 ];
