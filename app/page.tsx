@@ -1,6 +1,7 @@
 import V2HomeDashboard from '@/components/V2HomeDashboard';
+import { getContentStats } from '@/lib/content-stats';
 import { getExperienceCatalog } from '@/lib/experience-catalog';
 
 export default function Home() {
-  return <V2HomeDashboard catalog={getExperienceCatalog()} />;
+  return <V2HomeDashboard catalog={getExperienceCatalog()} contentStats={getContentStats()} />;
 }

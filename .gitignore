@@ -1,9 +1,11 @@
 node_modules/
 .next/
+.npm-cache/
 out/
 outputs/
 work/
 *.log
+*.tsbuildinfo
 .env*
 !.env.example
 

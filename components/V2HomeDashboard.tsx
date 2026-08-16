@@ -9,9 +9,11 @@ import { getIndonesiaPowerFromLearning } from '@/lib/v2/indonesia-power';
 import { withSearchContext } from '@/lib/experience-navigation';
 import { vocabularyLibrary } from '@/lib/vocabulary-library';
 import IndonesiaPowerBadge from '@/components/IndonesiaPowerBadge';
+import type { getContentStats } from '@/lib/content-stats';
 
 type ProfileState = ReturnType<typeof readLearningProfile>;
 type IconName = 'menu' | 'search' | 'scene' | 'book' | 'heart' | 'arrow';
+type ContentStats = ReturnType<typeof getContentStats>;
 
 function Icon({ name }: { name: IconName }) {
   const common = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
@@ -23,7 +25,7 @@ function Icon({ name }: { name: IconName }) {
   return <svg {...common}><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>;
 }
 
-export default function V2HomeDashboard({ catalog }: { catalog: readonly CatalogExperience[] }) {
+export default function V2HomeDashboard({ catalog, contentStats }: { catalog: readonly CatalogExperience[]; contentStats: ContentStats }) {
   const [profile, setProfile] = useState<ProfileState | null>(null);
   const [query, setQuery] = useState('');
 
@@ -36,7 +38,6 @@ export default function V2HomeDashboard({ catalog }: { catalog: readonly Catalog
   const favorites = profile?.favorites ?? [];
   const continueExperience = useMemo(() => catalog.find((item) => !completed.includes(item.id)) ?? catalog[0], [catalog, completed]);
   const progress = catalog.length ? Math.round((completed.length / catalog.length) * 100) : 0;
-  const lifeSceneCount = useMemo(() => catalog.filter((item) => item.module === 'Life').length, [catalog]);
   const achievements = useMemo(() => getLearningAchievementStats(completed, catalog), [catalog, completed]);
   const indonesiaPower = useMemo(() => getIndonesiaPowerFromLearning(achievements.completedExperienceCount, achievements.masteredHarvestCount), [achievements]);
 
@@ -55,8 +56,8 @@ export default function V2HomeDashboard({ catalog }: { catalog: readonly Catalog
   }, [catalog, query]);
 
   const quickLinks = [
-    { href: '/life', label: '场景速查', count: `${lifeSceneCount} 个场景`, icon: 'scene' as const },
-    { href: '/vocabulary', label: '基础词库', count: `${vocabularyLibrary.length} 个词汇`, icon: 'book' as const },
+    { href: '/life', label: '场景速查', count: `${contentStats.totalUniqueSceneCount} 个场景`, icon: 'scene' as const },
+    { href: '/vocabulary', label: '基础词库', count: `${contentStats.vocabularyCount} 个词汇`, icon: 'book' as const },
     { href: '/about#favorites', label: '我的收藏', count: `${favorites.length} 条收藏`, icon: 'heart' as const },
   ];
 
