@@ -173,3 +173,13 @@ export function getSceneMapGroupCount(group: SceneMapLevel2) {
   return group.topics.reduce((total, topic) => total + getSceneMapTopicCounts(topic).all, 0);
 }
 
+export function getSceneMapEntryLocation(entryId: string) {
+  for (const group of sceneMapV2) {
+    for (const topic of group.topics) {
+      const entry = getSceneMapEntries(topic).find((item) => item.id === entryId);
+      if (entry) return { group, topic, entry, href: `/life?group=${group.slug}&topic=${topic.slug}` };
+    }
+  }
+  return undefined;
+}
+
