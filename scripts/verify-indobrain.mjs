@@ -4,6 +4,7 @@ const steps = [
   ['TypeScript', ['run', 'typecheck']],
   ['Environment contract', ['run', 'verify:env']],
   ['TTS static check', ['run', 'verify:tts:static']],
+  ['Vocabulary Chinese coverage', ['run', 'verify:harvest-meanings']],
   ['Golden Scene integrity', ['run', 'verify:golden']],
   ['Production build', ['run', 'build']],
 ];

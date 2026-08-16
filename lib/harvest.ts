@@ -1,3 +1,5 @@
+import { harvestMeaningOverrides } from './harvest-meanings';
+
 const meanings: Record<string, string> = {
   'hari ini': '今天', 'besok': '明天', 'pagi': '早上', 'sore': '下午', 'malam ini': '今晚', 'dulu': '先', 'ya': '语气词', 'saja': '就、即可',
   'batch ini': '这个批次', 'sudah datang': '已经到了', 'pesanan ini': '这个订单', 'bahan ini': '这个材料', 'nggak usah': '不用', 'nggak cukup': '不够', 'nggak normal': '不正常', 'nggak tepat': '不对', 'nggak sesuai': '不符合', 'yang rusak': '损坏的、有问题的',
@@ -61,13 +63,19 @@ function inferredMeaning(term: string) {
   return translated.length ? translated.join(' ') : '印尼语短语';
 }
 
+export function harvestMeaning(entry: string) {
+  const term = harvestTerm(entry);
+  const normalized = term.toLocaleLowerCase();
+  return explicitMeaning(entry) || harvestMeaningOverrides[normalized] || meanings[normalized] || inferredMeaning(term);
+}
+
 export function formatHarvest(entries: string[], dialogue: string) {
   const normalizedDialogue = dialogue.toLocaleLowerCase();
   const output: string[] = [];
   for (const entry of entries) {
     const term = harvestTerm(entry);
     if (!term || !normalizedDialogue.includes(term.toLocaleLowerCase())) continue;
-    const meaning = explicitMeaning(entry) || meanings[term.toLocaleLowerCase()] || inferredMeaning(term);
+    const meaning = harvestMeaning(entry);
     const formatted = `${term}（${meaning}）`;
     if (!output.includes(formatted)) output.push(formatted);
     if (output.length === 6) break;
