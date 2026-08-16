@@ -66,7 +66,7 @@ function inferredMeaning(term: string) {
 export function harvestMeaning(entry: string) {
   const term = harvestTerm(entry);
   const normalized = term.toLocaleLowerCase();
-  return explicitMeaning(entry) || harvestMeaningOverrides[normalized] || meanings[normalized] || inferredMeaning(term);
+  return harvestMeaningOverrides[normalized] || explicitMeaning(entry) || meanings[normalized] || inferredMeaning(term);
 }
 
 export function formatHarvest(entries: string[], dialogue: string) {
