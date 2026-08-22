@@ -82,6 +82,7 @@ const {
   basicEssentialsConcepts,
   basicEssentialsNumberSteps,
   basicEssentialsCounterExamples,
+  basicEssentialsMicroScenes,
 } = compileBasicEssentials();
 
 const categoryIds = new Set(basicEssentialsCategories.map((item) => item.id));
@@ -163,6 +164,34 @@ for (const item of basicEssentialsCounterExamples) {
   if (!item.indonesian || !item.chinese) failures.push(`Counter example incomplete: ${JSON.stringify(item)}`);
 }
 
+if (!Array.isArray(basicEssentialsMicroScenes) || basicEssentialsMicroScenes.length < 8) {
+  failures.push(`Expected at least 8 Basic Essentials micro scenes, found ${basicEssentialsMicroScenes?.length ?? 0}`);
+}
+
+uniqueBy(basicEssentialsMicroScenes ?? [], (item) => item.id, 'micro scene id');
+for (const scene of basicEssentialsMicroScenes ?? []) {
+  for (const field of ['id', 'titleZh', 'contextZh']) {
+    if (!String(scene[field] ?? '').trim()) failures.push(`Micro scene missing ${field}: ${scene.id ?? 'unknown'}`);
+  }
+  if (scene.status !== 'active') failures.push(`Micro scene should not ship draft status: ${scene.id}`);
+  if (!Array.isArray(scene.conceptIds) || scene.conceptIds.length < 2) failures.push(`Micro scene needs reusable conceptIds: ${scene.id}`);
+  for (const conceptId of scene.conceptIds ?? []) {
+    if (!conceptKeys.has(conceptId) && !conceptIds.has(conceptId)) failures.push(`Micro scene references unknown conceptId: ${scene.id} -> ${conceptId}`);
+  }
+  if (!Array.isArray(scene.lines) || scene.lines.length < 2 || scene.lines.length > 4) failures.push(`Micro scene lines must be 2-4 short expressions: ${scene.id}`);
+  for (const line of scene.lines ?? []) {
+    if (!String(line.indonesian ?? '').trim()) failures.push(`Micro scene line missing Indonesian: ${scene.id}`);
+    if (!String(line.chinese ?? '').trim() || !hasChinese(line.chinese)) failures.push(`Micro scene line missing Chinese: ${scene.id} -> ${line.indonesian}`);
+    if (!String(line.ttsText ?? '').trim()) failures.push(`Micro scene line missing ttsText: ${scene.id} -> ${line.indonesian}`);
+    if (hasChinese(line.ttsText)) failures.push(`Micro scene ttsText contains Chinese: ${scene.id} -> ${line.ttsText}`);
+    if (normalize(line.ttsText) !== normalize(line.indonesian)) failures.push(`Micro scene ttsText must match the current line: ${scene.id} -> ${line.indonesian}`);
+    if (String(line.indonesian ?? '').length > 80) failures.push(`Micro scene line is too long for zero-beginner UX: ${scene.id} -> ${line.indonesian}`);
+  }
+  for (const sceneId of scene.relatedSceneIds ?? []) {
+    if (!knownSceneIds.has(sceneId)) failures.push(`Micro scene references unknown relatedSceneId: ${scene.id} -> ${sceneId}`);
+  }
+}
+
 const highRiskIncomplete = [
   ['di mana', /哪里|哪儿/],
   ['ke mana', /去哪里|去哪/],
@@ -183,6 +212,7 @@ for (const [term, expected] of highRiskIncomplete) {
 }
 
 if (!source.includes('export type BasicConcept')) failures.push('Content/UI separation failed: BasicConcept schema is missing from lib/basic-essentials.ts');
+if (!source.includes('export type BasicMicroScene')) failures.push('Micro scene schema is missing from lib/basic-essentials.ts');
 if (source.includes('IndonesianSpeechButton') || source.includes('className=')) failures.push('Content/UI separation failed: lib/basic-essentials.ts contains UI code');
 
 const routeExists = fs.existsSync(path.join(root, 'app', 'basic-essentials', 'page.tsx'));
@@ -196,7 +226,7 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`BASIC ESSENTIALS INTEGRITY: PASS (${basicEssentialsConcepts.length} concepts, ${basicEssentialsCategories.length} categories)`);
+console.log(`BASIC ESSENTIALS INTEGRITY: PASS (${basicEssentialsConcepts.length} concepts, ${basicEssentialsCategories.length} categories, ${basicEssentialsMicroScenes.length} micro scenes)`);
 if (warnings.length) {
   for (const warning of warnings) console.warn(`BASIC ESSENTIALS WARNING: ${warning}`);
 }

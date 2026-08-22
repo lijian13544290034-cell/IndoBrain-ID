@@ -7,9 +7,11 @@ import {
   getBasicCategory,
   getBasicConcept,
   getBasicConcepts,
+  getBasicMicroScenesForConcepts,
   getBasicSubcategory,
   type BasicCombination,
   type BasicConcept,
+  type BasicMicroScene,
   type BasicSubcategory,
   type BasicTopCategory,
 } from '@/lib/basic-essentials';
@@ -112,13 +114,13 @@ function ConceptCard({ item, href, active = false }: { item: BasicConcept; href:
   </div>;
 }
 
-function TextWithSpeech({ indonesian, chinese }: BasicCombination) {
+function TextWithSpeech({ indonesian, chinese, ttsText = indonesian }: BasicCombination & { ttsText?: string }) {
   return <div className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--ib-bg-soft)] px-4 py-3">
     <div className="min-w-0">
       <p className="truncate text-sm font-semibold text-[var(--ib-text-primary)]">{indonesian}</p>
       <p className="mt-1 text-xs leading-5 text-[var(--ib-text-secondary)]">{chinese}</p>
     </div>
-    <IndonesianSpeechButton text={indonesian} compact iconOnly />
+    <IndonesianSpeechButton text={ttsText} compact iconOnly />
   </div>;
 }
 
@@ -139,14 +141,14 @@ function ConceptDetail({ concept }: { concept: BasicConcept }) {
     </div>
 
     <div className="mt-4 grid gap-3">
-      {spokenForms.length ? <div>
-        <h3 className="text-sm font-bold text-[var(--ib-text-primary)]">日常更常听到</h3>
-        <div className="mt-2 grid gap-2">{spokenForms.map((form) => <TextWithSpeech key={form} indonesian={form} chinese="口语常见说法" />)}</div>
+      {combinations.length ? <div>
+        <h3 className="text-sm font-bold text-[var(--ib-text-primary)]">马上会说</h3>
+        <div className="mt-2 grid gap-2">{combinations.slice(0, 2).map((item) => <TextWithSpeech key={item.indonesian} indonesian={item.indonesian} chinese={item.chinese} />)}</div>
       </div> : null}
 
-      {combinations.length ? <div>
-        <h3 className="text-sm font-bold text-[var(--ib-text-primary)]">马上能组合</h3>
-        <div className="mt-2 grid gap-2">{combinations.map((item) => <TextWithSpeech key={item.indonesian} indonesian={item.indonesian} chinese={item.chinese} />)}</div>
+      {spokenForms.length ? <div>
+        <h3 className="text-sm font-bold text-[var(--ib-text-primary)]">现实里也会听到</h3>
+        <div className="mt-2 grid gap-2">{spokenForms.map((form) => <TextWithSpeech key={form} indonesian={form} chinese="口语常见说法" />)}</div>
       </div> : null}
 
       {concept.usageNote ? <p className="rounded-2xl bg-[var(--ib-bg-soft)] px-4 py-3 text-sm leading-6 text-[var(--ib-text-secondary)]">{concept.usageNote}</p> : null}
@@ -160,6 +162,37 @@ function ConceptDetail({ concept }: { concept: BasicConcept }) {
           </Link> : null)}
         </div>
       </div> : null}
+    </div>
+  </section>;
+}
+
+function MicroSceneSection({ scenes }: { scenes: BasicMicroScene[] }) {
+  if (!scenes.length) return null;
+  const sceneById = new Map(getExperienceCatalog().map((scene) => [scene.id, scene]));
+
+  return <section className="mt-5 rounded-[28px] bg-white p-5 shadow-[var(--ib-shadow-card)]" aria-label="马上用一下">
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ib-primary)]">马上用一下</p>
+      <h2 className="mt-2 text-xl font-bold text-[var(--ib-text-primary)]">刚学的词，马上处理一个小场景</h2>
+      <p className="mt-1 text-sm leading-6 text-[var(--ib-text-secondary)]">不用背长句。先把 2–4 句最短表达说顺。</p>
+    </div>
+
+    <div className="mt-4 grid gap-3">
+      {scenes.map((scene) => {
+        const relatedScenes = scene.relatedSceneIds.map((id) => sceneById.get(id)).filter(Boolean).slice(0, 1);
+        return <article key={scene.id} className="rounded-[22px] border border-[var(--ib-border)] bg-[var(--ib-bg-soft)] p-4">
+          <h3 className="text-base font-bold text-[var(--ib-text-primary)]">{scene.titleZh}</h3>
+          <p className="mt-1 text-sm leading-6 text-[var(--ib-text-secondary)]">{scene.contextZh}</p>
+          <div className="mt-3 grid gap-2">
+            {scene.lines.map((line) => <TextWithSpeech key={`${scene.id}-${line.indonesian}`} indonesian={line.indonesian} chinese={line.chinese} ttsText={line.ttsText} />)}
+          </div>
+          {relatedScenes.length ? <div className="mt-3">
+            {relatedScenes.map((relatedScene) => relatedScene ? <Link key={relatedScene.id} href={relatedScene.href} className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[var(--ib-primary)] shadow-sm transition hover:bg-[var(--ib-primary-soft)]">
+              进入真实场景 →
+            </Link> : null)}
+          </div> : null}
+        </article>;
+      })}
     </div>
   </section>;
 }
@@ -229,6 +262,7 @@ export default function BasicEssentialsExperience({ category, subcategory, conce
   const totalGroups = Math.max(1, Math.ceil(concepts.length / GROUP_SIZE));
   const groupIndex = clampGroup(group, totalGroups);
   const groupConcepts = concepts.slice((groupIndex - 1) * GROUP_SIZE, groupIndex * GROUP_SIZE);
+  const microScenes = getBasicMicroScenesForConcepts(groupConcepts.map((item) => item.conceptKey));
   const selectedConcept = concept ? getBasicConcept(concept) : undefined;
   const detailConcept = selectedConcept && selectedConcept.categoryId === selectedCategory.id ? selectedConcept : undefined;
 
@@ -256,6 +290,8 @@ export default function BasicEssentialsExperience({ category, subcategory, conce
     <section className="mt-4 grid gap-3 sm:grid-cols-2" aria-label={`${selectedSubcategory.title} current learning group`}>
       {groupConcepts.map((item) => <ConceptCard key={item.conceptKey} item={item} active={detailConcept?.conceptKey === item.conceptKey} href={buildHref({ category: selectedCategory.id, subcategory: selectedSubcategory.id, group: groupIndex, concept: item.conceptKey })} />)}
     </section>
+
+    <MicroSceneSection scenes={microScenes} />
 
     {detailConcept ? <div className="mt-5 grid gap-4">
       <ConceptDetail concept={detailConcept} />

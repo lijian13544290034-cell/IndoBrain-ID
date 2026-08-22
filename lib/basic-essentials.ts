@@ -56,6 +56,25 @@ export type BasicNumberStep = {
   items: BasicCombination[];
 };
 
+export type BasicMicroSceneStatus = 'active' | 'draft';
+
+export type BasicMicroSceneLine = {
+  indonesian: string;
+  chinese: string;
+  ttsText: string;
+};
+
+export type BasicMicroScene = {
+  id: string;
+  titleZh: string;
+  contextZh: string;
+  conceptIds: string[];
+  lines: BasicMicroSceneLine[];
+  relatedSceneIds: string[];
+  priority: number;
+  status: BasicMicroSceneStatus;
+};
+
 export const basicEssentialsCategories: BasicTopCategory[] = [
   {
     id: 'core',
@@ -383,6 +402,125 @@ export const basicEssentialsCounterExamples: BasicCombination[] = [
   { indonesian: 'dua orang', chinese: '两个人' }, { indonesian: 'dua botol', chinese: '两瓶' }, { indonesian: 'dua gelas', chinese: '两杯' }, { indonesian: 'dua piring', chinese: '两盘' }, { indonesian: 'dua bungkus', chinese: '两包 / 两份' }, { indonesian: 'dua kotak', chinese: '两盒' }, { indonesian: 'dua kilo', chinese: '两公斤' }, { indonesian: 'dua liter', chinese: '两升' }, { indonesian: 'dua lembar', chinese: '两张' }, { indonesian: 'dua mobil', chinese: '两辆车' }, { indonesian: 'dua hari', chinese: '两天' },
 ];
 
+export const basicEssentialsMicroScenes: BasicMicroScene[] = [
+  {
+    id: 'micro-core-actions-home-001',
+    titleZh: '在家里让人帮忙',
+    contextZh: '刚学完几个动作，马上能叫人拿、放、开、关。',
+    conceptIds: ['makan', 'minum', 'ambil', 'taruh', 'buka', 'tutup', 'pintu', 'di-sini'],
+    lines: [
+      { indonesian: 'Tolong ambil ini.', chinese: '帮我拿这个。', ttsText: 'Tolong ambil ini.' },
+      { indonesian: 'Taruh di sini.', chinese: '放在这里。', ttsText: 'Taruh di sini.' },
+      { indonesian: 'Buka pintunya.', chinese: '把门打开。', ttsText: 'Buka pintunya.' },
+      { indonesian: 'Tutup pintunya.', chinese: '把门关上。', ttsText: 'Tutup pintunya.' },
+    ],
+    relatedSceneIds: [],
+    priority: 10,
+    status: 'active',
+  },
+  {
+    id: 'micro-feelings-after-work-001',
+    titleZh: '下班回到家',
+    contextZh: '饿、累、困、渴，先把真实状态说出来。',
+    conceptIds: ['lapar', 'haus', 'capek', 'ngantuk', 'minum'],
+    lines: [
+      { indonesian: 'Lapar banget.', chinese: '好饿。', ttsText: 'Lapar banget.' },
+      { indonesian: 'Capek nih.', chinese: '有点累了。', ttsText: 'Capek nih.' },
+      { indonesian: 'Aku ngantuk.', chinese: '我困了。', ttsText: 'Aku ngantuk.' },
+      { indonesian: 'Mau minum dulu.', chinese: '想先喝点东西。', ttsText: 'Mau minum dulu.' },
+    ],
+    relatedSceneIds: [],
+    priority: 20,
+    status: 'active',
+  },
+  {
+    id: 'micro-core-directions-driver-001',
+    titleZh: '坐车给司机指路',
+    contextZh: '不用长句，三句话就能让司机明白方向。',
+    conceptIds: ['kiri', 'kanan', 'depan', 'di-sini', 'di-sana', 'lurus', 'belok'],
+    lines: [
+      { indonesian: 'Lurus saja.', chinese: '一直往前。', ttsText: 'Lurus saja.' },
+      { indonesian: 'Belok kanan di depan.', chinese: '前面右转。', ttsText: 'Belok kanan di depan.' },
+      { indonesian: 'Berhenti di sini ya.', chinese: '在这里停一下。', ttsText: 'Berhenti di sini ya.' },
+    ],
+    relatedSceneIds: ['EXP-DRV-001'],
+    priority: 30,
+    status: 'active',
+  },
+  {
+    id: 'micro-core-numbers-shop-001',
+    titleZh: '买东西报数量',
+    contextZh: '买水、买东西时，数字马上能派上用场。',
+    conceptIds: ['satu', 'dua', 'tiga', 'sepuluh', 'botol', 'harga'],
+    lines: [
+      { indonesian: 'Dua botol ya.', chinese: '两瓶。', ttsText: 'Dua botol ya.' },
+      { indonesian: 'Satu lagi.', chinese: '再一个。', ttsText: 'Satu lagi.' },
+      { indonesian: 'Sepuluh ribu?', chinese: '一万吗？', ttsText: 'Sepuluh ribu?' },
+    ],
+    relatedSceneIds: [],
+    priority: 40,
+    status: 'active',
+  },
+  {
+    id: 'micro-food-order-001',
+    titleZh: '吃饭点单',
+    contextZh: '少糖、少辣、不要冰，点餐时最先够用。',
+    conceptIds: ['makan', 'minum', 'teh', 'tanpa-gula', 'sedikit-gula', 'tanpa-es', 'pedas'],
+    lines: [
+      { indonesian: 'Saya mau makan di sini.', chinese: '我想在这里吃。', ttsText: 'Saya mau makan di sini.' },
+      { indonesian: 'Jangan terlalu pedas.', chinese: '不要太辣。', ttsText: 'Jangan terlalu pedas.' },
+      { indonesian: 'Tehnya sedikit gula ya.', chinese: '茶少糖。', ttsText: 'Tehnya sedikit gula ya.' },
+      { indonesian: 'Tanpa es.', chinese: '不要冰。', ttsText: 'Tanpa es.' },
+    ],
+    relatedSceneIds: [],
+    priority: 50,
+    status: 'active',
+  },
+  {
+    id: 'micro-home-kitchen-001',
+    titleZh: '厨房里找东西',
+    contextZh: '筷子、碗、锅铲、煤气，都是家里马上会用的词。',
+    conceptIds: ['sumpit', 'mangkuk', 'spatula', 'gas', 'tabung-gas', 'kompor'],
+    lines: [
+      { indonesian: 'Ambil sumpitnya ya.', chinese: '拿一下筷子。', ttsText: 'Ambil sumpitnya ya.' },
+      { indonesian: 'Mangkuknya di mana?', chinese: '碗在哪里？', ttsText: 'Mangkuknya di mana?' },
+      { indonesian: 'Gas habis.', chinese: '煤气没了。', ttsText: 'Gas habis.' },
+      { indonesian: 'Tolong cek tabung gas.', chinese: '帮我看一下煤气罐。', ttsText: 'Tolong cek tabung gas.' },
+    ],
+    relatedSceneIds: ['EXP-NAN-010'],
+    priority: 60,
+    status: 'active',
+  },
+  {
+    id: 'micro-transport-pickup-001',
+    titleZh: '司机来接你',
+    contextZh: '接送、定位、到了没有，先学最短可用句。',
+    conceptIds: ['driver', 'sopir', 'jemput', 'antar', 'lokasi', 'alamat', 'tiba'],
+    lines: [
+      { indonesian: 'Sudah sampai?', chinese: '到了吗？', ttsText: 'Sudah sampai?' },
+      { indonesian: 'Saya kirim lokasi ya.', chinese: '我发定位。', ttsText: 'Saya kirim lokasi ya.' },
+      { indonesian: 'Jemput saya di sini.', chinese: '在这里接我。', ttsText: 'Jemput saya di sini.' },
+    ],
+    relatedSceneIds: ['EXP-DRV-001'],
+    priority: 70,
+    status: 'active',
+  },
+  {
+    id: 'micro-home-personal-care-001',
+    titleZh: '洗漱用品用完了',
+    contextZh: '牙膏、纸巾、洗发水，家里缺了就这样说。',
+    conceptIds: ['pasta-gigi', 'tisu', 'tisu-toilet', 'sampo', 'shampoo', 'sabun', 'habis'],
+    lines: [
+      { indonesian: 'Pasta gigi habis.', chinese: '牙膏没了。', ttsText: 'Pasta gigi habis.' },
+      { indonesian: 'Tolong ambil tisu.', chinese: '帮我拿纸巾。', ttsText: 'Tolong ambil tisu.' },
+      { indonesian: 'Sampo beli di mana?', chinese: '洗发水在哪里买？', ttsText: 'Sampo beli di mana?' },
+    ],
+    relatedSceneIds: ['EXP-LIF-224'],
+    priority: 80,
+    status: 'active',
+  },
+];
+
 export const basicEssentialsConcepts = concepts;
 
 export function getBasicCategory(categoryId?: string) {
@@ -403,6 +541,15 @@ export function getBasicConcepts(filters: { categoryId?: string; subcategoryId?:
 
 export function getBasicConcept(conceptKey?: string) {
   return basicEssentialsConcepts.find((item) => item.conceptKey === conceptKey);
+}
+
+export function getBasicMicroScenesForConcepts(conceptIds: string[]) {
+  const conceptSet = new Set(conceptIds);
+  return basicEssentialsMicroScenes
+    .filter((scene) => scene.status === 'active')
+    .filter((scene) => scene.conceptIds.some((conceptId) => conceptSet.has(conceptId)))
+    .sort((a, b) => a.priority - b.priority)
+    .slice(0, 3);
 }
 
 export function getBasicStats() {
