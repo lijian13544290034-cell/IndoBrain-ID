@@ -19,15 +19,19 @@ async function getAudioUrl(text: string) {
   if (cached) return cached;
   const pending = pendingAudio.get(text);
   if (pending) return pending;
-  const request = fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) })
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 12000);
+  const request = fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }), signal: controller.signal })
     .then(async (response) => {
       if (!response.ok) throw new Error('TTS request failed');
       const url = URL.createObjectURL(await response.blob());
       audioUrlCache.set(text, url);
-      pendingAudio.delete(text);
       return url;
     })
-    .catch((error) => { pendingAudio.delete(text); throw error; });
+    .finally(() => {
+      window.clearTimeout(timeout);
+      pendingAudio.delete(text);
+    });
   pendingAudio.set(text, request);
   return request;
 }
@@ -143,18 +147,19 @@ export default function IndonesianSpeechButton({ text, compact = false, iconOnly
     }
   };
 
-  const checking = azureConfigured === null;
   const buttonText = loading ? '加载中…' : playing ? '播放中' : failed ? '语音暂不可用' : '听一听';
   const title = failed ? '未找到可用的印尼语语音' : azureConfigured === false ? '使用浏览器印尼语语音朗读' : '听一听';
+  const interactionClass = loading
+    ? 'cursor-wait text-[var(--ib-text-secondary)] opacity-60'
+    : 'cursor-pointer text-[#5b82c5] hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] active:text-[var(--ib-primary-strong)]';
 
   return (
     <button
       type="button"
       onClick={play}
-      disabled={checking}
       aria-label="听一听"
       title={title}
-      className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${checking ? 'cursor-wait text-[var(--ib-text-secondary)] opacity-60' : 'cursor-pointer text-[#5b82c5] hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] active:text-[var(--ib-primary-strong)]'} ${compact ? '' : 'mt-2'}`}
+      className={`min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium transition duration-200 ${interactionClass} ${compact ? '' : 'mt-2'}`}
     >
       <span className="inline-flex items-center gap-1.5">
         <SpeakerIcon />
