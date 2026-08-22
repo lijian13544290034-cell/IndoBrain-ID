@@ -6,6 +6,7 @@ const steps = [
   ['TTS static check', ['run', 'verify:tts:static']],
   ['Vocabulary Chinese coverage', ['run', 'verify:harvest-meanings']],
   ['Vocabulary Chinese semantic quality', ['run', 'verify:harvest-semantics']],
+  ['Basic Essentials integrity', ['run', 'verify:basic-essentials']],
   ['Golden Scene integrity', ['run', 'verify:golden']],
   ['Production build', ['run', 'build']],
 ];
