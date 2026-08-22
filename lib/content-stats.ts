@@ -5,6 +5,7 @@ import { moduleExperiences } from '@/lib/module-experiences';
 import { getNannyExperiences } from '@/lib/nanny-experiences';
 import { getSocialExperiences } from '@/lib/social-experiences';
 import { vocabularyLibrary } from '@/lib/vocabulary-library';
+import { getBasicConcepts } from '@/lib/basic-essentials';
 
 type CountableScene = { id: string; indonesian?: string; missing?: boolean; goldenScene?: unknown };
 
@@ -35,6 +36,7 @@ export function getContentStats() {
     quickSceneCount: totalUniqueSceneCount - goldenSceneCount,
     goldenSceneCount,
     totalUniqueSceneCount,
+    basicEssentialsConceptCount: getBasicConcepts().length,
     vocabularyCount: vocabularyLibrary.length,
   };
 }

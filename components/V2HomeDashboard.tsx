@@ -35,7 +35,6 @@ export default function V2HomeDashboard({ catalog, contentStats }: { catalog: re
   }, []);
 
   const completed = profile?.completed ?? [];
-  const favorites = profile?.favorites ?? [];
   const continueExperience = useMemo(() => catalog.find((item) => !completed.includes(item.id)) ?? catalog[0], [catalog, completed]);
   const progress = catalog.length ? Math.round((completed.length / catalog.length) * 100) : 0;
   const achievements = useMemo(() => getLearningAchievementStats(completed, catalog), [catalog, completed]);
@@ -56,9 +55,8 @@ export default function V2HomeDashboard({ catalog, contentStats }: { catalog: re
   }, [catalog, query]);
 
   const quickLinks = [
-    { href: '/life', label: '场景速查', count: `${contentStats.totalUniqueSceneCount} 个场景`, icon: 'scene' as const },
-    { href: '/vocabulary', label: '基础词库', count: `${contentStats.vocabularyCount} 个词汇`, icon: 'book' as const },
-    { href: '/about#favorites', label: '我的收藏', count: `${favorites.length} 条收藏`, icon: 'heart' as const },
+    { href: '/basic-essentials', label: '基础必会', description: '从最简单的开始学', count: `${contentStats.basicEssentialsConceptCount} 个基础概念`, icon: 'book' as const },
+    { href: '/life', label: '场景速查', description: '有事马上用', count: `${contentStats.totalUniqueSceneCount} 个场景`, icon: 'scene' as const },
   ];
 
   return <main className="v2-home mx-auto min-h-[100dvh] w-full max-w-6xl overflow-hidden px-5 pb-4 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-8 sm:pb-10 sm:pt-8">
@@ -81,7 +79,7 @@ export default function V2HomeDashboard({ catalog, contentStats }: { catalog: re
     <section data-home-part="quick-start" className="mt-4">
       <h2 className="h-6 text-[16px] font-semibold leading-6 text-[var(--ib-text-primary)]">快速开始</h2>
       <div data-home-part="quick-links" className="mt-2 overflow-hidden rounded-[18px] border border-[var(--ib-border-soft)] bg-[var(--ib-bg-card)] shadow-[var(--ib-shadow-card)]">
-        {quickLinks.map((link, index) => <Link key={link.href} href={link.href} className={`flex h-[60px] items-center gap-3 px-4 transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] ${index ? 'border-t border-[var(--ib-border-soft)]' : ''}`}><span className="shrink-0 text-[var(--ib-primary)]"><Icon name={link.icon} /></span><span className="min-w-0 flex-1"><span className="block truncate text-[16px] font-semibold leading-5 text-[var(--ib-text-primary)]">{link.label}</span></span><span className="shrink-0 text-[13px] text-[var(--ib-text-secondary)]">{link.count}</span><span aria-hidden="true" className="shrink-0 text-[var(--ib-text-secondary)]"><Icon name="arrow" /></span></Link>)}
+        {quickLinks.map((link, index) => <Link key={link.href} href={link.href} className={`flex h-[66px] items-center gap-3 px-4 transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] ${index ? 'border-t border-[var(--ib-border-soft)]' : ''}`}><span className="shrink-0 text-[var(--ib-primary)]"><Icon name={link.icon} /></span><span className="min-w-0 flex-1"><span className="block truncate text-[16px] font-semibold leading-5 text-[var(--ib-text-primary)]">{link.label}</span><span className="mt-0.5 block truncate text-[13px] leading-4 text-[var(--ib-text-secondary)]">{link.description}</span></span><span className="shrink-0 text-[13px] text-[var(--ib-text-secondary)]">{link.count}</span><span aria-hidden="true" className="shrink-0 text-[var(--ib-text-secondary)]"><Icon name="arrow" /></span></Link>)}
       </div>
     </section>
   </main>;
