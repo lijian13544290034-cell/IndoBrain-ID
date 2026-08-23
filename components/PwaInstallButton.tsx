@@ -24,6 +24,10 @@ function isMobileLike() {
   return window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 820;
 }
 
+function shouldShowInstallEntry(pathname: string | null) {
+  return pathname === '/' || pathname === '/basic-essentials' || pathname === '/life' || pathname === '/about';
+}
+
 export default function PwaInstallButton() {
   const pathname = usePathname();
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -33,6 +37,11 @@ export default function PwaInstallButton() {
   useEffect(() => {
     const updateFallbackState = () => {
       try {
+        if (!shouldShowInstallEntry(pathname)) {
+          setState('hidden');
+          return;
+        }
+
         if (isStandaloneMode()) {
           setState('hidden');
           return;
@@ -78,7 +87,7 @@ export default function PwaInstallButton() {
       window.removeEventListener('appinstalled', handleAppInstalled);
       window.removeEventListener('resize', updateFallbackState);
     };
-  }, []);
+  }, [pathname]);
 
   const bottomClass = useMemo(() => (pathname === '/' ? 'bottom-4' : 'bottom-24'), [pathname]);
 
