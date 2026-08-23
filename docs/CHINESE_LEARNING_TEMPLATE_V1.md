@@ -86,10 +86,12 @@ Chinese TTS V1 uses:
 
 - Route: `/api/chinese-tts`
 - Voice: `zh-CN-XiaoxiaoNeural`
-- Env: `CHINESE_AZURE_SPEECH_KEY`, `CHINESE_AZURE_SPEECH_REGION`
+- Azure credentials: shared existing `AZURE_SPEECH_KEY`, `AZURE_SPEECH_REGION`
 - Component: `components/ChineseSpeechButton.tsx`
 
-Browser fallback only runs when a Chinese / Mandarin voice is detected. It fails closed instead of using a non-Chinese default voice.
+The Chinese voice is isolated behind a single code constant so it can be replaced later without changing the route, data model, or Indonesian TTS provider.
+
+Chinese TTS input must be Hanzi, not pinyin. Browser fallback only runs when a Chinese / Mandarin voice is detected. It fails closed instead of using a non-Chinese default voice.
 
 ## Visual model
 

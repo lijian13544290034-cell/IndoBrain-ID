@@ -46,7 +46,7 @@ const {
   chineseConcepts,
   chineseLearningGroups,
   chineseRealUses,
-  chineseAzureVoice,
+  chineseTtsVoice,
 } = compileChineseLearning();
 
 const conceptIds = new Set(chineseConcepts.map((item) => item.id));
@@ -56,7 +56,7 @@ if (chineseConcepts.length !== 11) failures.push(`Expected 11 Chinese concepts, 
 if (chineseLearningGroups.length !== 2) failures.push(`Expected 2 Chinese learning groups, found ${chineseLearningGroups.length}`);
 if (chineseRealUses.length !== 2) failures.push(`Expected 2 Chinese real use units, found ${chineseRealUses.length}`);
 if (chineseRealUses.reduce((sum, item) => sum + item.items.length, 0) !== 7) failures.push('Expected 7 Chinese real use items');
-if (chineseAzureVoice !== 'zh-CN-XiaoxiaoNeural') failures.push(`Chinese Azure voice must be zh-CN-XiaoxiaoNeural, found ${chineseAzureVoice}`);
+if (chineseTtsVoice !== 'zh-CN-XiaoxiaoNeural') failures.push(`Chinese TTS voice must be zh-CN-XiaoxiaoNeural, found ${chineseTtsVoice}`);
 
 uniqueBy(chineseConcepts, (item) => item.id, 'Chinese concept id');
 uniqueBy(chineseLearningGroups, (item) => item.id, 'Chinese learning group id');
@@ -67,6 +67,8 @@ for (const concept of chineseConcepts) {
   if (!concept.pinyin || /\d/.test(concept.pinyin)) failures.push(`Concept ${concept.id} must use tone-mark pinyin`);
   if (!concept.indonesian) failures.push(`Concept ${concept.id} missing Indonesian support`);
   if (concept.ttsText !== concept.hanzi) failures.push(`Concept ${concept.id} ttsText should match Hanzi`);
+  if (!/[\u3400-\u9FFF]/.test(concept.ttsText)) failures.push(`Concept ${concept.id} ttsText must contain Hanzi`);
+  if (concept.ttsText === concept.pinyin) failures.push(`Concept ${concept.id} must not use pinyin as TTS input`);
   if (!concept.visualKey || !concept.visual?.kind) failures.push(`Concept ${concept.id} missing visual model`);
 }
 
@@ -91,6 +93,8 @@ for (const realUse of chineseRealUses) {
     if (!item.pinyin || /\d/.test(item.pinyin)) failures.push(`Real Use ${realUse.id} item must use tone-mark pinyin`);
     if (!item.indonesian) failures.push(`Real Use ${realUse.id} item missing Indonesian`);
     if (!item.ttsText || !/[\u3400-\u9FFF]/.test(item.ttsText)) failures.push(`Real Use ${realUse.id} item missing Chinese ttsText`);
+    if (item.ttsText === item.pinyin) failures.push(`Real Use ${realUse.id} must not use pinyin as TTS input`);
+    if (!item.hanzi.includes(item.ttsText.replace(/[？?。！!，,]/g, '')) && item.ttsText.replace(/[？?。！!，,]/g, '') !== item.hanzi.replace(/[？?。！!，,]/g, '')) failures.push(`Real Use ${realUse.id} ttsText should be the current Hanzi expression`);
     for (const conceptId of item.conceptIds) {
       if (!conceptIds.has(conceptId)) failures.push(`Real Use ${realUse.id} references missing concept ${conceptId}`);
     }
@@ -101,6 +105,7 @@ const page = read('app/learn-chinese/page.tsx');
 const component = read('components/ChineseLearningExperience.tsx');
 const button = read('components/ChineseSpeechButton.tsx');
 const route = read('app/api/chinese-tts/route.ts');
+const chineseProvider = read('lib/chinese-tts-provider.ts');
 const indonesianRoute = read('app/api/tts/route.ts');
 const indonesianProvider = read('lib/tts-provider.ts');
 
@@ -114,6 +119,10 @@ if (!button.includes('Chinese browser voice is not available')) failures.push('C
 if (!route.includes('getChineseTtsProvider')) failures.push('/api/chinese-tts is not wired to Chinese provider');
 if (!route.includes('Only Chinese text is accepted')) failures.push('/api/chinese-tts must reject non-Chinese text');
 if (!route.includes('X-IndoBrain-Chinese-TTS-Voice')) failures.push('/api/chinese-tts must return Chinese voice header');
+if (!chineseProvider.includes('process.env.AZURE_SPEECH_KEY')) failures.push('Chinese TTS must reuse existing AZURE_SPEECH_KEY');
+if (!chineseProvider.includes('process.env.AZURE_SPEECH_REGION')) failures.push('Chinese TTS must reuse existing AZURE_SPEECH_REGION');
+if (/CHINESE_AZURE_SPEECH_KEY|CHINESE_AZURE_SPEECH_REGION/.test(chineseProvider + route + button)) failures.push('Chinese TTS must not introduce separate CHINESE_AZURE_* credentials');
+if (!chineseProvider.includes('chineseTtsVoice')) failures.push('Chinese voice must be isolated behind a Chinese TTS voice constant');
 if (!indonesianRoute.includes('Only Indonesian text is accepted')) failures.push('Existing Indonesian /api/tts guard was changed');
 if (!indonesianProvider.includes('id-ID-GadisNeural')) failures.push('Existing Indonesian TTS voice was changed');
 

@@ -6,19 +6,19 @@ export type ChineseTtsProvider = {
   synthesize: (text: string) => Promise<ChineseTtsAudio>;
 };
 
-export const chineseAzureVoice = 'zh-CN-XiaoxiaoNeural';
+export const chineseTtsVoice = 'zh-CN-XiaoxiaoNeural';
 
 function escapeXml(text: string) {
   return text.replace(/[<>&'"]/g, (character) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' })[character] ?? character);
 }
 
 export function getChineseTtsProvider(): ChineseTtsProvider {
-  const key = process.env.CHINESE_AZURE_SPEECH_KEY;
-  const region = process.env.CHINESE_AZURE_SPEECH_REGION;
+  const key = process.env.AZURE_SPEECH_KEY;
+  const region = process.env.AZURE_SPEECH_REGION;
   const configured = Boolean(key && region);
   return {
     configured,
-    voice: configured ? chineseAzureVoice : null,
+    voice: configured ? chineseTtsVoice : null,
     async synthesize(text: string) {
       if (!configured || !key || !region) throw new Error('Chinese TTS provider is not configured');
       const response = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
@@ -29,10 +29,10 @@ export function getChineseTtsProvider(): ChineseTtsProvider {
           'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3',
           'User-Agent': 'IndoBrain Chinese Learning',
         },
-        body: `<speak version="1.0" xml:lang="zh-CN"><voice name="${chineseAzureVoice}">${escapeXml(text)}</voice></speak>`,
+        body: `<speak version="1.0" xml:lang="zh-CN"><voice name="${chineseTtsVoice}">${escapeXml(text)}</voice></speak>`,
       });
       if (!response.ok) throw new Error('Chinese TTS provider request failed');
-      return { audio: new Uint8Array(await response.arrayBuffer()), voice: chineseAzureVoice };
+      return { audio: new Uint8Array(await response.arrayBuffer()), voice: chineseTtsVoice };
     },
   };
 }
