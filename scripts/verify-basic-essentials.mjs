@@ -6,7 +6,9 @@ import ts from 'typescript';
 
 const root = process.cwd();
 const sourcePath = path.join(root, 'lib', 'basic-essentials.ts');
+const realUseSourcePath = path.join(root, 'lib', 'basic-real-use.ts');
 const source = fs.readFileSync(sourcePath, 'utf8');
+const realUseSource = fs.existsSync(realUseSourcePath) ? fs.readFileSync(realUseSourcePath, 'utf8') : '';
 const failures = [];
 const warnings = [];
 
@@ -34,6 +36,48 @@ function compileBasicEssentials() {
   fs.writeFileSync(tempFile, compiled.outputText, 'utf8');
   const require = createRequire(import.meta.url);
   const module = require(tempFile);
+  fs.rmSync(tempDir, { recursive: true, force: true });
+  return module;
+}
+
+function compileBasicRealUse() {
+  if (!realUseSource) {
+    failures.push('Missing Real Use runtime data: lib/basic-real-use.ts');
+    return {};
+  }
+
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'indobrain-real-use-'));
+  const require = createRequire(import.meta.url);
+  const basicCompiled = ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2020,
+      esModuleInterop: true,
+      skipLibCheck: true,
+    },
+    fileName: sourcePath,
+    reportDiagnostics: true,
+  });
+  const realUseCompiled = ts.transpileModule(realUseSource, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2020,
+      esModuleInterop: true,
+      skipLibCheck: true,
+    },
+    fileName: realUseSourcePath,
+    reportDiagnostics: true,
+  });
+
+  for (const diagnostic of [...(basicCompiled.diagnostics ?? []), ...(realUseCompiled.diagnostics ?? [])]) {
+    if (diagnostic.category === ts.DiagnosticCategory.Error) {
+      failures.push(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
+    }
+  }
+
+  fs.writeFileSync(path.join(tempDir, 'basic-essentials.js'), basicCompiled.outputText, 'utf8');
+  fs.writeFileSync(path.join(tempDir, 'basic-real-use.js'), realUseCompiled.outputText, 'utf8');
+  const module = require(path.join(tempDir, 'basic-real-use.js'));
   fs.rmSync(tempDir, { recursive: true, force: true });
   return module;
 }
@@ -84,6 +128,12 @@ const {
   basicEssentialsCounterExamples,
   basicEssentialsMicroScenes,
 } = compileBasicEssentials();
+
+const {
+  BASIC_REAL_USE_EXPECTED_STATS,
+  basicRealUseGroupBindings,
+  basicRealUseUnits,
+} = compileBasicRealUse();
 
 const categoryIds = new Set(basicEssentialsCategories.map((item) => item.id));
 const subcategoryByCategory = new Map(
@@ -215,6 +265,121 @@ if (!source.includes('export type BasicConcept')) failures.push('Content/UI sepa
 if (!source.includes('export type BasicMicroScene')) failures.push('Micro scene schema is missing from lib/basic-essentials.ts');
 if (source.includes('IndonesianSpeechButton') || source.includes('className=')) failures.push('Content/UI separation failed: lib/basic-essentials.ts contains UI code');
 
+function buildLearningGroups(groupSize = 8) {
+  const groups = [];
+  const sortedCategories = [...basicEssentialsCategories].sort((a, b) => a.order - b.order);
+  for (const category of sortedCategories) {
+    for (const subcategory of [...category.subcategories].sort((a, b) => a.order - b.order)) {
+      const items = basicEssentialsConcepts
+        .filter((concept) => concept.categoryId === category.id && concept.subcategoryId === subcategory.id && concept.status === 'active')
+        .sort((a, b) => a.order - b.order);
+      for (let index = 0; index < items.length; index += groupSize) {
+        groups.push({
+          learningGroupId: `${category.id}:${subcategory.id}:${Math.floor(index / groupSize) + 1}`,
+          categoryId: category.id,
+          subcategoryId: subcategory.id,
+          group: Math.floor(index / groupSize) + 1,
+          concepts: items.slice(index, index + groupSize),
+        });
+      }
+    }
+  }
+  return groups;
+}
+
+const realUseUnits = basicRealUseUnits ?? [];
+const realUseBindings = basicRealUseGroupBindings ?? [];
+const realUseStats = BASIC_REAL_USE_EXPECTED_STATS ?? {};
+const learningGroups = buildLearningGroups();
+const realUseById = new Map(realUseUnits.map((unit) => [unit.id, unit]));
+const bindingsByLearningGroup = new Map();
+const displayCounts = new Map();
+
+if (realUseStats.totalConcepts !== 633) failures.push(`Real Use expected totalConcepts must be 633, found ${realUseStats.totalConcepts}`);
+if (learningGroups.length !== 93) failures.push(`Expected 93 Learning Groups, found ${learningGroups.length}`);
+if (realUseUnits.length !== 93) failures.push(`Expected 93 Real Use Units, found ${realUseUnits.length}`);
+if (realUseBindings.length !== 93) failures.push(`Expected 93 Real Use bindings, found ${realUseBindings.length}`);
+
+let realUseItemCount = 0;
+let phraseCount = 0;
+let sentenceCount = 0;
+let microSceneCount = 0;
+
+uniqueBy(realUseUnits, (unit) => unit.id, 'real use id');
+
+for (const binding of realUseBindings) {
+  if (!binding.learningGroupId || !binding.realUseId) failures.push(`Real Use binding is incomplete: ${JSON.stringify(binding)}`);
+  const expectedLearningGroupId = `${binding.categoryId}:${binding.subcategoryId}:${binding.group}`;
+  if (binding.learningGroupId !== expectedLearningGroupId) failures.push(`Real Use binding learningGroupId mismatch: ${binding.learningGroupId} should be ${expectedLearningGroupId}`);
+  if (!realUseById.has(binding.realUseId)) failures.push(`Real Use binding references missing unit: ${binding.learningGroupId} -> ${binding.realUseId}`);
+  if (bindingsByLearningGroup.has(binding.learningGroupId)) failures.push(`Learning Group has more than one Real Use binding: ${binding.learningGroupId}`);
+  bindingsByLearningGroup.set(binding.learningGroupId, binding.realUseId);
+  displayCounts.set(binding.realUseId, (displayCounts.get(binding.realUseId) ?? 0) + 1);
+}
+
+for (const group of learningGroups) {
+  if (!bindingsByLearningGroup.has(group.learningGroupId)) failures.push(`Learning Group has no Real Use: ${group.learningGroupId}`);
+}
+
+for (const [realUseId, count] of displayCounts) {
+  if (count !== 1) failures.push(`Duplicated Real Use display binding: ${realUseId} appears ${count} times`);
+}
+
+function conceptMatchesText(conceptId, text) {
+  const normalizedText = normalize(text).replace(/-/g, ' ');
+  const concept = basicEssentialsConcepts.find((item) => item.conceptKey === conceptId || item.id === conceptId);
+  const displayAliases = {
+    'kotak-counter': ['kotak'],
+    'lembar-counter': ['lembar'],
+    'sakit-tenggorokan': ['sakit tenggorokan', 'tenggorokan sakit'],
+  };
+  const forms = new Set([
+    conceptId.replace(/-/g, ' '),
+    concept?.indonesian,
+    ...(concept?.standardForms ?? []),
+    ...(concept?.colloquialForms ?? []),
+    ...(displayAliases[conceptId] ?? []),
+  ].filter(Boolean).map((item) => normalize(item).replace(/-/g, ' ')));
+  for (const form of [...forms]) {
+    forms.add(`${form}nya`);
+    forms.add(`${form}ku`);
+    forms.add(`${form}mu`);
+  }
+  return [...forms].some((form) => form && normalizedText.includes(form));
+}
+
+for (const unit of realUseUnits) {
+  if (!['phrase', 'sentence', 'micro_scene'].includes(unit.type)) failures.push(`Invalid Real Use type: ${unit.id} -> ${unit.type}`);
+  if (unit.type === 'phrase') phraseCount += 1;
+  if (unit.type === 'sentence') sentenceCount += 1;
+  if (unit.type === 'micro_scene') microSceneCount += 1;
+  if (unit.status !== 'active') failures.push(`Real Use unit should be active: ${unit.id}`);
+  if (!String(unit.titleZh ?? '').trim() || !hasChinese(unit.titleZh)) failures.push(`Real Use unit missing Chinese titleZh: ${unit.id}`);
+  if (!Array.isArray(unit.items) || unit.items.length < 1) failures.push(`Real Use unit has no items: ${unit.id}`);
+  if (unit.type === 'micro_scene' && (!unit.contextZh || !hasChinese(unit.contextZh))) failures.push(`Micro-scene Real Use needs contextZh: ${unit.id}`);
+  for (const item of unit.items ?? []) {
+    realUseItemCount += 1;
+    if (!String(item.indonesian ?? '').trim()) failures.push(`Real Use item missing Indonesian: ${unit.id}`);
+    if (!String(item.chinese ?? '').trim() || !hasChinese(item.chinese)) failures.push(`Real Use item missing Chinese: ${unit.id} -> ${item.indonesian}`);
+    if (!String(item.ttsText ?? '').trim()) failures.push(`Real Use item missing ttsText: ${unit.id} -> ${item.indonesian}`);
+    if (/[\u3400-\u9FFF]/.test(item.ttsText)) failures.push(`Real Use ttsText contains Chinese: ${unit.id} -> ${item.ttsText}`);
+    if (normalize(item.ttsText) !== normalize(item.indonesian)) failures.push(`Real Use ttsText must match Indonesian display: ${unit.id} -> ${item.indonesian}`);
+    if (!Array.isArray(item.conceptIds) || item.conceptIds.length < 1) failures.push(`Real Use item missing conceptIds: ${unit.id} -> ${item.indonesian}`);
+    for (const conceptId of item.conceptIds ?? []) {
+      if (!conceptKeys.has(conceptId) && !conceptIds.has(conceptId)) failures.push(`Real Use item references unknown conceptId: ${unit.id} -> ${conceptId}`);
+      if (!conceptMatchesText(conceptId, item.indonesian)) failures.push(`Invalid Real Use concept binding: ${unit.id} -> "${item.indonesian}" does not visibly use ${conceptId}`);
+    }
+  }
+}
+
+if (realUseItemCount !== 279) failures.push(`Expected 279 Real Use items, found ${realUseItemCount}`);
+if (phraseCount !== 34) failures.push(`Expected 34 phrase Real Use units, found ${phraseCount}`);
+if (sentenceCount !== 48) failures.push(`Expected 48 sentence Real Use units, found ${sentenceCount}`);
+if (microSceneCount !== 11) failures.push(`Expected 11 micro_scene Real Use units, found ${microSceneCount}`);
+if (realUseStats.totalRealUseItems !== 279 || realUseStats.phrase !== 34 || realUseStats.sentence !== 48 || realUseStats.microScene !== 11) {
+  failures.push(`Real Use expected stats are not frozen V1 values: ${JSON.stringify(realUseStats)}`);
+}
+
 const routeExists = fs.existsSync(path.join(root, 'app', 'basic-essentials', 'page.tsx'));
 const componentExists = fs.existsSync(path.join(root, 'components', 'BasicEssentialsExperience.tsx'));
 if (!routeExists) warnings.push('Basic Essentials route not present yet: app/basic-essentials/page.tsx');
@@ -226,7 +391,7 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`BASIC ESSENTIALS INTEGRITY: PASS (${basicEssentialsConcepts.length} concepts, ${basicEssentialsCategories.length} categories, ${basicEssentialsMicroScenes.length} micro scenes)`);
+console.log(`BASIC ESSENTIALS INTEGRITY: PASS (${basicEssentialsConcepts.length} concepts, ${basicEssentialsCategories.length} categories, ${basicEssentialsMicroScenes.length} micro scenes, ${realUseUnits.length} real use units, ${realUseItemCount} real use items)`);
 if (warnings.length) {
   for (const warning of warnings) console.warn(`BASIC ESSENTIALS WARNING: ${warning}`);
 }
