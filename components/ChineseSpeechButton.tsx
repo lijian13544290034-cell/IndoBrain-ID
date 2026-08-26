@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 let activeAudio: HTMLAudioElement | undefined;
 let stopActiveAudio: (() => void) | undefined;
@@ -72,7 +72,7 @@ async function speakWithBrowser(text: string, onEnd: () => void) {
   speech.speak(utterance);
 }
 
-export default function ChineseSpeechButton({ text, compact = false }: { text: string; compact?: boolean }) {
+export default function ChineseSpeechButton({ text, compact = false, label = 'Dengarkan' }: { text: string; compact?: boolean; label?: string }) {
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -93,16 +93,19 @@ export default function ChineseSpeechButton({ text, compact = false }: { text: s
     setPlaying(false);
   };
 
+  useEffect(() => stop, []);
+
   const playWithAzure = async () => {
     const audio = new Audio(await getAudioUrl(text));
     audioRef.current = audio;
     activeAudio = audio;
     stopRef.current = () => audio.pause();
     stopActiveAudio = stop;
+    setPlaying(true);
     await new Promise<void>((resolve, reject) => {
       audio.onended = () => { if (activeAudio === audio) activeAudio = undefined; markEnded(); resolve(); };
       audio.onerror = () => { if (activeAudio === audio) activeAudio = undefined; markEnded(); reject(new Error('Chinese audio playback failed')); };
-      audio.play().then(resolve).catch(reject);
+      audio.play().catch(reject);
     });
   };
 
@@ -117,7 +120,6 @@ export default function ChineseSpeechButton({ text, compact = false }: { text: s
     setLoading(true);
     try {
       await playWithAzure();
-      setPlaying(true);
     } catch {
       try {
         await speakWithBrowser(text, markEnded);
@@ -131,18 +133,18 @@ export default function ChineseSpeechButton({ text, compact = false }: { text: s
     }
   };
 
-  const label = loading ? '加载中' : playing ? '播放中' : failed ? '语音暂不可用' : '听中文';
+  const visibleLabel = loading ? 'Memuat' : playing ? 'Memutar' : failed ? 'Audio belum tersedia' : label;
 
   return (
     <button
       type="button"
       onClick={play}
-      aria-label={`听中文：${text}`}
-      title={failed ? '未找到可用中文语音' : '听中文'}
-      className={`inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-[#b9d2ff] bg-white px-3 text-xs font-semibold text-[#4f76bb] shadow-sm transition hover:bg-[#eef5ff] active:scale-[0.99] ${loading ? 'cursor-wait opacity-60' : ''} ${compact ? 'px-2' : ''}`}
+      aria-label={`${label}: ${text}`}
+      title={failed ? 'Audio Mandarin belum tersedia' : label}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#b9d2ff] bg-white px-4 text-sm font-bold text-[#4f76bb] shadow-sm transition hover:bg-[#eef5ff] active:scale-[0.99] ${loading ? 'cursor-wait opacity-60' : ''} ${compact ? 'px-3 text-xs' : ''}`}
     >
       <SpeakerIcon />
-      <span>{label}</span>
+      <span>{visibleLabel}</span>
     </button>
   );
 }

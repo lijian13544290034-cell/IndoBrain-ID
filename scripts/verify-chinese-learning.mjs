@@ -42,64 +42,104 @@ function uniqueBy(items, key, label) {
   }
 }
 
+function stripPunctuation(text) {
+  return text.replace(/[？?。！!，,、\s]/g, '');
+}
+
+function hasHanzi(text) {
+  return /[\u3400-\u9FFF]/.test(text);
+}
+
+function hasToneMark(text) {
+  return /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü]/i.test(text);
+}
+
+function section(source, name) {
+  const start = source.indexOf(`function ${name}`);
+  if (start < 0) return '';
+  const next = source.indexOf(`function `, start + 9);
+  return source.slice(start, next < 0 ? source.length : next);
+}
+
 const {
-  chineseConcepts,
-  chineseLearningGroups,
-  chineseRealUses,
+  chineseVisualObjects,
+  chineseQuantityExpressions,
+  chineseGoldenLessonJumlah,
   chineseTtsVoice,
 } = compileChineseLearning();
 
-const conceptIds = new Set(chineseConcepts.map((item) => item.id));
-const realUseIds = new Set(chineseRealUses.map((item) => item.id));
+const expectedStates = ['entry', 'paham', 'dengar', 'lihat', 'ucapkan', 'temukan', 'pakai', 'aku-bisa', 'completion'];
+const lesson = chineseGoldenLessonJumlah;
 
-if (chineseConcepts.length !== 11) failures.push(`Expected 11 Chinese concepts, found ${chineseConcepts.length}`);
-if (chineseLearningGroups.length !== 2) failures.push(`Expected 2 Chinese learning groups, found ${chineseLearningGroups.length}`);
-if (chineseRealUses.length !== 2) failures.push(`Expected 2 Chinese real use units, found ${chineseRealUses.length}`);
-if (chineseRealUses.reduce((sum, item) => sum + item.items.length, 0) !== 7) failures.push('Expected 7 Chinese real use items');
+if (lesson.route !== '/learn-chinese') failures.push('Chinese lesson route must be /learn-chinese');
+if (lesson.id !== 'jumlah-01') failures.push('Lesson id must be jumlah-01');
+if (lesson.titleId !== 'Jumlah') failures.push('Lesson title must be Jumlah');
+if (lesson.subtitleId !== 'Belajar menyebut jumlah benda dalam Mandarin') failures.push('Lesson subtitle changed');
 if (chineseTtsVoice !== 'zh-CN-XiaoxiaoNeural') failures.push(`Chinese TTS voice must be zh-CN-XiaoxiaoNeural, found ${chineseTtsVoice}`);
+if (JSON.stringify(lesson.steps.map((item) => item.id)) !== JSON.stringify(expectedStates)) failures.push('Lesson state flow must match ENTRY → PAHAM → DENGAR → LIHAT → UCAPKAN → TEMUKAN → PAKAI → AKU BISA → COMPLETION');
 
-uniqueBy(chineseConcepts, (item) => item.id, 'Chinese concept id');
-uniqueBy(chineseLearningGroups, (item) => item.id, 'Chinese learning group id');
-uniqueBy(chineseRealUses, (item) => item.id, 'Chinese real use id');
+uniqueBy(chineseVisualObjects, (item) => item.id, 'Chinese visual object id');
+uniqueBy(chineseQuantityExpressions, (item) => item.id, 'Chinese quantity expression id');
 
-for (const concept of chineseConcepts) {
-  if (!/[\u3400-\u9FFF]/.test(concept.hanzi)) failures.push(`Concept ${concept.id} missing Hanzi`);
-  if (!concept.pinyin || /\d/.test(concept.pinyin)) failures.push(`Concept ${concept.id} must use tone-mark pinyin`);
-  if (!concept.indonesian) failures.push(`Concept ${concept.id} missing Indonesian support`);
-  if (concept.ttsText !== concept.hanzi) failures.push(`Concept ${concept.id} ttsText should match Hanzi`);
-  if (!/[\u3400-\u9FFF]/.test(concept.ttsText)) failures.push(`Concept ${concept.id} ttsText must contain Hanzi`);
-  if (concept.ttsText === concept.pinyin) failures.push(`Concept ${concept.id} must not use pinyin as TTS input`);
-  if (!concept.visualKey || !concept.visual?.kind) failures.push(`Concept ${concept.id} missing visual model`);
-}
+const apple = chineseVisualObjects.find((item) => item.id === 'apple');
+if (!apple || apple.renderer !== 'css-apple') failures.push('Visual Library V1 must provide css apple object');
+if (JSON.stringify(apple?.supportedVariables.quantity) !== JSON.stringify([1, 2, 3])) failures.push('Apple visual must support quantity states 1, 2, 3');
 
-const groupRealUseCount = new Map();
-for (const group of chineseLearningGroups) {
-  if (!group.realUseId || !realUseIds.has(group.realUseId)) failures.push(`Group ${group.id} references missing Real Use`);
-  groupRealUseCount.set(group.id, (groupRealUseCount.get(group.id) ?? 0) + 1);
-  for (const conceptId of group.conceptIds) {
-    if (!conceptIds.has(conceptId)) failures.push(`Group ${group.id} references missing concept ${conceptId}`);
+const expectedExpressions = [
+  { id: 'one-apple', quantity: 1, hanzi: '一个苹果', indonesian: 'satu apel' },
+  { id: 'two-apples', quantity: 2, hanzi: '两个苹果', indonesian: 'dua apel' },
+  { id: 'three-apples', quantity: 3, hanzi: '三个苹果', indonesian: 'tiga apel' },
+];
+
+for (const expected of expectedExpressions) {
+  const expression = chineseQuantityExpressions.find((item) => item.id === expected.id);
+  if (!expression) {
+    failures.push(`Missing target expression: ${expected.id}`);
+    continue;
+  }
+  if (expression.quantity !== expected.quantity) failures.push(`${expected.id} quantity changed`);
+  if (expression.hanzi !== expected.hanzi) failures.push(`${expected.id} Hanzi must be ${expected.hanzi}`);
+  if (expression.indonesian !== expected.indonesian) failures.push(`${expected.id} Indonesian support changed`);
+  if (expression.ttsText !== expected.hanzi) failures.push(`${expected.id} TTS input must be current Hanzi expression`);
+  if (!hasHanzi(expression.ttsText)) failures.push(`${expected.id} TTS input must contain Hanzi`);
+  if (expression.ttsText === expression.pinyin) failures.push(`${expected.id} must not use pinyin as TTS input`);
+  if (expression.visual.objectId !== 'apple' || expression.visual.quantity !== expected.quantity) failures.push(`${expected.id} visual state mismatch`);
+  const tokenHanzi = stripPunctuation(expression.pinyinTokens.map((token) => token.hanzi).join(''));
+  if (tokenHanzi !== stripPunctuation(expression.hanzi)) failures.push(`${expected.id} Hanzi/Pinyin token alignment mismatch`);
+  for (const token of expression.pinyinTokens) {
+    if (!hasHanzi(token.hanzi)) failures.push(`${expected.id} token missing Hanzi`);
+    if (!/^[a-z]+$/i.test(token.base)) failures.push(`${expected.id} token base must be plain Latin syllable`);
+    if (![1, 2, 3, 4, 'neutral'].includes(token.tone)) failures.push(`${expected.id} token has invalid tone`);
+    if (token.tone !== 'neutral' && !hasToneMark(token.display)) failures.push(`${expected.id} token display must use tone marks`);
+    if (!token.wordBlock.includes(token.hanzi)) failures.push(`${expected.id} token wordBlock must include its Hanzi`);
   }
 }
-for (const [groupId, count] of groupRealUseCount) {
-  if (count !== 1) failures.push(`Group ${groupId} must have exactly ONE Real Use`);
+
+if (lesson.focusExpressionId !== 'two-apples') failures.push('Focus expression must be two-apples');
+if (lesson.temukan.missingQuantity !== 2) failures.push('Temukan missing quantity must be 2');
+if (lesson.temukan.questionId !== 'Mana yang benar?') failures.push('Temukan question must be Bahasa Indonesia');
+if (lesson.temukan.correctFeedbackId !== 'Bagus! Kamu menemukan polanya.') failures.push('Temukan correct feedback changed');
+if (lesson.temukan.firstWrongFeedbackId !== 'Coba lagi') failures.push('Wrong answer feedback must be Coba lagi');
+if (lesson.temukan.options.filter((item) => item.correct).length !== 1) failures.push('Temukan must have one correct answer');
+if (lesson.temukan.options.find((item) => item.correct)?.hanzi !== '两个苹果') failures.push('Temukan correct answer must be 两个苹果');
+
+const pakai = lesson.pakai;
+const expectedPakai = [
+  [pakai.question, '你要几个？', '你要几个', 'Kamu mau berapa?'],
+  [pakai.answer, '两个。', '两个', 'Dua.'],
+  [pakai.response, '给你。', '给你', 'Ini untukmu.'],
+];
+for (const [line, hanzi, ttsText, indonesian] of expectedPakai) {
+  if (line.hanzi !== hanzi) failures.push(`Pakai line must be ${hanzi}`);
+  if (line.ttsText !== ttsText) failures.push(`Pakai TTS input must be Hanzi without punctuation: ${ttsText}`);
+  if (line.indonesian !== indonesian) failures.push(`Pakai Indonesian support must be ${indonesian}`);
+  if (!hasHanzi(line.ttsText)) failures.push(`Pakai TTS input must contain Hanzi: ${hanzi}`);
+  if (stripPunctuation(line.pinyinTokens.map((token) => token.hanzi).join('')) !== stripPunctuation(line.hanzi)) failures.push(`Pakai Pinyin alignment mismatch: ${hanzi}`);
 }
 
-for (const realUse of chineseRealUses) {
-  if (!['phrase', 'sentence', 'micro_scene'].includes(realUse.type)) failures.push(`Invalid Real Use type: ${realUse.id}`);
-  if (!realUse.titleZh || !realUse.titleId || !realUse.contextId) failures.push(`Real Use ${realUse.id} missing title/context`);
-  if (!realUse.items.length) failures.push(`Real Use ${realUse.id} has no items`);
-  for (const item of realUse.items) {
-    if (!/[\u3400-\u9FFF]/.test(item.hanzi)) failures.push(`Real Use ${realUse.id} item missing Hanzi`);
-    if (!item.pinyin || /\d/.test(item.pinyin)) failures.push(`Real Use ${realUse.id} item must use tone-mark pinyin`);
-    if (!item.indonesian) failures.push(`Real Use ${realUse.id} item missing Indonesian`);
-    if (!item.ttsText || !/[\u3400-\u9FFF]/.test(item.ttsText)) failures.push(`Real Use ${realUse.id} item missing Chinese ttsText`);
-    if (item.ttsText === item.pinyin) failures.push(`Real Use ${realUse.id} must not use pinyin as TTS input`);
-    if (!item.hanzi.includes(item.ttsText.replace(/[？?。！!，,]/g, '')) && item.ttsText.replace(/[？?。！!，,]/g, '') !== item.hanzi.replace(/[？?。！!，,]/g, '')) failures.push(`Real Use ${realUse.id} ttsText should be the current Hanzi expression`);
-    for (const conceptId of item.conceptIds) {
-      if (!conceptIds.has(conceptId)) failures.push(`Real Use ${realUse.id} references missing concept ${conceptId}`);
-    }
-  }
-}
+if (lesson.akuBisa.visualToHanzi.quantity !== 3) failures.push('Aku Bisa visual → Hanzi test must use 3 apples');
+if (lesson.akuBisa.visualToHanzi.options.find((item) => item.correct)?.hanzi !== '三个苹果') failures.push('Aku Bisa visual → Hanzi correct answer must be 三个苹果');
+if (lesson.akuBisa.soundToMeaning.expressionId !== 'two-apples') failures.push('Aku Bisa sound → meaning test must use two-apples');
 
 const page = read('app/learn-chinese/page.tsx');
 const component = read('components/ChineseLearningExperience.tsx');
@@ -108,11 +148,23 @@ const route = read('app/api/chinese-tts/route.ts');
 const chineseProvider = read('lib/chinese-tts-provider.ts');
 const indonesianRoute = read('app/api/tts/route.ts');
 const indonesianProvider = read('lib/tts-provider.ts');
+const applicationFrame = read('components/ApplicationFrame.tsx');
 
 if (!page.includes('ChineseLearningExperience')) failures.push('/learn-chinese route is not wired to ChineseLearningExperience');
-if (!component.includes('ChineseSpeechButton')) failures.push('Chinese learning UI is not wired to ChineseSpeechButton');
-if (!component.includes('马上会用')) failures.push('Chinese learning UI missing Real Use section');
-if (/PHRASE|SENTENCE|MICRO_SCENE|realUseId|conceptIds/.test(component)) failures.push('Chinese learning UI leaks internal labels');
+if (page.includes('searchParams') || page.includes('groupId')) failures.push('/learn-chinese must not keep old group-query demo flow');
+if (!component.includes("'use client'")) failures.push('Chinese golden template must be an interactive client lesson');
+for (const state of ['EntryState', 'PahamState', 'DengarState', 'LihatState', 'UcapkanState', 'TemukanState', 'PakaiState', 'AkuBisaState', 'CompletionState']) {
+  if (!component.includes(`function ${state}`)) failures.push(`Missing UI state: ${state}`);
+}
+if (section(component, 'DengarState').includes('PinyinAlignment') || section(component, 'DengarState').includes('expression.hanzi') || section(component, 'DengarState').includes('expression.indonesian')) failures.push('Dengar must hide Hanzi, Pinyin, and Indonesian support');
+if (!section(component, 'LihatState').includes('ExpressionFocus')) failures.push('Lihat must show Hanzi + Pinyin alignment + Indonesian support');
+if (!section(component, 'UcapkanState').includes('Sekarang coba ucapkan')) failures.push('Ucapkan must ask the child to imitate');
+if (!section(component, 'TemukanState').includes('Coba lagi') && !component.includes('firstWrongFeedbackId')) failures.push('Temukan must use gentle retry feedback');
+if (!section(component, 'PakaiState').includes('lesson.pakai.question') || !section(component, 'PakaiState').includes('lesson.pakai.answer') || !section(component, 'PakaiState').includes('lesson.pakai.response')) failures.push('Pakai must use exact approved dialogue data');
+if (section(component, 'AkuBisaState').includes('PinyinAlignment') || section(component, 'AkuBisaState').includes('.indonesian')) failures.push('Aku Bisa tests must not show Pinyin or Indonesian target translation');
+if (!section(component, 'CompletionState').includes('3 ungkapan Mandarin sudah kamu kuasai')) failures.push('Completion screen must show calm learning result');
+if (/Chinese Learning Template V1|马上会用|下一组|首页|收藏|我的|场景/.test(component)) failures.push('Chinese learning UI must not use Chinese interface labels or old demo labels');
+if (!component.includes('Kembali') || !component.includes('Mulai') || !component.includes('Dengarkan') || !component.includes('Lanjut') || !component.includes('Ulangi')) failures.push('Chinese learning UI labels must be Bahasa Indonesia');
 if (!button.includes("fetch('/api/chinese-tts'")) failures.push('ChineseSpeechButton must use /api/chinese-tts');
 if (!button.includes("utterance.lang = voice.lang || 'zh-CN'")) failures.push('Chinese browser fallback must use Chinese voice/lang');
 if (!button.includes('Chinese browser voice is not available')) failures.push('Chinese fallback must fail closed without Chinese voice');
@@ -125,11 +177,12 @@ if (/CHINESE_AZURE_SPEECH_KEY|CHINESE_AZURE_SPEECH_REGION/.test(chineseProvider 
 if (!chineseProvider.includes('chineseTtsVoice')) failures.push('Chinese voice must be isolated behind a Chinese TTS voice constant');
 if (!indonesianRoute.includes('Only Indonesian text is accepted')) failures.push('Existing Indonesian /api/tts guard was changed');
 if (!indonesianProvider.includes('id-ID-GadisNeural')) failures.push('Existing Indonesian TTS voice was changed');
+if (!applicationFrame.includes("pathname?.startsWith('/learn-chinese')")) failures.push('/learn-chinese must hide the global bottom navigation');
 
 if (failures.length) {
-  console.error('CHINESE LEARNING TEMPLATE: FAIL');
+  console.error('CHINESE GOLDEN TEMPLATE 01: FAIL');
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
-console.log(`CHINESE LEARNING TEMPLATE: PASS (${chineseConcepts.length} concepts, ${chineseLearningGroups.length} groups, ${chineseRealUses.length} real use units, ${chineseRealUses.reduce((sum, item) => sum + item.items.length, 0)} real use items)`);
+console.log('CHINESE GOLDEN TEMPLATE 01: PASS (Jumlah, 3 target expressions, 9 lesson states, Chinese TTS shared Azure config)');

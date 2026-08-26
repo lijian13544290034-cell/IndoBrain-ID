@@ -1,193 +1,177 @@
-# Chinese Learning Template V1
+# Chinese Learning Engine V1 — Golden Template 01: Jumlah
 
-Status: Template demo only. Not exposed from the homepage. Production release is not part of this task.
+This document records the frozen implementation contract for the isolated Chinese-learning demo.
 
-## Product philosophy
+## Route
 
-For Indonesian learners, IndoBrain Chinese learning follows:
+- Route: `/learn-chinese`
+- Exposure: isolated route only
+- Homepage: unchanged
+- Existing Indonesian learning modules: unchanged
 
-Visual / real meaning → Chinese sound → Hanzi → pinyin → Indonesian support → real use.
+## Audience
 
-Indonesian is support text. It should help the learner confirm meaning, but it should not become the main learning object.
+Indonesian primary-school beginners learning Mandarin Chinese.
 
-This is not a mechanical reversal of the Indonesian-learning module.
+The product mode is a school-textbook support tool. It is not a reverse copy of IndoBrain's Indonesian-learning interface.
 
-## Demo scope
+## UI language
 
-Route:
+- Interface language: Bahasa Indonesia
+- Target language: Mandarin Chinese
+- Pronunciation support: Pinyin
+- Meaning support: visual + Bahasa Indonesia
 
-`/learn-chinese`
+During the active Chinese lesson, the global bottom navigation is hidden so Chinese-learning mode stays immersive.
 
-Category:
+## Lesson
 
-`基础中文 / Bahasa Mandarin Dasar`
+- Lesson: `Jumlah`
+- Target result: child can understand, recognize, hear, and imitate:
+  - `一个苹果`
+  - `两个苹果`
+  - `三个苹果`
 
-Subcategory:
+Do not teach grammar theory, radicals, stroke order, classifier terminology, speech scoring, XP, leaderboards, or sharing in this template.
 
-`数量 / Jumlah`
+## Flow
 
-The first demo keeps the object stable: apple. The visual variable is quantity.
+Golden Template 01 implements:
 
-## Runtime schema
+1. Entry
+2. Paham
+3. Dengar
+4. Lihat
+5. Ucapkan
+6. Temukan
+7. Pakai
+8. Aku Bisa
+9. Completion
 
-Implemented in:
+The 7-step acquisition framework is represented as a learning loop, not as a future requirement that every lesson must use identical pages.
 
-`lib/chinese-learning.ts`
+## Data architecture
 
-Core types:
+Lesson content lives in `lib/chinese-learning.ts`, separated from React UI.
 
-- `ChineseConcept`
-- `ChineseLearningGroup`
-- `ChineseRealUse`
-- `ChineseRealUseItem`
+Core structures:
 
-Each `ChineseLearningGroup` has exactly one `realUseId`.
+- `ChineseVisualObject`
+- `ChineseVisualState`
+- `ChinesePinyinToken`
+- `ChineseQuantityExpression`
+- `ChinesePakaiLine`
+- `ChineseGoldenLesson`
 
-Real Use supports the same abstraction proven in Basic Essentials:
+Pinyin is structured by Hanzi, base syllable, tone, display pinyin, and word block. It must not collapse into a flat string-only model.
 
-- `phrase`
-- `sentence`
-- `micro_scene`
+## Visual Library V1
 
-V1 uses phrase Real Use because quantity learning is more natural as short phrases than as a forced dialogue.
+Visual object:
 
-## UI hierarchy
+- `apple`
+- renderer: `css-apple`
+- quantity states: `1`, `2`, `3`
 
-Implemented in:
+Future variables are reserved in the object model but not taught in this lesson:
 
-`components/ChineseLearningExperience.tsx`
-
-Visual priority:
-
-1. Visual meaning
-2. Hanzi
-3. Chinese audio
-4. Pinyin
-5. Indonesian support
-
-The UI intentionally avoids:
-
-- large grammar explanations
-- long pinyin paragraphs
-- internal labels like `realUseId` or `conceptIds`
-- childish decoration
-
-## TTS architecture
-
-Chinese TTS is separated from the existing Indonesian TTS.
-
-Existing Indonesian TTS remains:
-
-- Route: `/api/tts`
-- Voice: `id-ID-GadisNeural`
-- Env: `AZURE_SPEECH_KEY`, `AZURE_SPEECH_REGION`
-
-Chinese TTS V1 uses:
-
-- Route: `/api/chinese-tts`
-- Voice: `zh-CN-XiaoxiaoNeural`
-- Azure credentials: shared existing `AZURE_SPEECH_KEY`, `AZURE_SPEECH_REGION`
-- Component: `components/ChineseSpeechButton.tsx`
-
-The Chinese voice is isolated behind a single code constant so it can be replaced later without changing the route, data model, or Indonesian TTS provider.
-
-Chinese TTS input must be Hanzi, not pinyin. Browser fallback only runs when a Chinese / Mandarin voice is detected. It fails closed instead of using a non-Chinese default voice.
-
-## Visual model
-
-The first visual model uses simple CSS-rendered apple shapes. No generated images are required.
-
-The schema keeps `visualKey` and `visual` separate so future lessons can upgrade visuals for:
-
-- objects
-- actions
-- positions
-- quantity
-- size
 - color
-- feelings
-- people
-- food
-- home
-- transport
-
-## Demo data
-
-Concept count: 11
-
-Learning groups: 2
-
-Real Use units: 2
-
-Real Use items: 7
-
-Group 1:
-
-- 一
-- 两
-- 三
-- 个
-- 苹果
-
-Real Use:
-
-- 一个苹果
-- 两个苹果
-- 三个苹果
-
-Group 2:
-
-- 几个
-- 一些
-- 很多
-- 所有
-- 少
-- 多
-- 苹果
-
-Real Use:
-
-- 几个苹果？
-- 一些苹果
-- 很多苹果
-- 所有苹果
-
-## Verification
-
-Script:
-
-`npm run verify:chinese-learning`
-
-Integrated into:
-
-`npm run verify:indobrain`
-
-The verifier checks:
-
-- Chinese concepts are valid
-- Hanzi exists
-- pinyin exists and uses tone marks rather than tone numbers
-- Indonesian support exists
-- TTS text exists
-- no duplicate IDs
-- learning group bindings are valid
-- exactly one Real Use per group
-- Real Use references are valid
-- Chinese TTS route is separate
-- existing Indonesian TTS route and `id-ID-GadisNeural` are preserved
-
-## Future extension path
-
-Future Chinese lessons can add new categories and groups without changing the UI:
-
-- objects
-- colors
 - size
 - position
 - action
-- feelings
-- people
-- home
-- transport
 
-Adult or business-oriented content can reuse the same schema and route pattern with different content and presentation emphasis.
+## State rules
+
+### Entry
+
+Shows only:
+
+- Kembali
+- Jumlah
+- subtitle
+- 1/2/3 apple visuals
+- Mulai
+
+No Hanzi, no Pinyin, no concept counts, no XP, no global bottom nav.
+
+### Paham
+
+Shows only quantity change with the same apple object. No Chinese text, no Pinyin, no Indonesian number words, no audio.
+
+### Dengar
+
+Shows visual object and child-triggered Chinese audio only. No Hanzi, no Pinyin, no Indonesian translation, no autoplay.
+
+### Lihat
+
+Shows visual, Hanzi, precise Pinyin alignment, word blocks, Bahasa Indonesia support, and audio.
+
+### Ucapkan
+
+Shows the focused expression, audio, and a light imitation cue. No microphone and no scoring.
+
+### Temukan
+
+Asks `Mana yang benar?` for the missing `两个苹果`. Wrong answers receive gentle support and retry, never harsh punishment.
+
+### Pakai
+
+The approved dialogue is exactly:
+
+- `你要几个？` — `Kamu mau berapa?`
+- `两个。` — `Dua.`
+- `给你。` — `Ini untukmu.`
+
+Do not add greetings, extra dialogue, or grammar explanation.
+
+### Aku Bisa
+
+Test A: visual → Hanzi.
+
+Test B: sound → meaning.
+
+No Pinyin or Indonesian target translation is shown in the test choices.
+
+### Completion
+
+Calm success feedback:
+
+- `Hebat!`
+- `3 ungkapan Mandarin sudah kamu kuasai`
+
+## Chinese TTS
+
+- Endpoint: `/api/chinese-tts`
+- Azure credentials: shared existing `AZURE_SPEECH_KEY`, `AZURE_SPEECH_REGION`
+- Voice constant: `zh-CN-XiaoxiaoNeural`
+- Input: Hanzi only
+- Header: `X-IndoBrain-Chinese-TTS-Voice`
+
+Do not create `CHINESE_AZURE_SPEECH_KEY` or `CHINESE_AZURE_SPEECH_REGION`.
+
+Existing Indonesian TTS remains:
+
+- Endpoint: `/api/tts`
+- Voice: `id-ID-GadisNeural`
+
+## Verification
+
+`npm run verify:chinese-learning` must check:
+
+- route wiring
+- complete lesson state flow
+- apple visual states
+- Hanzi content
+- Pinyin token alignment
+- tone values
+- word-block grouping
+- Hanzi-only TTS input
+- no pinyin-as-TTS
+- Dengar text hidden
+- Lihat text/alignment visible
+- Pakai exact dialogue
+- Aku Bisa support removed from tests
+- Chinese TTS shared Azure config
+- Indonesian TTS unchanged
+
+`npm run verify:indobrain` must remain PASS.
