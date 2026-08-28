@@ -117,8 +117,8 @@ for (const expected of expectedExpressions) {
 
 if (lesson.focusExpressionId !== 'two-apples') failures.push('Focus expression must be two-apples');
 if (lesson.temukan.missingQuantity !== 2) failures.push('Temukan missing quantity must be 2');
-if (lesson.temukan.questionId !== 'Mana yang benar?') failures.push('Temukan question must be Bahasa Indonesia');
-if (lesson.temukan.correctFeedbackId !== 'Bagus! Kamu menemukan polanya.') failures.push('Temukan correct feedback changed');
+if (lesson.temukan.questionId !== 'Yang mana untuk dua apel?') failures.push('Temukan question must clearly target two apples');
+if (lesson.temukan.correctFeedbackId !== 'Bagus!') failures.push('Temukan correct feedback must be Bagus!');
 if (lesson.temukan.firstWrongFeedbackId !== 'Coba lagi') failures.push('Wrong answer feedback must be Coba lagi');
 if (lesson.temukan.options.filter((item) => item.correct).length !== 1) failures.push('Temukan must have one correct answer');
 if (lesson.temukan.options.find((item) => item.correct)?.hanzi !== '两个苹果') failures.push('Temukan correct answer must be 两个苹果');

@@ -69,7 +69,7 @@ export default function PwaInstallButton() {
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
       setInstallPrompt(event as BeforeInstallPromptEvent);
-      setState('native');
+      setState(shouldShowInstallEntry(pathname) ? 'native' : 'hidden');
     };
 
     const handleAppInstalled = () => {

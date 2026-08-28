@@ -62,12 +62,14 @@ function PinyinAlignment({ tokens }: { tokens: ChinesePinyinToken[] }) {
 function StepShell({
   step,
   title,
+  eyebrow = lesson.titleId,
   children,
   primary,
   secondary,
 }: {
   step: ChineseLessonStateId;
   title: string;
+  eyebrow?: string;
   children: React.ReactNode;
   primary?: React.ReactNode;
   secondary?: React.ReactNode;
@@ -84,7 +86,7 @@ function StepShell({
         </div>
 
         <section className="mt-5 flex flex-1 flex-col justify-center rounded-[36px] bg-white p-5 shadow-[0_18px_50px_rgba(23,54,111,0.08)] md:p-8">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7b95c6]">{lesson.titleId}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7b95c6]">{eyebrow}</p>
           <h1 className="mt-2 text-3xl font-black tracking-[-0.04em] text-[#17366f] md:text-5xl">{title}</h1>
           <div className="mt-6">{children}</div>
         </section>
@@ -228,38 +230,36 @@ function TemukanState({ goNext }: { goNext: () => void }) {
     <StepShell
       step="temukan"
       title={lesson.temukan.questionId}
+      eyebrow="Temukan polanya"
       primary={correct ? <ActionButton onClick={goNext}>Lanjut</ActionButton> : undefined}
     >
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-[28px] bg-[#f8fbff] p-4">
-          <AppleVisual state={{ objectId: 'apple', quantity: 1 }} compact />
-          <p className="mt-3 text-center text-3xl font-black text-[#17366f]">一个苹果</p>
-        </div>
-        <div className="rounded-[28px] bg-[#f8fbff] p-4 ring-2 ring-[#dfe8f7]">
+      <div className="mx-auto w-full max-w-[720px]">
+        <div className="mx-auto max-w-sm rounded-[28px] bg-[#f8fbff] p-3 ring-2 ring-[#dfe8f7] sm:p-4">
           <AppleVisual state={{ objectId: 'apple', quantity: 2 }} compact />
           <p className="mt-3 text-center text-4xl font-black text-[#4f76bb]">?</p>
         </div>
-        <div className="rounded-[28px] bg-[#f8fbff] p-4">
-          <AppleVisual state={{ objectId: 'apple', quantity: 3 }} compact />
-          <p className="mt-3 text-center text-3xl font-black text-[#17366f]">三个苹果</p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          {lesson.temukan.options.map((choice) => (
+            <button key={choice.id} type="button" onClick={() => choose(choice)} className="min-h-14 rounded-2xl bg-white px-3 text-2xl font-black text-[#17366f] shadow-sm ring-1 ring-[#dfe8f7] transition active:scale-[0.99]">
+              {choice.hanzi}
+            </button>
+          ))}
         </div>
+        {correct ? (
+          <div className="mt-5 text-center text-[#39744c]">
+            <p className="font-bold"><span aria-hidden="true" className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#39744c] text-xs text-white">✓</span>{lesson.temukan.correctFeedbackId}</p>
+            <p className="mt-1 text-sm font-semibold text-[#6a7da0]">Kamu menemukan polanya.</p>
+          </div>
+        ) : null}
+        {!correct && attempts === 1 ? <p className="mt-5 text-center font-semibold text-[#6a7da0]">{lesson.temukan.firstWrongFeedbackId}</p> : null}
+        {!correct && attempts > 1 ? (
+          <div className="mt-5 rounded-[24px] bg-[#f4f7fc] p-4 text-center">
+            <p className="text-3xl font-black text-[#17366f]">{missing.hanzi}</p>
+            <div className="mt-3"><PinyinAlignment tokens={missing.pinyinTokens} /></div>
+            <div className="mt-4 flex justify-center"><ChineseSpeechButton text={missing.ttsText} /></div>
+          </div>
+        ) : null}
       </div>
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        {lesson.temukan.options.map((choice) => (
-          <button key={choice.id} type="button" onClick={() => choose(choice)} className="min-h-14 rounded-2xl bg-white text-2xl font-black text-[#17366f] shadow-sm ring-1 ring-[#dfe8f7] transition active:scale-[0.99]">
-            {choice.hanzi}
-          </button>
-        ))}
-      </div>
-      {correct ? <p className="mt-5 rounded-full bg-[#eef9f1] px-4 py-3 text-center font-bold text-[#39744c]">✓ {lesson.temukan.correctFeedbackId}</p> : null}
-      {!correct && attempts === 1 ? <p className="mt-5 text-center font-semibold text-[#6a7da0]">{lesson.temukan.firstWrongFeedbackId}</p> : null}
-      {!correct && attempts > 1 ? (
-        <div className="mt-5 rounded-[24px] bg-[#f4f7fc] p-4 text-center">
-          <p className="text-3xl font-black text-[#17366f]">{missing.hanzi}</p>
-          <div className="mt-3"><PinyinAlignment tokens={missing.pinyinTokens} /></div>
-          <div className="mt-4 flex justify-center"><ChineseSpeechButton text={missing.ttsText} /></div>
-        </div>
-      ) : null}
     </StepShell>
   );
 }

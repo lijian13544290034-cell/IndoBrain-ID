@@ -190,14 +190,14 @@ export const chineseGoldenLessonJumlah: ChineseGoldenLesson = {
     { id: 'completion', labelId: 'Selesai' },
   ],
   temukan: {
-    questionId: 'Mana yang benar?',
+    questionId: 'Yang mana untuk dua apel?',
     missingQuantity: 2,
     options: [
       { id: 'one-apple-option', hanzi: '一个苹果', correct: false },
       { id: 'two-apples-option', hanzi: '两个苹果', correct: true },
       { id: 'three-apples-option', hanzi: '三个苹果', correct: false },
     ],
-    correctFeedbackId: 'Bagus! Kamu menemukan polanya.',
+    correctFeedbackId: 'Bagus!',
     firstWrongFeedbackId: 'Coba lagi',
   },
   pakai: {
