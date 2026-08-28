@@ -13,6 +13,7 @@
     "verify:harvest-meanings": "node scripts/verify-harvest-meanings.mjs",
     "verify:harvest-semantics": "node scripts/verify-harvest-semantic-quality.mjs",
     "verify:basic-essentials": "node scripts/verify-basic-essentials.mjs",
+    "verify:micro-scenes": "node scripts/verify-micro-scenes.mjs",
     "verify:chinese-learning": "node scripts/verify-chinese-learning.mjs",
     "verify:tts:static": "node scripts/verify-tts-quality-gate.mjs",
     "verify:tts:real": "node scripts/tts-smoke-test.mjs",

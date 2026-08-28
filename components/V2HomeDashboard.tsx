@@ -10,10 +10,12 @@ import { withSearchContext } from '@/lib/experience-navigation';
 import { vocabularyLibrary } from '@/lib/vocabulary-library';
 import IndonesiaPowerBadge from '@/components/IndonesiaPowerBadge';
 import type { getContentStats } from '@/lib/content-stats';
+import type { getMicroSceneStats } from '@/lib/micro-scenes';
 
 type ProfileState = ReturnType<typeof readLearningProfile>;
 type IconName = 'menu' | 'search' | 'scene' | 'book' | 'heart' | 'arrow';
 type ContentStats = ReturnType<typeof getContentStats>;
+type MicroSceneStats = ReturnType<typeof getMicroSceneStats>;
 
 function Icon({ name }: { name: IconName }) {
   const common = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
@@ -25,7 +27,7 @@ function Icon({ name }: { name: IconName }) {
   return <svg {...common}><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>;
 }
 
-export default function V2HomeDashboard({ catalog, contentStats }: { catalog: readonly CatalogExperience[]; contentStats: ContentStats }) {
+export default function V2HomeDashboard({ catalog, contentStats, microSceneStats }: { catalog: readonly CatalogExperience[]; contentStats: ContentStats; microSceneStats: MicroSceneStats }) {
   const [profile, setProfile] = useState<ProfileState | null>(null);
   const [query, setQuery] = useState('');
 
@@ -35,9 +37,11 @@ export default function V2HomeDashboard({ catalog, contentStats }: { catalog: re
   }, []);
 
   const completed = profile?.completed ?? [];
+  const catalogIds = useMemo(() => new Set(catalog.map((item) => item.id)), [catalog]);
+  const completedCatalogIds = useMemo(() => completed.filter((id) => catalogIds.has(id)), [catalogIds, completed]);
   const continueExperience = useMemo(() => catalog.find((item) => !completed.includes(item.id)) ?? catalog[0], [catalog, completed]);
-  const progress = catalog.length ? Math.round((completed.length / catalog.length) * 100) : 0;
-  const achievements = useMemo(() => getLearningAchievementStats(completed, catalog), [catalog, completed]);
+  const progress = catalog.length ? Math.round((completedCatalogIds.length / catalog.length) * 100) : 0;
+  const achievements = useMemo(() => getLearningAchievementStats(completedCatalogIds, catalog), [catalog, completedCatalogIds]);
   const indonesiaPower = useMemo(() => getIndonesiaPowerFromLearning(achievements.completedExperienceCount, achievements.masteredHarvestCount), [achievements]);
 
   const results = useMemo(() => {
@@ -55,8 +59,9 @@ export default function V2HomeDashboard({ catalog, contentStats }: { catalog: re
   }, [catalog, query]);
 
   const quickLinks = [
-    { href: '/basic-essentials', label: '基础必会', description: '从最简单的开始学', count: `${contentStats.basicEssentialsConceptCount} 个基础概念`, icon: 'book' as const },
-    { href: '/life', label: '场景速查', description: '有事马上用', count: `${contentStats.totalUniqueSceneCount} 个场景`, icon: 'scene' as const },
+    { href: '/basic-essentials', step: '1', label: '基础必会', description: '从最简单的开始', count: `${contentStats.basicEssentialsConceptCount} 个基础概念`, icon: 'book' as const },
+    { href: '/micro-scenes', step: '2', label: '微场景', description: '短句马上能用', count: `${microSceneStats.visibleAssetCount} 个微场景`, icon: 'heart' as const },
+    { href: '/life?type=golden', step: '3', label: '黄金场景', description: '处理完整真实场景', count: `${contentStats.goldenSceneCount} 个黄金场景`, icon: 'scene' as const },
   ];
 
   return <main className="v2-home mx-auto min-h-[100dvh] w-full max-w-6xl overflow-hidden px-5 pb-4 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-8 sm:pb-10 sm:pt-8">
@@ -77,9 +82,9 @@ export default function V2HomeDashboard({ catalog, contentStats }: { catalog: re
     </Link>}
 
     <section data-home-part="quick-start" className="mt-4">
-      <h2 className="h-6 text-[16px] font-semibold leading-6 text-[var(--ib-text-primary)]">快速开始</h2>
+      <h2 className="h-6 text-[16px] font-semibold leading-6 text-[var(--ib-text-primary)]">学习路径</h2>
       <div data-home-part="quick-links" className="mt-2 overflow-hidden rounded-[18px] border border-[var(--ib-border-soft)] bg-[var(--ib-bg-card)] shadow-[var(--ib-shadow-card)]">
-        {quickLinks.map((link, index) => <Link key={link.href} href={link.href} className={`flex h-[66px] items-center gap-3 px-4 transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] ${index ? 'border-t border-[var(--ib-border-soft)]' : ''}`}><span className="shrink-0 text-[var(--ib-primary)]"><Icon name={link.icon} /></span><span className="min-w-0 flex-1"><span className="block truncate text-[16px] font-semibold leading-5 text-[var(--ib-text-primary)]">{link.label}</span><span className="mt-0.5 block truncate text-[13px] leading-4 text-[var(--ib-text-secondary)]">{link.description}</span></span><span className="shrink-0 text-[13px] text-[var(--ib-text-secondary)]">{link.count}</span><span aria-hidden="true" className="shrink-0 text-[var(--ib-text-secondary)]"><Icon name="arrow" /></span></Link>)}
+        {quickLinks.map((link, index) => <Link key={link.href} href={link.href} className={`relative flex h-[66px] items-center gap-3 px-4 transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] ${index ? 'border-t border-[var(--ib-border-soft)]' : ''}`}><span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--ib-primary-soft)] text-xs font-bold text-[var(--ib-primary)]">{link.step}</span><span className="shrink-0 text-[var(--ib-primary)]"><Icon name={link.icon} /></span><span className="min-w-0 flex-1"><span className="block truncate text-[16px] font-semibold leading-5 text-[var(--ib-text-primary)]">{link.label}</span><span className="mt-0.5 block truncate text-[13px] leading-4 text-[var(--ib-text-secondary)]">{link.description}</span></span><span className="hidden shrink-0 text-[13px] text-[var(--ib-text-secondary)] sm:block">{link.count}</span><span aria-hidden="true" className="shrink-0 text-[var(--ib-text-secondary)]"><Icon name="arrow" /></span></Link>)}
       </div>
     </section>
   </main>;

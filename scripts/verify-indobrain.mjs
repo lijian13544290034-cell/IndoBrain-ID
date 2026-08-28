@@ -7,6 +7,7 @@ const steps = [
   ['Vocabulary Chinese coverage', ['run', 'verify:harvest-meanings']],
   ['Vocabulary Chinese semantic quality', ['run', 'verify:harvest-semantics']],
   ['Basic Essentials integrity', ['run', 'verify:basic-essentials']],
+  ['Micro Scenes product', ['run', 'verify:micro-scenes']],
   ['Chinese Learning template', ['run', 'verify:chinese-learning']],
   ['Golden Scene integrity', ['run', 'verify:golden']],
   ['Production build', ['run', 'build']],

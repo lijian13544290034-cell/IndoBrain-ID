@@ -41,17 +41,18 @@ export default function SceneMapV2Entry({ groupSlug, topicSlug, type, legacyCate
   const group = getSceneMapGroup(resolvedGroupSlug);
   const topic = getSceneMapTopic(resolvedGroupSlug, resolvedTopicSlug);
   const selectedType = type === 'golden' || type === 'quick' ? type : undefined;
+  const typeQuery = selectedType ? `&type=${selectedType}` : '';
 
   return <main className="mx-auto min-h-screen w-full max-w-5xl px-5 pb-12 pt-8 sm:px-8 sm:pt-12">
     <BackLink href="/">Beranda（返回首页）</BackLink>
     <header className="mt-6 rounded-[28px] border border-[var(--ib-border-soft)] bg-white p-5 shadow-[var(--ib-shadow-card)]">
       <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--ib-primary)]">Scene Map V2</p>
-      <h1 className="mt-2 text-2xl font-bold text-[var(--ib-text-primary)]">场景速查</h1>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--ib-text-secondary)]">按真实生活任务进入：先选大场景，再选具体问题，最后选择黄金场景或快速解决。</p>
+      <h1 className="mt-2 text-2xl font-bold text-[var(--ib-text-primary)]">{selectedType === 'golden' ? '黄金场景' : '场景速查'}</h1>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--ib-text-secondary)]">{selectedType === 'golden' ? '处理完整真实场景：先选现实领域，再进入连续任务。' : '按真实生活任务进入：先选大场景，再选具体问题，最后选择黄金场景或快速解决。'}</p>
     </header>
 
     {!group ? <section className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Scene Map V2 level 2">
-      {sceneMapV2.map((item) => <Link key={item.slug} href={`/life?group=${item.slug}`} className="flex min-h-36 flex-col rounded-[24px] border border-[var(--ib-border-soft)] bg-white p-5 shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--ib-primary)]">
+      {sceneMapV2.map((item) => <Link key={item.slug} href={`/life?group=${item.slug}${typeQuery}`} className="flex min-h-36 flex-col rounded-[24px] border border-[var(--ib-border-soft)] bg-white p-5 shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--ib-primary)]">
         <div className="flex items-start justify-between gap-3">
           <span className="text-3xl" aria-hidden="true">{item.icon}</span>
           <CountPill>{getSceneMapGroupCount(item)} 条</CountPill>
@@ -62,14 +63,14 @@ export default function SceneMapV2Entry({ groupSlug, topicSlug, type, legacyCate
     </section> : null}
 
     {group && !topic ? <>
-      <div className="mt-5"><BackLink href="/life">场景速查</BackLink></div>
+      <div className="mt-5"><BackLink href={selectedType ? `/life?type=${selectedType}` : '/life'}>{selectedType === 'golden' ? '黄金场景' : '场景速查'}</BackLink></div>
       <section className="mt-4 rounded-[28px] border border-[var(--ib-border-soft)] bg-white p-5 shadow-[var(--ib-shadow-card)]">
         <div className="flex items-center gap-3"><span className="text-3xl" aria-hidden="true">{group.icon}</span><div><h2 className="text-xl font-bold text-[var(--ib-text-primary)]">{group.title}</h2><p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{group.subtitle}</p></div></div>
       </section>
       <section className="mt-5 grid gap-3 sm:grid-cols-2" aria-label={`${group.title} level 3`}>
         {group.topics.map((item) => {
           const counts = getSceneMapTopicCounts(item);
-          return <Link key={item.slug} href={`/life?group=${group.slug}&topic=${item.slug}`} className="rounded-[22px] border border-[var(--ib-border-soft)] bg-white p-4 shadow-[var(--ib-shadow-card)] transition hover:border-[var(--ib-primary)] hover:bg-[var(--ib-primary-soft)]/40">
+          return <Link key={item.slug} href={`/life?group=${group.slug}&topic=${item.slug}${typeQuery}`} className="rounded-[22px] border border-[var(--ib-border-soft)] bg-white p-4 shadow-[var(--ib-shadow-card)] transition hover:border-[var(--ib-primary)] hover:bg-[var(--ib-primary-soft)]/40">
             <div className="flex items-start justify-between gap-3"><h3 className="font-bold text-[var(--ib-text-primary)]">{item.title}</h3><CountPill>{counts.all}</CountPill></div>
             <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">{item.subtitle}</p>
             <p className="mt-3 text-xs text-[var(--ib-text-muted)]">⭐ {counts.golden} · ⚡ {counts.quick}</p>
@@ -91,7 +92,7 @@ function TopicView({ groupSlug, groupTitle, topicSlug, topicTitle, topicSubtitle
   const visibleQuick = !selectedType || selectedType === 'quick';
 
   return <>
-    <div className="mt-5 flex flex-wrap items-center gap-3 text-sm"><BackLink href={`/life?group=${groupSlug}`}>{groupTitle}</BackLink><span className="text-[var(--ib-text-muted)]">/</span><span className="font-semibold text-[var(--ib-text-primary)]">{topicTitle}</span></div>
+    <div className="mt-5 flex flex-wrap items-center gap-3 text-sm"><BackLink href={`/life?group=${groupSlug}${selectedType ? `&type=${selectedType}` : ''}`}>{groupTitle}</BackLink><span className="text-[var(--ib-text-muted)]">/</span><span className="font-semibold text-[var(--ib-text-primary)]">{topicTitle}</span></div>
     <section className="mt-4 rounded-[28px] border border-[var(--ib-border-soft)] bg-white p-5 shadow-[var(--ib-shadow-card)]">
       <h2 className="text-xl font-bold text-[var(--ib-text-primary)]">{topicTitle}</h2>
       <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">{topicSubtitle}</p>
