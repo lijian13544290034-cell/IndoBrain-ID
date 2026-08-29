@@ -1,5 +1,6 @@
 import { basicRealUseGroupBindings, basicRealUseUnits } from '@/lib/basic-real-use';
 import { getEssentials, type Essential } from '@/lib/essentials';
+import { getHistoricalQuickExperiences, resolveHistoricalQuickExperience, type QuickExperienceLearningUnit } from '@/lib/quick-experience-adapter';
 import { getSceneMapEntries, sceneMapV2, type SceneMapLevel2Slug } from '@/lib/scene-map-v2';
 
 export type MicroSceneSourceType = 'REAL_USE' | 'QUICK_EXPERIENCE' | 'ESSENTIAL';
@@ -15,7 +16,7 @@ export type MicroSceneIndexItem = {
   assetId: string;
   sourceType: MicroSceneSourceType;
   sourceId: string;
-  primaryMapping: MicroSceneMapping;
+  primaryMapping?: MicroSceneMapping;
   secondaryMappings: MicroSceneMapping[];
   difficulty: MicroSceneDifficulty;
   priority: number;
@@ -34,6 +35,12 @@ export type MicroSceneCard = MicroSceneIndexItem & {
   title: string;
   lines: MicroSceneLine[];
   progressKey: string;
+};
+
+export type QuickMicroSceneCard = MicroSceneIndexItem & QuickExperienceLearningUnit & {
+  primaryMapping: MicroSceneMapping;
+  progressKey: string;
+  legacyProgressKeys: string[];
 };
 
 export type MicroSceneTopicSummary = {
@@ -124,7 +131,7 @@ function buildQuickIndex() {
         const mapping = { level1: domain.slug, level2: topic.slug };
         const current = byAsset.get(entry.id);
         if (current) {
-          if (mappingKey(current.primaryMapping) !== mappingKey(mapping) && !current.secondaryMappings.some((item) => mappingKey(item) === mappingKey(mapping))) {
+          if (current.primaryMapping && mappingKey(current.primaryMapping) !== mappingKey(mapping) && !current.secondaryMappings.some((item) => mappingKey(item) === mappingKey(mapping))) {
             current.secondaryMappings.push(mapping);
           }
           continue;
@@ -145,6 +152,21 @@ function buildQuickIndex() {
     }
   }
   return [...byAsset.values()];
+}
+
+function buildUnmappedQuickReviewIndex(mappedQuick: MicroSceneIndexItem[]) {
+  const mappedIds = new Set(mappedQuick.map((item) => item.sourceId));
+  return getHistoricalQuickExperiences().flatMap((source) => mappedIds.has(source.sourceId) ? [] : [{
+    assetId: source.sourceId,
+    sourceType: 'QUICK_EXPERIENCE' as const,
+    sourceId: source.sourceId,
+    secondaryMappings: [],
+    difficulty: difficultyFor(source.indonesian),
+    priority: 999,
+    tags: ['unmapped-review'],
+    enabled: false,
+    reviewStatus: 'UNMAPPED_REVIEW' as const,
+  }]);
 }
 
 function buildEssentialIndex() {
@@ -190,10 +212,13 @@ function buildRealUseIndex() {
   });
 }
 
+const mappedQuickIndex = buildQuickIndex();
+
 export const microSceneIndex: MicroSceneIndexItem[] = [
   ...buildRealUseIndex(),
   ...buildEssentialIndex(),
-  ...buildQuickIndex(),
+  ...mappedQuickIndex,
+  ...buildUnmappedQuickReviewIndex(mappedQuickIndex),
 ];
 
 const quickById = new Map(sceneMapV2.flatMap((domain) => domain.topics.flatMap((topic) => getSceneMapEntries(topic))).map((item) => [item.id, item]));
@@ -237,9 +262,42 @@ export function getVisibleMicroScenes() {
 
 export function getMicroScenesForTopic(level1: string, level2: string) {
   return getVisibleMicroScenes().filter((item) => {
-    const mappings = [item.primaryMapping, ...item.secondaryMappings];
+    const mappings = [item.primaryMapping, ...item.secondaryMappings].filter((mapping): mapping is MicroSceneMapping => Boolean(mapping));
     return mappings.some((mapping) => mapping.level1 === level1 && mapping.level2 === level2);
   });
+}
+
+export function resolveQuickMicroScene(indexItem: MicroSceneIndexItem): QuickMicroSceneCard | undefined {
+  if (indexItem.sourceType !== 'QUICK_EXPERIENCE' || !indexItem.primaryMapping || indexItem.reviewStatus !== 'READY') return undefined;
+  const source = resolveHistoricalQuickExperience(indexItem.sourceId);
+  if (!source) return undefined;
+  return {
+    ...indexItem,
+    ...source,
+    primaryMapping: indexItem.primaryMapping,
+    progressKey: indexItem.sourceId,
+    legacyProgressKeys: [progressKey(indexItem.sourceId)],
+  };
+}
+
+function avoidAdjacentDuplicateExpressions(items: QuickMicroSceneCard[]) {
+  const ordered = [...items];
+  for (let index = 1; index < ordered.length; index += 1) {
+    if (normalize(ordered[index - 1].indonesian) !== normalize(ordered[index].indonesian)) continue;
+    const replacementIndex = ordered.findIndex((item, candidateIndex) => candidateIndex > index && normalize(item.indonesian) !== normalize(ordered[index - 1].indonesian));
+    if (replacementIndex > index) [ordered[index], ordered[replacementIndex]] = [ordered[replacementIndex], ordered[index]];
+  }
+  return ordered;
+}
+
+export function getQuickMicroScenesForTopic(level1: string, level2: string) {
+  const items = mappedQuickIndex.flatMap((item) => {
+    const mappings = [item.primaryMapping, ...item.secondaryMappings].filter((mapping): mapping is MicroSceneMapping => Boolean(mapping));
+    if (!mappings.some((mapping) => mapping.level1 === level1 && mapping.level2 === level2)) return [];
+    const resolved = resolveQuickMicroScene(item);
+    return resolved ? [resolved] : [];
+  });
+  return avoidAdjacentDuplicateExpressions(items);
 }
 
 export function getMicroSceneDomains(): MicroSceneDomainSummary[] {
@@ -249,21 +307,36 @@ export function getMicroSceneDomains(): MicroSceneDomainSummary[] {
       slug: topic.slug,
       title: topic.title,
       subtitle: topic.subtitle,
-      count: visible.filter((item) => [item.primaryMapping, ...item.secondaryMappings].some((mapping) => mapping.level1 === domain.slug && mapping.level2 === topic.slug)).length,
+      count: visible.filter((item) => [item.primaryMapping, ...item.secondaryMappings].some((mapping) => mapping?.level1 === domain.slug && mapping.level2 === topic.slug)).length,
     }));
-    const domainAssetIds = new Set(visible.filter((item) => [item.primaryMapping, ...item.secondaryMappings].some((mapping) => mapping.level1 === domain.slug)).map((item) => item.assetId));
+    const domainAssetIds = new Set(visible.filter((item) => [item.primaryMapping, ...item.secondaryMappings].some((mapping) => mapping?.level1 === domain.slug)).map((item) => item.assetId));
+    return { slug: domain.slug, icon: domain.icon, title: domain.title, subtitle: domain.subtitle, count: domainAssetIds.size, topics };
+  });
+}
+
+export function getQuickMicroSceneDomains(): MicroSceneDomainSummary[] {
+  return sceneMapV2.map((domain) => {
+    const topics = domain.topics.map((topic) => ({
+      slug: topic.slug,
+      title: topic.title,
+      subtitle: topic.subtitle,
+      count: getQuickMicroScenesForTopic(domain.slug, topic.slug).length,
+    }));
+    const domainAssetIds = new Set(mappedQuickIndex.filter((item) => [item.primaryMapping, ...item.secondaryMappings].some((mapping) => mapping?.level1 === domain.slug)).map((item) => item.assetId));
     return { slug: domain.slug, icon: domain.icon, title: domain.title, subtitle: domain.subtitle, count: domainAssetIds.size, topics };
   });
 }
 
 export function getMicroSceneStats() {
   const visible = getVisibleMicroScenes();
+  const unmappedReview = microSceneIndex.filter((item) => item.sourceType === 'QUICK_EXPERIENCE' && item.reviewStatus === 'UNMAPPED_REVIEW');
   return {
     level1Count: sceneMapV2.length,
     level2Count: sceneMapV2.reduce((total, domain) => total + domain.topics.length, 0),
-    mappedAssetCount: microSceneIndex.length,
-    visibleAssetCount: visible.length,
-    unmappedReviewCount: 52,
+    mappedAssetCount: microSceneIndex.filter((item) => item.primaryMapping).length,
+    visibleAssetCount: mappedQuickIndex.length,
+    supportingVisibleAssetCount: visible.length,
+    unmappedReviewCount: unmappedReview.length,
     sourceCounts: {
       REAL_USE: visible.filter((item) => item.sourceType === 'REAL_USE').length,
       QUICK_EXPERIENCE: visible.filter((item) => item.sourceType === 'QUICK_EXPERIENCE').length,

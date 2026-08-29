@@ -1,4 +1,4 @@
-type Props = { content: string };
+type Props = { content: string; compact?: boolean };
 
 const emphasizedSections = new Set([
   'Business Goal',
@@ -81,9 +81,9 @@ function localizeWorkplaceLine(line: string) {
   return workplaceReplacements.reduce((value, [pattern, replacement]) => value.replace(pattern, replacement), line);
 }
 
-export default function MarkdownExperience({ content }: Props) {
+export default function MarkdownExperience({ content, compact = false }: Props) {
   return (
-    <article className="mt-8 rounded-2xl border border-stone-200 bg-white px-6 py-8 shadow-sm sm:px-10 sm:py-10">
+    <article className={compact ? 'mt-3 border-t border-stone-100 pt-2' : 'mt-8 rounded-2xl border border-stone-200 bg-white px-6 py-8 shadow-sm sm:px-10 sm:py-10'}>
       {content.split('\n').map((line, index) => {
         const key = `${index}-${line}`;
 

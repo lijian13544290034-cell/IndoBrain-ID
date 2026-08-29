@@ -60,7 +60,7 @@ export default function V2HomeDashboard({ catalog, contentStats, microSceneStats
 
   const quickLinks = [
     { href: '/basic-essentials', step: '1', label: '基础必会', description: '从最简单的开始', count: `${contentStats.basicEssentialsConceptCount} 个基础概念`, icon: 'book' as const },
-    { href: '/micro-scenes', step: '2', label: '微场景', description: '短句马上能用', count: `${microSceneStats.visibleAssetCount} 个微场景`, icon: 'heart' as const },
+    { href: '/micro-scenes', step: '2', label: '微场景', description: '马上会说', count: `${microSceneStats.visibleAssetCount} 个微场景`, icon: 'heart' as const },
     { href: '/life?type=golden', step: '3', label: '黄金场景', description: '处理完整真实场景', count: `${contentStats.goldenSceneCount} 个黄金场景`, icon: 'scene' as const },
   ];
 
