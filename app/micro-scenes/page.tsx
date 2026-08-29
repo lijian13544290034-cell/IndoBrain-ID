@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: '短句马上能用。',
 };
 
-export default async function MicroScenesPage({ searchParams }: { searchParams: Promise<{ group?: string; topic?: string }> }) {
-  const { group, topic } = await searchParams;
-  return <MicroSceneLibrary groupSlug={group} topicSlug={topic} />;
+export default async function MicroScenesPage({ searchParams }: { searchParams: Promise<{ module?: string; role?: string; category?: string; scene?: string }> }) {
+  const { module, role, category, scene } = await searchParams;
+  return <MicroSceneLibrary moduleSlug={module} roleSlug={role} categorySlug={category} sceneId={scene} />;
 }

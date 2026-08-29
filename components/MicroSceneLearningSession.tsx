@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import IndonesianSpeechButton from '@/components/IndonesianSpeechButton';
 import MarkdownExperience from '@/components/MarkdownExperience';
 import { harvestMeaning, harvestTerm } from '@/lib/harvest';
+import type { HistoricalMicroSceneCard } from '@/lib/historical-micro-navigation';
 import { completeExperience, readLearningProfile, subscribeProfile, toggleFavorite } from '@/lib/learning-profile';
-import type { QuickMicroSceneCard } from '@/lib/micro-scenes';
 
 function ArrowIcon({ reverse = false }: { reverse?: boolean }) {
   return <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={reverse ? 'rotate-180' : undefined}><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>;
@@ -16,21 +17,30 @@ function displayExplanation(explanation: string) {
   return explanation.replace(/(?:\r?\n\s*)?---\s*$/, '').trim();
 }
 
-function isLearned(item: QuickMicroSceneCard, completedIds: string[]) {
+function isLearned(item: HistoricalMicroSceneCard, completedIds: string[]) {
   return [item.progressKey, ...item.legacyProgressKeys].some((key) => completedIds.includes(key));
 }
 
-export default function MicroSceneLearningSession({ items, domainTitle, topicTitle, backHref }: { items: QuickMicroSceneCard[]; domainTitle: string; topicTitle: string; backHref: string }) {
-  const [index, setIndex] = useState(0);
+export default function MicroSceneLearningSession({ items, moduleTitle, categoryTitle, backHref, initialSourceId, nextGroupHref, nextGroupLabel }: { items: HistoricalMicroSceneCard[]; moduleTitle: string; categoryTitle: string; backHref: string; initialSourceId: string; nextGroupHref?: string; nextGroupLabel?: string }) {
+  const router = useRouter();
+  const [index, setIndex] = useState(() => Math.max(0, items.findIndex((item) => item.sourceId === initialSourceId)));
+  const [atEnd, setAtEnd] = useState(false);
   const [profile, setProfile] = useState<ReturnType<typeof readLearningProfile> | null>(null);
   const cardRef = useRef<HTMLElement>(null);
+  const initializedSourceIdRef = useRef(initialSourceId);
   const current = items[index];
 
   useEffect(() => {
     setProfile(readLearningProfile());
     return subscribeProfile(() => setProfile(readLearningProfile()));
   }, []);
-  useEffect(() => setIndex(0), [items]);
+  useEffect(() => {
+    if (initializedSourceIdRef.current === initialSourceId) return;
+    initializedSourceIdRef.current = initialSourceId;
+    const initialIndex = items.findIndex((item) => item.sourceId === initialSourceId);
+    setIndex(initialIndex >= 0 ? initialIndex : 0);
+    setAtEnd(false);
+  }, [initialSourceId, items]);
 
   const completedIds = profile?.completed ?? [];
   const completedCount = useMemo(() => items.filter((item) => isLearned(item, completedIds)).length, [items, completedIds]);
@@ -46,11 +56,18 @@ export default function MicroSceneLearningSession({ items, domainTitle, topicTit
   }
 
   const moveTo = (nextIndex: number) => {
-    setIndex((nextIndex + items.length) % items.length);
+    const boundedIndex = Math.max(0, Math.min(nextIndex, items.length - 1));
+    setIndex(boundedIndex);
+    setAtEnd(false);
+    router.replace(`${backHref}&scene=${encodeURIComponent(items[boundedIndex].sourceId)}`, { scroll: false });
     window.requestAnimationFrame(() => cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
   const goNext = () => {
     completeExperience(current.progressKey);
+    if (index === items.length - 1) {
+      setAtEnd(true);
+      return;
+    }
     moveTo(index + 1);
   };
   const toggleCurrentFavorite = () => toggleFavorite(current.sourceId);
@@ -58,7 +75,7 @@ export default function MicroSceneLearningSession({ items, domainTitle, topicTit
 
   return <>
     <div className="mt-4 flex items-center justify-between gap-3 text-sm">
-      <Link href={backHref} className="inline-flex min-h-10 items-center font-medium text-[var(--ib-text-secondary)] hover:text-[var(--ib-primary)]">← {domainTitle}</Link>
+      <Link href={backHref} className="inline-flex min-h-10 items-center font-medium text-[var(--ib-text-secondary)] hover:text-[var(--ib-primary)]">← {categoryTitle}</Link>
       <span className="shrink-0 text-[var(--ib-text-secondary)]">{completedCount}/{items.length} 已学</span>
     </div>
 
@@ -70,7 +87,7 @@ export default function MicroSceneLearningSession({ items, domainTitle, topicTit
       <div className="px-5 pb-5 pt-5 sm:px-8 sm:pb-7 sm:pt-7">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-xs font-semibold tracking-[0.08em] text-[var(--ib-primary)]">现实瞬间 · {topicTitle}</p>
+            <p className="text-xs font-semibold tracking-[0.08em] text-[var(--ib-primary)]">{moduleTitle} · {categoryTitle}</p>
             {current.momentTitle ? <p className="mt-2 text-sm font-medium text-[var(--ib-text-secondary)]">{current.momentTitle}</p> : null}
           </div>
           <span className="shrink-0 text-xs tabular-nums text-[var(--ib-text-muted)]">{index + 1} / {items.length}</span>
@@ -128,11 +145,20 @@ export default function MicroSceneLearningSession({ items, domainTitle, topicTit
 
       <div className="border-t border-[var(--ib-border-soft)] bg-[var(--ib-bg-soft)] px-4 py-4 sm:px-6">
         <div className="grid grid-cols-[auto_1fr] gap-2 sm:grid-cols-[auto_auto_1fr]">
-          <button type="button" onClick={() => moveTo(index - 1)} className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--ib-border-soft)] bg-white px-3 text-[var(--ib-text-secondary)] hover:border-[var(--ib-primary)]" aria-label="上一个场景"><ArrowIcon reverse /></button>
+          <button type="button" onClick={() => moveTo(index - 1)} disabled={index === 0} className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--ib-border-soft)] bg-white px-3 text-[var(--ib-text-secondary)] hover:border-[var(--ib-primary)] disabled:cursor-not-allowed disabled:opacity-40" aria-label="上一个场景"><ArrowIcon reverse /></button>
           <button type="button" onClick={toggleCurrentFavorite} aria-pressed={favorited} className={`min-h-12 rounded-2xl border px-4 text-sm font-semibold transition ${favorited ? 'border-[var(--ib-primary)] bg-[var(--ib-primary-soft)] text-[var(--ib-primary)]' : 'border-[var(--ib-border-soft)] bg-white text-[var(--ib-text-secondary)] hover:border-[var(--ib-primary)]'}`}>{favorited ? '已收藏' : '收藏'}</button>
-          <button type="button" onClick={goNext} className="col-span-2 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--ib-primary)] px-5 text-sm font-semibold text-white transition hover:bg-[var(--ib-primary-strong)] sm:col-span-1">{completed ? '下一场景' : '学会了，下一场景'}<ArrowIcon /></button>
+          <button type="button" onClick={goNext} className="col-span-2 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--ib-primary)] px-5 text-sm font-semibold text-white transition hover:bg-[var(--ib-primary-strong)] sm:col-span-1">{index === items.length - 1 ? '完成这个场景组' : completed ? '下一场景' : '学会了，下一场景'}<ArrowIcon /></button>
         </div>
       </div>
     </section>
+
+    {atEnd ? <section className="mx-auto mt-4 w-full max-w-2xl rounded-[22px] border border-[var(--ib-border-soft)] bg-white p-5 text-center shadow-[var(--ib-shadow-card)]">
+      <h2 className="text-lg font-bold text-[var(--ib-text-primary)]">这个场景组学完了</h2>
+      <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">继续学习下一个场景组，或者返回微场景重新选择。</p>
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        {nextGroupHref && nextGroupLabel ? <Link href={nextGroupHref} className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--ib-primary)] px-5 text-sm font-semibold text-white">继续：{nextGroupLabel}</Link> : null}
+        <Link href="/micro-scenes" className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--ib-border-soft)] px-5 text-sm font-semibold text-[var(--ib-text-secondary)]">返回微场景</Link>
+      </div>
+    </section> : null}
   </>;
 }

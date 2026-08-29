@@ -1,5 +1,6 @@
 import { basicRealUseGroupBindings, basicRealUseUnits } from '@/lib/basic-real-use';
 import { getEssentials, type Essential } from '@/lib/essentials';
+import { getHistoricalMicroReachableIds } from '@/lib/historical-micro-navigation';
 import { getHistoricalQuickExperiences, resolveHistoricalQuickExperience, type QuickExperienceLearningUnit } from '@/lib/quick-experience-adapter';
 import { getSceneMapEntries, sceneMapV2, type SceneMapLevel2Slug } from '@/lib/scene-map-v2';
 
@@ -330,11 +331,13 @@ export function getQuickMicroSceneDomains(): MicroSceneDomainSummary[] {
 export function getMicroSceneStats() {
   const visible = getVisibleMicroScenes();
   const unmappedReview = microSceneIndex.filter((item) => item.sourceType === 'QUICK_EXPERIENCE' && item.reviewStatus === 'UNMAPPED_REVIEW');
+  const historicalReachableCount = getHistoricalMicroReachableIds().length;
   return {
     level1Count: sceneMapV2.length,
     level2Count: sceneMapV2.reduce((total, domain) => total + domain.topics.length, 0),
     mappedAssetCount: microSceneIndex.filter((item) => item.primaryMapping).length,
-    visibleAssetCount: mappedQuickIndex.length,
+    visibleAssetCount: historicalReachableCount,
+    sceneMapMappedQuickCount: mappedQuickIndex.length,
     supportingVisibleAssetCount: visible.length,
     unmappedReviewCount: unmappedReview.length,
     sourceCounts: {
