@@ -29,7 +29,7 @@ const dialogueOverrides: Record<string, string> = {
   'EXP-NAN-016': 'Tolong ingatkan anak mengerjakan PR ya.',
   'EXP-NAN-017': 'Hari ini saya bayar gaji ya.',
   'EXP-NAN-018': 'Besok saya boleh izin?',
-  'EXP-NAN-019': 'Boleh minta gaji lebih awal sedikit?',
+  'EXP-NAN-019': 'Boleh minta gajinya dulu sebagian?',
   'EXP-NAN-020': 'Terima kasih, hari ini sudah bekerja keras.',
   'EXP-NAN-021': 'Tolong beli dua kotak susu ya.',
   'EXP-NAN-022': 'Sekalian beli satu rak telur ya.',
@@ -38,7 +38,7 @@ const dialogueOverrides: Record<string, string> = {
   'EXP-NAN-025': 'Tolong potong buah dulu ya.',
   'EXP-NAN-026': 'Tolong buatkan teh ya.',
   'EXP-NAN-027': 'Tamunya sudah datang.',
-  'EXP-NAN-028': 'Tolong bawakan buah ya.',
+  'EXP-NAN-028': 'Tolong keluarkan buahnya ya.',
   'EXP-NAN-029': 'Sarapan pagi ini yang sederhana saja ya.',
   'EXP-NAN-030': 'Jangan lupa bawa botol minum anak ya.',
   'EXP-NAN-031': 'Tolong hidangkan makanannya ya.',
@@ -68,6 +68,11 @@ const contentOverrides: Record<string, Pick<NannyExperience, 'explanation' | 'ha
     explanation: '今天不用做晚饭了。',
     harvest: ['hari ini（今天）', 'nggak usah（不用）', 'masak（做饭）', 'makan malam（晚饭）'],
   },
+};
+
+const harvestOverrides: Record<string, string[]> = {
+  'EXP-NAN-019': ['gajinya（工资）', 'dulu（先）', 'sebagian（一部分）'],
+  'EXP-NAN-028': ['keluarkan（拿出来）', 'buahnya（水果）', 'tolong（请）'],
 };
 
 const additionalExperiences: Record<string, NannyExperience> = {
@@ -119,7 +124,7 @@ function parse(id: string): NannyExperience | undefined {
   const explanation = contentOverrides[id]?.explanation ?? (between(source, 'Story Background', ['Task', 'User Goal']) || between(source, 'User Goal', ['Business Value', 'Frequency', 'Difficulty', ...actorMarkers]) || task);
   const sourceHarvest = between(source, "Today's Harvest", ['Chinese Common Mistakes', 'Culture Tips', 'Real Tips', 'Emotional Intelligence', 'AI Coach', 'Why This Matters', 'Related Experience', 'Next Scene'])
     .split(/\r?\n/).map((line) => line.replace(/^-\s*/, '').trim()).filter((line) => Boolean(line) && !line.startsWith('---'));
-  const harvest = contentOverrides[id]?.harvest ?? harvestFromDialogue(sourceHarvest, indonesian);
+  const harvest = harvestOverrides[id] ?? contentOverrides[id]?.harvest ?? harvestFromDialogue(sourceHarvest, indonesian);
   return task && indonesian && harvest.length ? { id, task, indonesian, chinese: task, explanation, harvest } : undefined;
 }
 

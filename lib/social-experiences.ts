@@ -23,7 +23,7 @@ const socialExperiences: SocialExperience[] = [
   experience('EXP-SOC-001', 'kenalan', '很高兴认识你。', 'Senang kenal sama kamu.', '第一次认识对方时，用一句简短友好的话表达高兴。', ['senang（高兴）', 'kenal（认识）', 'sama kamu（和你）']),
   experience('EXP-SOC-002', 'kenalan', '我叫李建，你叫什么名字？', 'Nama saya Li Jian. Nama kamu siapa?', '初次见面时，先介绍自己的名字，再自然地询问对方姓名。', ['nama saya（我的名字是）', 'nama kamu（你的名字）', 'siapa（谁、什么名字）']),
   experience('EXP-SOC-003', 'kenalan', '我来自中国。', 'Saya dari Tiongkok.', '介绍自己的国家来源时使用。', ['saya（我）', 'dari（来自）', 'Tiongkok（中国）']),
-  experience('EXP-SOC-004', 'kenalan', '我刚来印尼不久。', 'Saya baru datang ke Indonesia belum lama.', '和新认识的人说明自己到印尼时间不长时使用。', ['baru datang（刚来到）', 'Indonesia（印尼）', 'belum lama（不久）']),
+  experience('EXP-SOC-004', 'kenalan', '我刚来印尼不久。', 'Saya belum lama di Indonesia.', '和新认识的人说明自己到印尼时间不长时使用。', ['belum lama（不久）', 'di Indonesia（在印尼）']),
   experience('EXP-SOC-005', 'kenalan', '你住在哪里？', 'Kamu tinggal di mana?', '聊天时礼貌了解对方居住区域的简单问法。', ['kamu（你）', 'tinggal（居住）', 'di mana（在哪里）']),
   experience('EXP-SOC-006', 'kenalan', '你在这里工作吗？', 'Kamu kerja di sini?', '在办公室、社区或活动现场认识人时，询问对方是否在此工作。', ['kerja（工作）', 'di sini（在这里）', 'kamu（你）']),
   experience('EXP-SOC-007', 'kenalan', '你会说中文吗？', 'Kamu bisa bahasa Mandarin?', '想确认对方是否会说中文时使用。', ['bisa（会、可以）', 'bahasa Mandarin（中文）', 'kamu（你）']),

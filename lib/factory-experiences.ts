@@ -50,6 +50,7 @@ const dialogueOverrides: Record<string, string> = {
   'EXP-FAC-046': 'Karyawan baru sudah dilatih?', 'EXP-FAC-047': 'Mesinnya sudah dirawat?',
   'EXP-FAC-048': 'Fokus bulan depan apa?', 'EXP-FAC-049': 'Rapat bulanan kapan?',
   'EXP-FAC-050': 'Masih ada yang perlu saya bantu?',
+  'EXP-FAC-067': 'Jumlah yang dikirim sudah sesuai?',
 };
 
 // A small number of source records did not yet include a usable harvest list.
@@ -63,6 +64,7 @@ const harvestOverrides: Record<string, string[]> = {
   'EXP-FAC-030': ['hari ini（今天）', 'keseluruhannya（整体）', 'gimana（怎么样）'],
   'EXP-FAC-039': ['hari ini（今天）', 'sudah（已经）', 'rapat（开会）'],
   'EXP-FAC-050': ['masih ada（还有）', 'perlu（需要）', 'saya bantu（我来处理）'],
+  'EXP-FAC-067': ['jumlah（数量）', 'dikirim（发货）', 'sesuai（符合）'],
 };
 
 function harvestFromDialogue(harvest: string[], dialogue: string) {

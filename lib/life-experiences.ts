@@ -80,7 +80,7 @@ const newLifeExperiences: LifeExperience[] = [
   life('EXP-LIF-127', 'basics', '我先洗个澡。', 'Saya mandi dulu ya.', '运动后或在家里自然说明先去洗澡。', ['mandi（洗澡）', 'dulu（先）'], pattern('Saya [kegiatan] dulu ya.', '我先[做某事]。')),
   life('EXP-LIF-128', 'basics', '空调不冷。', 'AC-nya nggak dingin.', '公寓空调不制冷时向管理处报修。', ['AC（空调）', 'nggak dingin（不冷）'], pattern('[Barang]nya nggak [sifat].', '[物品]不[状态]。')),
   life('EXP-LIF-129', 'basics', '热水没有了。', 'Air panasnya nggak ada.', '公寓热水异常时说明问题。', ['air panas（热水）', 'nggak ada（没有）'], pattern('[Barang]nya nggak ada.', '[物品]没有了。')),
-  life('EXP-LIF-130', 'basics', '可以请人来修吗？', 'Bisa minta orang datang buat perbaiki?', '家电或房屋故障时请管理处安排维修。', ['bisa（可以）', 'orang datang（人来）', 'perbaiki（维修）'], pattern('Bisa minta orang datang buat [kegiatan]?', '可以请人来[做某事]吗？')),
+  life('EXP-LIF-130', 'basics', '可以请人来修吗？', 'Bisa panggil teknisi buat perbaiki ini?', '家电或房屋故障时请管理处安排维修。', ['panggil teknisi（叫维修人员）', 'buat perbaiki（来修理）', 'ini（这个）'], pattern('Bisa panggil teknisi buat perbaiki [barang]?', '可以叫维修人员来修[物品]吗？')),
   life('EXP-LIF-131', 'basics', '门禁卡不能用。', 'Kartu aksesnya nggak bisa dipakai.', '公寓门禁卡失效时向前台说明。', ['kartu akses（门禁卡）', 'nggak bisa（不能）', 'dipakai（使用）'], pattern('[Barang]nya nggak bisa dipakai.', '[物品]不能用了。')),
   life('EXP-LIF-132', 'basics', '我的房间漏水。', 'Kamar saya bocor.', '房间或卫生间漏水时立即通知管理处。', ['kamar（房间）', 'bocor（漏水）'], pattern('[Tempat] saya bocor.', '我的[地点]漏水。')),
   life('EXP-LIF-133', 'supermarket', '快递到了吗？', 'Paketnya sudah sampai belum?', '等待包裹时询问是否已经送达。', ['paket（包裹）', 'sudah sampai（已经到了）', 'belum（还没）'], pattern('[Barang]nya sudah sampai belum?', '[物品]到了吗？')),

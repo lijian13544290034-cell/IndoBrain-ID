@@ -209,6 +209,26 @@ if (newEmployee?.indonesian !== 'Karyawan baru sudah dilatih?') failures.push(`E
 if (!newEmployee?.harvest.includes('karyawan baru（新员工）')) failures.push('EXP-FAC-046 harvest must identify a general new employee as karyawan baru');
 if (historical.some((item) => /reservice/i.test(item.indonesian))) failures.push('Rejected word reservice remains in the 421 Quick Experiences');
 
+const humanApprovedFinalLanguage = {
+  'EXP-NAN-019': 'Boleh minta gajinya dulu sebagian?',
+  'EXP-NAN-028': 'Tolong keluarkan buahnya ya.',
+  'EXP-FAC-067': 'Jumlah yang dikirim sudah sesuai?',
+  'EXP-PRO-016': 'Batch ini cek sampel pertamanya dulu ya.',
+  'EXP-PUR-016': 'Cek minimum order-nya dulu ya.',
+  'EXP-OPR-014': 'Jumlah produksi hari ini laporkan ke supervisor ya.',
+  'EXP-SHP-005': 'Booking space-nya sudah dikonfirmasi?',
+  'EXP-EXP-004': 'SKA-nya kapan selesai?',
+  'EXP-EXP-006': 'Perkiraan tiba di pelabuhan kapan?',
+  'EXP-LIF-130': 'Bisa panggil teknisi buat perbaiki ini?',
+  'EXP-SOC-004': 'Saya belum lama di Indonesia.',
+};
+for (const [sourceId, expectedIndonesian] of Object.entries(humanApprovedFinalLanguage)) {
+  const item = historical.find((candidate) => candidate.sourceId === sourceId);
+  if (item?.indonesian !== expectedIndonesian) failures.push(`${sourceId} Human Review wording missing: ${item?.indonesian}`);
+}
+const undefinedHoliday = historical.find((item) => item.sourceId === 'EXP-LIF-220');
+if (undefinedHoliday?.indonesian !== 'Selamat merayakan ya!') failures.push(`EXP-LIF-220 must remain unchanged until its holiday is defined: ${undefinedHoliday?.indonesian}`);
+
 if (indexSource.includes('BASIC_ESSENTIALS_MICRO_SCENE_GROUP_MAP_V1')) failures.push('Planning-only Micro Scene content must not be imported by runtime');
 if (!adapterSource.includes('resolveHistoricalQuickExperience')) failures.push('Stable-ID Quick Experience adapter is missing');
 if (!librarySource.includes('getHistoricalMicroModules') || !librarySource.includes('getHistoricalMicroItems')) failures.push('Primary Micro Scene navigation is not using historical Quick structure');
@@ -241,7 +261,8 @@ console.log('City Life / 生活办事 reachable: 58');
 console.log('City Life / 社交关系 reachable: 98');
 console.log('City Life unclassified: 0');
 console.log('City Life duplicate primary assignments: 0');
-console.log('Human-approved language fixes: EXP-SOC-028, EXP-FAC-046');
+console.log('Human-approved language fixes: EXP-SOC-028, EXP-FAC-046 + final 11-ID language review');
+console.log('EXP-LIF-220 unchanged: needs Human scene definition');
 console.log('Scene Map mapped Quick preserved: 369');
 console.log('Scene Map UNMAPPED_REVIEW preserved and reachable: 52');
 console.log('Scene Map taxonomy regression: 6 domains / 36 topics');
