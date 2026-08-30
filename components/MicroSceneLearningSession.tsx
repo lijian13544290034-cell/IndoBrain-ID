@@ -21,7 +21,7 @@ function isLearned(item: HistoricalMicroSceneCard, completedIds: string[]) {
   return [item.progressKey, ...item.legacyProgressKeys].some((key) => completedIds.includes(key));
 }
 
-export default function MicroSceneLearningSession({ items, moduleTitle, categoryTitle, backHref, initialSourceId, nextGroupHref, nextGroupLabel }: { items: HistoricalMicroSceneCard[]; moduleTitle: string; categoryTitle: string; backHref: string; initialSourceId: string; nextGroupHref?: string; nextGroupLabel?: string }) {
+export default function MicroSceneLearningSession({ items, moduleTitle, categoryTitle, backHref, initialSourceId, nextGroupHref, nextGroupLabel, endReturnHref = '/micro-scenes', endReturnLabel = '返回微场景', nextGroupPrefix = '继续', showSourceId = true }: { items: HistoricalMicroSceneCard[]; moduleTitle: string; categoryTitle: string; backHref: string; initialSourceId: string; nextGroupHref?: string; nextGroupLabel?: string; endReturnHref?: string; endReturnLabel?: string; nextGroupPrefix?: string; showSourceId?: boolean }) {
   const router = useRouter();
   const [index, setIndex] = useState(() => Math.max(0, items.findIndex((item) => item.sourceId === initialSourceId)));
   const [atEnd, setAtEnd] = useState(false);
@@ -140,7 +140,7 @@ export default function MicroSceneLearningSession({ items, moduleTitle, category
           <MarkdownExperience content={current.content} compact />
         </details> : null}
 
-        <p className="mt-6 text-[11px] tracking-wide text-[var(--ib-text-muted)]">{current.sourceId}</p>
+        {showSourceId ? <p className="mt-6 text-[11px] tracking-wide text-[var(--ib-text-muted)]">{current.sourceId}</p> : null}
       </div>
 
       <div className="border-t border-[var(--ib-border-soft)] bg-[var(--ib-bg-soft)] px-4 py-4 sm:px-6">
@@ -156,8 +156,8 @@ export default function MicroSceneLearningSession({ items, moduleTitle, category
       <h2 className="text-lg font-bold text-[var(--ib-text-primary)]">这个场景组学完了</h2>
       <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">继续学习下一个场景组，或者返回微场景重新选择。</p>
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
-        {nextGroupHref && nextGroupLabel ? <Link href={nextGroupHref} className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--ib-primary)] px-5 text-sm font-semibold text-white">继续：{nextGroupLabel}</Link> : null}
-        <Link href="/micro-scenes" className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--ib-border-soft)] px-5 text-sm font-semibold text-[var(--ib-text-secondary)]">返回微场景</Link>
+        {nextGroupHref && nextGroupLabel ? <Link href={nextGroupHref} className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--ib-primary)] px-5 text-sm font-semibold text-white">{nextGroupPrefix}：{nextGroupLabel}</Link> : null}
+        <Link href={endReturnHref} className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--ib-border-soft)] px-5 text-sm font-semibold text-[var(--ib-text-secondary)]">{endReturnLabel}</Link>
       </div>
     </section> : null}
   </>;

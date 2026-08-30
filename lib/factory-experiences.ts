@@ -47,7 +47,7 @@ const dialogueOverrides: Record<string, string> = {
   'EXP-FAC-040': 'Apa prioritas utama hari ini?', 'EXP-FAC-041': 'Pelanggan ada keluhan?',
   'EXP-FAC-042': 'Masalah mutu sudah diperbaiki?', 'EXP-FAC-043': 'Biaya bulan ini bagaimana?',
   'EXP-FAC-044': 'Sasaran bulan ini bisa tercapai?', 'EXP-FAC-045': 'KPI bulan ini bagaimana?',
-  'EXP-FAC-046': 'Operator baru sudah dilatih?', 'EXP-FAC-047': 'Mesinnya sudah dirawat?',
+  'EXP-FAC-046': 'Karyawan baru sudah dilatih?', 'EXP-FAC-047': 'Mesinnya sudah dirawat?',
   'EXP-FAC-048': 'Fokus bulan depan apa?', 'EXP-FAC-049': 'Rapat bulanan kapan?',
   'EXP-FAC-050': 'Masih ada yang perlu saya bantu?',
 };

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import MicroSceneLearningSession from '@/components/MicroSceneLearningSession';
 import {
+  getCityLifeMicroSections,
   getFactoryMicroRoles,
   getHistoricalMicroGroups,
   getHistoricalMicroItems,
@@ -8,6 +9,7 @@ import {
   getHistoricalMicroModules,
   getNextHistoricalMicroGroup,
   type HistoricalMicroGroup,
+  type CityLifeMicroSection,
 } from '@/lib/historical-micro-navigation';
 
 function BackLink({ href, label }: { href: string; label: string }) {
@@ -37,6 +39,34 @@ function GroupCards({ groups, hrefFor }: { groups: HistoricalMicroGroup[]; hrefF
   </section>;
 }
 
+function CityLifeSections({ sections, hrefFor }: { sections: CityLifeMicroSection[]; hrefFor: (group: HistoricalMicroGroup) => string }) {
+  return <div className="mt-6 space-y-7">
+    {sections.map((section) => {
+      const visibleGroups = section.groups.filter((group) => group.count > 0);
+      if (!visibleGroups.length) return null;
+      const headingId = `city-life-${section.slug}`;
+      return <section key={section.slug} aria-labelledby={headingId}>
+        <div className="mb-3 px-1">
+          <h2 id={headingId} className="text-lg font-bold text-[var(--ib-text-primary)] sm:text-xl">{section.title}</h2>
+          <p className="mt-1 text-sm leading-6 text-[var(--ib-text-secondary)]">{section.description}</p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {visibleGroups.map((group) => <Link key={group.slug} href={hrefFor(group)} className="rounded-[18px] border border-[var(--ib-border-soft)] bg-white p-4 shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--ib-primary)] hover:bg-[var(--ib-primary-soft)]/35">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="font-bold text-[var(--ib-text-primary)]">{group.title}</h3>
+                <p className="mt-1 text-xs font-medium text-[var(--ib-primary)]">{group.indonesian}</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-[var(--ib-primary-soft)] px-2.5 py-1 text-xs font-semibold tabular-nums text-[var(--ib-primary)]">{group.count} 个</span>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-[var(--ib-text-secondary)]">{group.subtitle}</p>
+          </Link>)}
+        </div>
+      </section>;
+    })}
+  </div>;
+}
+
 function contextHref(moduleSlug: string, categorySlug?: string, roleSlug?: string) {
   const params = new URLSearchParams({ module: moduleSlug });
   if (roleSlug) params.set('role', roleSlug);
@@ -47,6 +77,7 @@ function contextHref(moduleSlug: string, categorySlug?: string, roleSlug?: strin
 export default function MicroSceneLibrary({ moduleSlug, roleSlug, categorySlug, sceneId }: { moduleSlug?: string; roleSlug?: string; categorySlug?: string; sceneId?: string }) {
   const modules = getHistoricalMicroModules();
   const selectedModule = getHistoricalMicroModule(moduleSlug);
+  const cityLifeSections = getCityLifeMicroSections();
   const factoryRoles = getFactoryMicroRoles();
   const selectedRole = moduleSlug === 'factory' ? factoryRoles.find((item) => item.slug === roleSlug) : undefined;
   const groups = selectedModule ? getHistoricalMicroGroups(selectedModule.slug, roleSlug) : [];
@@ -86,6 +117,10 @@ export default function MicroSceneLibrary({ moduleSlug, roleSlug, categorySlug, 
         initialSourceId={selectedScene.sourceId}
         nextGroupHref={nextGroupHref}
         nextGroupLabel={nextGroupLabel}
+        endReturnHref={selectedModule?.slug === 'life' ? contextHref('life') : '/micro-scenes'}
+        endReturnLabel={selectedModule?.slug === 'life' ? '返回城市生活·社交' : '返回微场景'}
+        nextGroupPrefix={selectedModule?.slug === 'life' ? '继续其他场景' : '继续'}
+        showSourceId={selectedModule?.slug !== 'life'}
       />
     </main>;
   }
@@ -105,14 +140,16 @@ export default function MicroSceneLibrary({ moduleSlug, roleSlug, categorySlug, 
     </> : null}
 
     {selectedModule && !hasListContext ? <>
-      <Header eyebrow={selectedModule.indonesian} title={selectedRole?.title ?? selectedModule.title} description={selectedRole?.subtitle ?? (selectedModule.slug === 'factory' ? '先选择你现在面对的工厂角色。' : '选择你现在最想学会的现实场景。')} />
+      <Header eyebrow={selectedModule.indonesian} title={selectedRole?.title ?? selectedModule.title} description={selectedRole?.subtitle ?? (selectedModule.slug === 'factory' ? '先选择你现在面对的工厂角色。' : selectedModule.slug === 'life' ? '在印尼吃饭、购物、办事、生活，也学会和当地人自然交流。' : '选择你现在最想学会的现实场景。')} />
       {selectedModule.slug === 'factory' && selectedRole?.slug === 'manager' ? <div className="mt-3"><BackLink href={contextHref('factory')} label="工厂角色" /></div> : null}
-      <GroupCards
-        groups={groups}
-        hrefFor={(group) => selectedModule.slug === 'factory' && !selectedRole
-          ? contextHref('factory', undefined, group.slug)
-          : contextHref(selectedModule.slug, group.slug, roleSlug)}
-      />
+      {selectedModule.slug === 'life'
+        ? <CityLifeSections sections={cityLifeSections} hrefFor={(group) => contextHref('life', group.slug)} />
+        : <GroupCards
+          groups={groups}
+          hrefFor={(group) => selectedModule.slug === 'factory' && !selectedRole
+            ? contextHref('factory', undefined, group.slug)
+            : contextHref(selectedModule.slug, group.slug, roleSlug)}
+        />}
     </> : null}
 
     {selectedModule && hasListContext ? <>
@@ -122,7 +159,7 @@ export default function MicroSceneLibrary({ moduleSlug, roleSlug, categorySlug, 
         {items.map((item) => <Link key={item.sourceId} href={`${listHref}&scene=${encodeURIComponent(item.sourceId)}`} className="flex min-h-36 flex-col rounded-[20px] border border-[var(--ib-border-soft)] bg-white p-4 shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--ib-primary)] hover:bg-[var(--ib-primary-soft)]/35">
           <h2 className="text-base font-bold leading-6 text-[var(--ib-text-primary)]">{item.sceneTitle}</h2>
           <p lang="id" className="mt-3 text-[17px] font-semibold leading-7 text-[var(--ib-primary-strong)]">{item.indonesian}</p>
-          <p className="mt-auto pt-3 text-[11px] tracking-wide text-[var(--ib-text-muted)]">{item.sourceId}</p>
+          {selectedModule.slug === 'life' ? null : <p className="mt-auto pt-3 text-[11px] tracking-wide text-[var(--ib-text-muted)]">{item.sourceId}</p>}
         </Link>)}
       </section>
     </> : null}

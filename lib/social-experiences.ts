@@ -49,7 +49,7 @@ const socialExperiences: SocialExperience[] = [
   experience('EXP-SOC-025', 'ngopi-makan', '我知道一家不错的餐厅。', 'Saya tahu restoran yang enak.', '推荐自己知道的一家好餐厅时使用。', ['saya tahu（我知道）', 'restoran（餐厅）', 'enak（好吃、不错）']),
   experience('EXP-SOC-026', 'ngopi-makan', '今天我请客。', 'Hari ini saya yang traktir ya.', '想主动请客时，使用轻松友好的说法。', ['hari ini（今天）', 'saya yang（我来）', 'traktir（请客）']),
   experience('EXP-SOC-027', 'ngopi-makan', '你什么时候有空？', 'Kamu kapan ada waktu?', '想另约时间时，询问对方什么时候方便。', ['kamu（你）', 'kapan（什么时候）', 'ada waktu（有时间）']),
-  experience('EXP-SOC-028', 'ngopi-makan', '我已经订好位置了。', 'Saya sudah reservasi tempat.', '约饭前已订好座位时告诉对方。', ['saya（我）', 'sudah（已经）', 'reservasi（预订）', 'tempat（位置）']),
+  experience('EXP-SOC-028', 'ngopi-makan', '我已经订好位置了。', 'Saya sudah booking tempat.', '约饭前已订好座位时告诉对方。', ['saya（我）', 'sudah（已经）', 'booking（预订）', 'tempat（位置）']),
   experience('EXP-SOC-029', 'ngopi-makan', '谢谢你今天陪我。', 'Terima kasih sudah menemani saya hari ini.', '当天见面结束后，感谢对方陪伴。', ['terima kasih（谢谢）', 'menemani（陪伴）', 'hari ini（今天）']),
   experience('EXP-SOC-030', 'ngopi-makan', '下次我们再一起出来吧。', 'Lain kali kita jalan bareng lagi ya.', '结束聚会时，友好地表示下次还可以再一起出来。', ['lain kali（下次）', 'jalan bareng（一起出来）', 'lagi（再一次）']),
 

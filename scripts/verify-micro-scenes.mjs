@@ -28,12 +28,14 @@ require.extensions['.ts'] = function loadTypeScript(module, filename) {
 
 const adapter = require(path.join(root, 'lib/quick-experience-adapter.ts'));
 const navigation = require(path.join(root, 'lib/historical-micro-navigation.ts'));
+const cityLife = require(path.join(root, 'lib/city-life-micro-navigation.ts'));
 const micro = require(path.join(root, 'lib/micro-scenes.ts'));
 const sceneMap = require(path.join(root, 'lib/scene-map-v2.ts'));
 
 const indexSource = read('lib/micro-scenes.ts');
 const adapterSource = read('lib/quick-experience-adapter.ts');
 const navigationSource = read('lib/historical-micro-navigation.ts');
+const cityLifeSource = read('lib/city-life-micro-navigation.ts');
 const sessionSource = read('components/MicroSceneLearningSession.tsx');
 const librarySource = read('components/MicroSceneLibrary.tsx');
 const homeSource = read('components/V2HomeDashboard.tsx');
@@ -78,23 +80,26 @@ for (const item of mappedQuick) {
 
 const modules = navigation.getHistoricalMicroModules();
 const expectedModules = [
-  ['driver', 32],
-  ['nanny', 49],
-  ['factory', 184],
-  ['life', 156],
+  ['driver', '出行·司机', 32],
+  ['nanny', '家庭·保姆', 49],
+  ['factory', '工作·工厂', 184],
+  ['life', '城市生活·社交', 156],
 ];
 if (modules.length !== 4) failures.push(`Expected 4 historical Micro Scene entrances, found ${modules.length}`);
-for (const [slug, count] of expectedModules) {
+for (const [slug, title, count] of expectedModules) {
   const module = modules.find((item) => item.slug === slug);
   if (!module) failures.push(`Missing historical Micro Scene entrance: ${slug}`);
-  else if (module.count !== count) failures.push(`Expected ${count} reachable assets for ${slug}, found ${module.count}`);
+  else {
+    if (module.title !== title) failures.push(`Expected learner-facing title ${title} for ${slug}, found ${module.title}`);
+    if (module.count !== count) failures.push(`Expected ${count} reachable assets for ${slug}, found ${module.count}`);
+  }
 }
 
 const expectedGroupSlugs = {
   driver: ['jemput', 'perjalanan', 'menunggu', 'kunjungan', 'lanjutan'],
   nanny: ['makan', 'rumah', 'anak', 'belanja', 'kerja'],
   factoryManager: ['produksi', 'kualitas', 'keamanan', 'material', 'pengiriman', 'ekspor', 'pelanggan'],
-  life: ['friends', 'basics', 'supermarket', 'restaurant', 'business', 'dating', 'rumah-harian'],
+  life: ['restaurant', 'supermarket', 'bank-payments', 'medical-pharmacy', 'grooming-wellness', 'housing-property', 'repairs', 'delivery-takeout', 'documents-window', 'hotel-stay', 'airport-travel', 'new-friends', 'friend-daily', 'meals-coffee', 'daily-chat', 'cultural-exchange', 'dating', 'business-social'],
   factoryRoles: ['manager', 'production', 'warehouse', 'qc', 'purchasing', 'operator', 'logistics', 'shipping', 'export', 'customer-service'],
 };
 const actualGroups = {
@@ -108,12 +113,45 @@ for (const [name, expected] of Object.entries(expectedGroupSlugs)) {
   if (actualGroups[name].join('|') !== expected.join('|')) failures.push(`${name} historical ordering changed: ${actualGroups[name].join(', ')}`);
 }
 
+const citySections = navigation.getCityLifeMicroSections();
+const expectedCitySections = ['life-services', 'social-relationships'];
+if (citySections.map((section) => section.slug).join('|') !== expectedCitySections.join('|')) failures.push('City Life must render the two visual sections 生活办事 and 社交关系 without another navigation layer');
+const expectedCityCounts = {
+  restaurant: 14,
+  supermarket: 10,
+  'bank-payments': 6,
+  'medical-pharmacy': 5,
+  'grooming-wellness': 5,
+  'housing-property': 2,
+  repairs: 3,
+  'delivery-takeout': 4,
+  'documents-window': 1,
+  'hotel-stay': 0,
+  'airport-travel': 8,
+  'new-friends': 13,
+  'friend-daily': 8,
+  'meals-coffee': 15,
+  'daily-chat': 11,
+  'cultural-exchange': 20,
+  dating: 25,
+  'business-social': 6,
+};
+for (const group of citySections.flatMap((section) => section.groups)) {
+  if (group.count !== expectedCityCounts[group.slug]) failures.push(`Expected ${expectedCityCounts[group.slug]} City Life assets in ${group.slug}, found ${group.count}`);
+}
+const cityLifeTotal = citySections.find((section) => section.slug === 'life-services')?.groups.reduce((sum, group) => sum + group.count, 0);
+const citySocialTotal = citySections.find((section) => section.slug === 'social-relationships')?.groups.reduce((sum, group) => sum + group.count, 0);
+if (cityLifeTotal !== 58) failures.push(`Expected City Life 生活办事 total 58, found ${cityLifeTotal}`);
+if (citySocialTotal !== 98) failures.push(`Expected City Life 社交关系 total 98, found ${citySocialTotal}`);
+const mappedCityIds = cityLife.getCityLifeMicroSourceIds();
+if (mappedCityIds.length !== 156 || new Set(mappedCityIds).size !== 156) failures.push(`City Life primary mapping must contain 156 unique IDs; found ${mappedCityIds.length} placements and ${new Set(mappedCityIds).size} unique IDs`);
+
 const contexts = [
   ...navigation.getDriverMicroGroups().map((group) => ({ key: `driver/${group.slug}`, items: navigation.getHistoricalMicroItems('driver', group.slug), allowed: new Set(['driver']) })),
   ...navigation.getNannyMicroGroups().map((group) => ({ key: `nanny/${group.slug}`, items: navigation.getHistoricalMicroItems('nanny', group.slug), allowed: new Set(['nanny']) })),
   ...navigation.getFactoryManagerMicroGroups().map((group) => ({ key: `factory/manager/${group.slug}`, items: navigation.getHistoricalMicroItems('factory', group.slug, 'manager'), allowed: new Set(['factory']) })),
   ...navigation.getFactoryMicroRoles().filter((role) => role.slug !== 'manager').map((role) => ({ key: `factory/${role.slug}`, items: navigation.getHistoricalMicroItems('factory', undefined, role.slug), allowed: new Set(['module']) })),
-  ...navigation.getLifeMicroGroups().map((group) => ({ key: `life/${group.slug}`, items: navigation.getHistoricalMicroItems('life', group.slug), allowed: new Set(group.slug === 'friends' ? ['life', 'social'] : ['life']) })),
+  ...navigation.getLifeMicroGroups().map((group) => ({ key: `life/${group.slug}`, items: navigation.getHistoricalMicroItems('life', group.slug), allowed: new Set(['life', 'social']) })),
 ];
 
 const reachableIds = navigation.getHistoricalMicroReachableIds();
@@ -124,7 +162,7 @@ for (const item of unmappedQuick) if (!reachableSet.has(item.sourceId)) failures
 
 const seenContextIds = [];
 for (const context of contexts) {
-  if (!context.items.length && !['life/business', 'life/rumah-harian'].includes(context.key)) failures.push(`${context.key} has no reachable Quick Experiences`);
+  if (!context.items.length && context.key !== 'life/hotel-stay') failures.push(`${context.key} has no reachable Quick Experiences`);
   const contextIds = new Set();
   for (const item of context.items) {
     seenContextIds.push(item.sourceId);
@@ -146,7 +184,7 @@ const representativeContexts = [
   ['factory/warehouse', 'EXP-WHS-001'],
   ['life/restaurant', 'EXP-LIF-093'],
   ['life/supermarket', 'EXP-LIF-083'],
-  ['life/friends', 'EXP-SOC-001'],
+  ['life/new-friends', 'EXP-SOC-001'],
 ];
 for (const [contextKey, sourceId] of representativeContexts) {
   const context = contexts.find((item) => item.key === contextKey);
@@ -161,12 +199,24 @@ if (stats.unmappedReviewCount !== 52) failures.push(`Scene Map UNMAPPED_REVIEW c
 const forbiddenCopiedFields = ['sceneTitle', 'momentTitle', 'indonesian', 'chinese', 'explanation', 'harvest', 'pattern', 'insight', 'content'];
 for (const item of quickIndex) for (const field of forbiddenCopiedFields) if (Object.hasOwn(item, field)) failures.push(`Quick index copied source content field ${field} for ${item.sourceId}`);
 for (const phrase of ['Pak, sudah sampai.', 'Periksa produk batch ini ya.', 'Cek stok bahan ini ya.']) if (navigationSource.includes(phrase)) failures.push(`Historical navigation duplicated source content: ${phrase}`);
+if (['sceneTitle:', 'explanation:', 'harvest:', 'pattern:', 'insight:', 'content:'].some((field) => cityLifeSource.includes(field))) failures.push('City Life navigation must map stable IDs without copying Quick Experience source content');
+
+const reservation = historical.find((item) => item.sourceId === 'EXP-SOC-028');
+if (reservation?.indonesian !== 'Saya sudah booking tempat.') failures.push(`EXP-SOC-028 reservation fix missing: ${reservation?.indonesian}`);
+if (!reservation?.harvest.includes('booking（预订）')) failures.push('EXP-SOC-028 harvest must teach booking, not the rejected reservation wording');
+const newEmployee = historical.find((item) => item.sourceId === 'EXP-FAC-046');
+if (newEmployee?.indonesian !== 'Karyawan baru sudah dilatih?') failures.push(`EXP-FAC-046 new employee fix missing: ${newEmployee?.indonesian}`);
+if (!newEmployee?.harvest.includes('karyawan baru（新员工）')) failures.push('EXP-FAC-046 harvest must identify a general new employee as karyawan baru');
+if (historical.some((item) => /reservice/i.test(item.indonesian))) failures.push('Rejected word reservice remains in the 421 Quick Experiences');
 
 if (indexSource.includes('BASIC_ESSENTIALS_MICRO_SCENE_GROUP_MAP_V1')) failures.push('Planning-only Micro Scene content must not be imported by runtime');
 if (!adapterSource.includes('resolveHistoricalQuickExperience')) failures.push('Stable-ID Quick Experience adapter is missing');
 if (!librarySource.includes('getHistoricalMicroModules') || !librarySource.includes('getHistoricalMicroItems')) failures.push('Primary Micro Scene navigation is not using historical Quick structure');
 if (librarySource.includes('getQuickMicroSceneDomains') || librarySource.includes('getQuickMicroScenesForTopic') || librarySource.includes('sceneMapV2')) failures.push('Primary Micro Scene UI still depends on Scene Map taxonomy');
-for (const label of ['司机出行', '家庭·保姆', '工厂·工作', '生活·社交']) if (!librarySource.includes(label) && !navigationSource.includes(label)) failures.push(`Top-level learner label missing: ${label}`);
+for (const label of ['出行·司机', '家庭·保姆', '工作·工厂', '城市生活·社交']) if (!librarySource.includes(label) && !navigationSource.includes(label)) failures.push(`Top-level learner label missing: ${label}`);
+for (const label of ['生活办事', '社交关系']) if (!librarySource.includes(label) && !cityLifeSource.includes(label)) failures.push(`City Life visual section missing: ${label}`);
+if (!librarySource.includes('visibleGroups = section.groups.filter((group) => group.count > 0)')) failures.push('City Life learner UI must hide empty category cards');
+if (!librarySource.includes("showSourceId={selectedModule?.slug !== 'life'}")) failures.push('City Life learner UI still exposes EXP-LIF / EXP-SOC source distinctions');
 for (const contract of ['current.explanation', 'current.harvest', 'current.pattern', 'current.insight', 'current.content', 'IndonesianSpeechButton', 'toggleFavorite', '完成这个场景组', 'nextGroupHref']) {
   if (!sessionSource.includes(contract)) failures.push(`Rich learning unit contract is missing: ${contract}`);
 }
@@ -187,8 +237,11 @@ console.log('Driver reachable: 32');
 console.log('Nanny reachable: 49');
 console.log('Factory Manager reachable: 65');
 console.log('Factory role/module reachable: 119');
-console.log('Life reachable: 86');
-console.log('Social through Life reachable: 70');
+console.log('City Life / 生活办事 reachable: 58');
+console.log('City Life / 社交关系 reachable: 98');
+console.log('City Life unclassified: 0');
+console.log('City Life duplicate primary assignments: 0');
+console.log('Human-approved language fixes: EXP-SOC-028, EXP-FAC-046');
 console.log('Scene Map mapped Quick preserved: 369');
 console.log('Scene Map UNMAPPED_REVIEW preserved and reachable: 52');
 console.log('Scene Map taxonomy regression: 6 domains / 36 topics');

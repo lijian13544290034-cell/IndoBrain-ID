@@ -29,7 +29,7 @@ export const factorySupplemental: Record<string, FactorySupplement> = {
   'EXP-FAC-043': { explanation: '按月检查成本是否符合目标，并持续控制支出。', harvest: ['biaya（成本）', 'sesuai sasaran（符合目标）', 'kontrol（控制）'] },
   'EXP-FAC-044': { explanation: '确认本月目标能否达成，及时判断是否需要调整。', harvest: ['sasaran bulanan（月度目标）', 'tercapai（达成）', 'optimis（有信心）'] },
   'EXP-FAC-045': { explanation: '通过 KPI 对比确认本月表现是否优于上月。', harvest: ['KPI（关键指标）', 'lebih baik（更好）', 'bulan lalu（上个月）'] },
-  'EXP-FAC-046': { explanation: '新员工完成培训后，安排有经验的员工继续带领。', harvest: ['operator baru（新员工）', 'dilatih（培训）', 'berpengalaman（有经验）'] },
+  'EXP-FAC-046': { explanation: '新员工完成培训后，安排有经验的员工继续带领。', harvest: ['karyawan baru（新员工）', 'dilatih（培训）', 'berpengalaman（有经验）'] },
   'EXP-FAC-047': { explanation: '确认设备保养完成，降低机器异常和停机风险。', harvest: ['dirawat（保养）', 'mesin（机器）', 'tetap dijaga（继续保持）'] },
   'EXP-FAC-048': { explanation: '提前明确下月重点，尽早准备产能和资源。', harvest: ['fokus（重点）', 'bulan depan（下个月）', 'persiapkan（提前准备）'] },
   'EXP-FAC-049': { explanation: '月会前确认时间，并提前准备需要使用的数据。', harvest: ['rapat bulanan（月会）', 'Senin depan（下周一）', 'data（资料）'] },
