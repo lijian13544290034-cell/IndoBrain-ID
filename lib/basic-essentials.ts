@@ -523,6 +523,40 @@ export const basicEssentialsMicroScenes: BasicMicroScene[] = [
 
 export const basicEssentialsConcepts = concepts;
 
+export const BASIC_ESSENTIALS_FAVORITE_PREFIX = 'BASIC:';
+
+export type BasicSearchEntry = {
+  id: string;
+  conceptKey: string;
+  indonesian: string;
+  chinese: string;
+  searchText: string;
+  href: string;
+};
+
+function normalizeBasicSearchText(value: string) {
+  return value.trim().toLocaleLowerCase('id-ID').replace(/\s+/g, ' ');
+}
+
+export function getBasicFavoriteId(conceptKey: string) {
+  return `${BASIC_ESSENTIALS_FAVORITE_PREFIX}${conceptKey}`;
+}
+
+export function isBasicFavoriteId(value: string) {
+  return value.startsWith(BASIC_ESSENTIALS_FAVORITE_PREFIX);
+}
+
+export function getBasicConceptSearchText(concept: BasicConcept) {
+  return normalizeBasicSearchText([
+    concept.indonesian,
+    concept.chinese,
+    concept.shortMeaning,
+    ...concept.tags,
+    ...concept.standardForms,
+    ...concept.colloquialForms,
+  ].join(' '));
+}
+
 export function getBasicCategory(categoryId?: string) {
   return basicEssentialsCategories.find((item) => item.id === categoryId);
 }
@@ -541,6 +575,23 @@ export function getBasicConcepts(filters: { categoryId?: string; subcategoryId?:
 
 export function getBasicConcept(conceptKey?: string) {
   return basicEssentialsConcepts.find((item) => item.conceptKey === conceptKey);
+}
+
+export function searchBasicConcepts(query: string) {
+  const term = normalizeBasicSearchText(query);
+  if (!term) return [];
+  return getBasicConcepts().filter((concept) => getBasicConceptSearchText(concept).includes(term));
+}
+
+export function getBasicSearchEntries(): BasicSearchEntry[] {
+  return getBasicConcepts().map((concept) => ({
+    id: concept.id,
+    conceptKey: concept.conceptKey,
+    indonesian: concept.indonesian,
+    chinese: concept.chinese,
+    searchText: getBasicConceptSearchText(concept),
+    href: `/basic-essentials?category=${encodeURIComponent(concept.categoryId)}&sub=${encodeURIComponent(concept.subcategoryId)}&concept=${encodeURIComponent(concept.conceptKey)}`,
+  }));
 }
 
 export function getBasicMicroScenesForConcepts(conceptIds: string[]) {

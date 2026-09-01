@@ -9,6 +9,11 @@ const sourcePath = path.join(root, 'lib', 'basic-essentials.ts');
 const realUseSourcePath = path.join(root, 'lib', 'basic-real-use.ts');
 const source = fs.readFileSync(sourcePath, 'utf8');
 const realUseSource = fs.existsSync(realUseSourcePath) ? fs.readFileSync(realUseSourcePath, 'utf8') : '';
+const experienceComponentSource = fs.readFileSync(path.join(root, 'components', 'BasicEssentialsExperience.tsx'), 'utf8');
+const conceptGridSource = fs.readFileSync(path.join(root, 'components', 'BasicConceptGrid.tsx'), 'utf8');
+const homeSource = fs.readFileSync(path.join(root, 'components', 'V2HomeDashboard.tsx'), 'utf8');
+const pwaSource = fs.readFileSync(path.join(root, 'components', 'PwaInstallButton.tsx'), 'utf8');
+const globalStylesSource = fs.readFileSync(path.join(root, 'app', 'globals.css'), 'utf8');
 const failures = [];
 const warnings = [];
 
@@ -127,6 +132,9 @@ const {
   basicEssentialsNumberSteps,
   basicEssentialsCounterExamples,
   basicEssentialsMicroScenes,
+  getBasicFavoriteId,
+  getBasicSearchEntries,
+  searchBasicConcepts,
 } = compileBasicEssentials();
 
 const {
@@ -154,6 +162,50 @@ uniqueBy(basicEssentialsCategories, (item) => item.id, 'category id');
 for (const category of basicEssentialsCategories) uniqueBy(category.subcategories, (item) => item.id, `subcategory id in ${category.id}`);
 uniqueBy(basicEssentialsConcepts, (item) => item.id, 'concept id');
 uniqueBy(basicEssentialsConcepts, (item) => item.conceptKey, 'concept key');
+
+const visibleConcepts = basicEssentialsConcepts.filter((item) => item.status === 'active');
+const basicSearchEntries = getBasicSearchEntries();
+const basicSearchEntryByKey = new Map(basicSearchEntries.map((item) => [item.conceptKey, item]));
+const favoriteIds = new Set();
+let indonesianSearchCoverage = 0;
+let chineseSearchCoverage = 0;
+
+if (basicSearchEntries.length !== visibleConcepts.length) {
+  failures.push(`Basic search index must contain every learner-visible concept: ${basicSearchEntries.length}/${visibleConcepts.length}`);
+}
+
+for (const concept of visibleConcepts) {
+  const indonesianMatches = searchBasicConcepts(concept.indonesian);
+  if (indonesianMatches.some((item) => item.conceptKey === concept.conceptKey)) indonesianSearchCoverage += 1;
+  else failures.push(`Learner-visible Indonesian is not searchable: ${concept.conceptKey} -> ${concept.indonesian}`);
+
+  const chineseMatches = searchBasicConcepts(concept.chinese);
+  if (chineseMatches.some((item) => item.conceptKey === concept.conceptKey)) chineseSearchCoverage += 1;
+  else failures.push(`Learner-visible Chinese meaning is not searchable: ${concept.conceptKey} -> ${concept.chinese}`);
+
+  const searchEntry = basicSearchEntryByKey.get(concept.conceptKey);
+  if (!searchEntry) continue;
+  if (!searchEntry.searchText.includes(normalize(concept.indonesian))) failures.push(`Basic search entry is missing Indonesian: ${concept.conceptKey}`);
+  if (!searchEntry.searchText.includes(normalize(concept.chinese))) failures.push(`Basic search entry is missing Chinese: ${concept.conceptKey}`);
+  if (!searchEntry.href.includes(`concept=${encodeURIComponent(concept.conceptKey)}`)) failures.push(`Basic search entry has unstable href: ${concept.conceptKey}`);
+
+  const favoriteId = getBasicFavoriteId(concept.conceptKey);
+  if (favoriteId !== `BASIC:${concept.conceptKey}`) failures.push(`Basic favorite ID must derive from stable conceptKey: ${concept.conceptKey} -> ${favoriteId}`);
+  if (favoriteIds.has(favoriteId)) failures.push(`Duplicate Basic favorite ID: ${favoriteId}`);
+  favoriteIds.add(favoriteId);
+}
+
+for (const [query, expectedKey] of [['lapar', 'lapar'], ['饿', 'lapar'], ['haus', 'haus'], ['渴', 'haus'], ['capek', 'capek'], ['累', 'capek']]) {
+  if (!searchBasicConcepts(query).some((item) => item.conceptKey === expectedKey)) failures.push(`Human search case failed: ${query} -> ${expectedKey}`);
+}
+
+if (!homeSource.includes('basicSearchEntries') || !homeSource.includes("type: '基础必会'")) failures.push('Unified home search is not wired to the canonical Basic Essentials search index');
+if (!experienceComponentSource.includes('searchBasicConcepts(query)')) failures.push('Basic Essentials search page is not using the canonical search helper');
+if (!conceptGridSource.includes('getBasicFavoriteId(item.conceptKey)')) failures.push('Basic vocabulary favorite keys are not derived from stable conceptKey values');
+if (!conceptGridSource.includes('readLearningProfile') || !conceptGridSource.includes('subscribeProfile') || !conceptGridSource.includes('toggleFavorite')) failures.push('Basic favorites must reuse persistent learning-profile storage');
+if (!conceptGridSource.includes('IndonesianSpeechButton') || !conceptGridSource.includes('aria-pressed')) failures.push('Basic favorite cards must retain independent TTS and accessible favorite controls');
+if (!experienceComponentSource.includes('/basic-essentials?favorites=1') || !experienceComponentSource.includes('favoritesOnly')) failures.push('Basic Essentials 我的收藏 entry/review is missing');
+if (!pwaSource.includes('basicPwaInstallVisible') || !globalStylesSource.includes("html[data-basic-pwa-install-visible='true'] [data-basic-essentials-page]")) failures.push('Basic Essentials PWA install banner does not reserve content space');
 
 const duplicateTermAllowlist = new Set([
   // True homonyms or intentionally different real-world registers.
@@ -392,6 +444,7 @@ if (failures.length) {
 }
 
 console.log(`BASIC ESSENTIALS INTEGRITY: PASS (${basicEssentialsConcepts.length} concepts, ${basicEssentialsCategories.length} categories, ${basicEssentialsMicroScenes.length} micro scenes, ${realUseUnits.length} real use units, ${realUseItemCount} real use items)`);
+console.log(`BASIC ESSENTIALS SEARCH COVERAGE: ${indonesianSearchCoverage}/${visibleConcepts.length} Indonesian, ${chineseSearchCoverage}/${visibleConcepts.length} Chinese`);
 if (warnings.length) {
   for (const warning of warnings) console.warn(`BASIC ESSENTIALS WARNING: ${warning}`);
 }

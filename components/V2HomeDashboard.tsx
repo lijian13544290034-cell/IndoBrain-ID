@@ -11,6 +11,7 @@ import { vocabularyLibrary } from '@/lib/vocabulary-library';
 import IndonesiaPowerBadge from '@/components/IndonesiaPowerBadge';
 import type { getContentStats } from '@/lib/content-stats';
 import type { getMicroSceneStats } from '@/lib/micro-scenes';
+import type { BasicSearchEntry } from '@/lib/basic-essentials';
 
 type ProfileState = ReturnType<typeof readLearningProfile>;
 type IconName = 'menu' | 'search' | 'scene' | 'book' | 'heart' | 'arrow';
@@ -27,7 +28,7 @@ function Icon({ name }: { name: IconName }) {
   return <svg {...common}><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>;
 }
 
-export default function V2HomeDashboard({ catalog, contentStats, microSceneStats }: { catalog: readonly CatalogExperience[]; contentStats: ContentStats; microSceneStats: MicroSceneStats }) {
+export default function V2HomeDashboard({ catalog, contentStats, microSceneStats, basicSearchEntries }: { catalog: readonly CatalogExperience[]; contentStats: ContentStats; microSceneStats: MicroSceneStats; basicSearchEntries: BasicSearchEntry[] }) {
   const [profile, setProfile] = useState<ProfileState | null>(null);
   const [query, setQuery] = useState('');
 
@@ -51,12 +52,16 @@ export default function V2HomeDashboard({ catalog, contentStats, microSceneStats
       .filter((item) => [item.id, item.task, item.indonesian, ...item.harvest].join(' ').toLocaleLowerCase('id-ID').includes(term))
       .slice(0, 5)
       .map((item) => ({ key: item.id, title: item.indonesian, detail: `${item.id} · ${item.task}`, href: withSearchContext(item.href, query), type: 'Experience' }));
+    const basicEssentials = basicSearchEntries
+      .filter((item) => item.searchText.includes(term))
+      .slice(0, 5)
+      .map((item) => ({ key: item.id, title: item.indonesian, detail: `${item.chinese} · 基础必会`, href: item.href, type: '基础必会' }));
     const vocabulary = vocabularyLibrary
       .filter((item) => [item.textId, item.textZh, ...item.tags].join(' ').toLocaleLowerCase('id-ID').includes(term))
       .slice(0, 5)
       .map((item) => ({ key: item.id, title: item.textId, detail: `${item.textZh} · ${item.id}`, href: '/vocabulary', type: '词库' }));
-    return [...experiences, ...vocabulary].slice(0, 8);
-  }, [catalog, query]);
+    return [...basicEssentials, ...experiences, ...vocabulary].slice(0, 8);
+  }, [basicSearchEntries, catalog, query]);
 
   const quickLinks = [
     { href: '/basic-essentials', step: '1', label: '基础必会', description: '从最简单的开始', count: `${contentStats.basicEssentialsConceptCount} 个基础概念`, icon: 'book' as const },

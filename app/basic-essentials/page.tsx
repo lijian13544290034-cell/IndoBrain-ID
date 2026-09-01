@@ -20,5 +20,6 @@ export default async function BasicEssentialsPage({ searchParams }: { searchPara
     concept={first(params?.concept)}
     group={first(params?.group)}
     query={first(params?.q)}
+    showFavorites={first(params?.favorites) === '1'}
   />;
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BasicConceptGrid from '@/components/BasicConceptGrid';
 import IndonesianSpeechButton from '@/components/IndonesianSpeechButton';
 import {
   basicEssentialsCategories,
@@ -8,6 +9,7 @@ import {
   getBasicConcept,
   getBasicConcepts,
   getBasicSubcategory,
+  searchBasicConcepts,
   type BasicCombination,
   type BasicConcept,
   type BasicSubcategory,
@@ -22,6 +24,7 @@ type BasicEssentialsExperienceProps = {
   concept?: string;
   group?: string;
   query?: string;
+  showFavorites?: boolean;
 };
 
 const GROUP_SIZE = 8;
@@ -58,13 +61,18 @@ function nextSubcategory(category: BasicTopCategory, current: BasicSubcategory) 
   return index >= 0 ? category.subcategories[index + 1] : undefined;
 }
 
+function FavoritesEntry() {
+  return <Link href="/basic-essentials?favorites=1" className="inline-flex min-h-10 items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-[var(--ib-primary)] shadow-[var(--ib-shadow-card)] transition hover:bg-[var(--ib-primary-soft)]">我的收藏</Link>;
+}
+
 function RootHome() {
-  return <main className="mx-auto min-h-screen w-full max-w-5xl px-5 pb-14 pt-8 sm:px-8 sm:pt-12">
+  return <main data-basic-essentials-page className="mx-auto min-h-screen w-full max-w-5xl px-5 pb-14 pt-8 sm:px-8 sm:pt-12">
     <Link href="/" className="text-sm font-medium text-[var(--ib-text-secondary)] hover:text-[var(--ib-primary)]">← Beranda（返回首页）</Link>
     <header className="mt-6 rounded-[30px] bg-white p-6 shadow-[var(--ib-shadow-card)]">
       <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--ib-primary)]">Basic Essentials V1</p>
       <h1 className="mt-2 text-3xl font-bold text-[var(--ib-text-primary)]">基础必会</h1>
       <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--ib-text-secondary)]">先学现在最能用的几组基础表达，再进入真实场景。</p>
+      <div className="mt-4"><FavoritesEntry /></div>
     </header>
 
     <section className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Basic Essentials root categories">
@@ -78,14 +86,9 @@ function RootHome() {
 }
 
 function SearchResults({ query }: { query: string }) {
-  const results = query.trim()
-    ? getBasicConcepts().filter((item) => {
-      const haystack = [item.indonesian, item.chinese, item.shortMeaning, item.tags.join(' '), item.standardForms.join(' '), item.colloquialForms.join(' ')].join(' ').toLowerCase();
-      return haystack.includes(query.trim().toLowerCase());
-    }).slice(0, 24)
-    : [];
+  const results = searchBasicConcepts(query);
 
-  return <main className="mx-auto min-h-screen w-full max-w-5xl px-5 pb-14 pt-8 sm:px-8 sm:pt-12">
+  return <main data-basic-essentials-page className="mx-auto min-h-screen w-full max-w-5xl px-5 pb-14 pt-8 sm:px-8 sm:pt-12">
     <Link href="/basic-essentials" className="text-sm font-medium text-[var(--ib-text-secondary)] hover:text-[var(--ib-primary)]">← 基础必会</Link>
     <header className="mt-6 rounded-[28px] bg-white p-5 shadow-[var(--ib-shadow-card)]">
       <h1 className="text-2xl font-bold text-[var(--ib-text-primary)]">搜索基础表达</h1>
@@ -93,24 +96,23 @@ function SearchResults({ query }: { query: string }) {
         <input name="q" defaultValue={query} placeholder="搜索中文 / 印尼语" className="min-h-11 flex-1 rounded-xl border border-transparent bg-white px-4 text-sm text-[var(--ib-text-primary)] outline-none focus:border-[var(--ib-primary)]" />
         <button type="submit" className="rounded-xl bg-[var(--ib-primary)] px-4 text-sm font-semibold text-white">搜索</button>
       </form>
+      <div className="mt-3"><FavoritesEntry /></div>
     </header>
-    <section className="mt-5 grid gap-3">
-      {results.map((item) => <ConceptCard key={item.conceptKey} item={item} href={buildHref({ category: item.categoryId, subcategory: item.subcategoryId, concept: item.conceptKey })} />)}
-      {!results.length ? <div className="rounded-2xl bg-white p-5 text-sm text-[var(--ib-text-secondary)] shadow-[var(--ib-shadow-card)]">没有找到匹配的基础表达。</div> : null}
-    </section>
+    {results.length ? <BasicConceptGrid ariaLabel="Basic Essentials search results" entries={results.map((item) => ({ item, href: buildHref({ category: item.categoryId, subcategory: item.subcategoryId, concept: item.conceptKey }) }))} /> : <div className="mt-5 rounded-2xl bg-white p-5 text-sm text-[var(--ib-text-secondary)] shadow-[var(--ib-shadow-card)]">没有找到匹配的基础表达。</div>}
   </main>;
 }
 
-function ConceptCard({ item, href, active = false }: { item: BasicConcept; href: string; active?: boolean }) {
-  return <div className={`rounded-[22px] bg-white px-4 py-3 shadow-[var(--ib-shadow-card)] transition ${active ? 'ring-2 ring-[var(--ib-primary)]' : ''}`}>
-    <div className="flex items-center justify-between gap-3">
-      <Link href={href} className="min-w-0 flex-1 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-primary)]">
-        <p className="truncate text-lg font-bold text-[var(--ib-text-primary)]">{item.indonesian}</p>
-        <p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{item.chinese}</p>
-      </Link>
-      <IndonesianSpeechButton text={item.ttsText} compact iconOnly />
-    </div>
-  </div>;
+function FavoritesReview() {
+  const concepts = getBasicConcepts();
+  return <main data-basic-essentials-page className="mx-auto min-h-screen w-full max-w-5xl px-5 pb-14 pt-8 sm:px-8 sm:pt-12">
+    <Link href="/basic-essentials" className="text-sm font-medium text-[var(--ib-text-secondary)] hover:text-[var(--ib-primary)]">← 基础必会</Link>
+    <header className="mt-6 rounded-[28px] bg-white p-5 shadow-[var(--ib-shadow-card)]">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ib-primary)]">Basic Essentials V1</p>
+      <h1 className="mt-2 text-2xl font-bold text-[var(--ib-text-primary)]">我的收藏</h1>
+      <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">快速复习你收藏的基础词汇。</p>
+    </header>
+    <BasicConceptGrid favoritesOnly ariaLabel="我的 Basic Essentials 收藏" entries={concepts.map((item) => ({ item, href: buildHref({ category: item.categoryId, subcategory: item.subcategoryId, concept: item.conceptKey }) }))} />
+  </main>;
 }
 
 function TextWithSpeech({ indonesian, chinese, ttsText = indonesian }: BasicCombination & { ttsText?: string }) {
@@ -242,9 +244,10 @@ function CounterModule({ categoryId, subcategoryId }: { categoryId: string; subc
   </section>;
 }
 
-export default function BasicEssentialsExperience({ category, subcategory, concept, group, query }: BasicEssentialsExperienceProps) {
+export default function BasicEssentialsExperience({ category, subcategory, concept, group, query, showFavorites = false }: BasicEssentialsExperienceProps) {
   const trimmedQuery = query?.trim() ?? '';
   if (trimmedQuery) return <SearchResults query={trimmedQuery} />;
+  if (showFavorites) return <FavoritesReview />;
 
   const selectedCategory = getBasicCategory(category);
   if (!selectedCategory) return <RootHome />;
@@ -258,8 +261,8 @@ export default function BasicEssentialsExperience({ category, subcategory, conce
   const selectedConcept = concept ? getBasicConcept(concept) : undefined;
   const detailConcept = selectedConcept && selectedConcept.categoryId === selectedCategory.id ? selectedConcept : undefined;
 
-  return <main className="mx-auto min-h-screen w-full max-w-5xl px-5 pb-14 pt-7 sm:px-8 sm:pt-10">
-    <Link href="/basic-essentials" className="text-sm font-medium text-[var(--ib-text-secondary)] hover:text-[var(--ib-primary)]">← 基础必会</Link>
+  return <main data-basic-essentials-page className="mx-auto min-h-screen w-full max-w-5xl px-5 pb-14 pt-7 sm:px-8 sm:pt-10">
+    <div className="flex items-center justify-between gap-3"><Link href="/basic-essentials" className="text-sm font-medium text-[var(--ib-text-secondary)] hover:text-[var(--ib-primary)]">← 基础必会</Link><FavoritesEntry /></div>
 
     <header className="mt-4 rounded-[28px] bg-white p-5 shadow-[var(--ib-shadow-card)]">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ib-primary)]">Basic Essentials V1</p>
@@ -279,9 +282,7 @@ export default function BasicEssentialsExperience({ category, subcategory, conce
       </div>
     </section>
 
-    <section className="mt-4 grid gap-3 sm:grid-cols-2" aria-label={`${selectedSubcategory.title} current learning group`}>
-      {groupConcepts.map((item) => <ConceptCard key={item.conceptKey} item={item} active={detailConcept?.conceptKey === item.conceptKey} href={buildHref({ category: selectedCategory.id, subcategory: selectedSubcategory.id, group: groupIndex, concept: item.conceptKey })} />)}
-    </section>
+    <BasicConceptGrid ariaLabel={`${selectedSubcategory.title} current learning group`} entries={groupConcepts.map((item) => ({ item, active: detailConcept?.conceptKey === item.conceptKey, href: buildHref({ category: selectedCategory.id, subcategory: selectedSubcategory.id, group: groupIndex, concept: item.conceptKey }) }))} />
 
     <RealUseSection realUse={realUse} />
 

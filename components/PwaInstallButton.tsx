@@ -91,6 +91,14 @@ export default function PwaInstallButton() {
 
   const bottomClass = useMemo(() => (pathname === '/' ? 'bottom-4' : 'bottom-24'), [pathname]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    const visibleOnBasicEssentials = pathname === '/basic-essentials' && state !== 'checking' && state !== 'hidden';
+    if (visibleOnBasicEssentials) root.dataset.basicPwaInstallVisible = 'true';
+    else delete root.dataset.basicPwaInstallVisible;
+    return () => { delete root.dataset.basicPwaInstallVisible; };
+  }, [pathname, state]);
+
   if (state === 'checking' || state === 'hidden') return null;
 
   const handleInstall = async () => {
@@ -118,7 +126,7 @@ export default function PwaInstallButton() {
   };
 
   return (
-    <div className={`fixed right-4 z-[55] w-[min(21rem,calc(100vw-2rem))] ${bottomClass}`}>
+    <div data-pwa-install-banner className={`fixed right-4 z-[55] w-[min(21rem,calc(100vw-2rem))] ${pathname === '/basic-essentials' ? 'bottom-[calc(6rem+env(safe-area-inset-bottom))]' : bottomClass}`}>
       {message && (
         <div
           role="status"
