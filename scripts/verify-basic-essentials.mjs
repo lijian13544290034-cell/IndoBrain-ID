@@ -11,6 +11,8 @@ const source = fs.readFileSync(sourcePath, 'utf8');
 const realUseSource = fs.existsSync(realUseSourcePath) ? fs.readFileSync(realUseSourcePath, 'utf8') : '';
 const experienceComponentSource = fs.readFileSync(path.join(root, 'components', 'BasicEssentialsExperience.tsx'), 'utf8');
 const conceptGridSource = fs.readFileSync(path.join(root, 'components', 'BasicConceptGrid.tsx'), 'utf8');
+const aboutWorkspaceSource = fs.readFileSync(path.join(root, 'components', 'AboutMeWorkspace.tsx'), 'utf8');
+const learningProfileSource = fs.readFileSync(path.join(root, 'lib', 'learning-profile.ts'), 'utf8');
 const homeSource = fs.readFileSync(path.join(root, 'components', 'V2HomeDashboard.tsx'), 'utf8');
 const pwaSource = fs.readFileSync(path.join(root, 'components', 'PwaInstallButton.tsx'), 'utf8');
 const globalStylesSource = fs.readFileSync(path.join(root, 'app', 'globals.css'), 'utf8');
@@ -134,6 +136,7 @@ const {
   basicEssentialsMicroScenes,
   getBasicFavoriteId,
   getBasicSearchEntries,
+  resolveBasicFavoriteIds,
   searchBasicConcepts,
 } = compileBasicEssentials();
 
@@ -199,12 +202,26 @@ for (const [query, expectedKey] of [['lapar', 'lapar'], ['饿', 'lapar'], ['haus
   if (!searchBasicConcepts(query).some((item) => item.conceptKey === expectedKey)) failures.push(`Human search case failed: ${query} -> ${expectedKey}`);
 }
 
+const favoriteContractKeys = ['lapar', 'haus', 'capek'];
+const persistedBasicFavoriteIds = favoriteContractKeys.map(getBasicFavoriteId);
+const resolvedBasicFavorites = resolveBasicFavoriteIds(persistedBasicFavoriteIds);
+if (resolvedBasicFavorites.map((item) => item.conceptKey).join(',') !== favoriteContractKeys.join(',')) {
+  failures.push(`Basic favorite resolver failed persisted ID -> canonical concept contract: ${resolvedBasicFavorites.map((item) => item.conceptKey).join(',')}`);
+}
+if (resolveBasicFavoriteIds([...persistedBasicFavoriteIds, 'EXP-DRV-001', 'BASIC:not-a-concept']).length !== favoriteContractKeys.length) {
+  failures.push('Basic favorite resolver must preserve non-Basic favorites and ignore unknown Basic IDs');
+}
+
 if (!homeSource.includes('basicSearchEntries') || !homeSource.includes("type: '基础必会'")) failures.push('Unified home search is not wired to the canonical Basic Essentials search index');
 if (!experienceComponentSource.includes('searchBasicConcepts(query)')) failures.push('Basic Essentials search page is not using the canonical search helper');
 if (!conceptGridSource.includes('getBasicFavoriteId(item.conceptKey)')) failures.push('Basic vocabulary favorite keys are not derived from stable conceptKey values');
 if (!conceptGridSource.includes('readLearningProfile') || !conceptGridSource.includes('subscribeProfile') || !conceptGridSource.includes('toggleFavorite')) failures.push('Basic favorites must reuse persistent learning-profile storage');
 if (!conceptGridSource.includes('IndonesianSpeechButton') || !conceptGridSource.includes('aria-pressed')) failures.push('Basic favorite cards must retain independent TTS and accessible favorite controls');
 if (!experienceComponentSource.includes('/basic-essentials?favorites=1') || !experienceComponentSource.includes('favoritesOnly')) failures.push('Basic Essentials 我的收藏 entry/review is missing');
+if (!aboutWorkspaceSource.includes('resolveBasicFavoriteIds(profile.favorites)') || !aboutWorkspaceSource.includes('basicFavorites.map')) failures.push('Global favorites view does not resolve and render Basic favorite IDs');
+if (!aboutWorkspaceSource.includes('IndonesianSpeechButton text={item.ttsText}') || !aboutWorkspaceSource.includes('toggleFavorite(getBasicFavoriteId(item.conceptKey))')) failures.push('Global Basic favorite cards must retain TTS and unfavorite controls');
+if (!aboutWorkspaceSource.includes('id="favorites"')) failures.push('Global favorites anchor is missing');
+if (!aboutWorkspaceSource.includes('useState<LearningProfile>(createEmptyLearningProfile)') || !learningProfileSource.includes('export const createEmptyLearningProfile')) failures.push('Global favorites view must hydrate from a deterministic profile before syncing persistent storage');
 if (!pwaSource.includes('basicPwaInstallVisible') || !globalStylesSource.includes("html[data-basic-pwa-install-visible='true'] [data-basic-essentials-page]")) failures.push('Basic Essentials PWA install banner does not reserve content space');
 
 const duplicateTermAllowlist = new Set([

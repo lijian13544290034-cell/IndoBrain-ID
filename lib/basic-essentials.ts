@@ -546,6 +546,15 @@ export function isBasicFavoriteId(value: string) {
   return value.startsWith(BASIC_ESSENTIALS_FAVORITE_PREFIX);
 }
 
+export function resolveBasicFavoriteIds(favoriteIds: string[]) {
+  const conceptByFavoriteId = new Map(
+    getBasicConcepts().map((concept) => [getBasicFavoriteId(concept.conceptKey), concept]),
+  );
+  return favoriteIds
+    .map((favoriteId) => conceptByFavoriteId.get(favoriteId))
+    .filter((concept): concept is BasicConcept => Boolean(concept));
+}
+
 export function getBasicConceptSearchText(concept: BasicConcept) {
   return normalizeBasicSearchText([
     concept.indonesian,

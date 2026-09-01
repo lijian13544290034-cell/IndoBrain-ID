@@ -27,7 +27,7 @@ export type LearningProfile = {
 
 const storageKey = 'indobrain_learning_profile_v1';
 const updateEvent = 'indobrain-learning-profile-updated';
-const emptyProfile = (): LearningProfile => ({ version: 1, favorites: [], completed: [], currentStreak: 0, longestStreak: 0, submissions: [] });
+export const createEmptyLearningProfile = (): LearningProfile => ({ version: 1, favorites: [], completed: [], currentStreak: 0, longestStreak: 0, submissions: [] });
 
 function localDate() {
   const now = new Date();
@@ -49,13 +49,13 @@ export function inferModule(experienceId: string) {
 }
 
 export function readLearningProfile(): LearningProfile {
-  if (typeof window === 'undefined') return emptyProfile();
+  if (typeof window === 'undefined') return createEmptyLearningProfile();
   try {
     const saved = window.localStorage.getItem(storageKey);
-    if (!saved) return emptyProfile();
+    if (!saved) return createEmptyLearningProfile();
     const parsed = JSON.parse(saved) as Partial<LearningProfile>;
-    return { ...emptyProfile(), ...parsed, favorites: Array.from(new Set(parsed.favorites ?? [])), completed: Array.from(new Set(parsed.completed ?? [])), submissions: parsed.submissions ?? [] };
-  } catch { return emptyProfile(); }
+    return { ...createEmptyLearningProfile(), ...parsed, favorites: Array.from(new Set(parsed.favorites ?? [])), completed: Array.from(new Set(parsed.completed ?? [])), submissions: parsed.submissions ?? [] };
+  } catch { return createEmptyLearningProfile(); }
 }
 
 function save(profile: LearningProfile) {
