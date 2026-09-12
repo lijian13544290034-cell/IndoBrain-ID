@@ -14,7 +14,7 @@ import IndonesiaPowerBadge from '@/components/IndonesiaPowerBadge';
 
 const statusLabel = { pending: '待审核', accepted: '已接受', published: '已发布', rejected: '未采用' } as const;
 
-export default function AboutMeWorkspace({ catalog, total }: { catalog: CatalogExperience[]; total: number }) {
+export default function AboutMeWorkspace({ catalog, total, isAuthenticated }: { catalog: CatalogExperience[]; total: number; isAuthenticated?: boolean }) {
   const [profile, setProfile] = useState<LearningProfile>(createEmptyLearningProfile);
   useEffect(() => {
     const sync = () => setProfile(readLearningProfile());
@@ -44,6 +44,9 @@ export default function AboutMeWorkspace({ catalog, total }: { catalog: CatalogE
       <p className="text-xs text-stone-400">IndoBrain</p>
       <h1 className="mt-1 text-2xl font-semibold">Tentang Saya <span className="text-base font-normal text-stone-500">（关于我）</span></h1>
       <p className="mt-2 text-sm leading-6 text-stone-500">只保存这台设备上的学习记录；暂不跨设备同步。</p>
+      <Link href={isAuthenticated ? '/account' : '/login'} className="mt-4 inline-flex min-h-9 items-center rounded-lg border border-stone-300 bg-white px-3 text-sm font-medium text-stone-700 hover:bg-stone-100">
+        {isAuthenticated ? 'Akun Saya（我的账户）' : 'Masuk（登录）'}
+      </Link>
     </header>
 
     <section className="mt-7 grid gap-3 sm:grid-cols-3">

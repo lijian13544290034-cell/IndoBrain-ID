@@ -1,0 +1,69 @@
+import { NextResponse } from 'next/server';
+import { requireSuperAdmin } from '@/lib/account/auth';
+import { initialStudentPassword } from '@/lib/account/config';
+import { hashPassword, validatePassword } from '@/lib/account/password';
+import { assignRole, audit, findUserById, revokeSessionsForUser, softDeleteUser, unbindDevice, updateUser } from '@/lib/account/repository';
+import { ACCOUNT_ROLES, LEARNING_DIRECTIONS, MEMBERSHIP_LEVELS } from '@/lib/account/types';
+
+export const runtime = 'nodejs';
+
+export async function PATCH(request: Request, { params }: { params: Promise<{ userId: string }> }) {
+  try {
+    const admin = await requireSuperAdmin();
+    const { userId } = await params;
+    const body = (await request.json()) as { action?: string; password?: string; membership?: string; expiresAt?: string | null; learningDirection?: string; role?: string; phone?: string; name?: string; accountStatus?: string };
+    const values: Record<string, unknown> = {};
+
+    if (body.action === 'reset_password') {
+      const resetPassword = initialStudentPassword();
+      const validation = validatePassword(resetPassword);
+      if (validation) return NextResponse.json({ error: validation }, { status: 400 });
+      values.password_hash = await hashPassword(resetPassword);
+      values.must_change_password = true;
+      values.initial_password_issued_at = new Date().toISOString();
+      await revokeSessionsForUser(userId);
+    } else if (body.action === 'change_membership' && MEMBERSHIP_LEVELS.includes(body.membership as (typeof MEMBERSHIP_LEVELS)[number])) {
+      values.membership_code = body.membership;
+    } else if (body.action === 'edit') {
+      if (body.phone) values.phone = body.phone;
+      if (body.name !== undefined) values.display_name = body.name.trim() || null;
+      if (body.membership && MEMBERSHIP_LEVELS.includes(body.membership as (typeof MEMBERSHIP_LEVELS)[number])) values.membership_code = body.membership;
+      if (body.learningDirection && LEARNING_DIRECTIONS.includes(body.learningDirection as (typeof LEARNING_DIRECTIONS)[number])) values.learning_direction = body.learningDirection;
+      if (body.expiresAt !== undefined) values.expires_at = body.expiresAt || null;
+    } else if (body.action === 'extend_membership') {
+      values.expires_at = body.expiresAt || null;
+    } else if (body.action === 'suspend') {
+      values.account_status = 'SUSPENDED';
+      await revokeSessionsForUser(userId);
+    } else if (body.action === 'reactivate') {
+      values.account_status = 'ACTIVE';
+    } else if (body.action === 'unbind_device') {
+      values.device_id = null;
+      await revokeSessionsForUser(userId);
+      await unbindDevice(userId);
+    } else if (body.action === 'soft_delete') {
+      const user = await softDeleteUser(userId, admin.id);
+      await audit(admin.id, 'soft_delete', userId);
+      return NextResponse.json({ user });
+    } else if (body.action === 'learning_direction' && LEARNING_DIRECTIONS.includes(body.learningDirection as (typeof LEARNING_DIRECTIONS)[number])) {
+      values.learning_direction = body.learningDirection;
+    } else if (body.action === 'assign_role' && ACCOUNT_ROLES.includes(body.role as (typeof ACCOUNT_ROLES)[number])) {
+      await requireSuperAdmin();
+      await assignRole(userId, body.role as (typeof ACCOUNT_ROLES)[number]);
+    } else {
+      return NextResponse.json({ error: 'Unsupported administrator action.' }, { status: 400 });
+    }
+
+    const user = Object.keys(values).length ? await updateUser(userId, values, admin.id) : await findUserById(userId, true);
+    await audit(admin.id, body.action, userId, { ...values, password_hash: undefined });
+    return NextResponse.json({ user });
+  } catch (error) {
+    if (error instanceof Error && error.message === 'ADMIN_AUTH_REQUIRED') {
+      return NextResponse.json({ error: 'Administrator permission is required.' }, { status: 403 });
+    }
+    const message = error instanceof Error && error.message === 'INITIAL_STUDENT_PASSWORD_NOT_CONFIGURED'
+      ? 'The server initial password is not configured.'
+      : 'Unable to update user.';
+    return NextResponse.json({ error: message }, { status: 503 });
+  }
+}

@@ -19,13 +19,15 @@
     "verify:tts:real": "node scripts/tts-smoke-test.mjs",
     "verify:tts": "node scripts/verify-tts-quality-gate.mjs",
     "smoke:tts": "node scripts/tts-smoke-test.mjs",
+    "admin:unbind": "node scripts/admin-unbind.mjs",
     "verify:indobrain": "node scripts/verify-indobrain.mjs"
   },
   "dependencies": {
     "next": "latest",
     "qrcode": "^1.5.4",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "latest",
