@@ -28,6 +28,17 @@ export type LearningGroupRealUseBinding = {
   realUseId: string;
 };
 
+export const BASIC_REAL_USE_FAVORITE_PREFIX = 'BASIC_REAL_USE:';
+
+export type BasicRealUseFavorite = RealUseItem & LearningGroupRealUseBinding & {
+  favoriteId: string;
+  itemIndex: number;
+};
+
+export function getBasicRealUseFavoriteId(realUseId: string, itemIndex: number) {
+  return `${BASIC_REAL_USE_FAVORITE_PREFIX}${realUseId}:${itemIndex + 1}`;
+}
+
 export const BASIC_REAL_USE_EXPECTED_STATS = {
   totalConcepts: 663,
   totalLearningGroups: 97,
@@ -1186,6 +1197,18 @@ const bindingByLearningGroup = new Map(basicRealUseGroupBindings.map((binding) =
 export function getRealUseForLearningGroup(categoryId: string, subcategoryId: string, group: number) {
   const realUseId = bindingByLearningGroup.get(getLearningGroupId(categoryId, subcategoryId, group));
   return realUseId ? realUseById.get(realUseId) : undefined;
+}
+
+export function resolveBasicRealUseFavoriteIds(favoriteIds: string[]): BasicRealUseFavorite[] {
+  const requested = new Set(favoriteIds.filter((id) => id.startsWith(BASIC_REAL_USE_FAVORITE_PREFIX)));
+  return basicRealUseGroupBindings.flatMap((binding) => {
+    const unit = realUseById.get(binding.realUseId);
+    if (!unit) return [];
+    return unit.items.flatMap((item, itemIndex) => {
+      const favoriteId = getBasicRealUseFavoriteId(unit.id, itemIndex);
+      return requested.has(favoriteId) ? [{ ...binding, ...item, favoriteId, itemIndex }] : [];
+    });
+  });
 }
 
 export function getBasicLearningGroups(concepts: BasicConcept[], groupSize = 8) {

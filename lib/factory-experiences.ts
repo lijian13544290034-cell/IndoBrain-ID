@@ -19,6 +19,7 @@ export type FactoryExperience = {
   goldenScene?: GoldenSceneContent;
   momentTitle?: string;
   insight?: { indonesian: string; chinese: string };
+  microScene?: { indonesian: string; chinese: string };
 };
 
 const experiencePath = path.join(process.cwd(), 'experience', 'factory', 'manager', 'Factory_Manager_Experience.md');
@@ -169,6 +170,7 @@ export function getFactoryExperiences(): FactoryExperience[] {
       pattern,
       momentTitle: `${seed.code} · ${seed.task}`,
       insight: seed.insight,
+      microScene: seed.microScene,
       content: displayContent(id, seed.task, seed.indonesian, seed.explanation, formatHarvest(seed.harvest, seed.indonesian)),
     };
   });

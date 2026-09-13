@@ -6,6 +6,7 @@ import IndonesianAudioProvider from '@/components/IndonesianAudioProvider';
 import IndonesianSpeechButton from '@/components/IndonesianSpeechButton';
 import AchievementCardLauncher from '@/components/achievement-card/AchievementCardLauncher';
 import { getBasicFavoriteId, resolveBasicFavoriteIds } from '@/lib/basic-essentials';
+import { resolveBasicRealUseFavoriteIds } from '@/lib/basic-real-use';
 import type { CatalogExperience } from '@/lib/experience-catalog';
 import { getLearningAchievementStats } from '@/lib/learning-achievements';
 import { getIndonesiaPowerFromLearning, getIndonesiaLevel, getIndonesiaLevelDisplayId, getNextIndonesiaLevel } from '@/lib/v2/indonesia-power';
@@ -27,7 +28,8 @@ export default function AboutMeWorkspace({ catalog, total, isAuthenticated }: { 
     [profile.favorites, catalog],
   );
   const basicFavorites = useMemo(() => resolveBasicFavoriteIds(profile.favorites), [profile.favorites]);
-  const favoriteCount = favorites.length + basicFavorites.length;
+  const basicRealUseFavorites = useMemo(() => resolveBasicRealUseFavoriteIds(profile.favorites), [profile.favorites]);
+  const favoriteCount = favorites.length + basicFavorites.length + basicRealUseFavorites.length;
   const achievements = useMemo(() => getLearningAchievementStats(profile.completed, catalog), [profile.completed, catalog]);
   const indonesiaPower = useMemo(() => getIndonesiaPowerFromLearning(achievements.completedExperienceCount, achievements.masteredHarvestCount), [achievements]);
   const currentLevel = getIndonesiaLevel(indonesiaPower);
@@ -71,12 +73,18 @@ export default function AboutMeWorkspace({ catalog, total, isAuthenticated }: { 
 
     <section id="favorites" className="mt-8 scroll-mt-6">
       <h2 className="text-lg font-semibold">收藏</h2>
-      {favorites.length || basicFavorites.length ? <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      {favorites.length || basicFavorites.length || basicRealUseFavorites.length ? <div className="mt-4 grid gap-3 sm:grid-cols-2">
         {basicFavorites.map((item) => <article key={item.conceptKey} className="flex min-h-44 flex-col rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
           <p className="text-[11px] font-medium text-stone-400">基础必会 · {item.id}</p>
           <Link href={`/basic-essentials?category=${encodeURIComponent(item.categoryId)}&sub=${encodeURIComponent(item.subcategoryId)}&concept=${encodeURIComponent(item.conceptKey)}`} className="mt-2 text-lg font-semibold hover:underline">{item.indonesian}</Link>
           <p className="mt-1 text-sm leading-6 text-stone-700">{item.chinese}</p>
           <div className="mt-auto flex flex-wrap gap-2 pt-4"><IndonesianSpeechButton text={item.ttsText} compact /><button onClick={() => { toggleFavorite(getBasicFavoriteId(item.conceptKey)); setProfile(readLearningProfile()); }} className="min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium hover:bg-stone-100" aria-label={`取消收藏 ${item.indonesian}`}>取消收藏</button></div>
+        </article>)}
+        {basicRealUseFavorites.map((item) => <article key={item.favoriteId} className="flex min-h-44 min-w-0 flex-col rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+          <p className="text-[11px] font-medium text-stone-400">基础必会 · 马上会用</p>
+          <Link href={`/basic-essentials?category=${encodeURIComponent(item.categoryId)}&sub=${encodeURIComponent(item.subcategoryId)}&group=${item.group}`} className="mt-2 break-words text-lg font-semibold hover:underline">{item.indonesian}</Link>
+          <p className="mt-1 break-words text-sm leading-6 text-stone-700">{item.chinese}</p>
+          <div className="mt-auto flex flex-wrap gap-2 pt-4"><IndonesianSpeechButton text={item.ttsText} compact /><button onClick={() => { toggleFavorite(item.favoriteId); setProfile(readLearningProfile()); }} className="min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium hover:bg-stone-100" aria-label={`取消收藏 ${item.indonesian}`}>取消收藏</button></div>
         </article>)}
         {favorites.map((item) => <article key={item.id} className="flex min-h-44 flex-col rounded-xl border border-stone-200 bg-white p-4 shadow-sm"><p className="text-[11px] font-medium text-stone-400">{item.id} · {item.module}（{item.category}）</p><Link href={item.href} className="mt-2 font-semibold hover:underline">{item.task}</Link><p className="mt-2 text-sm leading-6 text-stone-700">{item.indonesian}</p><div className="mt-auto flex flex-wrap gap-2 pt-4"><IndonesianSpeechButton text={item.indonesian} compact /><button onClick={() => copy(item.indonesian)} className="min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium hover:bg-stone-100">复制</button><button onClick={() => { toggleFavorite(item.id); setProfile(readLearningProfile()); }} className="min-h-8 rounded-lg border border-stone-300 px-2 text-xs font-medium hover:bg-stone-100">取消收藏</button></div></article>)}
       </div> : <p className="mt-4 rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm leading-6 text-stone-500">还没有收藏。打开任意 Experience 或基础词汇，点击“收藏”即可保存。</p>}

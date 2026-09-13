@@ -35,6 +35,7 @@ type QuickSourceItem = {
   content?: string;
   goldenScene?: unknown;
   missing?: boolean;
+  microScene?: { indonesian: string; chinese: string };
 };
 
 const isQuick = (item: QuickSourceItem) => !item.goldenScene && !item.missing && Boolean(item.indonesian);
@@ -42,13 +43,14 @@ const isHistoricalFactoryQuick = (item: QuickSourceItem) => isQuick(item) && Num
 const isHistoricalSocialQuick = (item: QuickSourceItem) => isQuick(item) && Number(item.id.slice(-3)) <= 70;
 
 function adapt(item: QuickSourceItem, source: QuickExperienceSource): QuickExperienceLearningUnit {
+  const microScene = item.microScene;
   return {
     sourceId: item.id,
     source,
     sceneTitle: item.task,
     momentTitle: item.momentTitle,
-    indonesian: item.indonesian,
-    chinese: item.chinese ?? item.task,
+    indonesian: microScene?.indonesian ?? item.indonesian,
+    chinese: microScene?.chinese ?? item.chinese ?? item.task,
     explanation: item.explanation ?? '',
     harvest: item.harvest,
     pattern: item.pattern,
@@ -60,11 +62,11 @@ function adapt(item: QuickSourceItem, source: QuickExperienceSource): QuickExper
 function buildHistoricalQuickExperiencePool() {
   const driver = getDriverExperiences().filter(isQuick).map((item) => adapt(item, 'driver'));
   const nanny = getNannyExperiences().filter(isQuick).map((item) => adapt(item, 'nanny'));
-  const factory = getFactoryExperiences().filter(isHistoricalFactoryQuick).map((item) => adapt(item, 'factory'));
+  const factory = getFactoryExperiences().filter((item) => isHistoricalFactoryQuick(item) || (isQuick(item) && Boolean(item.microScene))).map((item) => adapt(item, 'factory'));
   const life = getLifeExperiences()
     .filter((item) => item.id.startsWith('EXP-LIF-') && isQuick(item))
     .map((item) => adapt(item, 'life'));
-  const social = getSocialExperiences().filter(isHistoricalSocialQuick).map((item) => adapt(item, 'social'));
+  const social = getSocialExperiences().filter((item) => isHistoricalSocialQuick(item) || (isQuick(item) && Boolean(item.microScene))).map((item) => adapt(item, 'social'));
   const module = (Object.entries(moduleExperiences) as [ModuleRole, QuickSourceItem[]][])
     .filter(([role]) => role !== 'driver' && role !== 'nanny')
     .flatMap(([, items]) => items.filter(isQuick).map((item) => adapt(item, 'module')));

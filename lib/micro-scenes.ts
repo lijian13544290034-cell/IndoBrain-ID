@@ -129,8 +129,8 @@ function buildQuickIndex() {
   for (const domain of sceneMapV2) {
     for (const topic of domain.topics) {
       for (const entry of getSceneMapEntries(topic).filter((item) => item.kind === 'quick')) {
-        // The Human-reviewed historical pool is frozen at 421. Newly integrated
-        // Work/Social lessons render in their native modules and Scene Map only.
+        // The Human-reviewed 421 core remains unchanged. Only explicitly
+        // approved short Work/Social additions enter the Micro Scene pool.
         if (!resolveHistoricalQuickExperience(entry.id)) continue;
         const mapping = { level1: domain.slug, level2: topic.slug };
         const current = byAsset.get(entry.id);

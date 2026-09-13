@@ -13,6 +13,7 @@ const realUseSource = fs.existsSync(realUseSourcePath) ? fs.readFileSync(realUse
 const internetSlangSource = fs.readFileSync(internetSlangSourcePath, 'utf8');
 const experienceComponentSource = fs.readFileSync(path.join(root, 'components', 'BasicEssentialsExperience.tsx'), 'utf8');
 const conceptGridSource = fs.readFileSync(path.join(root, 'components', 'BasicConceptGrid.tsx'), 'utf8');
+const realUseItemSource = fs.readFileSync(path.join(root, 'components', 'BasicRealUseItem.tsx'), 'utf8');
 const aboutWorkspaceSource = fs.readFileSync(path.join(root, 'components', 'AboutMeWorkspace.tsx'), 'utf8');
 const learningProfileSource = fs.readFileSync(path.join(root, 'lib', 'learning-profile.ts'), 'utf8');
 const homeSource = fs.readFileSync(path.join(root, 'components', 'V2HomeDashboard.tsx'), 'utf8');
@@ -156,6 +157,8 @@ const {
   BASIC_REAL_USE_EXPECTED_STATS,
   basicRealUseGroupBindings,
   basicRealUseUnits,
+  getBasicRealUseFavoriteId,
+  resolveBasicRealUseFavoriteIds,
 } = compileBasicRealUse();
 
 const categoryIds = new Set(basicEssentialsCategories.map((item) => item.id));
@@ -231,6 +234,9 @@ if (!conceptGridSource.includes('readLearningProfile') || !conceptGridSource.inc
 if (!conceptGridSource.includes('IndonesianSpeechButton') || !conceptGridSource.includes('aria-pressed')) failures.push('Basic favorite cards must retain independent TTS and accessible favorite controls');
 if (!experienceComponentSource.includes('/basic-essentials?favorites=1') || !experienceComponentSource.includes('favoritesOnly')) failures.push('Basic Essentials 我的收藏 entry/review is missing');
 if (!aboutWorkspaceSource.includes('resolveBasicFavoriteIds(profile.favorites)') || !aboutWorkspaceSource.includes('basicFavorites.map')) failures.push('Global favorites view does not resolve and render Basic favorite IDs');
+if (!realUseItemSource.includes('getBasicRealUseFavoriteId(realUseId, itemIndex)') || !realUseItemSource.includes('readLearningProfile') || !realUseItemSource.includes('subscribeProfile') || !realUseItemSource.includes('toggleFavorite')) failures.push('Real Use favorites must use stable unit/item IDs and reuse persistent learning-profile storage');
+if (!realUseItemSource.includes('whitespace-normal break-words') || !realUseItemSource.includes('shrink-0')) failures.push('Real Use card must wrap text while keeping TTS and Favorite controls accessible');
+if (!experienceComponentSource.includes('BasicRealUseItem') || !aboutWorkspaceSource.includes('resolveBasicRealUseFavoriteIds(profile.favorites)') || !aboutWorkspaceSource.includes('basicRealUseFavorites.map')) failures.push('Real Use favorites are not integrated into the learning card and global Favorites destination');
 if (!aboutWorkspaceSource.includes('IndonesianSpeechButton text={item.ttsText}') || !aboutWorkspaceSource.includes('toggleFavorite(getBasicFavoriteId(item.conceptKey))')) failures.push('Global Basic favorite cards must retain TTS and unfavorite controls');
 if (!aboutWorkspaceSource.includes('id="favorites"')) failures.push('Global favorites anchor is missing');
 if (!aboutWorkspaceSource.includes('useState<LearningProfile>(createEmptyLearningProfile)') || !learningProfileSource.includes('export const createEmptyLearningProfile')) failures.push('Global favorites view must hydrate from a deterministic profile before syncing persistent storage');
@@ -457,6 +463,13 @@ if (realUseItemCount !== 309) failures.push(`Expected 309 Real Use items, found 
 if (phraseCount !== 34) failures.push(`Expected 34 phrase Real Use units, found ${phraseCount}`);
 if (sentenceCount !== 52) failures.push(`Expected 52 sentence Real Use units, found ${sentenceCount}`);
 if (microSceneCount !== 11) failures.push(`Expected 11 micro_scene Real Use units, found ${microSceneCount}`);
+const realUseFavoriteIds = realUseUnits.flatMap((unit) => unit.items.map((_, itemIndex) => getBasicRealUseFavoriteId(unit.id, itemIndex)));
+if (new Set(realUseFavoriteIds).size !== realUseItemCount) failures.push('Real Use favorite IDs must be unique and stable across all items');
+const baperUnit = realUseUnits.find((unit) => unit.items.some((item) => item.indonesian === 'Jangan baper, aku cuma bercanda.'));
+const baperIndex = baperUnit?.items.findIndex((item) => item.indonesian === 'Jangan baper, aku cuma bercanda.') ?? -1;
+const baperFavoriteId = baperUnit && baperIndex >= 0 ? getBasicRealUseFavoriteId(baperUnit.id, baperIndex) : '';
+const resolvedBaper = baperFavoriteId ? resolveBasicRealUseFavoriteIds([baperFavoriteId]) : [];
+if (resolvedBaper.length !== 1 || resolvedBaper[0].indonesian !== 'Jangan baper, aku cuma bercanda.') failures.push('Required Real Use favorite cannot resolve through the existing Favorites destination');
 if (realUseStats.totalRealUseItems !== 309 || realUseStats.phrase !== 34 || realUseStats.sentence !== 52 || realUseStats.microScene !== 11) {
   failures.push(`Real Use expected stats do not match the integrated content set: ${JSON.stringify(realUseStats)}`);
 }

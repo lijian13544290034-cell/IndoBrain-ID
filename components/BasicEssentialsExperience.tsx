@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BasicConceptGrid from '@/components/BasicConceptGrid';
+import BasicRealUseItem from '@/components/BasicRealUseItem';
 import IndonesianSpeechButton from '@/components/IndonesianSpeechButton';
 import {
   basicEssentialsCategories,
@@ -185,7 +186,7 @@ function RealUseSection({ realUse }: { realUse?: RealUseUnit }) {
     </div>
 
     <div className="mt-4 grid gap-3">
-      {realUse.items.map((item) => <TextWithSpeech key={`${realUse.id}-${item.indonesian}`} indonesian={item.indonesian} chinese={item.chinese} ttsText={item.ttsText} />)}
+      {realUse.items.map((item, itemIndex) => <BasicRealUseItem key={`${realUse.id}-${itemIndex + 1}`} realUseId={realUse.id} itemIndex={itemIndex} indonesian={item.indonesian} chinese={item.chinese} ttsText={item.ttsText} />)}
       {relatedScenes.length ? <div>
         {relatedScenes.map((relatedScene) => relatedScene ? <Link key={relatedScene.id} href={relatedScene.href} className="inline-flex rounded-full bg-[var(--ib-bg-soft)] px-3 py-2 text-xs font-semibold text-[var(--ib-primary)] shadow-sm transition hover:bg-[var(--ib-primary-soft)]">
           进入真实场景 →

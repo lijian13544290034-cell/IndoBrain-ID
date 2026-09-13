@@ -10,6 +10,7 @@ export type SocialExperience = {
   harvest: string[];
   momentTitle?: string;
   insight?: { indonesian: string; chinese: string };
+  microScene?: { indonesian: string; chinese: string };
   relatedConceptIds?: string[];
 };
 
@@ -111,6 +112,7 @@ const socialExpansionExperiences: SocialExperience[] = socialExpansionSeeds.map(
   harvest: seed.harvest,
   momentTitle: `${seed.code} · ${seed.task}`,
   insight: seed.insight,
+  microScene: seed.microScene,
   relatedConceptIds: seed.code === 'S09' ? ['slang-salting'] : seed.code === 'S16' ? ['slang-hts'] : seed.code === 'S10' || seed.code === 'S11' ? ['slang-pdkt'] : [],
 }));
 

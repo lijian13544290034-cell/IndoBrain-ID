@@ -159,7 +159,10 @@ export const cityLifeMicroSceneTaxonomy: CityLifeMicroSectionDefinition[] = [
         indonesian: 'Kencan & Hubungan',
         title: '恋爱交友',
         subtitle: '表达好感、约会、误会处理、边界和关心。',
-        sourceIds: range('EXP-LIF', 199, 223),
+        sourceIds: [
+          ...range('EXP-LIF', 199, 223),
+          ...ids('EXP-SOC', [317, 301, 302, 303, 304, 305, 318, 319, 306, 307, 308, 309, 310, 311, 312, 314, 315]),
+        ],
       },
       {
         slug: 'business-social',
