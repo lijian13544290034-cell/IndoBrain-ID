@@ -33,8 +33,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'This membership has expired.' }, { status: 403 });
     }
 
+    const roles = await getUserRoles(user.id);
+    const isSuperAdmin = roles.includes('SUPER_ADMIN');
     const deviceId = body.deviceId?.trim() || null;
-    if (await hasActiveSessionOnOtherDevice(user.id, deviceId)) {
+    if (!isSuperAdmin && await hasActiveSessionOnOtherDevice(user.id, deviceId)) {
       await recordLoginHistory({ user_id: user.id, phone, login_at: new Date().toISOString(), device_id: deviceId, login_status: 'FAILED', failure_reason: 'DEVICE_BOUND', ...metadata });
       return NextResponse.json({ error: 'This account is bound to another device. Ask an administrator to unbind it.' }, { status: 409 });
     }
@@ -47,13 +49,12 @@ export async function POST(request: Request) {
     await bindDevice(user.id, deviceId);
     await recordLoginHistory({ user_id: user.id, phone, session_id: session.sessionId, login_at: new Date().toISOString(), device_id: deviceId, login_status: 'SUCCESS', failure_reason: null, ...metadata });
 
-    const roles = await getUserRoles(user.id);
     const response = NextResponse.json({
       user: {
         publicId: user.public_id,
         membership: user.membership_code,
         learningDirection: user.learning_direction,
-        isSuperAdmin: roles.includes('SUPER_ADMIN'),
+        isSuperAdmin,
         mustChangePassword: Boolean(user.must_change_password),
       },
     });
