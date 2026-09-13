@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import type { AccountUser, AdminStats, LearningDirection, LoginHistoryEntry, MembershipLevel } from '@/lib/account/types';
 import BulkStudentImport from './BulkStudentImport';
+import PasswordVisibilityField from './PasswordVisibilityField';
 
 const plans: MembershipLevel[] = ['BASIC', 'PRO', 'VIP', 'ENTERPRISE', 'SVIP'];
 const planLabels: Record<MembershipLevel, string> = {
@@ -26,7 +27,7 @@ function dateValue(value?: string | null) {
   return value ? new Date(value).toLocaleDateString('zh-CN') : '长期有效';
 }
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ initialPassword }: { initialPassword: string }) {
   const [stats, setStats] = useState(emptyStats);
   const [users, setUsers] = useState<AccountUser[]>([]);
   const [history, setHistory] = useState<LoginHistoryEntry[]>([]);
@@ -135,7 +136,7 @@ export default function AdminDashboard() {
       <form onSubmit={createUser} className="mt-5 grid gap-4 md:grid-cols-2">
         <label className="grid gap-1 text-sm font-medium">姓名<input name="name" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal" /></label>
         <label className="grid gap-1 text-sm font-medium">手机号（国际格式）<input required name="phone" inputMode="tel" placeholder="+628123456789" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal" /></label>
-        <label className="grid gap-1 text-sm font-medium">初始密码<input required name="password" type="password" minLength={10} placeholder="至少 10 位，含字母和数字" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal" /></label>
+        <PasswordVisibilityField label="初始密码" name="password" defaultValue={initialPassword} required minLength={10} autoComplete="new-password" helperText="至少 10 位，含字母和数字。仅 SUPER_ADMIN 可查看。" />
         <label className="grid gap-1 text-sm font-medium">会员等级<select required name="membership" defaultValue="BASIC" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal">{plans.map((plan) => <option key={plan} value={plan}>{planLabels[plan]}</option>)}</select></label>
         <label className="grid gap-1 text-sm font-medium">学习方向<select required name="learningDirection" defaultValue="ZH_TO_ID" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal"><option value="ZH_TO_ID">中文 → 印尼语</option><option value="ID_TO_ZH">印尼语 → 中文</option></select></label>
         <label className="grid gap-1 text-sm font-medium">开通日期<input value={new Date().toISOString().slice(0, 10)} disabled className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 font-normal text-gray-500" /><span className="text-xs font-normal text-gray-400">账号创建时自动记录。</span></label>
@@ -146,7 +147,7 @@ export default function AdminDashboard() {
       {createdUser && <article className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950"><p className="font-semibold">账号已创建，可立即登录。</p><dl className="mt-3 grid gap-2 sm:grid-cols-2"><div><dt className="text-emerald-700">用户编号</dt><dd>{createdUser.public_id}</dd></div><div><dt className="text-emerald-700">手机号</dt><dd>{createdUser.phone}</dd></div><div><dt className="text-emerald-700">会员等级</dt><dd>{planLabels[createdUser.membership_code]}</dd></div><div><dt className="text-emerald-700">有效期</dt><dd>{dateValue(createdUser.expires_at)}</dd></div></dl></article>}
     </section>}
 
-    <BulkStudentImport />
+    <BulkStudentImport initialPassword={initialPassword} />
 
     <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{cards.map(([indonesian, chinese, value]) => <article key={indonesian} className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm"><p className="text-xs text-gray-500"><Label indonesian={indonesian} chinese={chinese} /></p><p className="mt-2 text-2xl font-semibold">{value}</p></article>)}</section>
     <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{plans.map((plan) => <article key={plan} className="rounded-2xl border border-stone-200 bg-stone-50 p-4"><p className="text-xs text-gray-500">{planLabels[plan]}</p><p className="mt-2 text-xl font-semibold">{stats.membershipDistribution[plan]}</p></article>)}</section>
