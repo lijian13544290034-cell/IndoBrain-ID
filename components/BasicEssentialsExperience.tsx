@@ -28,6 +28,7 @@ type BasicEssentialsExperienceProps = {
 };
 
 const GROUP_SIZE = 8;
+const slangStatusLabel = { COMMON: '常用', TRENDING: '正流行', VOLATILE: '可能过时' } as const;
 
 function BasicIcon({ kind }: { kind: BasicTopCategory['icon'] }) {
   const common = { className: 'h-6 w-6', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
@@ -135,7 +136,10 @@ function ConceptDetail({ concept }: { concept: BasicConcept }) {
     <div className="flex items-start justify-between gap-3">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ib-primary)]">展开看看</p>
-        <h2 className="mt-2 text-2xl font-bold text-[var(--ib-text-primary)]">{concept.indonesian}</h2>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <h2 className="text-2xl font-bold text-[var(--ib-text-primary)]">{concept.indonesian}</h2>
+          {concept.slangStatus ? <span className="rounded-full bg-[var(--ib-primary-soft)] px-2.5 py-1 text-xs font-bold text-[var(--ib-primary)]">{slangStatusLabel[concept.slangStatus]}</span> : null}
+        </div>
         <p className="mt-1 text-base font-semibold text-[var(--ib-text-secondary)]">{concept.chinese}</p>
       </div>
       <IndonesianSpeechButton text={concept.ttsText} compact iconOnly />

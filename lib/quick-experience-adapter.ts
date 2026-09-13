@@ -38,6 +38,8 @@ type QuickSourceItem = {
 };
 
 const isQuick = (item: QuickSourceItem) => !item.goldenScene && !item.missing && Boolean(item.indonesian);
+const isHistoricalFactoryQuick = (item: QuickSourceItem) => isQuick(item) && Number(item.id.slice(-3)) <= 90;
+const isHistoricalSocialQuick = (item: QuickSourceItem) => isQuick(item) && Number(item.id.slice(-3)) <= 70;
 
 function adapt(item: QuickSourceItem, source: QuickExperienceSource): QuickExperienceLearningUnit {
   return {
@@ -58,11 +60,11 @@ function adapt(item: QuickSourceItem, source: QuickExperienceSource): QuickExper
 function buildHistoricalQuickExperiencePool() {
   const driver = getDriverExperiences().filter(isQuick).map((item) => adapt(item, 'driver'));
   const nanny = getNannyExperiences().filter(isQuick).map((item) => adapt(item, 'nanny'));
-  const factory = getFactoryExperiences().filter(isQuick).map((item) => adapt(item, 'factory'));
+  const factory = getFactoryExperiences().filter(isHistoricalFactoryQuick).map((item) => adapt(item, 'factory'));
   const life = getLifeExperiences()
     .filter((item) => item.id.startsWith('EXP-LIF-') && isQuick(item))
     .map((item) => adapt(item, 'life'));
-  const social = getSocialExperiences().filter(isQuick).map((item) => adapt(item, 'social'));
+  const social = getSocialExperiences().filter(isHistoricalSocialQuick).map((item) => adapt(item, 'social'));
   const module = (Object.entries(moduleExperiences) as [ModuleRole, QuickSourceItem[]][])
     .filter(([role]) => role !== 'driver' && role !== 'nanny')
     .flatMap(([, items]) => items.filter(isQuick).map((item) => adapt(item, 'module')));

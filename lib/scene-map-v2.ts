@@ -102,7 +102,7 @@ export const sceneMapV2: SceneMapLevel2[] = [
     { slug: 'daily-errands', title: '日常跑腿', subtitle: '银行、仓库、客户、加油和临时行程。', sources: [{ type: 'driverWorkflow', workflow: 'kunjungan' }, { type: 'driverWorkflow', workflow: 'lanjutan' }] },
   ] },
   { slug: 'work-business', icon: '💼', title: '工作商务', subtitle: '办公室、工厂、供应商、客户和电商运营。', topics: [
-    { slug: 'employee-management', title: '员工管理', subtitle: '员工汇报、完成标准、纪律、离职和责任。', sources: [{ type: 'lifeIds', ids: range(144, 153) }, { type: 'factoryIds', ids: range(21, 35) }] },
+    { slug: 'employee-management', title: '员工管理', subtitle: '员工汇报、完成标准、纪律、离职和责任。', sources: [{ type: 'lifeIds', ids: range(144, 153) }, { type: 'factoryIds', ids: [...range(21, 35), ...range(91, 108)] }] },
     { slug: 'office-collaboration', title: '办公室协作', subtitle: 'WhatsApp、文件、会议、跨部门协作。', sources: [{ type: 'lifeIds', ids: [144, 146, 147, 148, 149, 150, 151] }] },
     { slug: 'meeting-report', title: '会议汇报', subtitle: '把问题、结果、方案和下一步说清楚。', sources: [{ type: 'lifeIds', ids: [144, 148, 149, 150, 154, 173] }] },
     { slug: 'recruiting-hr', title: '招聘人事', subtitle: '面试、入职、请假、工资和离职沟通。', sources: [{ type: 'lifeIds', ids: [152, 153] }, { type: 'nannyWorkflow', workflow: 'kerja' }] },
@@ -116,7 +116,7 @@ export const sceneMapV2: SceneMapLevel2[] = [
   { slug: 'social-relationship', icon: '🧑‍🤝‍🧑', title: '社交关系', subtitle: '认识朋友、关系推进、聚会、边界和商务社交。', topics: [
     { slug: 'new-friends', title: '认识新朋友', subtitle: '第一次认识、共同话题、WhatsApp 和邀约。', sources: [{ type: 'lifeIds', ids: range(174, 183) }, { type: 'socialIds', ids: range(1, 20) }] },
     { slug: 'daily-friendship', title: '朋友日常', subtitle: '聊天、吃饭、帮忙、感谢和自然联系。', sources: [{ type: 'socialIds', ids: range(21, 70) }] },
-    { slug: 'dating-relationship', title: '恋爱关系', subtitle: '约会、边界、表达好感和关系沟通。', sources: [{ type: 'lifeCategory', category: 'dating' }] },
+    { slug: 'dating-relationship', title: '恋爱关系', subtitle: '约会、边界、表达好感和关系沟通。', sources: [{ type: 'lifeCategory', category: 'dating' }, { type: 'socialIds', ids: range(301, 316) }] },
     { slug: 'business-social', title: '商务社交', subtitle: '客户饭局、跟进、关系维护和不冒犯。', sources: [{ type: 'lifeIds', ids: range(184, 189) }] },
   ] },
   { slug: 'public-service', icon: '🏛', title: '办事服务', subtitle: '银行、医疗、文件、公寓管理和窗口沟通。', topics: [

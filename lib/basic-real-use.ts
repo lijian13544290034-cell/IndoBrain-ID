@@ -1,4 +1,5 @@
 import type { BasicConcept } from './basic-essentials';
+import { internetSlangRealUseUnits } from './internet-slang-content';
 
 export type RealUseType = 'phrase' | 'sentence' | 'micro_scene';
 
@@ -28,12 +29,12 @@ export type LearningGroupRealUseBinding = {
 };
 
 export const BASIC_REAL_USE_EXPECTED_STATS = {
-  totalConcepts: 633,
-  totalLearningGroups: 93,
-  totalRealUseUnits: 93,
-  totalRealUseItems: 279,
+  totalConcepts: 663,
+  totalLearningGroups: 97,
+  totalRealUseUnits: 97,
+  totalRealUseItems: 309,
   phrase: 34,
-  sentence: 48,
+  sentence: 52,
   microScene: 11,
 } as const;
 
@@ -42,6 +43,10 @@ export function getLearningGroupId(categoryId: string, subcategoryId: string, gr
 }
 
 export const basicRealUseGroupBindings: LearningGroupRealUseBinding[] = [
+  { learningGroupId: getLearningGroupId("internet-slang", "today-slang", 1), categoryId: "internet-slang", subcategoryId: "today-slang", group: 1, realUseId: "real-use-be-slang-g001" },
+  { learningGroupId: getLearningGroupId("internet-slang", "today-slang", 2), categoryId: "internet-slang", subcategoryId: "today-slang", group: 2, realUseId: "real-use-be-slang-g002" },
+  { learningGroupId: getLearningGroupId("internet-slang", "today-slang", 3), categoryId: "internet-slang", subcategoryId: "today-slang", group: 3, realUseId: "real-use-be-slang-g003" },
+  { learningGroupId: getLearningGroupId("internet-slang", "today-slang", 4), categoryId: "internet-slang", subcategoryId: "today-slang", group: 4, realUseId: "real-use-be-slang-g004" },
   { learningGroupId: getLearningGroupId("core", "numbers", 1), categoryId: "core", subcategoryId: "numbers", group: 1, realUseId: "real-use-be-v1-g001" },
   { learningGroupId: getLearningGroupId("core", "numbers", 2), categoryId: "core", subcategoryId: "numbers", group: 2, realUseId: "real-use-be-v1-g002" },
   { learningGroupId: getLearningGroupId("core", "numbers", 3), categoryId: "core", subcategoryId: "numbers", group: 3, realUseId: "real-use-be-v1-g003" },
@@ -138,6 +143,7 @@ export const basicRealUseGroupBindings: LearningGroupRealUseBinding[] = [
 ];
 
 export const basicRealUseUnits: RealUseUnit[] = [
+  ...internetSlangRealUseUnits,
   {
     id: "real-use-be-v1-g001",
     type: "phrase",

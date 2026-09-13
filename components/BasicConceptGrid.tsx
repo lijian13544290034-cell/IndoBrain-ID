@@ -16,6 +16,8 @@ function FavoriteIcon({ filled }: { filled: boolean }) {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.9-8.6a5.5 5.5 0 0 0-.1-7.8Z" /></svg>;
 }
 
+const slangStatusLabel = { COMMON: '常用', TRENDING: '正流行', VOLATILE: '可能过时' } as const;
+
 export default function BasicConceptGrid({ entries, ariaLabel, favoritesOnly = false }: { entries: BasicConceptGridEntry[]; ariaLabel: string; favoritesOnly?: boolean }) {
   const [favoriteIds, setFavoriteIds] = useState<string[] | null>(null);
 
@@ -42,7 +44,10 @@ export default function BasicConceptGrid({ entries, ariaLabel, favoritesOnly = f
       return <article key={item.conceptKey} className={`rounded-[22px] bg-white px-4 py-3 shadow-[var(--ib-shadow-card)] transition ${active ? 'ring-2 ring-[var(--ib-primary)]' : ''}`}>
         <div className="flex items-center justify-between gap-3">
           <Link href={href} className="min-w-0 flex-1 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-primary)]">
-            <p className="truncate text-lg font-bold text-[var(--ib-text-primary)]">{item.indonesian}</p>
+            <div className="flex min-w-0 items-center gap-2">
+              <p className="truncate text-lg font-bold text-[var(--ib-text-primary)]">{item.indonesian}</p>
+              {item.slangStatus ? <span className="shrink-0 rounded-full bg-[var(--ib-primary-soft)] px-2 py-0.5 text-[10px] font-bold text-[var(--ib-primary)]">{slangStatusLabel[item.slangStatus]}</span> : null}
+            </div>
             <p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{item.chinese}</p>
           </Link>
           <div className="flex shrink-0 items-center gap-1">

@@ -6,6 +6,7 @@ import { factoryGoldenBatch4 } from '@/lib/golden-batch-4-scenes';
 import type { GoldenSceneContent } from '@/lib/golden-scenes';
 import { formatHarvest } from '@/lib/harvest';
 import { getWorkplacePattern, type WorkplacePattern } from '@/lib/workplace-patterns';
+import { workExpansionSeeds } from '@/lib/content-expansion-pack';
 
 export type FactoryExperience = {
   id: string;
@@ -16,6 +17,8 @@ export type FactoryExperience = {
   harvest: string[];
   pattern: WorkplacePattern;
   goldenScene?: GoldenSceneContent;
+  momentTitle?: string;
+  insight?: { indonesian: string; chinese: string };
 };
 
 const experiencePath = path.join(process.cwd(), 'experience', 'factory', 'manager', 'Factory_Manager_Experience.md');
@@ -110,7 +113,7 @@ function firstIndonesianLine(content: string, taskSection: string) {
 export function getFactoryExperiences(): FactoryExperience[] {
   const source = fs.readFileSync(experiencePath, 'utf8').trim();
 
-  return source
+  const existing = source
     .split(/(?=^# EXP-FAC-\d{3}\s*$)/m)
     .filter((section) => section.trim().startsWith('# EXP-FAC-'))
     .map((section) => {
@@ -153,6 +156,24 @@ export function getFactoryExperiences(): FactoryExperience[] {
     })
     .filter(({ id }) => Number(id.slice(-3)) >= 1)
     .sort((a, b) => a.id.localeCompare(b.id));
+
+  const expansion = workExpansionSeeds.map((seed, index) => {
+    const id = `EXP-FAC-${String(91 + index).padStart(3, '0')}`;
+    const pattern = getWorkplacePattern(seed.indonesian);
+    return {
+      id,
+      task: seed.task,
+      indonesian: seed.indonesian,
+      explanation: seed.explanation,
+      harvest: formatHarvest(seed.harvest, seed.indonesian),
+      pattern,
+      momentTitle: `${seed.code} · ${seed.task}`,
+      insight: seed.insight,
+      content: displayContent(id, seed.task, seed.indonesian, seed.explanation, formatHarvest(seed.harvest, seed.indonesian)),
+    };
+  });
+
+  return [...existing, ...expansion];
 }
 
 export function getFactoryExperience(id: string) {

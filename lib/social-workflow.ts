@@ -3,6 +3,7 @@ export const socialWorkflow = [
   { slug: 'obrolan-santai', indonesian: 'Obrolan Santai', chinese: '日常聊天', ids: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20] },
   { slug: 'ngopi-makan', indonesian: 'Ngopi & Makan', chinese: '喝咖啡与吃饭', ids: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30] },
   { slug: 'budaya', indonesian: 'Budaya', chinese: '文化理解', ids: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50] },
+  { slug: 'dating', indonesian: 'Dating', chinese: '恋爱关系', ids: [301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316] },
 ] as const;
 
 export type SocialWorkflowSlug = (typeof socialWorkflow)[number]['slug'];

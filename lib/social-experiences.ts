@@ -1,6 +1,8 @@
+import { socialExpansionSeeds } from '@/lib/content-expansion-pack';
+
 export type SocialExperience = {
   id: string;
-  category: 'kenalan' | 'obrolan-santai' | 'ngopi-makan' | 'budaya';
+  category: 'kenalan' | 'obrolan-santai' | 'ngopi-makan' | 'budaya' | 'dating';
   task: string;
   chinese: string;
   indonesian: string;
@@ -8,6 +10,7 @@ export type SocialExperience = {
   harvest: string[];
   momentTitle?: string;
   insight?: { indonesian: string; chinese: string };
+  relatedConceptIds?: string[];
 };
 
 const experience = (
@@ -98,6 +101,19 @@ const socialExperiences: SocialExperience[] = [
   experience('EXP-SOC-070', 'budaya', '没事，需要帮忙就说。', 'Nggak apa-apa, kalau perlu bantuan bilang aja.', '对方感谢或遇到小困难时，用这句表达愿意继续帮忙。', ['nggak apa-apa（没事）', 'perlu bantuan（需要帮忙）', 'bilang aja（直接说）']),
 ];
 
+const socialExpansionExperiences: SocialExperience[] = socialExpansionSeeds.map((seed, index) => ({
+  id: `EXP-SOC-${String(301 + index).padStart(3, '0')}`,
+  category: 'dating',
+  task: seed.task,
+  chinese: seed.task,
+  indonesian: seed.indonesian,
+  explanation: seed.explanation,
+  harvest: seed.harvest,
+  momentTitle: `${seed.code} · ${seed.task}`,
+  insight: seed.insight,
+  relatedConceptIds: seed.code === 'S09' ? ['slang-salting'] : seed.code === 'S16' ? ['slang-hts'] : seed.code === 'S10' || seed.code === 'S11' ? ['slang-pdkt'] : [],
+}));
+
 const socialEnhancements: Record<string, Required<Pick<SocialExperience, 'momentTitle' | 'insight'>>> = {
   'EXP-SOC-001': { momentTitle: '第一次见面', insight: { indonesian: 'Senyum dan satu kalimat sederhana biasanya sudah cukup untuk membuka perkenalan.', chinese: '初次见面时，微笑加上一句简单问候，通常就足够自然。' } },
   'EXP-SOC-002': { momentTitle: '交换姓名', insight: { indonesian: 'Menyebut nama sendiri dulu membuat pertanyaan tentang nama lawan bicara terasa lebih santai.', chinese: '先介绍自己的名字，再问对方姓名，会更自然。' } },
@@ -172,7 +188,7 @@ const socialEnhancements: Record<string, Required<Pick<SocialExperience, 'moment
 };
 
 export function getSocialExperiences() {
-  return socialExperiences.map((experience) => ({ ...experience, ...socialEnhancements[experience.id] }));
+  return [...socialExperiences.map((experience) => ({ ...experience, ...socialEnhancements[experience.id] })), ...socialExpansionExperiences];
 }
 
 export function getSocialExperience(id: string) {

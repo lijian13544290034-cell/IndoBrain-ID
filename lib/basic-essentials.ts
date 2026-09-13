@@ -1,3 +1,5 @@
+import { internetSlangConcepts, type InternetSlangStatus } from './internet-slang-content';
+
 export type BasicFrequency = '超高频' | '高频' | '常用' | '识别';
 export type BasicDifficulty = 1 | 2 | 3;
 export type BasicStatus = 'active' | 'draft';
@@ -46,6 +48,7 @@ export type BasicConcept = {
   frequency: BasicFrequency;
   difficulty: BasicDifficulty;
   status: BasicStatus;
+  slangStatus?: InternetSlangStatus;
   order: number;
 };
 
@@ -164,6 +167,16 @@ export const basicEssentialsCategories: BasicTopCategory[] = [
       { id: 'airport', title: '飞机机场', subtitle: '机场、航班、登机口、延误、到达', order: 6 },
     ],
   },
+  {
+    id: 'internet-slang',
+    title: '网络流行词',
+    subtitle: 'Bahasa Gaul & Internet · 印尼人今天正在说的话',
+    icon: 'blocks',
+    order: 7,
+    subcategories: [
+      { id: 'today-slang', title: 'Bahasa Gaul & Internet', subtitle: '印尼人今天正在说的话', order: 1 },
+    ],
+  },
 ];
 
 const concepts: BasicConcept[] = [];
@@ -187,6 +200,7 @@ type Seed = {
   priority?: number;
   frequency?: BasicFrequency;
   difficulty?: BasicDifficulty;
+  slangStatus?: InternetSlangStatus;
 };
 
 function add(seed: Seed) {
@@ -213,6 +227,7 @@ function add(seed: Seed) {
     frequency: seed.frequency ?? '常用',
     difficulty: seed.difficulty ?? 1,
     status: 'active',
+    slangStatus: seed.slangStatus,
     order,
   });
 }
@@ -390,6 +405,22 @@ addSimple('core', 'particles', [
 addSimple('core', 'questions-pronouns', [
   ['nama', 'nama', '名字'], ['nomor', 'nomor', '号码'], ['foto', 'foto', '照片'], ['video', 'video', '视频'], ['pesan', 'pesan', '消息 / 点单 / 订购', { usageNote: '强语境词：聊天里是消息，餐饮里可表示点单，采购里可表示订购。', relatedSceneIds: ['EXP-PUR-003'] }], ['whatsapp', 'WhatsApp', 'WhatsApp 聊天软件'], ['wa', 'WA', 'WhatsApp（缩写）'],
 ]);
+
+internetSlangConcepts.forEach((concept) => add({
+  key: concept.key,
+  categoryId: 'internet-slang',
+  subcategoryId: 'today-slang',
+  indonesian: concept.indonesian,
+  chinese: concept.chinese,
+  shortMeaning: concept.chinese,
+  usageNote: [concept.chinese, concept.note].filter(Boolean).join(' · '),
+  shortExpressions: [concept.realUse],
+  relatedSceneIds: concept.relatedSceneIds,
+  tags: ['bahasa-gaul', 'internet', concept.status.toLowerCase(), concept.code],
+  frequency: concept.status === 'COMMON' ? '常用' : '识别',
+  difficulty: 1,
+  slangStatus: concept.status,
+}));
 
 export const basicEssentialsNumberSteps: BasicNumberStep[] = [
   { id: 'zero-ten', title: '0–10', note: '先把最小数字听熟。0 同时记住 nol 和 kosong。', items: ['nol', 'kosong', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh'].map((key) => ({ indonesian: concepts.find((item) => item.conceptKey === key)?.indonesian ?? key, chinese: concepts.find((item) => item.conceptKey === key)?.chinese ?? key })) },

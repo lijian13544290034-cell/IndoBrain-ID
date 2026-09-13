@@ -7,8 +7,10 @@ import ts from 'typescript';
 const root = process.cwd();
 const sourcePath = path.join(root, 'lib', 'basic-essentials.ts');
 const realUseSourcePath = path.join(root, 'lib', 'basic-real-use.ts');
+const internetSlangSourcePath = path.join(root, 'lib', 'internet-slang-content.ts');
 const source = fs.readFileSync(sourcePath, 'utf8');
 const realUseSource = fs.existsSync(realUseSourcePath) ? fs.readFileSync(realUseSourcePath, 'utf8') : '';
+const internetSlangSource = fs.readFileSync(internetSlangSourcePath, 'utf8');
 const experienceComponentSource = fs.readFileSync(path.join(root, 'components', 'BasicEssentialsExperience.tsx'), 'utf8');
 const conceptGridSource = fs.readFileSync(path.join(root, 'components', 'BasicConceptGrid.tsx'), 'utf8');
 const aboutWorkspaceSource = fs.readFileSync(path.join(root, 'components', 'AboutMeWorkspace.tsx'), 'utf8');
@@ -40,6 +42,11 @@ function compileBasicEssentials() {
 
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'indobrain-basic-'));
   const tempFile = path.join(tempDir, 'basic-essentials.cjs');
+  const internetSlangCompiled = ts.transpileModule(internetSlangSource, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, esModuleInterop: true, skipLibCheck: true },
+    fileName: internetSlangSourcePath,
+  });
+  fs.writeFileSync(path.join(tempDir, 'internet-slang-content.js'), internetSlangCompiled.outputText, 'utf8');
   fs.writeFileSync(tempFile, compiled.outputText, 'utf8');
   const require = createRequire(import.meta.url);
   const module = require(tempFile);
@@ -75,6 +82,10 @@ function compileBasicRealUse() {
     fileName: realUseSourcePath,
     reportDiagnostics: true,
   });
+  const internetSlangCompiled = ts.transpileModule(internetSlangSource, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, esModuleInterop: true, skipLibCheck: true },
+    fileName: internetSlangSourcePath,
+  });
 
   for (const diagnostic of [...(basicCompiled.diagnostics ?? []), ...(realUseCompiled.diagnostics ?? [])]) {
     if (diagnostic.category === ts.DiagnosticCategory.Error) {
@@ -84,6 +95,7 @@ function compileBasicRealUse() {
 
   fs.writeFileSync(path.join(tempDir, 'basic-essentials.js'), basicCompiled.outputText, 'utf8');
   fs.writeFileSync(path.join(tempDir, 'basic-real-use.js'), realUseCompiled.outputText, 'utf8');
+  fs.writeFileSync(path.join(tempDir, 'internet-slang-content.js'), internetSlangCompiled.outputText, 'utf8');
   const module = require(path.join(tempDir, 'basic-real-use.js'));
   fs.rmSync(tempDir, { recursive: true, force: true });
   return module;
@@ -154,9 +166,9 @@ const conceptIds = new Set(basicEssentialsConcepts.map((item) => item.id));
 const conceptKeys = new Set(basicEssentialsConcepts.map((item) => item.conceptKey));
 const knownSceneIds = getKnownSceneIds();
 
-if (basicEssentialsCategories.length !== 6) failures.push(`Expected 6 top categories, found ${basicEssentialsCategories.length}`);
+if (basicEssentialsCategories.length !== 7) failures.push(`Expected 7 top categories, found ${basicEssentialsCategories.length}`);
 
-const expectedCategoryTitles = ['高频基础', '感受与状态', '吃喝', '身体与穿戴', '居家常用', '出行交通'];
+const expectedCategoryTitles = ['高频基础', '感受与状态', '吃喝', '身体与穿戴', '居家常用', '出行交通', '网络流行词'];
 for (const title of expectedCategoryTitles) {
   if (!basicEssentialsCategories.some((item) => item.title === title)) failures.push(`Missing frozen top category: ${title}`);
 }
@@ -364,10 +376,10 @@ const realUseById = new Map(realUseUnits.map((unit) => [unit.id, unit]));
 const bindingsByLearningGroup = new Map();
 const displayCounts = new Map();
 
-if (realUseStats.totalConcepts !== 633) failures.push(`Real Use expected totalConcepts must be 633, found ${realUseStats.totalConcepts}`);
-if (learningGroups.length !== 93) failures.push(`Expected 93 Learning Groups, found ${learningGroups.length}`);
-if (realUseUnits.length !== 93) failures.push(`Expected 93 Real Use Units, found ${realUseUnits.length}`);
-if (realUseBindings.length !== 93) failures.push(`Expected 93 Real Use bindings, found ${realUseBindings.length}`);
+if (realUseStats.totalConcepts !== 663) failures.push(`Real Use expected totalConcepts must be 663, found ${realUseStats.totalConcepts}`);
+if (learningGroups.length !== 97) failures.push(`Expected 97 Learning Groups, found ${learningGroups.length}`);
+if (realUseUnits.length !== 97) failures.push(`Expected 97 Real Use Units, found ${realUseUnits.length}`);
+if (realUseBindings.length !== 97) failures.push(`Expected 97 Real Use bindings, found ${realUseBindings.length}`);
 
 let realUseItemCount = 0;
 let phraseCount = 0;
@@ -441,12 +453,12 @@ for (const unit of realUseUnits) {
   }
 }
 
-if (realUseItemCount !== 279) failures.push(`Expected 279 Real Use items, found ${realUseItemCount}`);
+if (realUseItemCount !== 309) failures.push(`Expected 309 Real Use items, found ${realUseItemCount}`);
 if (phraseCount !== 34) failures.push(`Expected 34 phrase Real Use units, found ${phraseCount}`);
-if (sentenceCount !== 48) failures.push(`Expected 48 sentence Real Use units, found ${sentenceCount}`);
+if (sentenceCount !== 52) failures.push(`Expected 52 sentence Real Use units, found ${sentenceCount}`);
 if (microSceneCount !== 11) failures.push(`Expected 11 micro_scene Real Use units, found ${microSceneCount}`);
-if (realUseStats.totalRealUseItems !== 279 || realUseStats.phrase !== 34 || realUseStats.sentence !== 48 || realUseStats.microScene !== 11) {
-  failures.push(`Real Use expected stats are not frozen V1 values: ${JSON.stringify(realUseStats)}`);
+if (realUseStats.totalRealUseItems !== 309 || realUseStats.phrase !== 34 || realUseStats.sentence !== 52 || realUseStats.microScene !== 11) {
+  failures.push(`Real Use expected stats do not match the integrated content set: ${JSON.stringify(realUseStats)}`);
 }
 
 const routeExists = fs.existsSync(path.join(root, 'app', 'basic-essentials', 'page.tsx'));
