@@ -27,6 +27,17 @@ function dateValue(value?: string | null) {
   return value ? new Date(value).toLocaleDateString('zh-CN') : '长期有效';
 }
 
+function PasswordVisibilityIcon({ visible }: { visible: boolean }) {
+  const common = { width: 19, height: 19, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true };
+  if (visible) return <svg {...common}><path d="m2 2 20 20" /><path d="M6.7 6.7C3.7 8.5 2 12 2 12s3.6 7 10 7c1.6 0 3-.4 4.3-1.2" /><path d="M10.7 5.1A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a13.2 13.2 0 0 1-1.7 2.7" /><path d="M14.1 14.1a3 3 0 1 1-4.2-4.2" /></svg>;
+  return <svg {...common}><path d="M2.1 12.3a1 1 0 0 1 0-.7A10.8 10.8 0 0 1 22 12a10.8 10.8 0 0 1-19.9.3Z" /><circle cx="12" cy="12" r="3" /></svg>;
+}
+
+type CreatedAccountResult = {
+  user: AccountUser;
+  initialPassword: string;
+};
+
 export default function AdminDashboard({ initialPassword }: { initialPassword: string }) {
   const [stats, setStats] = useState(emptyStats);
   const [users, setUsers] = useState<AccountUser[]>([]);
@@ -35,7 +46,10 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
   const [notice, setNotice] = useState('');
   const [creating, setCreating] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [createdUser, setCreatedUser] = useState<AccountUser | null>(null);
+  const [createdAccount, setCreatedAccount] = useState<CreatedAccountResult | null>(null);
+  const [createError, setCreateError] = useState('');
+  const [resultPasswordVisible, setResultPasswordVisible] = useState(false);
+  const [copyMessage, setCopyMessage] = useState('');
 
   async function load(search = query) {
     const [statsResponse, usersResponse, historyResponse] = await Promise.all([
@@ -55,22 +69,68 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
     event.preventDefault();
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
+    const initialPasswordUsed = String(form.get('password') ?? '');
+    const submittedPhone = String(form.get('phone') ?? '').trim().replace(/[\s()-]/g, '');
     setCreating(true);
     setNotice('');
-    setCreatedUser(null);
-    const response = await fetch('/api/admin/users', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(form)),
-    });
-    const data = await response.json() as { error?: string; user?: AccountUser };
-    setCreating(false);
-    if (!response.ok || !data.user) {
-      setNotice(data.error ?? '无法创建账号。');
-      return;
+    setCreatedAccount(null);
+    setCreateError('');
+    setCopyMessage('');
+    setResultPasswordVisible(false);
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(form)),
+      });
+      const data = await response.json() as { error?: string; user?: AccountUser };
+      if (!response.ok || !data.user) {
+        let message = data.error ?? '创建失败，请重试。';
+        if (submittedPhone) {
+          try {
+            const existingResponse = await fetch(`/api/admin/users?query=${encodeURIComponent(submittedPhone)}`);
+            const existingData = await existingResponse.json() as { users?: AccountUser[] };
+            if (existingResponse.ok && existingData.users?.some((user) => user.phone === submittedPhone)) message = '手机号已存在。';
+          } catch {
+            // Preserve the safe create API message when account lookup is unavailable.
+          }
+        }
+        setCreateError(message);
+        return;
+      }
+
+      const verificationResponse = await fetch(`/api/admin/users?query=${encodeURIComponent(data.user.phone)}`);
+      const verificationData = await verificationResponse.json() as { error?: string; users?: AccountUser[] };
+      const verifiedUser = verificationData.users?.find((user) => user.id === data.user?.id && user.phone === data.user.phone);
+      if (!verificationResponse.ok || !verifiedUser) {
+        setCreateError(verificationData.error ?? '创建失败：无法确认账号已保存，请重试。');
+        return;
+      }
+
+      setCreatedAccount({ user: verifiedUser, initialPassword: initialPasswordUsed });
+      formElement.reset();
+      void load();
+    } catch {
+      setCreateError('创建失败，账号服务暂时不可用，请重试。');
+    } finally {
+      setCreating(false);
     }
-    formElement.reset();
-    setCreatedUser(data.user);
-    setNotice('账号创建成功。新用户可立即使用手机号和初始密码登录。');
-    void load();
+  }
+
+  async function copyCreatedAccount() {
+    if (!createdAccount) return;
+    const { user, initialPassword: password } = createdAccount;
+    const accountInfo = [
+      `姓名: ${user.display_name || '—'}`,
+      `手机号: ${user.phone}`,
+      `初始密码: ${password}`,
+      `会员: ${user.membership_code}`,
+      `学习方向: ${directions[user.learning_direction]}`,
+    ].join('\n');
+    try {
+      await navigator.clipboard.writeText(accountInfo);
+      setCopyMessage('账号信息已复制。');
+    } catch {
+      setCopyMessage('复制失败，请手动复制。');
+    }
   }
 
   async function action(user: AccountUser, actionName: string) {
@@ -127,7 +187,7 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
   return <div className="space-y-8">
     <section className="flex flex-col gap-4 rounded-2xl border border-stone-200 bg-stone-50 p-5 sm:flex-row sm:items-center sm:justify-between">
       <div><h2 className="text-lg font-semibold"><Label indonesian="Kelola Akun" chinese="账号管理" /></h2><p className="mt-1 text-sm text-gray-500">仅 SUPER_ADMIN 可以创建和管理测试账号。</p></div>
-      <button onClick={() => { setShowCreateForm((visible) => !visible); setCreatedUser(null); }} className="rounded-xl bg-stone-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-stone-700"><Label indonesian={showCreateForm ? 'Tutup Formulir' : 'Buat Akun'} chinese={showCreateForm ? '关闭表单' : '创建账号'} /></button>
+      <button onClick={() => { setShowCreateForm((visible) => !visible); setCreatedAccount(null); setCreateError(''); }} className="rounded-xl bg-stone-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-stone-700"><Label indonesian={showCreateForm ? 'Tutup Formulir' : 'Buat Akun'} chinese={showCreateForm ? '关闭表单' : '创建账号'} /></button>
     </section>
 
     {showCreateForm && <section className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
@@ -144,7 +204,20 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
         <label className="grid gap-1 text-sm font-medium">账号状态<select name="accountStatus" defaultValue="ACTIVE" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal"><option value="ACTIVE">active（正常）</option><option value="SUSPENDED">suspended（停用）</option></select></label>
         <div className="flex items-end"><button disabled={creating} className="w-full rounded-xl bg-stone-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50">{creating ? '正在创建…' : 'Buat Akun（创建账号）'}</button></div>
       </form>
-      {createdUser && <article className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950"><p className="font-semibold">账号已创建，可立即登录。</p><dl className="mt-3 grid gap-2 sm:grid-cols-2"><div><dt className="text-emerald-700">用户编号</dt><dd>{createdUser.public_id}</dd></div><div><dt className="text-emerald-700">手机号</dt><dd>{createdUser.phone}</dd></div><div><dt className="text-emerald-700">会员等级</dt><dd>{planLabels[createdUser.membership_code]}</dd></div><div><dt className="text-emerald-700">有效期</dt><dd>{dateValue(createdUser.expires_at)}</dd></div></dl></article>}
+      {createError && <article role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"><p className="font-semibold">创建失败 / Account creation failed</p><p className="mt-1">{createError}</p></article>}
+      {createdAccount && <article role="status" aria-live="polite" className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950">
+        <p className="text-base font-semibold">创建成功 / Account created successfully</p>
+        <p className="mt-1 text-emerald-700">账号已通过账户列表验证，可立即登录。</p>
+        <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div><dt className="text-xs text-emerald-700">姓名</dt><dd className="mt-0.5 font-medium">{createdAccount.user.display_name || '—'}</dd></div>
+          <div><dt className="text-xs text-emerald-700">手机号</dt><dd className="mt-0.5 font-medium break-all">{createdAccount.user.phone}</dd></div>
+          <div><dt className="text-xs text-emerald-700">会员等级</dt><dd className="mt-0.5 font-medium">{createdAccount.user.membership_code} · {planLabels[createdAccount.user.membership_code]}</dd></div>
+          <div><dt className="text-xs text-emerald-700">学习方向</dt><dd className="mt-0.5 font-medium">{directions[createdAccount.user.learning_direction]}</dd></div>
+          <div><dt className="text-xs text-emerald-700">账号状态</dt><dd className="mt-0.5 font-medium">{createdAccount.user.account_status === 'ACTIVE' ? 'active（正常）' : 'suspended（停用）'}</dd></div>
+          <div className="sm:col-span-2"><dt className="text-xs text-emerald-700">初始密码</dt><dd className="relative mt-1"><input readOnly value={createdAccount.initialPassword} type={resultPasswordVisible ? 'text' : 'password'} aria-label="初始密码结果" className="w-full rounded-xl border border-emerald-200 bg-white px-3 py-2.5 pr-14 font-mono text-gray-900" /><button type="button" onPointerDown={(event) => event.preventDefault()} onClick={() => setResultPasswordVisible((visible) => !visible)} aria-label={resultPasswordVisible ? '隐藏初始密码' : '显示初始密码'} aria-pressed={resultPasswordVisible} className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-xl text-emerald-700 hover:bg-emerald-100"><PasswordVisibilityIcon visible={resultPasswordVisible} /></button></dd></div>
+        </dl>
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center"><button type="button" onClick={() => void copyCreatedAccount()} className="rounded-xl bg-emerald-800 px-4 py-2.5 font-medium text-white hover:bg-emerald-700">复制账号信息</button>{copyMessage && <p role="status" className="text-sm text-emerald-800">{copyMessage}</p>}</div>
+      </article>}
     </section>}
 
     <BulkStudentImport initialPassword={initialPassword} />
