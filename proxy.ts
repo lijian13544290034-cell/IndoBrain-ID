@@ -56,7 +56,6 @@ export async function proxy(request: NextRequest) {
   const access = token ? await getLearningAccess(token) : null;
 
   if (!access) {
-    if (process.env.AUTH_REQUIRED !== 'true') return NextResponse.next();
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('next', request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
@@ -75,7 +74,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/', '/learn-chinese/:path*', '/driver/:path*', '/nanny/:path*', '/factory/:path*', '/life/:path*', '/social/:path*', '/patterns/:path*', '/module/:path*', '/chat/:path*',
+    '/', '/about', '/learn-chinese/:path*', '/driver/:path*', '/nanny/:path*', '/factory/:path*', '/life/:path*', '/social/:path*', '/patterns/:path*', '/module/:path*', '/chat/:path*',
     '/basic-essentials/:path*', '/micro-scenes/:path*', '/vocabulary/:path*', '/golden-batch-2/:path*', '/golden-batch-3/:path*', '/golden-batch-4/:path*', '/golden-batch-5/:path*', '/golden-batch-6/:path*',
   ],
 };
