@@ -5,7 +5,7 @@ import { getHistoricalQuickExperiences, type QuickExperienceLearningUnit } from 
 import { cityLifeMicroSceneTaxonomy, type CityLifeMicroSectionSlug } from '@/lib/city-life-micro-navigation';
 
 export type HistoricalMicroModuleSlug = 'driver' | 'nanny' | 'factory' | 'life';
-export type HistoricalFactoryRoleSlug = 'manager' | 'production' | 'warehouse' | 'qc' | 'purchasing' | 'operator' | 'logistics' | 'shipping' | 'export' | 'customer-service';
+export type HistoricalFactoryRoleSlug = 'manager' | 'employee-management' | 'production' | 'warehouse' | 'qc' | 'purchasing' | 'operator' | 'logistics' | 'shipping' | 'export' | 'customer-service';
 
 export type HistoricalMicroSceneCard = QuickExperienceLearningUnit & {
   progressKey: string;
@@ -40,6 +40,21 @@ const lifeQuick = allQuick.filter((item) => item.source === 'life');
 const socialQuick = allQuick.filter((item) => item.source === 'social');
 const cityLifeQuick = [...lifeQuick, ...socialQuick];
 const factoryRoleQuick = allQuick.filter((item) => item.source === 'module');
+const employeeManagementSourceIds = [
+  'EXP-FAC-091',
+  'EXP-FAC-092',
+  'EXP-FAC-093',
+  'EXP-FAC-096',
+  'EXP-FAC-097',
+  'EXP-FAC-098',
+  'EXP-FAC-101',
+  'EXP-FAC-104',
+  'EXP-FAC-105',
+  'EXP-FAC-107',
+  'EXP-FAC-109',
+] as const;
+const employeeManagementSourceIdSet = new Set<string>(employeeManagementSourceIds);
+const factoryManagerOperationsQuick = factoryManagerQuick.filter((item) => !employeeManagementSourceIdSet.has(item.sourceId));
 
 const historicalWorkflowSupplements = {
   driver: {
@@ -60,6 +75,7 @@ const historicalWorkflowSupplements = {
 
 const factoryRoleDefinitions = [
   { slug: 'manager', prefix: 'EXP-FAC-', indonesian: 'Manajer Pabrik', title: '工厂经理', subtitle: '生产、品质、安全、原料、交付和客户。' },
+  { slug: 'employee-management', prefix: 'EXP-FAC-', indonesian: '👥 Manajemen Karyawan · Employee Management', title: '员工管理', subtitle: '表扬、认可、鼓励、纠错、信任、授权和团队绩效。' },
   { slug: 'production', prefix: 'EXP-PRO-', indonesian: 'Produksi', title: '生产', subtitle: '生产安排、目标、进度和现场协作。' },
   { slug: 'warehouse', prefix: 'EXP-WHS-', indonesian: 'Gudang', title: '仓库', subtitle: '库存、材料、入库和仓库沟通。' },
   { slug: 'qc', prefix: 'EXP-QC-', indonesian: 'QC', title: '品质管理', subtitle: '检查、异常、不良品和品质确认。' },
@@ -89,7 +105,8 @@ function filterBySourceIds(items: QuickExperienceLearningUnit[], sourceIds: read
 }
 
 function factoryRoleItems(roleSlug: string) {
-  if (roleSlug === 'manager') return factoryManagerQuick.map(asCard);
+  if (roleSlug === 'manager') return factoryManagerOperationsQuick.map(asCard);
+  if (roleSlug === 'employee-management') return filterBySourceIds(factoryManagerQuick, employeeManagementSourceIds);
   const role = factoryRoleDefinitions.find((item) => item.slug === roleSlug);
   return role ? factoryRoleQuick.filter((item) => item.sourceId.startsWith(role.prefix)).map(asCard) : [];
 }
@@ -163,7 +180,7 @@ export function getFactoryManagerMicroGroups(): HistoricalMicroGroup[] {
       ekspor: '出口进度、文件和出运安排。',
       pelanggan: '客户需求、反馈和关系维护。',
     }[workflow.slug],
-    count: filterByIds(factoryManagerQuick, workflow.ids).length,
+    count: filterByIds(factoryManagerOperationsQuick, workflow.ids).length,
   }));
 }
 
@@ -210,7 +227,7 @@ export function getHistoricalMicroItems(moduleSlug: string, categorySlug?: strin
   }
   if (moduleSlug === 'factory' && roleSlug === 'manager') {
     const workflow = factoryWorkflow.find((item) => item.slug === categorySlug);
-    return workflow ? filterByIds(factoryManagerQuick, workflow.ids) : [];
+    return workflow ? filterByIds(factoryManagerOperationsQuick, workflow.ids) : [];
   }
   if (moduleSlug === 'factory' && roleSlug) return factoryRoleItems(roleSlug);
   return [];

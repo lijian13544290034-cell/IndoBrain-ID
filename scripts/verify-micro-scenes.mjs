@@ -102,7 +102,7 @@ const expectedGroupSlugs = {
   nanny: ['makan', 'rumah', 'anak', 'belanja', 'kerja'],
   factoryManager: ['produksi', 'kualitas', 'keamanan', 'material', 'pengiriman', 'ekspor', 'pelanggan'],
   life: ['restaurant', 'supermarket', 'bank-payments', 'medical-pharmacy', 'grooming-wellness', 'housing-property', 'repairs', 'delivery-takeout', 'documents-window', 'hotel-stay', 'airport-travel', 'new-friends', 'friend-daily', 'meals-coffee', 'daily-chat', 'cultural-exchange', 'dating', 'business-social'],
-  factoryRoles: ['manager', 'production', 'warehouse', 'qc', 'purchasing', 'operator', 'logistics', 'shipping', 'export', 'customer-service'],
+  factoryRoles: ['manager', 'employee-management', 'production', 'warehouse', 'qc', 'purchasing', 'operator', 'logistics', 'shipping', 'export', 'customer-service'],
 };
 const actualGroups = {
   driver: navigation.getDriverMicroGroups().map((item) => item.slug),
@@ -152,7 +152,7 @@ const contexts = [
   ...navigation.getDriverMicroGroups().map((group) => ({ key: `driver/${group.slug}`, items: navigation.getHistoricalMicroItems('driver', group.slug), allowed: new Set(['driver']) })),
   ...navigation.getNannyMicroGroups().map((group) => ({ key: `nanny/${group.slug}`, items: navigation.getHistoricalMicroItems('nanny', group.slug), allowed: new Set(['nanny']) })),
   ...navigation.getFactoryManagerMicroGroups().map((group) => ({ key: `factory/manager/${group.slug}`, items: navigation.getHistoricalMicroItems('factory', group.slug, 'manager'), allowed: new Set(['factory']) })),
-  ...navigation.getFactoryMicroRoles().filter((role) => role.slug !== 'manager').map((role) => ({ key: `factory/${role.slug}`, items: navigation.getHistoricalMicroItems('factory', undefined, role.slug), allowed: new Set(['module']) })),
+  ...navigation.getFactoryMicroRoles().filter((role) => role.slug !== 'manager').map((role) => ({ key: `factory/${role.slug}`, items: navigation.getHistoricalMicroItems('factory', undefined, role.slug), allowed: new Set([role.slug === 'employee-management' ? 'factory' : 'module']) })),
   ...navigation.getLifeMicroGroups().map((group) => ({ key: `life/${group.slug}`, items: navigation.getHistoricalMicroItems('life', group.slug), allowed: new Set(['life', 'social']) })),
 ];
 
@@ -182,6 +182,7 @@ if (seenContextIds.length !== 449 || new Set(seenContextIds).size !== 449) failu
 const representativeContexts = [
   ['driver/jemput', 'EXP-DRV-013'],
   ['factory/manager/produksi', 'EXP-FAC-001'],
+  ['factory/employee-management', 'EXP-FAC-091'],
   ['factory/qc', 'EXP-QC-001'],
   ['factory/warehouse', 'EXP-WHS-001'],
   ['life/restaurant', 'EXP-LIF-093'],
@@ -265,6 +266,16 @@ for (const [sourceId, expectedIndonesian] of Object.entries(approvedMicroAdditio
   const item = historical.find((candidate) => candidate.sourceId === sourceId);
   if (item?.indonesian !== expectedIndonesian) failures.push(`${sourceId} approved Micro wording missing: ${item?.indonesian}`);
 }
+
+const expectedEmployeeManagementIds = ['EXP-FAC-091', 'EXP-FAC-092', 'EXP-FAC-093', 'EXP-FAC-096', 'EXP-FAC-097', 'EXP-FAC-098', 'EXP-FAC-101', 'EXP-FAC-104', 'EXP-FAC-105', 'EXP-FAC-107', 'EXP-FAC-109'];
+const employeeManagementRole = navigation.getFactoryMicroRoles().find((role) => role.slug === 'employee-management');
+const employeeManagementItems = navigation.getHistoricalMicroItems('factory', undefined, 'employee-management');
+if (employeeManagementRole?.title !== '员工管理') failures.push(`Employee Management learner-facing title missing: ${employeeManagementRole?.title}`);
+if (employeeManagementRole?.count !== expectedEmployeeManagementIds.length) failures.push(`Expected ${expectedEmployeeManagementIds.length} Employee Management items, found ${employeeManagementRole?.count}`);
+if (employeeManagementItems.map((item) => item.sourceId).join('|') !== expectedEmployeeManagementIds.join('|')) failures.push(`Employee Management placement changed: ${employeeManagementItems.map((item) => item.sourceId).join(', ')}`);
+if (new Set(employeeManagementItems.map((item) => item.sourceId)).size !== employeeManagementItems.length) failures.push('Employee Management contains duplicate stable IDs');
+const managerIds = new Set(navigation.getFactoryManagerMicroGroups().flatMap((group) => navigation.getHistoricalMicroItems('factory', group.slug, 'manager')).map((item) => item.sourceId));
+for (const sourceId of expectedEmployeeManagementIds) if (managerIds.has(sourceId)) failures.push(`${sourceId} remains mixed into Factory Manager operational groups`);
 for (const excludedId of ['EXP-SOC-313', 'EXP-SOC-316']) if (historicalIds.has(excludedId)) failures.push(`${excludedId} must remain excluded from Micro Scene`);
 
 if (indexSource.includes('BASIC_ESSENTIALS_MICRO_SCENE_GROUP_MAP_V1')) failures.push('Planning-only Micro Scene content must not be imported by runtime');
@@ -293,7 +304,8 @@ console.log('Historical Quick core integrity: 421');
 console.log('Quick Experience reachable: 449');
 console.log('Driver reachable: 32');
 console.log('Nanny reachable: 49');
-console.log('Factory Manager reachable: 76');
+console.log('Factory Manager operational reachable: 65');
+console.log('Employee Management reachable: 11');
 console.log('Factory role/module reachable: 119');
 console.log('City Life / 生活办事 reachable: 58');
 console.log('City Life / 社交关系 reachable: 115');
