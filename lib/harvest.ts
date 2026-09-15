@@ -55,7 +55,7 @@ export function harvestTerm(entry: string) {
 }
 
 function explicitMeaning(entry: string) {
-  return entry.match(/[（(]([^）)]+)[）)]/)?.[1]?.trim();
+  return entry.match(/[（(](.*)[）)]$/)?.[1]?.trim();
 }
 
 function inferredMeaning(term: string) {

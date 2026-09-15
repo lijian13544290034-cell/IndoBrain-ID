@@ -44,11 +44,11 @@ const historical = adapter.getHistoricalQuickExperiences();
 const historicalIds = new Set(historical.map((item) => item.sourceId));
 const historicalCore = historical.filter((item) => !(item.source === 'factory' && Number(item.sourceId.slice(-3)) > 90) && !(item.source === 'social' && Number(item.sourceId.slice(-3)) > 70));
 
-if (historical.length !== 449) failures.push(`Expected 449 Quick Experience assets after approved additions, found ${historical.length}`);
-if (historicalIds.size !== 449) failures.push(`Expected 449 unique Quick Experience IDs, found ${historicalIds.size}`);
+if (historical.length !== 469) failures.push(`Expected 469 Quick Experience assets after approved additions, found ${historical.length}`);
+if (historicalIds.size !== 469) failures.push(`Expected 469 unique Quick Experience IDs, found ${historicalIds.size}`);
 if (historicalCore.length !== 421) failures.push(`Expected the frozen 421 core Quick Experience assets to remain intact, found ${historicalCore.length}`);
 
-const expectedSourceCounts = { driver: 32, nanny: 49, factory: 76, life: 86, social: 87, module: 119 };
+const expectedSourceCounts = { driver: 32, nanny: 49, factory: 96, life: 86, social: 87, module: 119 };
 for (const [source, expected] of Object.entries(expectedSourceCounts)) {
   const actual = historical.filter((item) => item.source === source).length;
   if (actual !== expected) failures.push(`Expected ${expected} ${source} Quick assets, found ${actual}`);
@@ -64,10 +64,10 @@ for (const item of historical) {
 const quickIndex = micro.microSceneIndex.filter((item) => item.sourceType === 'QUICK_EXPERIENCE');
 const mappedQuick = quickIndex.filter((item) => item.enabled && item.reviewStatus === 'READY');
 const unmappedQuick = quickIndex.filter((item) => !item.enabled && item.reviewStatus === 'UNMAPPED_REVIEW');
-if (quickIndex.length !== 449) failures.push(`Expected all 449 Quick assets in metadata index, found ${quickIndex.length}`);
+if (quickIndex.length !== 469) failures.push(`Expected all 469 Quick assets in metadata index, found ${quickIndex.length}`);
 if (mappedQuick.length !== 397) failures.push(`Expected 397 Scene Map mapped Quick assets, found ${mappedQuick.length}`);
-if (unmappedQuick.length !== 52) failures.push(`Expected 52 Scene Map UNMAPPED_REVIEW Quick assets, found ${unmappedQuick.length}`);
-if (new Set(quickIndex.map((item) => item.sourceId)).size !== 449) failures.push('Quick index contains duplicate stable source IDs');
+if (unmappedQuick.length !== 72) failures.push(`Expected 72 Scene Map UNMAPPED_REVIEW Quick assets, found ${unmappedQuick.length}`);
+if (new Set(quickIndex.map((item) => item.sourceId)).size !== 469) failures.push('Quick index contains duplicate stable source IDs');
 if (unmappedQuick.some((item) => item.primaryMapping)) failures.push('UNMAPPED_REVIEW assets must not be force-mapped into Scene Map');
 if (unmappedQuick.some((item) => !historicalIds.has(item.sourceId))) failures.push('UNMAPPED_REVIEW contains an unknown source ID');
 
@@ -85,7 +85,7 @@ const modules = navigation.getHistoricalMicroModules();
 const expectedModules = [
   ['driver', '出行·司机', 32],
   ['nanny', '家庭·保姆', 49],
-  ['factory', '工作·工厂', 195],
+  ['factory', '工作·工厂', 215],
   ['life', '城市生活·社交', 173],
 ];
 if (modules.length !== 4) failures.push(`Expected 4 historical Micro Scene entrances, found ${modules.length}`);
@@ -159,7 +159,7 @@ const contexts = [
 
 const reachableIds = navigation.getHistoricalMicroReachableIds();
 const reachableSet = new Set(reachableIds);
-if (reachableIds.length !== 449) failures.push(`Expected 449 Quick assets reachable through historical navigation, found ${reachableIds.length}`);
+if (reachableIds.length !== 469) failures.push(`Expected 469 Quick assets reachable through historical navigation, found ${reachableIds.length}`);
 for (const id of historicalIds) if (!reachableSet.has(id)) failures.push(`${id} is not reachable through historical Micro navigation`);
 for (const item of unmappedQuick) if (!reachableSet.has(item.sourceId)) failures.push(`${item.sourceId} was lost because it is Scene Map UNMAPPED_REVIEW`);
 
@@ -178,7 +178,7 @@ for (const context of contexts) {
     if (!item.harvest.length) failures.push(`${item.sourceId} visible unit is missing harvest`);
   }
 }
-if (seenContextIds.length !== 449 || new Set(seenContextIds).size !== 449) failures.push(`Historical navigation must expose every Quick Experience exactly once; found ${seenContextIds.length} placements and ${new Set(seenContextIds).size} unique IDs`);
+if (seenContextIds.length !== 469 || new Set(seenContextIds).size !== 469) failures.push(`Historical navigation must expose every Quick Experience exactly once; found ${seenContextIds.length} placements and ${new Set(seenContextIds).size} unique IDs`);
 
 const representativeContexts = [
   ['driver/jemput', 'EXP-DRV-013'],
@@ -196,9 +196,9 @@ for (const [contextKey, sourceId] of representativeContexts) {
 }
 
 const stats = micro.getMicroSceneStats();
-if (stats.visibleAssetCount !== 449) failures.push(`Homepage Micro Scene count must be 449, found ${stats.visibleAssetCount}`);
+if (stats.visibleAssetCount !== 469) failures.push(`Homepage Micro Scene count must be 469, found ${stats.visibleAssetCount}`);
 if (stats.sceneMapMappedQuickCount !== 397) failures.push(`Scene Map mapped Quick count must be 397, found ${stats.sceneMapMappedQuickCount}`);
-if (stats.unmappedReviewCount !== 52) failures.push(`Scene Map UNMAPPED_REVIEW count must remain 52, found ${stats.unmappedReviewCount}`);
+if (stats.unmappedReviewCount !== 72) failures.push(`Scene Map UNMAPPED_REVIEW count must be 72 after the approved Employee Management additions, found ${stats.unmappedReviewCount}`);
 
 const forbiddenCopiedFields = ['sceneTitle', 'momentTitle', 'indonesian', 'chinese', 'explanation', 'harvest', 'pattern', 'insight', 'content'];
 for (const item of quickIndex) for (const field of forbiddenCopiedFields) if (Object.hasOwn(item, field)) failures.push(`Quick index copied source content field ${field} for ${item.sourceId}`);
@@ -245,6 +245,26 @@ const approvedMicroAdditions = {
   'EXP-FAC-105': 'Saya kasih kamu kesempatan sekali lagi.',
   'EXP-FAC-107': 'Saya hargai itu.',
   'EXP-FAC-109': 'Makasih ya, hari ini sudah kerja keras.',
+  'EXP-FAC-110': 'Hari ini kamu kerjakan yang ini dulu.',
+  'EXP-FAC-111': 'Yang tadi sudah selesai belum?',
+  'EXP-FAC-112': 'Tolong dipercepat sedikit, ya.',
+  'EXP-FAC-113': 'Yang ini harus selesai hari ini.',
+  'EXP-FAC-114': 'Kenapa ini belum selesai?',
+  'EXP-FAC-115': 'Coba cek lagi sebelum dikirim.',
+  'EXP-FAC-116': 'Yang ini masih salah. Tolong diperbaiki, ya.',
+  'EXP-FAC-117': 'Lain kali jangan sampai terulang lagi, ya.',
+  'EXP-FAC-118': 'Kamu hari ini kenapa terlambat?',
+  'EXP-FAC-119': 'Kalau mau izin, kasih tahu saya dulu, ya.',
+  'EXP-FAC-120': 'Kalau lagi kerja, jangan main HP terus, ya.',
+  'EXP-FAC-121': 'Ngobrol boleh, tapi jangan sampai ganggu kerjaan.',
+  'EXP-FAC-122': 'Kerjakan sesuai prosedur, jangan asal.',
+  'EXP-FAC-123': 'Kalau ada masalah, langsung kasih tahu saya.',
+  'EXP-FAC-124': 'Kalau belum yakin, tanya saya dulu. Jangan putuskan sendiri.',
+  'EXP-FAC-125': 'Hari ini kita perlu lembur sedikit, ya.',
+  'EXP-FAC-126': 'Besok datang lebih pagi, ya.',
+  'EXP-FAC-127': 'Yang pegang bagian ini siapa?',
+  'EXP-FAC-128': 'Sebelum pulang, pastikan serah terimanya jelas, ya.',
+  'EXP-FAC-129': 'Kalau sudah selesai, kasih tahu saya.',
   'EXP-SOC-317': 'Kamu cantik banget hari ini.',
   'EXP-SOC-301': 'Senyum kamu manis banget.',
   'EXP-SOC-302': 'Kok kamu makin cantik sih?',
@@ -268,13 +288,15 @@ for (const [sourceId, expectedIndonesian] of Object.entries(approvedMicroAdditio
   if (item?.indonesian !== expectedIndonesian) failures.push(`${sourceId} approved Micro wording missing: ${item?.indonesian}`);
 }
 
-const expectedEmployeeManagementIds = ['EXP-FAC-091', 'EXP-FAC-092', 'EXP-FAC-093', 'EXP-FAC-096', 'EXP-FAC-097', 'EXP-FAC-098', 'EXP-FAC-101', 'EXP-FAC-104', 'EXP-FAC-105', 'EXP-FAC-107', 'EXP-FAC-109'];
+const newEmployeeManagementIds = Array.from({ length: 20 }, (_, index) => `EXP-FAC-${String(110 + index).padStart(3, '0')}`);
+const expectedEmployeeManagementIds = ['EXP-FAC-091', 'EXP-FAC-092', 'EXP-FAC-093', 'EXP-FAC-096', 'EXP-FAC-097', 'EXP-FAC-098', 'EXP-FAC-101', 'EXP-FAC-104', 'EXP-FAC-105', 'EXP-FAC-107', 'EXP-FAC-109', ...newEmployeeManagementIds];
 const employeeManagementRole = navigation.getFactoryMicroRoles().find((role) => role.slug === 'employee-management');
 const employeeManagementItems = navigation.getHistoricalMicroItems('factory', undefined, 'employee-management');
 if (employeeManagementRole?.title !== '员工管理') failures.push(`Employee Management learner-facing title missing: ${employeeManagementRole?.title}`);
 if (employeeManagementRole?.count !== expectedEmployeeManagementIds.length) failures.push(`Expected ${expectedEmployeeManagementIds.length} Employee Management items, found ${employeeManagementRole?.count}`);
 if (employeeManagementItems.map((item) => item.sourceId).join('|') !== expectedEmployeeManagementIds.join('|')) failures.push(`Employee Management placement changed: ${employeeManagementItems.map((item) => item.sourceId).join(', ')}`);
 if (new Set(employeeManagementItems.map((item) => item.sourceId)).size !== employeeManagementItems.length) failures.push('Employee Management contains duplicate stable IDs');
+if (new Set(employeeManagementItems.map((item) => item.indonesian)).size !== employeeManagementItems.length) failures.push('Employee Management contains an exact duplicate Indonesian sentence');
 
 const expectedEmployeeChinese = {
   'EXP-FAC-091': '你今天做得非常好，继续保持。',
@@ -288,6 +310,48 @@ const expectedEmployeeChinese = {
   'EXP-FAC-105': '我再给你一次机会。',
   'EXP-FAC-107': '我很认可这一点。',
   'EXP-FAC-109': '谢谢你，今天辛苦了。',
+  'EXP-FAC-110': '今天你先做这个。',
+  'EXP-FAC-111': '刚才那个做完了吗？',
+  'EXP-FAC-112': '麻烦稍微快一点。',
+  'EXP-FAC-113': '这个今天必须完成。',
+  'EXP-FAC-114': '这个为什么还没做完？',
+  'EXP-FAC-115': '发出去之前再检查一下。',
+  'EXP-FAC-116': '这个还有问题，麻烦改一下。',
+  'EXP-FAC-117': '下次不要再犯了。',
+  'EXP-FAC-118': '你今天怎么迟到了？',
+  'EXP-FAC-119': '如果要请假，先跟我说一声。',
+  'EXP-FAC-120': '工作的时候别一直玩手机。',
+  'EXP-FAC-121': '聊天可以，但别影响工作。',
+  'EXP-FAC-122': '按流程做，不要随便来。',
+  'EXP-FAC-123': '有问题马上告诉我。',
+  'EXP-FAC-124': '如果不确定，先问我，不要自己做决定。',
+  'EXP-FAC-125': '今天我们需要稍微加一下班。',
+  'EXP-FAC-126': '明天早点来。',
+  'EXP-FAC-127': '这部分是谁负责的？',
+  'EXP-FAC-128': '下班前，把工作交接清楚。',
+  'EXP-FAC-129': '做完以后告诉我。',
+};
+const expectedNewEmployeeTeaching = {
+  'EXP-FAC-110': { task: '先做这个', explanation: '“dulu” 在这里不是“以前”，而是表示“先……”。“yang ini dulu” 是工作中安排优先顺序非常常见的说法。', harvest: ['kerjakan（做；处理）', 'yang ini dulu（先做这个）'] },
+  'EXP-FAC-111': { task: '询问是否完成', explanation: '“sudah ... belum?” 是印尼语非常高频的“已经……了吗？”结构。“yang tadi” 指双方都知道的“刚才那个事情/任务”。', harvest: ['yang tadi（刚才那个）', 'sudah selesai belum?（做完了吗？）'] },
+  'EXP-FAC-112': { task: '催一下进度', explanation: '“dipercepat” 表示“加快”。加上 “tolong” 和 “sedikit” 后，既表达催进度，又不会显得过于生硬。', harvest: ['dipercepat（加快；加快进度）', 'sedikit（一点；稍微）'] },
+  'EXP-FAC-113': { task: '今天必须完成', explanation: '“harus selesai” 表示“必须完成”。适合老板或主管明确任务截止时间时使用，要求清楚直接。', harvest: ['harus selesai（必须完成）', 'hari ini（今天）'] },
+  'EXP-FAC-114': { task: '为什么还没完成', explanation: '“belum selesai” 是工作中非常高频的“还没完成”。这句话本身可以是正常询问，实际语气强弱主要取决于说话方式。', harvest: ['kenapa（为什么；怎么了）', 'belum selesai（还没完成）'] },
+  'EXP-FAC-115': { task: '再检查一下', explanation: '工作口语中的 “coba + 动词” 经常用于自然地提出要求，不一定真的表示“尝试”。“cek lagi” 就是“再检查一下”。', harvest: ['cek lagi（再检查一下）', 'sebelum dikirim（发送之前）'] },
+  'EXP-FAC-116': { task: '要求修改', explanation: '“masih salah” 表示“还是不对/还有错误”。“diperbaiki” 在这个工作场景中就是“修改、改正”。', harvest: ['masih salah（还是不对；还有错误）', 'diperbaiki（修改；改正）'] },
+  'EXP-FAC-117': { task: '提醒不要再犯', explanation: '“jangan sampai...” 用来强调“不要让某件事情发生”。“terulang lagi” 在这里指同样的问题再次发生。', harvest: ['lain kali（下次）', 'jangan sampai（不要让……发生；千万不要）', 'terulang lagi（再次发生；再次犯同样的问题）'] },
+  'EXP-FAC-118': { task: '询问为什么迟到', explanation: '“terlambat” 表示“迟到、晚了”。这句话先询问员工迟到的原因，比一上来直接责备更适合日常管理沟通。', harvest: ['terlambat（迟到；晚了）', 'kenapa（为什么；怎么了）'] },
+  'EXP-FAC-119': { task: '请假先告诉我', explanation: '职场里的 “izin” 经常表示请假、请示离开。“kasih tahu” 是日常口语里非常常见的“告诉”。', harvest: ['mau izin（要请假；要请示离开）', 'kasih tahu（告诉）', 'dulu（先）'] },
+  'EXP-FAC-120': { task: '工作时别一直玩手机', explanation: '“lagi kerja” 是口语里的“正在工作”。这里的 “terus” 表示“一直、老是”，常用于提醒某种持续行为。', harvest: ['lagi kerja（正在工作）', 'main HP（玩手机）', 'terus（一直；老是）'] },
+  'EXP-FAC-121': { task: '聊天别影响工作', explanation: '“boleh, tapi...” 是管理沟通中很好用的结构：先表示允许，再说明边界。“kerjaan” 是 “pekerjaan” 很常见的口语形式。', harvest: ['ngobrol（聊天）', 'jangan sampai（不要让……）', 'ganggu kerjaan（影响工作；耽误工作）'] },
+  'EXP-FAC-122': { task: '按流程做', explanation: '“sesuai prosedur” 表示“按照流程/符合程序”。“jangan asal” 在工作口语里表示不要随便做、不要敷衍了事。', harvest: ['sesuai prosedur（按照流程）', 'jangan asal（不要随便做；不要敷衍）'] },
+  'EXP-FAC-123': { task: '有问题马上告诉我', explanation: '这里的 “langsung” 表示“马上、立刻”。“langsung kasih tahu saya” 是要求员工发现异常后第一时间汇报的自然说法。', harvest: ['ada masalah（有问题）', 'langsung（马上；立刻）', 'kasih tahu saya（告诉我）'] },
+  'EXP-FAC-124': { task: '不确定先问我', explanation: '“belum yakin” 表示“还不确定、还没把握”。“putuskan sendiri” 是“自己做决定”，适合说明员工的决策边界。', harvest: ['belum yakin（还不确定；还没把握）', 'tanya saya dulu（先问我）', 'putuskan sendiri（自己做决定）'] },
+  'EXP-FAC-125': { task: '今天需要加班', explanation: '“lembur” 就是“加班”。“kita perlu...” 表达“我们需要……”，比直接对员工说 “kamu harus...” 语气更有团队感。', harvest: ['perlu（需要）', 'lembur（加班）', 'lembur sedikit（稍微加一下班）'] },
+  'EXP-FAC-126': { task: '明天早点来', explanation: '“lebih pagi” 表示“更早一些、早点”。句尾的 “ya” 让工作提醒听起来更自然，不那么生硬。', harvest: ['besok（明天）', 'datang（来；到）', 'lebih pagi（早点；更早）'] },
+  'EXP-FAC-127': { task: '这部分谁负责', explanation: '这里的 “pegang” 不是字面上的“拿、握”，而是职场口语中的“负责、掌管”。这是印尼工作场景非常实用的表达。', harvest: ['yang pegang（负责的人；谁负责）', 'bagian ini（这部分）', 'pegang（负责；掌管（工作语境））'] },
+  'EXP-FAC-128': { task: '做好工作交接', explanation: '“serah terima” 在工作场景中表示“交接”。“pastikan” 表示“确保”。适用于换班、仓库、工厂和办公室等场景。', harvest: ['sebelum pulang（下班/回去之前）', 'pastikan（确保）', 'serah terima（工作交接）'] },
+  'EXP-FAC-129': { task: '做完以后告诉我', explanation: '“kalau sudah selesai” 表示“如果/等做完以后”。日常老板和员工沟通里，“kasih tahu saya” 比较自然，意思是完成后告诉我、跟我说一声。', harvest: ['sudah selesai（已经完成；做完）', 'kasih tahu saya（告诉我；跟我说一声）'] },
 };
 const expectedEmployeeVocabulary = {
   'saya lihat': '我看得出来；我注意到',
@@ -326,9 +390,20 @@ for (const item of employeeManagementItems) {
   if (!item.teachingContract) failures.push(`${item.sourceId} is missing the Micro Scene teaching contract`);
   if (item.chinese !== expectedEmployeeChinese[item.sourceId]) failures.push(`${item.sourceId} approved Chinese translation changed: ${item.chinese}`);
 }
-const employeeVocabulary = new Map(employeeManagementItems.flatMap((item) => item.harvest.map((entry) => [harvestTerm(entry).toLocaleLowerCase(), harvestMeaning(entry)])));
+for (const [sourceId, expected] of Object.entries(expectedNewEmployeeTeaching)) {
+  const item = employeeManagementItems.find((candidate) => candidate.sourceId === sourceId);
+  if (item?.sceneTitle !== expected.task) failures.push(`${sourceId} approved task changed: ${item?.sceneTitle}`);
+  if (item?.explanation !== expected.explanation) failures.push(`${sourceId} approved Penjelasan changed: ${item?.explanation}`);
+  if (item?.harvest.join('|') !== expected.harvest.join('|')) failures.push(`${sourceId} approved vocabulary changed: ${item?.harvest.join('|')}`);
+}
+const employeeVocabulary = new Map();
+for (const item of employeeManagementItems) for (const entry of item.harvest) {
+  const term = harvestTerm(entry).toLocaleLowerCase();
+  if (!employeeVocabulary.has(term)) employeeVocabulary.set(term, new Set());
+  employeeVocabulary.get(term).add(harvestMeaning(entry));
+}
 for (const [term, meaning] of Object.entries(expectedEmployeeVocabulary)) {
-  if (employeeVocabulary.get(term) !== meaning) failures.push(`Employee Management vocabulary must teach ${term} as ${meaning}; found ${employeeVocabulary.get(term)}`);
+  if (!employeeVocabulary.get(term)?.has(meaning)) failures.push(`Employee Management vocabulary must teach ${term} as ${meaning}; found ${[...(employeeVocabulary.get(term) ?? [])].join(', ')}`);
 }
 const managerIds = new Set(navigation.getFactoryManagerMicroGroups().flatMap((group) => navigation.getHistoricalMicroItems('factory', group.slug, 'manager')).map((item) => item.sourceId));
 for (const sourceId of expectedEmployeeManagementIds) if (managerIds.has(sourceId)) failures.push(`${sourceId} remains mixed into Factory Manager operational groups`);
@@ -357,19 +432,19 @@ if (failures.length) {
 
 console.log('MICRO SCENES VERIFY: PASS');
 console.log('Historical Quick core integrity: 421');
-console.log('Quick Experience reachable: 449');
+console.log('Quick Experience reachable: 469');
 console.log('Driver reachable: 32');
 console.log('Nanny reachable: 49');
 console.log('Factory Manager operational reachable: 65');
-console.log('Employee Management reachable: 11');
+console.log('Employee Management reachable: 31');
 console.log('Factory role/module reachable: 119');
 console.log('City Life / 生活办事 reachable: 58');
 console.log('City Life / 社交关系 reachable: 115');
 console.log('City Life unclassified: 0');
 console.log('City Life duplicate primary assignments: 0');
-console.log('Human-approved language fixes: EXP-SOC-028, EXP-FAC-046 + final 11-ID language review');
+console.log('Human-approved language fixes: EXP-SOC-028, EXP-FAC-046 + 31 Employee Management scenes');
 console.log('EXP-LIF-220 unchanged: needs Human scene definition');
 console.log('Scene Map mapped Quick: 397 (369 core + 28 approved additions)');
-console.log('Scene Map UNMAPPED_REVIEW preserved and reachable: 52');
+console.log('Scene Map UNMAPPED_REVIEW preserved and reachable: 72');
 console.log('Scene Map taxonomy regression: 6 domains / 36 topics');
 console.log('Progress identity: stable Quick ID + backward-compatible micro:{id} read');
