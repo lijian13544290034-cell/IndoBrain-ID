@@ -20,6 +20,8 @@ export type QuickExperienceLearningUnit = {
   pattern?: WorkplacePattern;
   insight?: { indonesian: string; chinese: string };
   content?: string;
+  learningTip?: string;
+  teachingContract?: boolean;
 };
 
 type QuickSourceItem = {
@@ -35,7 +37,14 @@ type QuickSourceItem = {
   content?: string;
   goldenScene?: unknown;
   missing?: boolean;
-  microScene?: { indonesian: string; chinese: string };
+  microScene?: {
+    task?: string;
+    indonesian: string;
+    chinese: string;
+    explanation?: string;
+    harvest?: string[];
+    learningTip?: string;
+  };
 };
 
 const isQuick = (item: QuickSourceItem) => !item.goldenScene && !item.missing && Boolean(item.indonesian);
@@ -44,18 +53,21 @@ const isHistoricalSocialQuick = (item: QuickSourceItem) => isQuick(item) && Numb
 
 function adapt(item: QuickSourceItem, source: QuickExperienceSource): QuickExperienceLearningUnit {
   const microScene = item.microScene;
+  const teachingContract = Boolean(microScene?.explanation && microScene.harvest?.length);
   return {
     sourceId: item.id,
     source,
-    sceneTitle: item.task,
-    momentTitle: item.momentTitle,
+    sceneTitle: microScene?.task ?? item.task,
+    momentTitle: teachingContract ? undefined : item.momentTitle,
     indonesian: microScene?.indonesian ?? item.indonesian,
     chinese: microScene?.chinese ?? item.chinese ?? item.task,
-    explanation: item.explanation ?? '',
-    harvest: item.harvest,
-    pattern: item.pattern,
-    insight: item.insight,
-    content: item.content,
+    explanation: microScene?.explanation ?? item.explanation ?? '',
+    harvest: microScene?.harvest ?? item.harvest,
+    pattern: teachingContract ? undefined : item.pattern,
+    insight: teachingContract ? undefined : item.insight,
+    content: teachingContract ? undefined : item.content,
+    learningTip: microScene?.learningTip,
+    teachingContract,
   };
 }
 

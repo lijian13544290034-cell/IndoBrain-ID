@@ -27,6 +27,7 @@ require.extensions['.ts'] = function loadTypeScript(module, filename) {
 };
 
 const adapter = require(path.join(root, 'lib/quick-experience-adapter.ts'));
+const { harvestMeaning, harvestTerm } = require(path.join(root, 'lib/harvest.ts'));
 const navigation = require(path.join(root, 'lib/historical-micro-navigation.ts'));
 const cityLife = require(path.join(root, 'lib/city-life-micro-navigation.ts'));
 const micro = require(path.join(root, 'lib/micro-scenes.ts'));
@@ -274,6 +275,61 @@ if (employeeManagementRole?.title !== '员工管理') failures.push(`Employee Ma
 if (employeeManagementRole?.count !== expectedEmployeeManagementIds.length) failures.push(`Expected ${expectedEmployeeManagementIds.length} Employee Management items, found ${employeeManagementRole?.count}`);
 if (employeeManagementItems.map((item) => item.sourceId).join('|') !== expectedEmployeeManagementIds.join('|')) failures.push(`Employee Management placement changed: ${employeeManagementItems.map((item) => item.sourceId).join(', ')}`);
 if (new Set(employeeManagementItems.map((item) => item.sourceId)).size !== employeeManagementItems.length) failures.push('Employee Management contains duplicate stable IDs');
+
+const expectedEmployeeChinese = {
+  'EXP-FAC-091': '你今天做得非常好，继续保持。',
+  'EXP-FAC-092': '我看得出来，你现在进步很多了。',
+  'EXP-FAC-093': '我对你的工作成果很满意。',
+  'EXP-FAC-096': '你的想法不错，我们试试。',
+  'EXP-FAC-097': '我相信你。',
+  'EXP-FAC-098': '从现在开始，这部分你来负责。',
+  'EXP-FAC-101': '这个月目标达成了。',
+  'EXP-FAC-104': '犯错没关系。',
+  'EXP-FAC-105': '我再给你一次机会。',
+  'EXP-FAC-107': '我很认可这一点。',
+  'EXP-FAC-109': '谢谢你，今天辛苦了。',
+};
+const expectedEmployeeVocabulary = {
+  'saya lihat': '我看得出来；我注意到',
+  'jauh lebih baik': '好很多；进步很多',
+  'puas sama': '对……满意',
+  'hasil kerja': '工作成果；工作结果',
+  'ide': '想法；主意',
+  'kita coba': '我们试试',
+  'gak apa-apa': '没关系；不要紧',
+  'yang penting': '重要的是……',
+  'jangan diulang': '不要再犯；不要再重复',
+  'sasaran': '目标',
+  'tercapai': '达到；实现；达成',
+  'pegang': '负责；掌管',
+};
+const chineseText = /[\u4e00-\u9fff]/;
+const englishTeachingFallback = /\b(?:is|are|can|means?|natural|common|workplace|responsible|handling|use|way)\b/i;
+const normalizedTeaching = (value) => value.toLocaleLowerCase().replace(/[\s“”'"，。；：、/…（）()[\]_-]+/g, '');
+const teachingContractItems = historical.filter((candidate) => candidate.teachingContract);
+
+if (teachingContractItems.length !== expectedEmployeeManagementIds.length) failures.push(`Teaching contract must be scoped to the ${expectedEmployeeManagementIds.length} Employee Management scenes; found ${teachingContractItems.length}`);
+for (const item of teachingContractItems) {
+  if (!chineseText.test(item.explanation) || englishTeachingFallback.test(item.explanation)) failures.push(`${item.sourceId} teaching explanation must be Simplified Chinese without English fallback`);
+  if (normalizedTeaching(item.explanation) === normalizedTeaching(item.chinese)) failures.push(`${item.sourceId} explanation repeats the Chinese translation`);
+  if (item.harvest.length < 1 || item.harvest.length > 3) failures.push(`${item.sourceId} teaching vocabulary must contain 1-3 reusable chunks`);
+  for (const entry of item.harvest) {
+    const meaning = harvestMeaning(entry);
+    if (!meaning || meaning === '印尼语短语' || !chineseText.test(meaning)) failures.push(`${item.sourceId} has invalid learner-facing vocabulary: ${entry}`);
+  }
+  if (item.learningTip && (!chineseText.test(item.learningTip) || englishTeachingFallback.test(item.learningTip))) failures.push(`${item.sourceId} learning tip must be Simplified Chinese without English fallback`);
+  if (item.learningTip && [item.explanation, item.chinese].some((value) => normalizedTeaching(value) === normalizedTeaching(item.learningTip))) failures.push(`${item.sourceId} learning tip duplicates another teaching block`);
+  if (item.pattern || item.insight || item.content) failures.push(`${item.sourceId} teaching contract leaked a legacy fallback block`);
+}
+
+for (const item of employeeManagementItems) {
+  if (!item.teachingContract) failures.push(`${item.sourceId} is missing the Micro Scene teaching contract`);
+  if (item.chinese !== expectedEmployeeChinese[item.sourceId]) failures.push(`${item.sourceId} approved Chinese translation changed: ${item.chinese}`);
+}
+const employeeVocabulary = new Map(employeeManagementItems.flatMap((item) => item.harvest.map((entry) => [harvestTerm(entry).toLocaleLowerCase(), harvestMeaning(entry)])));
+for (const [term, meaning] of Object.entries(expectedEmployeeVocabulary)) {
+  if (employeeVocabulary.get(term) !== meaning) failures.push(`Employee Management vocabulary must teach ${term} as ${meaning}; found ${employeeVocabulary.get(term)}`);
+}
 const managerIds = new Set(navigation.getFactoryManagerMicroGroups().flatMap((group) => navigation.getHistoricalMicroItems('factory', group.slug, 'manager')).map((item) => item.sourceId));
 for (const sourceId of expectedEmployeeManagementIds) if (managerIds.has(sourceId)) failures.push(`${sourceId} remains mixed into Factory Manager operational groups`);
 for (const excludedId of ['EXP-SOC-313', 'EXP-SOC-316']) if (historicalIds.has(excludedId)) failures.push(`${excludedId} must remain excluded from Micro Scene`);

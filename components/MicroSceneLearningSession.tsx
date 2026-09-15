@@ -93,20 +93,31 @@ export default function MicroSceneLearningSession({ items, moduleTitle, category
           <span className="shrink-0 text-xs tabular-nums text-[var(--ib-text-muted)]">{index + 1} / {items.length}</span>
         </div>
 
-        <h1 className="mt-3 text-[22px] font-bold leading-8 text-[var(--ib-text-primary)] sm:text-2xl">{current.sceneTitle}</h1>
+        {current.teachingContract ? <p className="mt-3 text-xs font-semibold tracking-[0.08em] text-[var(--ib-text-muted)]">场景任务</p> : null}
+        <h1 className={current.teachingContract ? 'mt-1 text-[22px] font-bold leading-8 text-[var(--ib-text-primary)] sm:text-2xl' : 'mt-3 text-[22px] font-bold leading-8 text-[var(--ib-text-primary)] sm:text-2xl'}>{current.sceneTitle}</h1>
 
         <div className="mt-4 rounded-[20px] bg-[var(--ib-bg-soft)] px-4 py-4 sm:px-5">
+          {current.teachingContract ? <p className="mb-2 text-xs font-semibold tracking-[0.08em] text-[var(--ib-text-muted)]">Bahasa Indonesia</p> : null}
           <p lang="id" className="break-words text-[27px] font-bold leading-[1.3] tracking-tight text-[var(--ib-text-primary)] sm:text-[32px]">{current.indonesian}</p>
           <IndonesianSpeechButton text={current.indonesian} />
         </div>
 
-        <section className="mt-6 border-t border-[var(--ib-border-soft)] pt-5">
+        {current.teachingContract ? <>
+          <section className="mt-6 border-t border-[var(--ib-border-soft)] pt-5">
+            <h2 className="text-sm font-bold text-[var(--ib-text-primary)]">中文翻译</h2>
+            <p className="mt-2 whitespace-pre-line text-[15px] leading-7 text-[var(--ib-text-secondary)]">{current.chinese}</p>
+          </section>
+          <section className="mt-6">
+            <h2 className="text-sm font-bold text-[var(--ib-text-primary)]">Penjelasan（表达说明）</h2>
+            <p className="mt-2 whitespace-pre-line text-[15px] leading-7 text-[var(--ib-text-secondary)]">{explanation}</p>
+          </section>
+        </> : <section className="mt-6 border-t border-[var(--ib-border-soft)] pt-5">
           <h2 className="text-sm font-bold text-[var(--ib-text-primary)]">什么时候这样说？</h2>
           <p className="mt-2 whitespace-pre-line text-[15px] leading-7 text-[var(--ib-text-secondary)]">{explanation}</p>
-        </section>
+        </section>}
 
         <section className="mt-6">
-          <h2 className="text-sm font-bold text-[var(--ib-text-primary)]">今天记住</h2>
+          <h2 className="text-sm font-bold text-[var(--ib-text-primary)]">{current.teachingContract ? 'Kata Penting Hari Ini（今日重点词汇）' : '今天记住'}</h2>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
             {current.harvest.map((entry) => {
               const term = harvestTerm(entry);
@@ -133,6 +144,11 @@ export default function MicroSceneLearningSession({ items, moduleTitle, category
           <h2 className="text-sm font-bold text-[var(--ib-text-primary)]">学习提示</h2>
           <p className="mt-3 text-sm leading-6 text-[var(--ib-text-primary)]">{current.insight.indonesian}</p>
           <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">{current.insight.chinese}</p>
+        </section> : null}
+
+        {current.learningTip ? <section className="mt-6 rounded-[20px] border border-[var(--ib-border-soft)] px-4 py-4">
+          <h2 className="text-sm font-bold text-[var(--ib-text-primary)]">学习提示</h2>
+          <p className="mt-3 text-sm leading-6 text-[var(--ib-text-secondary)]">{current.learningTip}</p>
         </section> : null}
 
         {current.content ? <details className="mt-6 rounded-[20px] border border-[var(--ib-border-soft)] px-4 py-3">

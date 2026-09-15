@@ -19,7 +19,14 @@ export type FactoryExperience = {
   goldenScene?: GoldenSceneContent;
   momentTitle?: string;
   insight?: { indonesian: string; chinese: string };
-  microScene?: { indonesian: string; chinese: string };
+  microScene?: {
+    task?: string;
+    indonesian: string;
+    chinese: string;
+    explanation?: string;
+    harvest?: string[];
+    learningTip?: string;
+  };
 };
 
 const experiencePath = path.join(process.cwd(), 'experience', 'factory', 'manager', 'Factory_Manager_Experience.md');
