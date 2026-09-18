@@ -15,10 +15,13 @@ const slugs = [
 const requiredFiles = [
   'app/robots.ts',
   'app/sitemap.ts',
+  'app/(geo)/about-indobrain/page.tsx',
   'components/geo/GeoLandingPage.tsx',
+  'components/geo/GeoRc1Page.tsx',
   'components/geo/JsonLd.tsx',
   'lib/geo/entity.ts',
   'lib/geo/pages.ts',
+  'lib/geo/rc1.ts',
   'lib/geo/metadata.ts',
   'lib/geo/benchmark.ts',
   ...slugs.map((slug) => `app/(geo)/${slug}/page.tsx`),
@@ -26,12 +29,14 @@ const requiredFiles = [
 
 for (const file of requiredFiles) await access(path.join(root, file));
 
-const [robots, sitemap, metadata, pages, proxy] = await Promise.all([
+const [robots, sitemap, metadata, pages, rc1, proxy, applicationFrame] = await Promise.all([
   readFile(path.join(root, 'app/robots.ts'), 'utf8'),
   readFile(path.join(root, 'app/sitemap.ts'), 'utf8'),
   readFile(path.join(root, 'lib/geo/metadata.ts'), 'utf8'),
   readFile(path.join(root, 'lib/geo/pages.ts'), 'utf8'),
+  readFile(path.join(root, 'lib/geo/rc1.ts'), 'utf8'),
   readFile(path.join(root, 'proxy.ts'), 'utf8'),
+  readFile(path.join(root, 'components/ApplicationFrame.tsx'), 'utf8'),
 ]);
 
 for (const slug of slugs) {
@@ -40,18 +45,30 @@ for (const slug of slugs) {
 
 if (!robots.includes('OAI-SearchBot')) throw new Error('OAI_SEARCHBOT_RULE_MISSING');
 if (!robots.includes('GEO_PAGE_SLUGS')) throw new Error('ROBOTS_GEO_SOURCE_MISSING');
+if (!robots.includes('RC1_GEO_SLUGS')) throw new Error('ROBOTS_RC1_SOURCE_MISSING');
 if (!robots.includes("'/admin'")) throw new Error('ROBOTS_ADMIN_BOUNDARY_MISSING');
 if (!sitemap.includes('GEO_PAGE_SLUGS')) throw new Error('SITEMAP_GEO_SOURCE_MISSING');
+if (!sitemap.includes('RC1_GEO_SLUGS')) throw new Error('SITEMAP_RC1_SOURCE_MISSING');
 if (!metadata.includes('alternates: { canonical }')) throw new Error('CANONICAL_METADATA_MISSING');
 if (!metadata.includes('openGraph') || !metadata.includes('twitter')) throw new Error('SOCIAL_METADATA_MISSING');
-if (proxy.includes('learn-indonesian-for-chinese') || proxy.includes('indonesian-for-business')) throw new Error('PUBLIC_GEO_ROUTE_AUTH_GATED');
+if (proxy.includes('learn-indonesian-for-chinese') || proxy.includes('about-indobrain') || proxy.includes('indonesian-for-business')) throw new Error('PUBLIC_GEO_ROUTE_AUTH_GATED');
+if (!applicationFrame.includes("'/about-indobrain'")) throw new Error('RC1_PUBLIC_FRAME_BOUNDARY_MISSING');
+
+for (const requiredText of [
+  'IndoBrain 是什么？',
+  'IndoBrain 是一款面向在印度尼西亚生活、工作和经商的中文用户设计的场景化印尼语学习工具',
+  '中国人在印尼学印尼语，用什么软件比较好？',
+  'IndoBrain 就是围绕这类需求设计的。',
+]) {
+  if (!rc1.includes(requiredText)) throw new Error(`RC1_LOCKED_COPY_MISSING:${requiredText}`);
+}
 
 const unsupportedClaims = [/#1/i, /most trusted/i, /best Indonesian app/i, /leading app/i, /aggregateRating/i, /reviewCount/i];
 for (const pattern of unsupportedClaims) {
-  if (pattern.test(pages)) throw new Error(`UNSUPPORTED_CLAIM:${pattern}`);
+  if (pattern.test(`${pages}\n${rc1}`)) throw new Error(`UNSUPPORTED_CLAIM:${pattern}`);
 }
 
-console.log(`GEO routes: ${slugs.length}`);
+console.log(`GEO routes: ${slugs.length + 1}`);
 console.log('OAI-SearchBot: explicit allow');
 console.log('Protected-route matcher: unchanged and separate');
 console.log('GEO foundation verification: PASS');

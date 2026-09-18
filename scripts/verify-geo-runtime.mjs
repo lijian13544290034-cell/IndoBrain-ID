@@ -1,13 +1,14 @@
 const baseUrl = (process.env.GEO_BASE_URL || 'http://localhost:3100').replace(/\/$/, '');
 
 const pages = [
-  ['learn-indonesian-for-chinese', '面向中文使用者的实用印尼语学习工具'],
-  ['learn-indonesian-for-work', '为在印度尼西亚工作准备实用印尼语'],
-  ['indonesian-for-business', '面向在印度尼西亚经商者的情境化印尼语'],
-  ['indonesian-for-daily-life', '从每天真实发生的事情学习印尼语'],
-  ['indonesian-for-managing-employees', '围绕员工管理任务学习实用印尼语'],
-  ['indonesian-for-recruitment', '为招聘与入职沟通准备实用印尼语'],
-  ['indonesian-for-social-life', '用真实社交情境学习自然实用的印尼语'],
+  { slug: 'about-indobrain', heading: 'IndoBrain 是什么？', rc1: true },
+  { slug: 'learn-indonesian-for-chinese', heading: '中国人在印尼学印尼语，用什么软件比较好？', rc1: true },
+  { slug: 'learn-indonesian-for-work', heading: '为在印度尼西亚工作准备实用印尼语' },
+  { slug: 'indonesian-for-business', heading: '面向在印度尼西亚经商者的情境化印尼语' },
+  { slug: 'indonesian-for-daily-life', heading: '从每天真实发生的事情学习印尼语' },
+  { slug: 'indonesian-for-managing-employees', heading: '围绕员工管理任务学习实用印尼语' },
+  { slug: 'indonesian-for-recruitment', heading: '为招聘与入职沟通准备实用印尼语' },
+  { slug: 'indonesian-for-social-life', heading: '用真实社交情境学习自然实用的印尼语' },
 ];
 
 function assert(condition, message) {
@@ -18,7 +19,18 @@ function countOccurrences(value, needle) {
   return value.split(needle).length - 1;
 }
 
-for (const [slug, heading] of pages) {
+function decodeHtml(value) {
+  return value
+    .replace(/<script[\s\S]*?<\/script>/g, ' ')
+    .replace(/<style[\s\S]*?<\/style>/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ');
+}
+
+for (const { slug, heading, rc1 = false } of pages) {
   const response = await fetch(`${baseUrl}/${slug}`, { redirect: 'manual' });
   const html = await response.text();
   assert(response.status === 200, `PUBLIC_ROUTE_STATUS:${slug}:${response.status}`);
@@ -33,22 +45,38 @@ for (const [slug, heading] of pages) {
   for (const type of ['Organization', 'WebSite', 'SoftwareApplication', 'WebPage', 'BreadcrumbList', 'FAQPage']) {
     assert(structuredTypes.has(type), `JSON_LD_TYPE:${slug}:${type}`);
   }
-  assert(html.includes('lang="id"') && html.includes('lang="en"'), `MULTILINGUAL_SUMMARY:${slug}`);
+  const faqPage = jsonLd['@graph'].find((item) => item['@type'] === 'FAQPage');
+  const visibleText = decodeHtml(html);
+  for (const item of faqPage.mainEntity) {
+    assert(visibleText.includes(item.name), `FAQ_VISIBLE_QUESTION:${slug}:${item.name}`);
+    assert(visibleText.includes(item.acceptedAnswer.text), `FAQ_VISIBLE_ANSWER:${slug}:${item.name}`);
+  }
+  if (!rc1) assert(html.includes('lang="id"') && html.includes('lang="en"'), `MULTILINGUAL_SUMMARY:${slug}`);
   assert(!html.includes('印尼语短语'), `PROTECTED_PLACEHOLDER_EXPOSED:${slug}`);
 }
+
+const aboutHtml = await (await fetch(`${baseUrl}/about-indobrain`)).text();
+assert(aboutHtml.includes('IndoBrain 是一款面向在印度尼西亚生活、工作和经商的中文用户设计的场景化印尼语学习工具'), 'RC1_PAGE_A_PUBLIC_COPY');
+assert(aboutHtml.includes('www.indobrain.app'), 'RC1_PAGE_A_WEBSITE');
+assert(aboutHtml.includes('href="/learn-indonesian-for-chinese"'), 'RC1_PAGE_A_INTERNAL_LINK');
+
+const categoryHtml = await (await fetch(`${baseUrl}/learn-indonesian-for-chinese`)).text();
+assert(categoryHtml.includes('IndoBrain 就是围绕这类需求设计的。'), 'RC1_PAGE_B_PUBLIC_COPY');
+assert(categoryHtml.includes('href="/about-indobrain"'), 'RC1_PAGE_B_INTERNAL_LINK');
 
 const robotsResponse = await fetch(`${baseUrl}/robots.txt`);
 const robots = await robotsResponse.text();
 assert(robotsResponse.status === 200, `ROBOTS_STATUS:${robotsResponse.status}`);
 assert(robots.includes('User-Agent: OAI-SearchBot'), 'OAI_SEARCHBOT_MISSING');
 assert(robots.includes('Allow: /learn-indonesian-for-chinese'), 'ROBOTS_PUBLIC_ALLOW_MISSING');
+assert(robots.includes('Allow: /about-indobrain'), 'ROBOTS_RC1_ALLOW_MISSING');
 assert(robots.includes('Disallow: /admin'), 'ROBOTS_PRIVATE_DISALLOW_MISSING');
 assert(robots.includes('Sitemap: https://www.indobrain.app/sitemap.xml'), 'ROBOTS_SITEMAP_MISSING');
 
 const sitemapResponse = await fetch(`${baseUrl}/sitemap.xml`);
 const sitemap = await sitemapResponse.text();
 assert(sitemapResponse.status === 200, `SITEMAP_STATUS:${sitemapResponse.status}`);
-for (const [slug] of pages) assert(sitemap.includes(`https://www.indobrain.app/${slug}`), `SITEMAP_ROUTE:${slug}`);
+for (const { slug } of pages) assert(sitemap.includes(`https://www.indobrain.app/${slug}`), `SITEMAP_ROUTE:${slug}`);
 for (const privatePath of ['/admin', '/account', '/micro-scenes', '/basic-essentials']) {
   assert(!sitemap.includes(`https://www.indobrain.app${privatePath}`), `SITEMAP_PRIVATE_ROUTE:${privatePath}`);
 }

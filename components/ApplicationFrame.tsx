@@ -20,6 +20,7 @@ const items = [
 ];
 
 const publicGeoPaths = [
+  '/about-indobrain',
   '/learn-indonesian-for-chinese',
   '/learn-indonesian-for-work',
   '/indonesian-for-business',
