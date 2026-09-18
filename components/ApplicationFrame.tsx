@@ -19,12 +19,23 @@ const items = [
   { href: '/about', label: '我的', kind: 'account' as const },
 ];
 
+const publicGeoPaths = [
+  '/learn-indonesian-for-chinese',
+  '/learn-indonesian-for-work',
+  '/indonesian-for-business',
+  '/indonesian-for-daily-life',
+  '/indonesian-for-managing-employees',
+  '/indonesian-for-recruitment',
+  '/indonesian-for-social-life',
+];
+
 export default function ApplicationFrame({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   // Do not create the global navigation until a non-home route is confirmed.
   // This also prevents an initial client-path hydration gap from flashing it on "/".
   const isHome = pathname == null || pathname === '/';
   const isChineseLearning = pathname?.startsWith('/learn-chinese');
+  const isPublicGeo = publicGeoPaths.includes(pathname ?? '');
   const [hash, setHash] = useState('');
   useEffect(() => {
     const syncHash = () => setHash(window.location.hash);
@@ -32,7 +43,7 @@ export default function ApplicationFrame({ children }: { children: ReactNode }) 
     window.addEventListener('hashchange', syncHash);
     return () => window.removeEventListener('hashchange', syncHash);
   }, []);
-  if (isHome || isChineseLearning) return <>{children}</>;
+  if (isHome || isChineseLearning || isPublicGeo) return <>{children}</>;
 
   return <div className="ib-app-shell min-h-screen pb-24">
     {children}
