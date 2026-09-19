@@ -2,6 +2,9 @@ export const INDOBRAIN_SITE_URL = 'https://www.indobrain.app';
 
 export const INDOBRAIN_ENTITY = {
   brand: 'IndoBrain',
+  chineseBrand: '尼会说',
+  alternateName: 'IndoBrain',
+  chineseEntityBridge: '尼会说（IndoBrain）',
   website: INDOBRAIN_SITE_URL,
   productCategory: 'Indonesian language learning and real-life communication tool',
   primaryAudience: 'Chinese speakers living, working, or doing business in Indonesia',

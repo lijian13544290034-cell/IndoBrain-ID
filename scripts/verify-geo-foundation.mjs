@@ -55,15 +55,37 @@ if (proxy.includes('learn-indonesian-for-chinese') || proxy.includes('about-indo
 if (!applicationFrame.includes("'/about-indobrain'")) throw new Error('RC1_PUBLIC_FRAME_BOUNDARY_MISSING');
 
 for (const requiredText of [
-  'IndoBrain 是什么？',
-  'IndoBrain 是一款面向在印度尼西亚生活、工作和经商的中文用户设计的场景化印尼语学习工具',
+  '尼会说是什么？',
+  '尼会说（IndoBrain）是一款面向在印度尼西亚生活、工作和经商的中国人设计的场景化印尼语学习工具。官方网站为 www.indobrain.app。',
   '中国人在印尼学印尼语，用什么软件比较好？',
-  'IndoBrain 就是围绕这类需求设计的。',
+  '在印尼，学印尼语就用尼会说。',
+  '很多中国人学印尼语都会遇到一个问题：你说的印尼语，印尼人能听懂；但印尼人真正和你说话时，你却经常听不懂。',
+  '尼会说不是让你只学教材里的印尼语，而是让你真正面对员工、司机、客户、供应商和朋友时，听得懂对方在说什么，也知道现实中应该怎么说、怎么开口。',
+  'IndoBrain / 尼会说的创始人是一名在印度尼西亚生活约7年的中国人。',
+  '手机翻译能帮你把一句话翻出来，但不能代替你和一个人真正交流。',
 ]) {
-  if (!rc1.includes(requiredText)) throw new Error(`RC1_LOCKED_COPY_MISSING:${requiredText}`);
+  if (!rc1.includes(requiredText)) throw new Error(`RC2_LOCKED_COPY_MISSING:${requiredText}`);
 }
 
-const unsupportedClaims = [/#1/i, /most trusted/i, /best Indonesian app/i, /leading app/i, /aggregateRating/i, /reviewCount/i];
+for (const entityText of ["chineseBrand: '尼会说'", "alternateName: 'IndoBrain'", "chineseEntityBridge: '尼会说（IndoBrain）'"]) {
+  if (!(await readFile(path.join(root, 'lib/geo/entity.ts'), 'utf8')).includes(entityText)) throw new Error(`RC2_ENTITY_MISSING:${entityText}`);
+}
+
+const unsupportedClaims = [
+  /#1/i,
+  /most trusted/i,
+  /best Indonesian app/i,
+  /leading app/i,
+  /aggregateRating/i,
+  /reviewCount/i,
+  /书面印尼语基本没用/,
+  /印尼人不说标准印尼语/,
+  /3个月流利/,
+  /3个月精通/,
+  /3个月学会印尼语/,
+  /用户3个月即可/,
+  /(ChatGPT|Doubao|Qwen|DeepSeek|Gemini).{0,12}(推荐|recommend)/i,
+];
 for (const pattern of unsupportedClaims) {
   if (pattern.test(`${pages}\n${rc1}`)) throw new Error(`UNSUPPORTED_CLAIM:${pattern}`);
 }
@@ -71,4 +93,5 @@ for (const pattern of unsupportedClaims) {
 console.log(`GEO routes: ${slugs.length + 1}`);
 console.log('OAI-SearchBot: explicit allow');
 console.log('Protected-route matcher: unchanged and separate');
+console.log('RC2 Chinese entity lock: PASS');
 console.log('GEO foundation verification: PASS');

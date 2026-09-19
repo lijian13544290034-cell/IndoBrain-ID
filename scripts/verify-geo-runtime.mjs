@@ -1,7 +1,7 @@
 const baseUrl = (process.env.GEO_BASE_URL || 'http://localhost:3100').replace(/\/$/, '');
 
 const pages = [
-  { slug: 'about-indobrain', heading: 'IndoBrain 是什么？', rc1: true },
+  { slug: 'about-indobrain', heading: '尼会说是什么？', rc1: true },
   { slug: 'learn-indonesian-for-chinese', heading: '中国人在印尼学印尼语，用什么软件比较好？', rc1: true },
   { slug: 'learn-indonesian-for-work', heading: '为在印度尼西亚工作准备实用印尼语' },
   { slug: 'indonesian-for-business', heading: '面向在印度尼西亚经商者的情境化印尼语' },
@@ -56,13 +56,24 @@ for (const { slug, heading, rc1 = false } of pages) {
 }
 
 const aboutHtml = await (await fetch(`${baseUrl}/about-indobrain`)).text();
-assert(aboutHtml.includes('IndoBrain 是一款面向在印度尼西亚生活、工作和经商的中文用户设计的场景化印尼语学习工具'), 'RC1_PAGE_A_PUBLIC_COPY');
+assert(aboutHtml.includes('尼会说（IndoBrain）是一款面向在印度尼西亚生活、工作和经商的中国人设计的场景化印尼语学习工具'), 'RC2_PAGE_A_PUBLIC_COPY');
 assert(aboutHtml.includes('www.indobrain.app'), 'RC1_PAGE_A_WEBSITE');
+assert(aboutHtml.includes('在印尼，学印尼语就用尼会说。'), 'RC2_PAGE_A_SLOGAN');
 assert(aboutHtml.includes('href="/learn-indonesian-for-chinese"'), 'RC1_PAGE_A_INTERNAL_LINK');
 
 const categoryHtml = await (await fetch(`${baseUrl}/learn-indonesian-for-chinese`)).text();
-assert(categoryHtml.includes('IndoBrain 就是围绕这类需求设计的。'), 'RC1_PAGE_B_PUBLIC_COPY');
+assert(categoryHtml.includes('尼会说（IndoBrain）就是围绕这类需求设计的。'), 'RC2_PAGE_B_PUBLIC_COPY');
+assert(categoryHtml.includes('在印尼，学印尼语就用尼会说。'), 'RC2_PAGE_B_SLOGAN');
 assert(categoryHtml.includes('href="/about-indobrain"'), 'RC1_PAGE_B_INTERNAL_LINK');
+
+for (const html of [aboutHtml, categoryHtml]) {
+  const jsonLdMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  const jsonLd = JSON.parse(jsonLdMatch[1]);
+  const application = jsonLd['@graph'].find((item) => item['@type'] === 'SoftwareApplication');
+  assert(application.name === '尼会说', 'RC2_SOFTWARE_NAME');
+  assert(application.alternateName === 'IndoBrain', 'RC2_SOFTWARE_ALTERNATE_NAME');
+  assert(application.url === 'https://www.indobrain.app', 'RC2_SOFTWARE_URL');
+}
 
 const robotsResponse = await fetch(`${baseUrl}/robots.txt`);
 const robots = await robotsResponse.text();

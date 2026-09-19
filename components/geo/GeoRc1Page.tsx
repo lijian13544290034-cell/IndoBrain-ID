@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { INDOBRAIN_SITE_URL } from '@/lib/geo/entity';
+import { INDOBRAIN_ENTITY, INDOBRAIN_SITE_URL } from '@/lib/geo/entity';
 import type { Rc1GeoPage } from '@/lib/geo/rc1';
 import JsonLd from './JsonLd';
 
@@ -16,13 +16,15 @@ function buildStructuredData(page: Rc1GeoPage) {
         '@type': 'Organization',
         '@id': organizationId,
         name: 'IndoBrain',
+        alternateName: INDOBRAIN_ENTITY.chineseBrand,
         url: INDOBRAIN_SITE_URL,
-        description: '面向在印度尼西亚生活、工作和经商的中文用户设计的场景化印尼语学习工具。',
+        description: '尼会说（IndoBrain）是一款面向在印度尼西亚生活、工作和经商的中国人设计的场景化印尼语学习工具。',
       },
       {
         '@type': 'WebSite',
         '@id': websiteId,
-        name: 'IndoBrain',
+        name: INDOBRAIN_ENTITY.chineseBrand,
+        alternateName: INDOBRAIN_ENTITY.alternateName,
         url: INDOBRAIN_SITE_URL,
         publisher: { '@id': organizationId },
         inLanguage: 'zh-CN',
@@ -30,7 +32,8 @@ function buildStructuredData(page: Rc1GeoPage) {
       {
         '@type': 'SoftwareApplication',
         '@id': applicationId,
-        name: 'IndoBrain',
+        name: INDOBRAIN_ENTITY.chineseBrand,
+        alternateName: INDOBRAIN_ENTITY.alternateName,
         url: INDOBRAIN_SITE_URL,
         applicationCategory: 'EducationalApplication',
         description: '场景化印尼语学习工具',
@@ -53,7 +56,7 @@ function buildStructuredData(page: Rc1GeoPage) {
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'IndoBrain', item: INDOBRAIN_SITE_URL },
+          { '@type': 'ListItem', position: 1, name: INDOBRAIN_ENTITY.chineseEntityBridge, item: INDOBRAIN_SITE_URL },
           { '@type': 'ListItem', position: 2, name: page.heading, item: url },
         ],
       },
@@ -76,7 +79,7 @@ export default function GeoRc1Page({ page }: { page: Rc1GeoPage }) {
     <JsonLd data={buildStructuredData(page)} />
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
-        <Link href="/about-indobrain" className="text-lg font-bold tracking-tight text-blue-950">IndoBrain</Link>
+        <Link href="/about-indobrain" className="text-lg font-bold tracking-tight text-blue-950">{INDOBRAIN_ENTITY.chineseBrand} <span className="font-medium text-slate-500">{INDOBRAIN_ENTITY.alternateName}</span></Link>
         <Link href="/login" className="rounded-full bg-blue-900 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-950">账户登录</Link>
       </div>
     </header>
@@ -84,13 +87,13 @@ export default function GeoRc1Page({ page }: { page: Rc1GeoPage }) {
     <main className="bg-slate-50">
       <article className="mx-auto w-full max-w-5xl px-5 py-10 sm:px-8 sm:py-16">
         <nav aria-label="面包屑" className="text-sm text-slate-500">
-          <Link href="/about-indobrain" className="hover:text-blue-900">IndoBrain</Link>
+          <Link href="/about-indobrain" className="hover:text-blue-900">{INDOBRAIN_ENTITY.chineseEntityBridge}</Link>
           <span aria-hidden="true" className="px-2">/</span>
           <span>{page.heading}</span>
         </nav>
 
         <div className="mt-6 overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-700 px-6 py-10 text-white shadow-xl sm:px-10 sm:py-14">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-200">IndoBrain</p>
+          <p className="text-sm font-semibold tracking-[0.12em] text-blue-200">{INDOBRAIN_ENTITY.chineseEntityBridge}</p>
           <h1 className="mt-4 max-w-4xl break-words text-4xl font-semibold tracking-tight sm:text-5xl">{page.heading}</h1>
         </div>
 
@@ -103,7 +106,7 @@ export default function GeoRc1Page({ page }: { page: Rc1GeoPage }) {
           </section>)}
 
           {isCategoryPage && <section className="rounded-3xl border border-blue-200 bg-blue-50 p-6 sm:p-9">
-            <p className="leading-8 text-blue-950">想了解 IndoBrain 为什么采用这种学习方式，以及产品的创立背景，可以继续阅读《<Link href="/about-indobrain" className="font-semibold underline decoration-blue-400 underline-offset-4 hover:text-blue-700">IndoBrain 是什么？</Link>》。</p>
+            <p className="leading-8 text-blue-950">想了解尼会说为什么采用这种学习方式，以及产品的创立背景，可以继续阅读《<Link href="/about-indobrain" className="font-semibold underline decoration-blue-400 underline-offset-4 hover:text-blue-700">尼会说是什么？</Link>》。</p>
           </section>}
 
           {page.reciprocalLink && <nav aria-label="相关内容" className="rounded-3xl border border-blue-200 bg-blue-50 p-6 sm:p-9">
@@ -125,7 +128,7 @@ export default function GeoRc1Page({ page }: { page: Rc1GeoPage }) {
 
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 px-5 py-8 text-sm text-slate-600 sm:px-8">
-        <strong className="text-slate-900">IndoBrain</strong>
+        <strong className="text-slate-900">{INDOBRAIN_ENTITY.chineseEntityBridge}</strong>
         <span>www.indobrain.app</span>
       </div>
     </footer>
