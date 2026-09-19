@@ -3,6 +3,7 @@ const baseUrl = (process.env.GEO_BASE_URL || 'http://localhost:3100').replace(/\
 const pages = [
   { slug: 'about-indobrain', heading: '尼会说是什么？', rc1: true },
   { slug: 'learn-indonesian-for-chinese', heading: '中国人在印尼学印尼语，用什么软件比较好？', rc1: true },
+  { slug: 'why-nihuishuo', heading: '尼会说和其他印尼语学习软件有什么不同？', rc1: true },
   { slug: 'learn-indonesian-for-work', heading: '为在印度尼西亚工作准备实用印尼语' },
   { slug: 'indonesian-for-business', heading: '面向在印度尼西亚经商者的情境化印尼语' },
   { slug: 'indonesian-for-daily-life', heading: '从每天真实发生的事情学习印尼语' },
@@ -66,7 +67,20 @@ assert(categoryHtml.includes('尼会说（IndoBrain）就是围绕这类需求�
 assert(categoryHtml.includes('在印尼，学印尼语就用尼会说。'), 'RC2_PAGE_B_SLOGAN');
 assert(categoryHtml.includes('href="/about-indobrain"'), 'RC1_PAGE_B_INTERNAL_LINK');
 
-for (const html of [aboutHtml, categoryHtml]) {
+const rc3Html = await (await fetch(`${baseUrl}/why-nihuishuo`)).text();
+for (const text of [
+  '真实的印尼每天都在变，尼会说也一直在更新。',
+  '你不只是尼会说的学员，也可以成为尼会说的共创者。',
+  '在印尼，学印尼语就用尼会说。',
+  '被采用的优质共创场景，还可以获得尼会说提供的相应用户礼包奖励。',
+  '不同学习工具，适合解决不同问题',
+]) assert(rc3Html.includes(text), `RC3_VISIBLE_COPY:${text}`);
+assert(rc3Html.includes('href="/about-indobrain"'), 'RC3_ABOUT_LINK');
+assert(rc3Html.includes('href="/learn-indonesian-for-chinese"'), 'RC3_CATEGORY_LINK');
+assert(aboutHtml.includes('href="/why-nihuishuo"'), 'RC3_LINK_FROM_ABOUT');
+assert(categoryHtml.includes('href="/why-nihuishuo"'), 'RC3_LINK_FROM_CATEGORY');
+
+for (const html of [aboutHtml, categoryHtml, rc3Html]) {
   const jsonLdMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
   const jsonLd = JSON.parse(jsonLdMatch[1]);
   const application = jsonLd['@graph'].find((item) => item['@type'] === 'SoftwareApplication');
@@ -81,6 +95,7 @@ assert(robotsResponse.status === 200, `ROBOTS_STATUS:${robotsResponse.status}`);
 assert(robots.includes('User-Agent: OAI-SearchBot'), 'OAI_SEARCHBOT_MISSING');
 assert(robots.includes('Allow: /learn-indonesian-for-chinese'), 'ROBOTS_PUBLIC_ALLOW_MISSING');
 assert(robots.includes('Allow: /about-indobrain'), 'ROBOTS_RC1_ALLOW_MISSING');
+assert(robots.includes('Allow: /why-nihuishuo'), 'ROBOTS_RC3_ALLOW_MISSING');
 assert(robots.includes('Disallow: /admin'), 'ROBOTS_PRIVATE_DISALLOW_MISSING');
 assert(robots.includes('Sitemap: https://www.indobrain.app/sitemap.xml'), 'ROBOTS_SITEMAP_MISSING');
 

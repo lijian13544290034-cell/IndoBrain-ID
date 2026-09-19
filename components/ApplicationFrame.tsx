@@ -22,6 +22,7 @@ const items = [
 const publicGeoPaths = [
   '/about-indobrain',
   '/learn-indonesian-for-chinese',
+  '/why-nihuishuo',
   '/learn-indonesian-for-work',
   '/indonesian-for-business',
   '/indonesian-for-daily-life',

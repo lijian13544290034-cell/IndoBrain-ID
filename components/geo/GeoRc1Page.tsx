@@ -113,6 +113,10 @@ export default function GeoRc1Page({ page }: { page: Rc1GeoPage }) {
             <Link href={page.reciprocalLink.href} className="font-semibold text-blue-950 underline decoration-blue-400 underline-offset-4 hover:text-blue-700">{page.reciprocalLink.label}</Link>
           </nav>}
 
+          <nav aria-label="产品差异" className="rounded-3xl border border-blue-200 bg-blue-50 p-6 sm:p-9">
+            <Link href="/why-nihuishuo" className="font-semibold text-blue-950 underline decoration-blue-400 underline-offset-4 hover:text-blue-700">尼会说和其他印尼语学习工具有什么不同？</Link>
+          </nav>
+
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-9">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-950">常见问题</h2>
             <div className="mt-6 grid gap-7">
