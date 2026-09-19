@@ -5,8 +5,9 @@ import { moduleExperiences, type ModuleRole } from '@/lib/module-experiences';
 import { getNannyExperiences } from '@/lib/nanny-experiences';
 import { getSocialExperiences } from '@/lib/social-experiences';
 import type { WorkplacePattern } from '@/lib/workplace-patterns';
+import { youthChatScenes, type YouthChatVocabulary } from '@/lib/youth-chat-content';
 
-export type QuickExperienceSource = 'driver' | 'nanny' | 'factory' | 'life' | 'social' | 'module';
+export type QuickExperienceSource = 'driver' | 'nanny' | 'factory' | 'life' | 'social' | 'youth' | 'module';
 
 export type QuickExperienceLearningUnit = {
   sourceId: string;
@@ -22,6 +23,9 @@ export type QuickExperienceLearningUnit = {
   content?: string;
   learningTip?: string;
   teachingContract?: boolean;
+  risk?: string;
+  vocabulary?: YouthChatVocabulary[];
+  ttsText?: string;
 };
 
 type QuickSourceItem = {
@@ -79,11 +83,25 @@ function buildHistoricalQuickExperiencePool() {
     .filter((item) => item.id.startsWith('EXP-LIF-') && isQuick(item))
     .map((item) => adapt(item, 'life'));
   const social = getSocialExperiences().filter((item) => isHistoricalSocialQuick(item) || (isQuick(item) && Boolean(item.microScene))).map((item) => adapt(item, 'social'));
+  const youth = youthChatScenes.map((item) => ({
+    sourceId: item.id,
+    source: 'youth' as const,
+    sceneTitle: item.task,
+    indonesian: item.indonesian,
+    chinese: item.chinese,
+    explanation: item.explanation,
+    harvest: item.harvest,
+    learningTip: item.learningTip,
+    teachingContract: true,
+    risk: item.risk,
+    vocabulary: item.vocabulary,
+    ttsText: item.ttsText,
+  }));
   const module = (Object.entries(moduleExperiences) as [ModuleRole, QuickSourceItem[]][])
     .filter(([role]) => role !== 'driver' && role !== 'nanny')
     .flatMap(([, items]) => items.filter(isQuick).map((item) => adapt(item, 'module')));
 
-  return [...driver, ...nanny, ...factory, ...life, ...social, ...module];
+  return [...driver, ...nanny, ...factory, ...life, ...social, ...youth, ...module];
 }
 
 const historicalQuickExperiences = buildHistoricalQuickExperiencePool();

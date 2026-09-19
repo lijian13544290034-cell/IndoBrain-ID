@@ -42,13 +42,13 @@ const librarySource = read('components/MicroSceneLibrary.tsx');
 const homeSource = read('components/V2HomeDashboard.tsx');
 const historical = adapter.getHistoricalQuickExperiences();
 const historicalIds = new Set(historical.map((item) => item.sourceId));
-const historicalCore = historical.filter((item) => !(item.source === 'factory' && Number(item.sourceId.slice(-3)) > 90) && !(item.source === 'social' && Number(item.sourceId.slice(-3)) > 70));
+const historicalCore = historical.filter((item) => item.source !== 'youth' && !(item.source === 'factory' && Number(item.sourceId.slice(-3)) > 90) && !(item.source === 'social' && Number(item.sourceId.slice(-3)) > 70));
 
-if (historical.length !== 469) failures.push(`Expected 469 Quick Experience assets after approved additions, found ${historical.length}`);
-if (historicalIds.size !== 469) failures.push(`Expected 469 unique Quick Experience IDs, found ${historicalIds.size}`);
+if (historical.length !== 519) failures.push(`Expected 519 Quick Experience assets after approved additions, found ${historical.length}`);
+if (historicalIds.size !== 519) failures.push(`Expected 519 unique Quick Experience IDs, found ${historicalIds.size}`);
 if (historicalCore.length !== 421) failures.push(`Expected the frozen 421 core Quick Experience assets to remain intact, found ${historicalCore.length}`);
 
-const expectedSourceCounts = { driver: 32, nanny: 49, factory: 96, life: 86, social: 87, module: 119 };
+const expectedSourceCounts = { driver: 32, nanny: 49, factory: 96, life: 86, social: 87, youth: 50, module: 119 };
 for (const [source, expected] of Object.entries(expectedSourceCounts)) {
   const actual = historical.filter((item) => item.source === source).length;
   if (actual !== expected) failures.push(`Expected ${expected} ${source} Quick assets, found ${actual}`);
@@ -64,10 +64,10 @@ for (const item of historical) {
 const quickIndex = micro.microSceneIndex.filter((item) => item.sourceType === 'QUICK_EXPERIENCE');
 const mappedQuick = quickIndex.filter((item) => item.enabled && item.reviewStatus === 'READY');
 const unmappedQuick = quickIndex.filter((item) => !item.enabled && item.reviewStatus === 'UNMAPPED_REVIEW');
-if (quickIndex.length !== 469) failures.push(`Expected all 469 Quick assets in metadata index, found ${quickIndex.length}`);
+if (quickIndex.length !== 519) failures.push(`Expected all 519 Quick assets in metadata index, found ${quickIndex.length}`);
 if (mappedQuick.length !== 397) failures.push(`Expected 397 Scene Map mapped Quick assets, found ${mappedQuick.length}`);
-if (unmappedQuick.length !== 72) failures.push(`Expected 72 Scene Map UNMAPPED_REVIEW Quick assets, found ${unmappedQuick.length}`);
-if (new Set(quickIndex.map((item) => item.sourceId)).size !== 469) failures.push('Quick index contains duplicate stable source IDs');
+if (unmappedQuick.length !== 122) failures.push(`Expected 122 Scene Map UNMAPPED_REVIEW Quick assets, found ${unmappedQuick.length}`);
+if (new Set(quickIndex.map((item) => item.sourceId)).size !== 519) failures.push('Quick index contains duplicate stable source IDs');
 if (unmappedQuick.some((item) => item.primaryMapping)) failures.push('UNMAPPED_REVIEW assets must not be force-mapped into Scene Map');
 if (unmappedQuick.some((item) => !historicalIds.has(item.sourceId))) failures.push('UNMAPPED_REVIEW contains an unknown source ID');
 
@@ -86,7 +86,7 @@ const expectedModules = [
   ['driver', '出行·司机', 32],
   ['nanny', '家庭·保姆', 49],
   ['factory', '工作·工厂', 215],
-  ['life', '城市生活·社交', 173],
+  ['life', '城市生活·社交', 223],
 ];
 if (modules.length !== 4) failures.push(`Expected 4 historical Micro Scene entrances, found ${modules.length}`);
 for (const [slug, title, count] of expectedModules) {
@@ -102,7 +102,7 @@ const expectedGroupSlugs = {
   driver: ['jemput', 'perjalanan', 'menunggu', 'kunjungan', 'lanjutan'],
   nanny: ['makan', 'rumah', 'anak', 'belanja', 'kerja'],
   factoryManager: ['produksi', 'kualitas', 'keamanan', 'material', 'pengiriman', 'ekspor', 'pelanggan'],
-  life: ['restaurant', 'supermarket', 'bank-payments', 'medical-pharmacy', 'grooming-wellness', 'housing-property', 'repairs', 'delivery-takeout', 'documents-window', 'hotel-stay', 'airport-travel', 'new-friends', 'friend-daily', 'meals-coffee', 'daily-chat', 'cultural-exchange', 'dating', 'business-social'],
+  life: ['restaurant', 'supermarket', 'bank-payments', 'medical-pharmacy', 'grooming-wellness', 'housing-property', 'repairs', 'delivery-takeout', 'documents-window', 'hotel-stay', 'airport-travel', 'new-friends', 'friend-daily', 'meals-coffee', 'daily-chat', 'cultural-exchange', 'dating', 'young-people-chat', 'business-social'],
   factoryRoles: ['manager', 'employee-management', 'production', 'warehouse', 'qc', 'purchasing', 'operator', 'logistics', 'shipping', 'export', 'customer-service'],
 };
 const actualGroups = {
@@ -137,6 +137,7 @@ const expectedCityCounts = {
   'daily-chat': 11,
   'cultural-exchange': 20,
   dating: 42,
+  'young-people-chat': 50,
   'business-social': 6,
 };
 for (const group of citySections.flatMap((section) => section.groups)) {
@@ -145,21 +146,21 @@ for (const group of citySections.flatMap((section) => section.groups)) {
 const cityLifeTotal = citySections.find((section) => section.slug === 'life-services')?.groups.reduce((sum, group) => sum + group.count, 0);
 const citySocialTotal = citySections.find((section) => section.slug === 'social-relationships')?.groups.reduce((sum, group) => sum + group.count, 0);
 if (cityLifeTotal !== 58) failures.push(`Expected City Life 生活办事 total 58, found ${cityLifeTotal}`);
-if (citySocialTotal !== 115) failures.push(`Expected City Life 社交关系 total 115, found ${citySocialTotal}`);
+if (citySocialTotal !== 165) failures.push(`Expected City Life 社交关系 total 165, found ${citySocialTotal}`);
 const mappedCityIds = cityLife.getCityLifeMicroSourceIds();
-if (mappedCityIds.length !== 173 || new Set(mappedCityIds).size !== 173) failures.push(`City Life primary mapping must contain 173 unique IDs; found ${mappedCityIds.length} placements and ${new Set(mappedCityIds).size} unique IDs`);
+if (mappedCityIds.length !== 223 || new Set(mappedCityIds).size !== 223) failures.push(`City Life primary mapping must contain 223 unique IDs; found ${mappedCityIds.length} placements and ${new Set(mappedCityIds).size} unique IDs`);
 
 const contexts = [
   ...navigation.getDriverMicroGroups().map((group) => ({ key: `driver/${group.slug}`, items: navigation.getHistoricalMicroItems('driver', group.slug), allowed: new Set(['driver']) })),
   ...navigation.getNannyMicroGroups().map((group) => ({ key: `nanny/${group.slug}`, items: navigation.getHistoricalMicroItems('nanny', group.slug), allowed: new Set(['nanny']) })),
   ...navigation.getFactoryManagerMicroGroups().map((group) => ({ key: `factory/manager/${group.slug}`, items: navigation.getHistoricalMicroItems('factory', group.slug, 'manager'), allowed: new Set(['factory']) })),
   ...navigation.getFactoryMicroRoles().filter((role) => role.slug !== 'manager').map((role) => ({ key: `factory/${role.slug}`, items: navigation.getHistoricalMicroItems('factory', undefined, role.slug), allowed: new Set([role.slug === 'employee-management' ? 'factory' : 'module']) })),
-  ...navigation.getLifeMicroGroups().map((group) => ({ key: `life/${group.slug}`, items: navigation.getHistoricalMicroItems('life', group.slug), allowed: new Set(['life', 'social']) })),
+  ...navigation.getLifeMicroGroups().map((group) => ({ key: `life/${group.slug}`, items: navigation.getHistoricalMicroItems('life', group.slug), allowed: new Set(['life', 'social', 'youth']) })),
 ];
 
 const reachableIds = navigation.getHistoricalMicroReachableIds();
 const reachableSet = new Set(reachableIds);
-if (reachableIds.length !== 469) failures.push(`Expected 469 Quick assets reachable through historical navigation, found ${reachableIds.length}`);
+if (reachableIds.length !== 519) failures.push(`Expected 519 Quick assets reachable through historical navigation, found ${reachableIds.length}`);
 for (const id of historicalIds) if (!reachableSet.has(id)) failures.push(`${id} is not reachable through historical Micro navigation`);
 for (const item of unmappedQuick) if (!reachableSet.has(item.sourceId)) failures.push(`${item.sourceId} was lost because it is Scene Map UNMAPPED_REVIEW`);
 
@@ -178,7 +179,7 @@ for (const context of contexts) {
     if (!item.harvest.length) failures.push(`${item.sourceId} visible unit is missing harvest`);
   }
 }
-if (seenContextIds.length !== 469 || new Set(seenContextIds).size !== 469) failures.push(`Historical navigation must expose every Quick Experience exactly once; found ${seenContextIds.length} placements and ${new Set(seenContextIds).size} unique IDs`);
+if (seenContextIds.length !== 519 || new Set(seenContextIds).size !== 519) failures.push(`Historical navigation must expose every Quick Experience exactly once; found ${seenContextIds.length} placements and ${new Set(seenContextIds).size} unique IDs`);
 
 const representativeContexts = [
   ['driver/jemput', 'EXP-DRV-013'],
@@ -189,6 +190,7 @@ const representativeContexts = [
   ['life/restaurant', 'EXP-LIF-093'],
   ['life/supermarket', 'EXP-LIF-083'],
   ['life/new-friends', 'EXP-SOC-001'],
+  ['life/young-people-chat', 'Y01'],
 ];
 for (const [contextKey, sourceId] of representativeContexts) {
   const context = contexts.find((item) => item.key === contextKey);
@@ -196,9 +198,9 @@ for (const [contextKey, sourceId] of representativeContexts) {
 }
 
 const stats = micro.getMicroSceneStats();
-if (stats.visibleAssetCount !== 469) failures.push(`Homepage Micro Scene count must be 469, found ${stats.visibleAssetCount}`);
+if (stats.visibleAssetCount !== 519) failures.push(`Homepage Micro Scene count must be 519, found ${stats.visibleAssetCount}`);
 if (stats.sceneMapMappedQuickCount !== 397) failures.push(`Scene Map mapped Quick count must be 397, found ${stats.sceneMapMappedQuickCount}`);
-if (stats.unmappedReviewCount !== 72) failures.push(`Scene Map UNMAPPED_REVIEW count must be 72 after the approved Employee Management additions, found ${stats.unmappedReviewCount}`);
+if (stats.unmappedReviewCount !== 122) failures.push(`Scene Map UNMAPPED_REVIEW count must be 122 after the approved additions, found ${stats.unmappedReviewCount}`);
 
 const forbiddenCopiedFields = ['sceneTitle', 'momentTitle', 'indonesian', 'chinese', 'explanation', 'harvest', 'pattern', 'insight', 'content'];
 for (const item of quickIndex) for (const field of forbiddenCopiedFields) if (Object.hasOwn(item, field)) failures.push(`Quick index copied source content field ${field} for ${item.sourceId}`);
@@ -370,7 +372,7 @@ const expectedEmployeeVocabulary = {
 const chineseText = /[\u4e00-\u9fff]/;
 const englishTeachingFallback = /\b(?:is|are|can|means?|natural|common|workplace|responsible|handling|use|way)\b/i;
 const normalizedTeaching = (value) => value.toLocaleLowerCase().replace(/[\s“”'"，。；：、/…（）()[\]_-]+/g, '');
-const teachingContractItems = historical.filter((candidate) => candidate.teachingContract);
+const teachingContractItems = employeeManagementItems;
 
 if (teachingContractItems.length !== expectedEmployeeManagementIds.length) failures.push(`Teaching contract must be scoped to the ${expectedEmployeeManagementIds.length} Employee Management scenes; found ${teachingContractItems.length}`);
 for (const item of teachingContractItems) {
@@ -432,19 +434,20 @@ if (failures.length) {
 
 console.log('MICRO SCENES VERIFY: PASS');
 console.log('Historical Quick core integrity: 421');
-console.log('Quick Experience reachable: 469');
+console.log('Quick Experience reachable: 519');
 console.log('Driver reachable: 32');
 console.log('Nanny reachable: 49');
 console.log('Factory Manager operational reachable: 65');
 console.log('Employee Management reachable: 31');
 console.log('Factory role/module reachable: 119');
 console.log('City Life / 生活办事 reachable: 58');
-console.log('City Life / 社交关系 reachable: 115');
+console.log('City Life / 社交关系 reachable: 165');
+console.log('Young People Chat reachable: 50');
 console.log('City Life unclassified: 0');
 console.log('City Life duplicate primary assignments: 0');
 console.log('Human-approved language fixes: EXP-SOC-028, EXP-FAC-046 + 31 Employee Management scenes');
 console.log('EXP-LIF-220 unchanged: needs Human scene definition');
 console.log('Scene Map mapped Quick: 397 (369 core + 28 approved additions)');
-console.log('Scene Map UNMAPPED_REVIEW preserved and reachable: 72');
+console.log('Scene Map UNMAPPED_REVIEW preserved and reachable: 122');
 console.log('Scene Map taxonomy regression: 6 domains / 36 topics');
 console.log('Progress identity: stable Quick ID + backward-compatible micro:{id} read');

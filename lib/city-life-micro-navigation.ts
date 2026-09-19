@@ -165,6 +165,13 @@ export const cityLifeMicroSceneTaxonomy: CityLifeMicroSectionDefinition[] = [
         ],
       },
       {
+        slug: 'young-people-chat',
+        indonesian: 'Cara Anak Muda Ngobrol',
+        title: '年轻人都在怎么聊',
+        subtitle: '听懂印尼年轻人的聊天、网络热词、暧昧、互损，以及那些课本很少告诉你的真实表达。',
+        sourceIds: Array.from({ length: 50 }, (_, index) => `Y${String(index + 1).padStart(2, '0')}`),
+      },
+      {
         slug: 'business-social',
         indonesian: 'Relasi Profesional',
         title: '商务社交',

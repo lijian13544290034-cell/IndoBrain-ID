@@ -63,7 +63,7 @@ function previousDate(date: string) {
 export function inferModule(experienceId: string) {
   if (experienceId.startsWith('EXP-DRV')) return 'driver';
   if (experienceId.startsWith('EXP-NAN')) return 'nanny';
-  if (experienceId.startsWith('EXP-LIF') || experienceId.startsWith('EXP-SOC')) return 'life';
+  if (experienceId.startsWith('EXP-LIF') || experienceId.startsWith('EXP-SOC') || /^Y\d{2}$/.test(experienceId)) return 'life';
   return 'factory';
 }
 

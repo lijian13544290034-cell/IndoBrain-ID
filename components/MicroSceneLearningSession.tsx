@@ -72,6 +72,7 @@ export default function MicroSceneLearningSession({ items, moduleTitle, category
   };
   const toggleCurrentFavorite = () => toggleFavorite(current.sourceId);
   const explanation = displayExplanation(current.explanation);
+  const vocabulary = current.vocabulary ?? current.harvest.map((entry) => ({ term: harvestTerm(entry), meaning: harvestMeaning(entry) }));
 
   return <>
     <div className="mt-4 flex items-center justify-between gap-3 text-sm">
@@ -98,9 +99,14 @@ export default function MicroSceneLearningSession({ items, moduleTitle, category
 
         <div className="mt-4 rounded-[20px] bg-[var(--ib-bg-soft)] px-4 py-4 sm:px-5">
           {current.teachingContract ? <p className="mb-2 text-xs font-semibold tracking-[0.08em] text-[var(--ib-text-muted)]">Bahasa Indonesia</p> : null}
-          <p lang="id" className="break-words text-[27px] font-bold leading-[1.3] tracking-tight text-[var(--ib-text-primary)] sm:text-[32px]">{current.indonesian}</p>
-          <IndonesianSpeechButton text={current.indonesian} />
+          <p lang="id" className="whitespace-pre-line break-words text-[27px] font-bold leading-[1.3] tracking-tight text-[var(--ib-text-primary)] sm:text-[32px]">{current.indonesian}</p>
+          <IndonesianSpeechButton text={current.ttsText ?? current.indonesian} />
         </div>
+
+        {current.risk ? <div className="mt-4 flex flex-wrap items-center gap-2 rounded-[18px] border border-[var(--ib-border-soft)] bg-white px-4 py-3">
+          <span className="text-xs font-bold tracking-[0.08em] text-[var(--ib-text-muted)]">使用风险</span>
+          <span className="break-words text-sm font-semibold text-[var(--ib-text-primary)]">{current.risk}</span>
+        </div> : null}
 
         {current.teachingContract ? <>
           <section className="mt-6 border-t border-[var(--ib-border-soft)] pt-5">
@@ -119,10 +125,8 @@ export default function MicroSceneLearningSession({ items, moduleTitle, category
         <section className="mt-6">
           <h2 className="text-sm font-bold text-[var(--ib-text-primary)]">{current.teachingContract ? 'Kata Penting Hari Ini（今日重点词汇）' : '今天记住'}</h2>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {current.harvest.map((entry) => {
-              const term = harvestTerm(entry);
-              const meaning = harvestMeaning(entry);
-              return <li key={entry} className="min-w-0 rounded-2xl border border-[var(--ib-border-soft)] px-3.5 py-3">
+            {vocabulary.map(({ term, meaning }) => {
+              return <li key={`${term}:${meaning ?? ''}`} className="min-w-0 rounded-2xl border border-[var(--ib-border-soft)] px-3.5 py-3">
                 <div className="flex min-w-0 items-center justify-between gap-2">
                   <span className="min-w-0 break-words text-sm font-semibold text-[var(--ib-text-primary)]">{term}</span>
                   <IndonesianSpeechButton text={term} compact iconOnly />
