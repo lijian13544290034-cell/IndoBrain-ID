@@ -5,7 +5,7 @@ import { getHistoricalQuickExperiences, type QuickExperienceLearningUnit } from 
 import { cityLifeMicroSceneTaxonomy, type CityLifeMicroSectionSlug } from '@/lib/city-life-micro-navigation';
 
 export type HistoricalMicroModuleSlug = 'driver' | 'nanny' | 'factory' | 'life';
-export type HistoricalFactoryRoleSlug = 'manager' | 'employee-management' | 'production' | 'warehouse' | 'qc' | 'purchasing' | 'operator' | 'logistics' | 'shipping' | 'export' | 'customer-service';
+export type HistoricalFactoryRoleSlug = 'manager' | 'employee-management' | 'recruitment-interview' | 'production' | 'warehouse' | 'qc' | 'purchasing' | 'operator' | 'logistics' | 'shipping' | 'export' | 'customer-service';
 
 export type HistoricalMicroSceneCard = QuickExperienceLearningUnit & {
   progressKey: string;
@@ -38,6 +38,7 @@ const nannyQuick = allQuick.filter((item) => item.source === 'nanny');
 const factoryManagerQuick = allQuick.filter((item) => item.source === 'factory');
 const lifeQuick = allQuick.filter((item) => item.source === 'life');
 const socialQuick = allQuick.filter((item) => item.source === 'social');
+const recruitmentQuick = allQuick.filter((item) => item.source === 'recruitment');
 const youthQuick = allQuick.filter((item) => item.source === 'youth');
 const cityLifeQuick = [...lifeQuick, ...socialQuick, ...youthQuick];
 const factoryRoleQuick = allQuick.filter((item) => item.source === 'module');
@@ -97,6 +98,7 @@ const historicalWorkflowSupplements = {
 const factoryRoleDefinitions = [
   { slug: 'manager', prefix: 'EXP-FAC-', indonesian: 'Manajer Pabrik', title: '工厂经理', subtitle: '生产、品质、安全、原料、交付和客户。' },
   { slug: 'employee-management', prefix: 'EXP-FAC-', indonesian: '👥 Manajemen Karyawan · Employee Management', title: '员工管理', subtitle: '表扬、认可、鼓励、纠错、信任、授权和团队绩效。' },
+  { slug: 'recruitment-interview', prefix: 'R', indonesian: 'Rekrutmen & Interview', title: '招聘与面试', subtitle: '工作经历、能力确认、薪资沟通、到岗安排和录用通知。' },
   { slug: 'production', prefix: 'EXP-PRO-', indonesian: 'Produksi', title: '生产', subtitle: '生产安排、目标、进度和现场协作。' },
   { slug: 'warehouse', prefix: 'EXP-WHS-', indonesian: 'Gudang', title: '仓库', subtitle: '库存、材料、入库和仓库沟通。' },
   { slug: 'qc', prefix: 'EXP-QC-', indonesian: 'QC', title: '品质管理', subtitle: '检查、异常、不良品和品质确认。' },
@@ -128,6 +130,7 @@ function filterBySourceIds(items: QuickExperienceLearningUnit[], sourceIds: read
 function factoryRoleItems(roleSlug: string) {
   if (roleSlug === 'manager') return factoryManagerOperationsQuick.map(asCard);
   if (roleSlug === 'employee-management') return filterBySourceIds(factoryManagerQuick, employeeManagementSourceIds);
+  if (roleSlug === 'recruitment-interview') return recruitmentQuick.map(asCard);
   const role = factoryRoleDefinitions.find((item) => item.slug === roleSlug);
   return role ? factoryRoleQuick.filter((item) => item.sourceId.startsWith(role.prefix)).map(asCard) : [];
 }
@@ -136,7 +139,7 @@ export function getHistoricalMicroModules(): HistoricalMicroModule[] {
   return [
     { slug: 'driver', icon: '🚗', indonesian: 'Sopir', title: '出行·司机', subtitle: '接送、行程、等待和日常跑腿。', count: driverQuick.length },
     { slug: 'nanny', icon: '🏠', indonesian: 'Asisten Rumah Tangga', title: '家庭·保姆', subtitle: '吃饭、家务、孩子、采购和工作安排。', count: nannyQuick.length },
-    { slug: 'factory', icon: '🏭', indonesian: 'Pabrik', title: '工作·工厂', subtitle: '工厂经理、生产、仓库、品质和供应链。', count: factoryManagerQuick.length + factoryRoleQuick.length },
+    { slug: 'factory', icon: '🏭', indonesian: 'Pabrik', title: '工作·工厂', subtitle: '工厂经理、招聘、员工管理、生产、仓库、品质和供应链。', count: factoryManagerQuick.length + recruitmentQuick.length + factoryRoleQuick.length },
     { slug: 'life', icon: '🌆', indonesian: 'Kehidupan Kota', title: '城市生活·社交', subtitle: '吃饭、购物、办事、生活，也学会和当地人自然交流。', count: cityLifeQuick.length },
   ];
 }

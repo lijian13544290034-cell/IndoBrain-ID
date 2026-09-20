@@ -15,6 +15,7 @@
     "verify:basic-essentials": "node scripts/verify-basic-essentials.mjs",
     "verify:micro-scenes": "node scripts/verify-micro-scenes.mjs",
     "verify:youth-chat": "node scripts/verify-youth-chat.mjs",
+    "verify:recruitment-interview": "node scripts/verify-recruitment-interview.mjs",
     "verify:geo": "node scripts/verify-geo-foundation.mjs",
     "verify:geo:runtime": "node scripts/verify-geo-runtime.mjs",
     "verify:chinese-learning": "node scripts/verify-chinese-learning.mjs",
