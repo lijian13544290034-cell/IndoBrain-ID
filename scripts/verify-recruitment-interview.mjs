@@ -84,7 +84,7 @@ if (new Set(rendered.map((scene) => scene.sourceId)).size !== 20) failures.push(
 
 const employeeCount = navigation.getHistoricalMicroItems('factory', undefined, 'employee-management').length;
 const youthCount = navigation.getHistoricalMicroItems('life', 'young-people-chat').length;
-const historicalCoreCount = allQuick.filter((item) => item.source !== 'recruitment' && item.source !== 'youth' && !(item.source === 'factory' && Number(item.sourceId.slice(-3)) > 90) && !(item.source === 'social' && Number(item.sourceId.slice(-3)) > 70)).length;
+const historicalCoreCount = allQuick.filter((item) => item.source !== 'recruitment' && item.source !== 'restaurant-ordering' && item.source !== 'youth' && !(item.source === 'factory' && Number(item.sourceId.slice(-3)) > 90) && !(item.source === 'social' && Number(item.sourceId.slice(-3)) > 70)).length;
 if (employeeCount !== 31) failures.push(`Employee Management changed: ${employeeCount}`);
 if (youthCount !== 50) failures.push(`Y01-Y50 changed: ${youthCount}`);
 if (historicalCoreCount !== 421) failures.push(`Historical 421 core changed: ${historicalCoreCount}`);

@@ -39,8 +39,9 @@ const factoryManagerQuick = allQuick.filter((item) => item.source === 'factory')
 const lifeQuick = allQuick.filter((item) => item.source === 'life');
 const socialQuick = allQuick.filter((item) => item.source === 'social');
 const recruitmentQuick = allQuick.filter((item) => item.source === 'recruitment');
+const restaurantOrderingQuick = allQuick.filter((item) => item.source === 'restaurant-ordering');
 const youthQuick = allQuick.filter((item) => item.source === 'youth');
-const cityLifeQuick = [...lifeQuick, ...socialQuick, ...youthQuick];
+const cityLifeQuick = [...lifeQuick, ...socialQuick, ...restaurantOrderingQuick, ...youthQuick];
 const factoryRoleQuick = allQuick.filter((item) => item.source === 'module');
 const employeeManagementSourceIds = [
   'EXP-FAC-091',

@@ -21,6 +21,9 @@ const range = (prefix: 'EXP-LIF' | 'EXP-SOC', start: number, end: number) =>
 const ids = (prefix: 'EXP-LIF' | 'EXP-SOC', values: number[]) =>
   values.map((value) => `${prefix}-${String(value).padStart(3, '0')}`);
 
+const restaurantOrderingNewIds = Array.from({ length: 50 }, (_, index) => `F${String(index + 1).padStart(2, '0')}`)
+  .filter((id) => id !== 'F05' && id !== 'F07');
+
 export const cityLifeMicroSceneTaxonomy: CityLifeMicroSectionDefinition[] = [
   {
     slug: 'life-services',
@@ -32,7 +35,7 @@ export const cityLifeMicroSceneTaxonomy: CityLifeMicroSectionDefinition[] = [
         indonesian: 'Makan di Restoran',
         title: '餐厅吃饭',
         subtitle: '找座位、点餐、口味、加菜、打包和结账。',
-        sourceIds: [...range('EXP-LIF', 93, 103), ...range('EXP-LIF', 137, 139)],
+        sourceIds: [...range('EXP-LIF', 93, 103), ...range('EXP-LIF', 137, 139), ...restaurantOrderingNewIds],
       },
       {
         slug: 'supermarket',
