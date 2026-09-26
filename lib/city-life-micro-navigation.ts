@@ -1,3 +1,5 @@
+import { newMicroScenePlacements } from '@/lib/new-micro-scene-assets';
+
 export type CityLifeMicroSectionSlug = 'life-services' | 'social-relationships';
 
 export type CityLifeMicroGroupDefinition = {
@@ -24,6 +26,10 @@ const ids = (prefix: 'EXP-LIF' | 'EXP-SOC', values: number[]) =>
 const restaurantOrderingNewIds = Array.from({ length: 50 }, (_, index) => `F${String(index + 1).padStart(2, '0')}`)
   .filter((id) => id !== 'F05' && id !== 'F07');
 
+const newAssetIdsFor = (category: string) => Object.entries(newMicroScenePlacements)
+  .filter(([, placement]) => placement.module === 'life' && placement.category === category)
+  .map(([id]) => id);
+
 export const cityLifeMicroSceneTaxonomy: CityLifeMicroSectionDefinition[] = [
   {
     slug: 'life-services',
@@ -42,14 +48,14 @@ export const cityLifeMicroSceneTaxonomy: CityLifeMicroSectionDefinition[] = [
         indonesian: 'Belanja di Supermarket',
         title: '超市购物',
         subtitle: '找商品、问价格、称重、包装和付款。',
-        sourceIds: range('EXP-LIF', 83, 92),
+        sourceIds: [...range('EXP-LIF', 83, 92), ...newAssetIdsFor('supermarket')],
       },
       {
         slug: 'bank-payments',
         indonesian: 'Bank & Pembayaran',
         title: '银行·支付',
         subtitle: 'ATM、取现、换钱、转账和付款确认。',
-        sourceIds: range('EXP-LIF', 112, 117),
+        sourceIds: [...range('EXP-LIF', 112, 117), ...newAssetIdsFor('bank-payments')],
       },
       {
         slug: 'medical-pharmacy',
@@ -98,14 +104,14 @@ export const cityLifeMicroSceneTaxonomy: CityLifeMicroSectionDefinition[] = [
         indonesian: 'Menginap di Hotel',
         title: '酒店住宿',
         subtitle: '入住、房间和酒店服务沟通。',
-        sourceIds: [],
+        sourceIds: newAssetIdsFor('hotel-stay'),
       },
       {
         slug: 'airport-travel',
         indonesian: 'Bandara & Perjalanan',
         title: '机场·旅行',
         subtitle: '问路、叫车、等候、下车和出行安排。',
-        sourceIds: range('EXP-LIF', 104, 111),
+        sourceIds: [...range('EXP-LIF', 104, 111), ...newAssetIdsFor('airport-travel')],
       },
     ],
   },
@@ -137,7 +143,7 @@ export const cityLifeMicroSceneTaxonomy: CityLifeMicroSectionDefinition[] = [
         indonesian: 'Makan & Ngopi',
         title: '约饭·喝咖啡',
         subtitle: '发出邀请、选时间地点、会合和用餐安排。',
-        sourceIds: [...range('EXP-SOC', 21, 30), ...range('EXP-SOC', 61, 65)],
+        sourceIds: [...range('EXP-SOC', 21, 30), ...range('EXP-SOC', 61, 65), ...newAssetIdsFor('meals-coffee')],
       },
       {
         slug: 'daily-chat',
@@ -148,6 +154,7 @@ export const cityLifeMicroSceneTaxonomy: CityLifeMicroSectionDefinition[] = [
           ...range('EXP-SOC', 11, 13),
           ...range('EXP-SOC', 15, 20),
           ...ids('EXP-SOC', [56, 59]),
+          ...newAssetIdsFor('daily-chat'),
         ],
       },
       {
@@ -155,7 +162,7 @@ export const cityLifeMicroSceneTaxonomy: CityLifeMicroSectionDefinition[] = [
         indonesian: 'Budaya & Kebiasaan',
         title: '文化交流',
         subtitle: '称呼、待客、聊天习惯、礼貌拒绝和告别。',
-        sourceIds: range('EXP-SOC', 31, 50),
+        sourceIds: [...range('EXP-SOC', 31, 50), ...newAssetIdsFor('cultural-exchange')],
       },
       {
         slug: 'dating',

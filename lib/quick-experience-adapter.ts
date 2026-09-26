@@ -3,13 +3,14 @@ import { getFactoryExperiences } from '@/lib/factory-experiences';
 import { getLifeExperiences } from '@/lib/life-experiences';
 import { moduleExperiences, type ModuleRole } from '@/lib/module-experiences';
 import { getNannyExperiences } from '@/lib/nanny-experiences';
+import { newMicroSceneAssets, type NewMicroSceneAsset } from '@/lib/new-micro-scene-assets';
 import { getSocialExperiences } from '@/lib/social-experiences';
 import { recruitmentInterviewScenes } from '@/lib/recruitment-interview-content';
 import { newRestaurantOrderingScenes } from '@/lib/restaurant-ordering-content';
 import type { WorkplacePattern } from '@/lib/workplace-patterns';
 import { youthChatScenes, type YouthChatVocabulary } from '@/lib/youth-chat-content';
 
-export type QuickExperienceSource = 'driver' | 'nanny' | 'factory' | 'life' | 'social' | 'recruitment' | 'restaurant-ordering' | 'youth' | 'module';
+export type QuickExperienceSource = 'driver' | 'nanny' | 'factory' | 'life' | 'social' | 'asset-library' | 'recruitment' | 'restaurant-ordering' | 'youth' | 'module';
 
 export type QuickExperienceLearningUnit = {
   sourceId: string;
@@ -28,6 +29,8 @@ export type QuickExperienceLearningUnit = {
   risk?: string;
   vocabulary?: YouthChatVocabulary[];
   ttsText?: string;
+  canonicalCategory?: string;
+  assetMetadata?: NewMicroSceneAsset['metadata'];
 };
 
 type QuickSourceItem = {
@@ -111,6 +114,21 @@ function buildHistoricalQuickExperiencePool() {
     vocabulary: item.vocabulary,
     ttsText: item.indonesian,
   }));
+  const assetLibrary = newMicroSceneAssets.map((item) => ({
+    sourceId: item.id,
+    source: 'asset-library' as const,
+    sceneTitle: item.task,
+    indonesian: item.indonesian,
+    chinese: item.chinese,
+    explanation: item.explanation,
+    harvest: item.vocabulary.map(({ term, meaning }) => `${term}（${meaning}）`),
+    learningTip: item.learningTip,
+    teachingContract: true,
+    vocabulary: item.vocabulary,
+    ttsText: item.indonesian,
+    canonicalCategory: item.category,
+    assetMetadata: item.metadata,
+  }));
   const youth = youthChatScenes.map((item) => ({
     sourceId: item.id,
     source: 'youth' as const,
@@ -129,7 +147,7 @@ function buildHistoricalQuickExperiencePool() {
     .filter(([role]) => role !== 'driver' && role !== 'nanny')
     .flatMap(([, items]) => items.filter(isQuick).map((item) => adapt(item, 'module')));
 
-  return [...driver, ...nanny, ...factory, ...life, ...social, ...recruitment, ...restaurantOrdering, ...youth, ...module];
+  return [...driver, ...nanny, ...factory, ...life, ...social, ...assetLibrary, ...recruitment, ...restaurantOrdering, ...youth, ...module];
 }
 
 const historicalQuickExperiences = buildHistoricalQuickExperiencePool();

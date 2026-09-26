@@ -3,6 +3,7 @@ import { factoryWorkflow } from '@/lib/factory-workflow';
 import { nannyWorkflow } from '@/lib/nanny-workflow';
 import { getHistoricalQuickExperiences, type QuickExperienceLearningUnit } from '@/lib/quick-experience-adapter';
 import { cityLifeMicroSceneTaxonomy, type CityLifeMicroSectionSlug } from '@/lib/city-life-micro-navigation';
+import { newMicroScenePlacements } from '@/lib/new-micro-scene-assets';
 
 export type HistoricalMicroModuleSlug = 'driver' | 'nanny' | 'factory' | 'life';
 export type HistoricalFactoryRoleSlug = 'manager' | 'employee-management' | 'recruitment-interview' | 'production' | 'warehouse' | 'qc' | 'purchasing' | 'operator' | 'logistics' | 'shipping' | 'export' | 'customer-service';
@@ -40,8 +41,9 @@ const lifeQuick = allQuick.filter((item) => item.source === 'life');
 const socialQuick = allQuick.filter((item) => item.source === 'social');
 const recruitmentQuick = allQuick.filter((item) => item.source === 'recruitment');
 const restaurantOrderingQuick = allQuick.filter((item) => item.source === 'restaurant-ordering');
+const assetLibraryQuick = allQuick.filter((item) => item.source === 'asset-library');
 const youthQuick = allQuick.filter((item) => item.source === 'youth');
-const cityLifeQuick = [...lifeQuick, ...socialQuick, ...restaurantOrderingQuick, ...youthQuick];
+const cityLifeQuick = [...lifeQuick, ...socialQuick, ...assetLibraryQuick.filter((item) => newMicroScenePlacements[item.sourceId]?.module === 'life'), ...restaurantOrderingQuick, ...youthQuick];
 const factoryRoleQuick = allQuick.filter((item) => item.source === 'module');
 const employeeManagementSourceIds = [
   'EXP-FAC-091',
@@ -78,6 +80,12 @@ const employeeManagementSourceIds = [
 ] as const;
 const employeeManagementSourceIdSet = new Set<string>(employeeManagementSourceIds);
 const factoryManagerOperationsQuick = factoryManagerQuick.filter((item) => !employeeManagementSourceIdSet.has(item.sourceId));
+
+const assetItemsFor = (module: 'driver' | 'factory' | 'life', category: string, role?: string) => assetLibraryQuick
+  .filter((item) => {
+    const placement = newMicroScenePlacements[item.sourceId];
+    return placement?.module === module && placement.category === category && placement.role === role;
+  });
 
 const historicalWorkflowSupplements = {
   driver: {
@@ -138,9 +146,9 @@ function factoryRoleItems(roleSlug: string) {
 
 export function getHistoricalMicroModules(): HistoricalMicroModule[] {
   return [
-    { slug: 'driver', icon: '🚗', indonesian: 'Sopir', title: '出行·司机', subtitle: '接送、行程、等待和日常跑腿。', count: driverQuick.length },
+    { slug: 'driver', icon: '🚗', indonesian: 'Sopir', title: '出行·司机', subtitle: '接送、行程、等待和日常跑腿。', count: driverQuick.length + assetLibraryQuick.filter((item) => newMicroScenePlacements[item.sourceId]?.module === 'driver').length },
     { slug: 'nanny', icon: '🏠', indonesian: 'Asisten Rumah Tangga', title: '家庭·保姆', subtitle: '吃饭、家务、孩子、采购和工作安排。', count: nannyQuick.length },
-    { slug: 'factory', icon: '🏭', indonesian: 'Pabrik', title: '工作·工厂', subtitle: '工厂经理、招聘、员工管理、生产、仓库、品质和供应链。', count: factoryManagerQuick.length + recruitmentQuick.length + factoryRoleQuick.length },
+    { slug: 'factory', icon: '🏭', indonesian: 'Pabrik', title: '工作·工厂', subtitle: '工厂经理、招聘、员工管理、生产、仓库、品质和供应链。', count: factoryManagerQuick.length + recruitmentQuick.length + factoryRoleQuick.length + assetLibraryQuick.filter((item) => newMicroScenePlacements[item.sourceId]?.module === 'factory').length },
     { slug: 'life', icon: '🌆', indonesian: 'Kehidupan Kota', title: '城市生活·社交', subtitle: '吃饭、购物、办事、生活，也学会和当地人自然交流。', count: cityLifeQuick.length },
   ];
 }
@@ -161,7 +169,7 @@ export function getDriverMicroGroups(): HistoricalMicroGroup[] {
       kunjungan: '客户拜访、生活地点和临时跑腿。',
       lanjutan: '机场、行李、加油和更多后续安排。',
     }[workflow.slug],
-    count: filterByIds(driverQuick, [...workflow.ids, ...historicalWorkflowSupplements.driver[workflow.slug]]).length,
+    count: filterByIds(driverQuick, [...workflow.ids, ...historicalWorkflowSupplements.driver[workflow.slug]]).length + assetItemsFor('driver', workflow.slug).length,
   }));
 }
 
@@ -205,7 +213,7 @@ export function getFactoryManagerMicroGroups(): HistoricalMicroGroup[] {
       ekspor: '出口进度、文件和出运安排。',
       pelanggan: '客户需求、反馈和关系维护。',
     }[workflow.slug],
-    count: filterByIds(factoryManagerOperationsQuick, workflow.ids).length,
+    count: filterByIds(factoryManagerOperationsQuick, workflow.ids).length + assetItemsFor('factory', workflow.slug, 'manager').length,
   }));
 }
 
@@ -240,7 +248,7 @@ export function getHistoricalMicroGroups(moduleSlug: string, roleSlug?: string):
 export function getHistoricalMicroItems(moduleSlug: string, categorySlug?: string, roleSlug?: string): HistoricalMicroSceneCard[] {
   if (moduleSlug === 'driver') {
     const workflow = driverWorkflow.find((item) => item.slug === categorySlug);
-    return workflow ? filterByIds(driverQuick, [...workflow.ids, ...historicalWorkflowSupplements.driver[workflow.slug]]) : [];
+    return workflow ? [...filterByIds(driverQuick, [...workflow.ids, ...historicalWorkflowSupplements.driver[workflow.slug]]), ...assetItemsFor('driver', workflow.slug).map(asCard)] : [];
   }
   if (moduleSlug === 'nanny') {
     const workflow = nannyWorkflow.find((item) => item.slug === categorySlug);
@@ -252,7 +260,7 @@ export function getHistoricalMicroItems(moduleSlug: string, categorySlug?: strin
   }
   if (moduleSlug === 'factory' && roleSlug === 'manager') {
     const workflow = factoryWorkflow.find((item) => item.slug === categorySlug);
-    return workflow ? filterByIds(factoryManagerOperationsQuick, workflow.ids) : [];
+    return workflow ? [...filterByIds(factoryManagerOperationsQuick, workflow.ids), ...assetItemsFor('factory', workflow.slug, 'manager').map(asCard)] : [];
   }
   if (moduleSlug === 'factory' && roleSlug) return factoryRoleItems(roleSlug);
   return [];

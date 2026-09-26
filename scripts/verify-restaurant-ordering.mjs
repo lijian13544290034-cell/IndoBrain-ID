@@ -111,7 +111,7 @@ if (restaurantOrderingScenes.some((scene) => scene.indonesian === 'Bisa agak dip
 const employeeCount = navigation.getHistoricalMicroItems('factory', undefined, 'employee-management').length;
 const recruitmentCount = navigation.getHistoricalMicroItems('factory', undefined, 'recruitment-interview').length;
 const youthCount = navigation.getHistoricalMicroItems('life', 'young-people-chat').length;
-const historicalCoreCount = allQuick.filter((item) => item.source !== 'recruitment' && item.source !== 'restaurant-ordering' && item.source !== 'youth' && !(item.source === 'factory' && Number(item.sourceId.slice(-3)) > 90) && !(item.source === 'social' && Number(item.sourceId.slice(-3)) > 70)).length;
+const historicalCoreCount = allQuick.filter((item) => item.source !== 'asset-library' && item.source !== 'recruitment' && item.source !== 'restaurant-ordering' && item.source !== 'youth' && !(item.source === 'factory' && Number(item.sourceId.slice(-3)) > 90) && !(item.source === 'social' && Number(item.sourceId.slice(-3)) > 70)).length;
 if (employeeCount !== 31) failures.push(`Employee Management changed: ${employeeCount}`);
 if (recruitmentCount !== 20) failures.push(`Recruitment R01-R20 changed: ${recruitmentCount}`);
 if (youthCount !== 50) failures.push(`Y01-Y50 changed: ${youthCount}`);
