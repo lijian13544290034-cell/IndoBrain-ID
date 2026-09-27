@@ -4,7 +4,7 @@ const encoder = new TextEncoder();
 
 type PreviewQaPayload = {
   version: 1;
-  learningDirection: 'ZH_TO_ID';
+  learningDirection: 'ID_TO_ZH';
   expiresAt: number;
 };
 
@@ -50,7 +50,7 @@ export async function createPreviewQaSession() {
   if (!key || !isPreviewEnvironment()) return null;
   const payload: PreviewQaPayload = {
     version: 1,
-    learningDirection: 'ZH_TO_ID',
+    learningDirection: 'ID_TO_ZH',
     expiresAt: Date.now() + PREVIEW_QA_TTL_SECONDS * 1000,
   };
   const encodedPayload = toBase64Url(encoder.encode(JSON.stringify(payload)));
@@ -68,7 +68,7 @@ export async function verifyPreviewQaSession(token: string | undefined) {
     if (!valid) return false;
     const payload = JSON.parse(new TextDecoder().decode(fromBase64Url(encodedPayload))) as PreviewQaPayload;
     return payload.version === 1
-      && payload.learningDirection === 'ZH_TO_ID'
+      && payload.learningDirection === 'ID_TO_ZH'
       && Number.isFinite(payload.expiresAt)
       && payload.expiresAt > Date.now();
   } catch {

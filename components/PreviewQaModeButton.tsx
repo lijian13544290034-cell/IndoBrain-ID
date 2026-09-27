@@ -27,7 +27,7 @@ export default function PreviewQaModeButton() {
   return <section className="mt-6 rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-4 text-center">
     <p className="text-sm font-semibold text-stone-700">🧪 Preview QA Mode</p>
     <p className="mt-1 text-xs text-stone-500">仅用于 Preview 验收，不创建账号或保存数据。</p>
-    <button type="button" onClick={enterPreviewQaMode} disabled={loading} className="mt-3 w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-800 hover:bg-stone-100 disabled:opacity-50">{loading ? 'Memproses…' : '进入 N01–N50 验收'}</button>
+    <button type="button" onClick={enterPreviewQaMode} disabled={loading} className="mt-3 w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-800 hover:bg-stone-100 disabled:opacity-50">{loading ? 'Memproses…' : '进入 30天工作中文验收'}</button>
     {message ? <p role="alert" className="mt-2 text-xs text-red-700">{message}</p> : null}
   </section>;
 }

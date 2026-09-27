@@ -53,8 +53,7 @@ function redirectForDirection(request: NextRequest, direction: LearningDirection
 }
 
 function isPreviewQaReviewPath(pathname: string) {
-  return pathname === '/' || ['/micro-scenes', '/driver', '/factory', '/life']
-    .some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+  return pathname === '/learn-chinese' || pathname.startsWith('/learn-chinese/');
 }
 
 export async function proxy(request: NextRequest) {
