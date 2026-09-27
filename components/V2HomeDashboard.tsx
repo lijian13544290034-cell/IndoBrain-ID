@@ -71,8 +71,8 @@ export default function V2HomeDashboard({ catalog, contentStats, microSceneStats
   ];
 
   return <main className="v2-home mx-auto min-h-[100dvh] w-full max-w-6xl overflow-hidden px-5 pb-4 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-8 sm:pb-10 sm:pt-8">
-    <header data-home-part="brand-header" className="relative z-10 flex h-[64px] items-start justify-between sm:h-[76px]">
-      <div><p className="font-serif text-[38px] font-bold leading-[0.94] tracking-tight text-[var(--ib-primary-strong)] sm:text-5xl">IndoBrain</p><p className="mt-1 text-[15px] leading-4 tracking-wide text-[var(--ib-text-secondary)] sm:text-base">会说，机会更多。</p></div>
+    <header data-home-part="brand-header" className="relative z-10 flex h-[68px] items-start justify-between sm:h-[80px]">
+      <div><p className="font-serif text-[36px] font-bold leading-none tracking-tight text-[var(--ib-primary-strong)] sm:text-5xl">尼会说</p><div className="mt-1 flex items-center gap-2 text-[13px] leading-4 sm:text-sm"><span className="font-semibold tracking-wide text-[var(--ib-primary)]">IndoBrain</span><span aria-hidden="true" className="h-3 w-px bg-[var(--ib-border-soft)]" /><span className="text-[var(--ib-text-secondary)]">会说，机会更多。</span></div></div>
       <div className="flex items-center gap-1"><IndonesiaPowerBadge totalIndonesiaPower={indonesiaPower} size="compact" href="/about#learning-achievement" /><Link href="/about" aria-label="打开菜单" className="flex size-11 items-center justify-center rounded-2xl text-[var(--ib-primary-strong)] transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)]"><Icon name="menu" /></Link></div>
     </header>
 

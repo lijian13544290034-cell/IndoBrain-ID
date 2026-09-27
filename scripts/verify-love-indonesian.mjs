@@ -79,8 +79,11 @@ const manifestSource = fs.readFileSync(path.join(root, 'app/manifest.ts'), 'utf8
 if (!uiSource.includes("@/components/IndonesianSpeechButton")) failures.push('LOVE module does not reuse shared IndonesianSpeechButton');
 if (uiSource.includes('speechSynthesis') || uiSource.includes('SpeechSynthesisUtterance')) failures.push('LOVE module created a parallel TTS implementation');
 if (!uiSource.includes('break-words') || !uiSource.includes('overflow-x-hidden')) failures.push('LOVE module mobile overflow guards are missing');
+if (/\b(?:rose|pink|red)-/.test(uiSource)) failures.push('LOVE module contains a separate red/pink theme class');
+if (!uiSource.includes('var(--ib-primary)') || !uiSource.includes('var(--ib-primary-soft)') || !uiSource.includes('var(--ib-border-soft)')) failures.push('LOVE module does not consistently reuse IndoBrain blue tokens');
 if (!uiSource.includes('previous') || !uiSource.includes('next') || !uiSource.includes('scene.order - 2') || !uiSource.includes('loveScenes[scene.order]')) failures.push('LOVE previous/next order logic is missing');
 if (!homeSource.includes("href: '/love-indonesian'") || !homeSource.includes('永久免费')) failures.push('LOVE free home entry is missing');
+if (!homeSource.includes('>尼会说</p>') || !homeSource.includes('>IndoBrain</span>')) failures.push('Home brand hierarchy must show 尼会说 before IndoBrain');
 if (proxySource.includes("'/love-indonesian")) failures.push('LOVE free route was added to the membership auth matcher');
 if (!routeSource.includes('尼会说｜印尼语恋爱大全100句') || !routeSource.includes('100句真实印尼语恋爱口语，永久免费学习。')) failures.push('LOVE metadata is missing');
 if (!manifestSource.includes("start_url: '/'") || !manifestSource.includes("display: 'standalone'")) failures.push('PWA manifest baseline changed or is incomplete');
