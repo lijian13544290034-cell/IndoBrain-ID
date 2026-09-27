@@ -21,8 +21,8 @@ function HeartIcon({ filled, size = 20 }: { filled: boolean; size?: number }) {
 function ChapterCards({ completed, onSelect }: { completed: string[]; onSelect: (scene: LoveScene) => void }) {
   return <section aria-labelledby="love-chapters-title" className="mt-7">
     <div className="flex items-end justify-between gap-4">
-      <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--ib-primary)]">10 Chapters</p><h2 id="love-chapters-title" className="mt-1 text-2xl font-bold text-[var(--ib-text-primary)]">从认识到重新选择</h2></div>
-      <p className="shrink-0 text-sm font-semibold text-[var(--ib-text-secondary)]">{completed.length} / 100</p>
+      <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--ib-primary)]">{loveChapters.length} Chapters</p><h2 id="love-chapters-title" className="mt-1 text-2xl font-bold text-[var(--ib-text-primary)]">从认识到重新选择</h2></div>
+      <p className="shrink-0 text-sm font-semibold text-[var(--ib-text-secondary)]">{completed.length} / {loveScenes.length}</p>
     </div>
     <div className="mt-4 grid gap-3 sm:grid-cols-2">
       {loveChapters.map((chapter) => {
@@ -30,10 +30,10 @@ function ChapterCards({ completed, onSelect }: { completed: string[]; onSelect: 
         const done = scenes.filter((scene) => completed.includes(scene.id)).length;
         return <button key={chapter.id} type="button" onClick={() => onSelect(scenes[0])} className="group min-w-0 rounded-[24px] border border-[var(--ib-border-soft)] bg-white p-5 text-left shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--ib-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-primary)]">
           <div className="flex items-start justify-between gap-3"><span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--ib-primary-soft)] text-sm font-bold text-[var(--ib-primary)]">{chapter.order}</span><span className="rounded-full border border-[var(--ib-border-soft)] bg-[var(--ib-primary-soft)] px-2.5 py-1 text-[11px] font-bold text-[var(--ib-primary-strong)]">免费</span></div>
-          <h3 className="mt-4 break-words text-lg font-bold text-[var(--ib-text-primary)]">{chapter.title}<span className="ml-2 font-medium text-[var(--ib-text-secondary)]">｜{chapter.chineseTitle}</span></h3>
+          <h3 className="mt-4 break-words text-lg font-bold text-[var(--ib-text-primary)]">{chapter.title}<span className="ml-2 font-medium text-[var(--ib-text-secondary)]">｜{chapter.chineseTitle}</span><span className="ml-2 whitespace-nowrap text-xs font-normal tabular-nums text-[var(--ib-text-secondary)]">{scenes.length}</span></h3>
           <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">{chapter.description}</p>
-          <div className="mt-4 flex items-center justify-between gap-3 text-xs font-semibold text-[var(--ib-text-secondary)]"><span>{chapter.range}</span><span>{done} / 10</span></div>
-          <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-[var(--ib-primary-soft)]"><span className="block h-full rounded-full bg-[var(--ib-primary)] transition-all" style={{ width: `${done * 10}%` }} /></span>
+          <div className="mt-4 flex items-center justify-between gap-3 text-xs font-semibold text-[var(--ib-text-secondary)]"><span>{chapter.range}</span><span>{done} / {scenes.length}</span></div>
+          <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-[var(--ib-primary-soft)]"><span className="block h-full rounded-full bg-[var(--ib-primary)] transition-all" style={{ width: `${scenes.length ? (done / scenes.length) * 100 : 0}%` }} /></span>
         </button>;
       })}
     </div>
@@ -49,7 +49,7 @@ function SceneCard({ scene, completed, favorited, onComplete, onFavorite, onNavi
   return <section aria-label={`${scene.id} 学习卡`} className="mt-7">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <button type="button" onClick={onClose} className="min-h-10 rounded-full bg-white px-4 text-sm font-semibold text-[var(--ib-text-secondary)] shadow-sm transition hover:text-[var(--ib-primary)]">← 章节总览</button>
-      <p className="text-sm font-semibold text-[var(--ib-text-secondary)]">{scene.order} / 100</p>
+      <p className="text-sm font-semibold text-[var(--ib-text-secondary)]">{scene.order} / {loveScenes.length}</p>
     </div>
     <div className="mt-3 overflow-hidden rounded-[30px] border border-[var(--ib-border-soft)] bg-white shadow-[var(--ib-shadow-card)]">
       <div className="bg-gradient-to-br from-[var(--ib-primary-soft)] via-white to-[var(--ib-bg-page)] px-5 py-6 sm:px-8 sm:py-8">
@@ -75,7 +75,7 @@ function SceneCard({ scene, completed, favorited, onComplete, onFavorite, onNavi
     </div>
     <nav aria-label="恋爱印尼语上一句和下一句" className="mt-4 grid grid-cols-2 gap-3">
       {previous ? <button type="button" onClick={() => onNavigate(previous)} className="min-h-12 rounded-2xl bg-white px-4 text-left text-sm font-semibold text-[var(--ib-text-primary)] shadow-sm">← {previous.id}</button> : <span />}
-      {next ? <button type="button" onClick={() => onNavigate(next)} className="min-h-12 rounded-2xl bg-[var(--ib-primary)] px-4 text-right text-sm font-semibold text-white shadow-sm hover:bg-[var(--ib-primary-strong)]">{next.id} →</button> : <span className="flex min-h-12 items-center justify-end rounded-2xl bg-[var(--ib-primary-soft)] px-4 text-sm font-bold text-[var(--ib-primary)]">100 / 100 完成</span>}
+      {next ? <button type="button" onClick={() => onNavigate(next)} className="min-h-12 rounded-2xl bg-[var(--ib-primary)] px-4 text-right text-sm font-semibold text-white shadow-sm hover:bg-[var(--ib-primary-strong)]">{next.id} →</button> : <span className="flex min-h-12 items-center justify-end rounded-2xl bg-[var(--ib-primary-soft)] px-4 text-sm font-bold text-[var(--ib-primary)]">{loveScenes.length} / {loveScenes.length} 完成</span>}
     </nav>
   </section>;
 }
@@ -110,7 +110,7 @@ export default function LoveIndonesianExperience({ initialSceneId }: { initialSc
     <Link href="/" className="inline-flex min-h-10 items-center text-sm font-semibold text-[var(--ib-text-secondary)] hover:text-[var(--ib-primary)]">← 尼会说 · IndoBrain</Link>
     <header className="relative mt-3 overflow-hidden rounded-[32px] border border-[var(--ib-border-soft)] bg-gradient-to-br from-[var(--ib-primary-soft)] via-white to-[var(--ib-bg-page)] px-5 py-8 shadow-[var(--ib-shadow-card)] sm:px-9 sm:py-10">
       <div aria-hidden="true" className="absolute -right-8 -top-8 size-32 rounded-full bg-[var(--ib-primary)]/10 blur-2xl" />
-      <div className="relative"><div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-[var(--ib-primary-soft)] px-3 py-1 text-xs font-bold text-[var(--ib-primary-strong)]">永久免费</span><span className="rounded-full border border-[var(--ib-border-soft)] bg-white px-3 py-1 text-xs font-bold text-[var(--ib-primary)] shadow-sm">100 句 · 10 章</span></div><h1 className="mt-5 flex items-center gap-3 break-words text-3xl font-bold tracking-tight text-[var(--ib-text-primary)] sm:text-5xl"><span className="shrink-0 text-[var(--ib-primary)]"><HeartIcon filled={false} size={36} /></span><span>印尼语恋爱大全</span></h1><p className="mt-3 text-lg font-semibold text-[var(--ib-primary)]">课本不教，但印尼人谈恋爱真的会说。</p><p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--ib-text-secondary)] sm:text-base">100句真实恋爱印尼语，全部永久免费。从认识、暧昧、确定关系，到想念、吵架、和好、分手与复合，按一段关系的发展顺序学会真实表达。</p></div>
+      <div className="relative"><div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-[var(--ib-primary-soft)] px-3 py-1 text-xs font-bold text-[var(--ib-primary-strong)]">永久免费</span><span className="rounded-full border border-[var(--ib-border-soft)] bg-white px-3 py-1 text-xs font-bold text-[var(--ib-primary)] shadow-sm">{loveScenes.length} 句 · {loveChapters.length} 章</span></div><h1 className="mt-5 flex items-center gap-3 break-words text-3xl font-bold tracking-tight text-[var(--ib-text-primary)] sm:text-5xl"><span className="shrink-0 text-[var(--ib-primary)]"><HeartIcon filled={false} size={36} /></span><span>印尼语恋爱大全</span></h1><p className="mt-3 text-lg font-semibold text-[var(--ib-primary)]">课本不教，但印尼人谈恋爱真的会说。</p><p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--ib-text-secondary)] sm:text-base">{loveScenes.length}句真实恋爱印尼语，全部永久免费。从认识、暧昧、确定关系，到想念、吵架、和好、分手与复合，按一段关系的发展顺序学会真实表达。</p></div>
     </header>
 
     {selected ? <SceneCard scene={selected} completed={profile.completed.includes(selected.id)} favorited={profile.favorites.includes(selected.id)} onComplete={() => completeExperience(selected.id)} onFavorite={() => toggleFavorite(selected.id)} onNavigate={navigate} onClose={close} /> : <ChapterCards completed={completed} onSelect={navigate} />}

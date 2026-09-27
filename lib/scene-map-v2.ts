@@ -169,8 +169,19 @@ export function getSceneMapTopicCounts(topic: SceneMapTopic) {
   return { all: entries.length, golden: entries.filter((item) => item.kind === 'golden').length, quick: entries.filter((item) => item.kind === 'quick').length };
 }
 
-export function getSceneMapGroupCount(group: SceneMapLevel2) {
-  return group.topics.reduce((total, topic) => total + getSceneMapTopicCounts(topic).all, 0);
+export function getSceneMapGroupCount(group: SceneMapLevel2, kind?: SceneMapEntryKind) {
+  const entryIds = new Set(group.topics.flatMap((topic) => getSceneMapEntries(topic))
+    .filter((entry) => !kind || entry.kind === kind)
+    .map((entry) => entry.id));
+  return entryIds.size;
+}
+
+export function getSceneMapCount(kind?: SceneMapEntryKind) {
+  const entryIds = new Set(sceneMapV2.flatMap((group) => group.topics)
+    .flatMap((topic) => getSceneMapEntries(topic))
+    .filter((entry) => !kind || entry.kind === kind)
+    .map((entry) => entry.id));
+  return entryIds.size;
 }
 
 export function getSceneMapEntryLocation(entryId: string) {

@@ -80,7 +80,7 @@ function RootHome() {
     <section className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Basic Essentials root categories">
       {basicEssentialsCategories.map((item) => <Link key={item.id} href={buildHref({ category: item.id, subcategory: item.subcategories[0]?.id })} className="rounded-[26px] bg-white p-5 shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:bg-[var(--ib-primary-soft)]">
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--ib-primary-soft)] text-[var(--ib-primary)]"><BasicIcon kind={item.icon} /></span>
-        <h2 className="mt-4 text-lg font-bold text-[var(--ib-text-primary)]">{item.title}</h2>
+        <h2 className="mt-4 text-lg font-bold text-[var(--ib-text-primary)]">{item.title}<span className="ml-2 whitespace-nowrap text-sm font-normal tabular-nums text-[var(--ib-text-secondary)]">{getBasicConcepts({ categoryId: item.id }).length}</span></h2>
         <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">{item.subtitle}</p>
       </Link>)}
     </section>
@@ -201,7 +201,8 @@ function SecondaryTabs({ category, selectedSubcategory }: { category: BasicTopCa
     <div className="flex min-w-max gap-2 py-1">
       {category.subcategories.map((item) => {
         const active = item.id === selectedSubcategory.id;
-        return <Link key={item.id} href={buildHref({ category: category.id, subcategory: item.id })} className={`rounded-full px-4 py-2 text-sm font-semibold transition ${active ? 'bg-[var(--ib-primary)] text-white shadow-[var(--ib-shadow-card)]' : 'bg-white text-[var(--ib-text-secondary)] hover:bg-[var(--ib-primary-soft)] hover:text-[var(--ib-primary)]'}`}>{item.title}</Link>;
+        const count = getBasicConcepts({ categoryId: category.id, subcategoryId: item.id }).length;
+        return <Link key={item.id} href={buildHref({ category: category.id, subcategory: item.id })} className={`rounded-full px-4 py-2 text-sm font-semibold transition ${active ? 'bg-[var(--ib-primary)] text-white shadow-[var(--ib-shadow-card)]' : 'bg-white text-[var(--ib-text-secondary)] hover:bg-[var(--ib-primary-soft)] hover:text-[var(--ib-primary)]'}`}>{item.title}<span className="ml-1.5 text-xs font-normal tabular-nums opacity-70">{count}</span></Link>;
       })}
     </div>
   </nav>;
@@ -282,7 +283,7 @@ export default function BasicEssentialsExperience({ category, subcategory, conce
     <section className="mt-4 grid gap-3">
       <LearningProgress groupIndex={groupIndex} totalGroups={totalGroups} groupCount={groupConcepts.length} />
       <div>
-        <h2 className="text-xl font-bold text-[var(--ib-text-primary)]">{selectedSubcategory.title}</h2>
+        <h2 className="text-xl font-bold text-[var(--ib-text-primary)]">{selectedSubcategory.title}<span className="ml-2 whitespace-nowrap text-sm font-normal tabular-nums text-[var(--ib-text-secondary)]">{concepts.length}</span></h2>
         <p className="mt-1 text-sm leading-6 text-[var(--ib-text-secondary)]">{selectedSubcategory.subtitle}</p>
       </div>
     </section>

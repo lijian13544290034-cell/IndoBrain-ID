@@ -28,10 +28,7 @@ function GroupCards({ groups, hrefFor }: { groups: HistoricalMicroGroup[]; hrefF
   return <section className="mt-5 grid gap-3 sm:grid-cols-2" aria-label="历史场景分类">
     {groups.map((group) => {
       const content = <>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0"><h2 className="font-bold text-[var(--ib-text-primary)]">{group.title}</h2><p className="mt-1 text-xs font-medium text-[var(--ib-primary)]">{group.indonesian}</p></div>
-        <span className="shrink-0 rounded-full bg-[var(--ib-primary-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--ib-primary)]">{group.count ? `${group.count} 个` : '待补充'}</span>
-      </div>
+      <div className="min-w-0"><h2 className="font-bold text-[var(--ib-text-primary)]">{group.title}<span className="ml-2 whitespace-nowrap text-xs font-normal tabular-nums text-[var(--ib-text-secondary)]">{group.count || '待补充'}</span></h2><p className="mt-1 text-xs font-medium text-[var(--ib-primary)]">{group.indonesian}</p></div>
       <p className="mt-3 text-sm leading-6 text-[var(--ib-text-secondary)]">{group.subtitle}</p>
       </>;
       return group.count ? <Link key={group.slug} href={hrefFor(group)} className="rounded-[20px] border border-[var(--ib-border-soft)] bg-white p-4 shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--ib-primary)] hover:bg-[var(--ib-primary-soft)]/40">{content}</Link> : <article key={group.slug} aria-disabled="true" className="rounded-[20px] border border-[var(--ib-border-soft)] bg-[var(--ib-bg-soft)] p-4 opacity-70">{content}</article>;
@@ -44,20 +41,20 @@ function CityLifeSections({ sections, hrefFor }: { sections: CityLifeMicroSectio
     {sections.map((section) => {
       const visibleGroups = section.groups.filter((group) => group.count > 0);
       if (!visibleGroups.length) return null;
+      const sectionCount = visibleGroups.reduce((total, group) => total + group.count, 0);
       const headingId = `city-life-${section.slug}`;
       return <section key={section.slug} aria-labelledby={headingId}>
         <div className="mb-3 px-1">
-          <h2 id={headingId} className="text-lg font-bold text-[var(--ib-text-primary)] sm:text-xl">{section.title}</h2>
+          <h2 id={headingId} className="text-lg font-bold text-[var(--ib-text-primary)] sm:text-xl">{section.title}<span className="ml-2 whitespace-nowrap text-sm font-normal tabular-nums text-[var(--ib-text-secondary)]">{sectionCount}</span></h2>
           <p className="mt-1 text-sm leading-6 text-[var(--ib-text-secondary)]">{section.description}</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {visibleGroups.map((group) => <Link key={group.slug} href={hrefFor(group)} className="rounded-[18px] border border-[var(--ib-border-soft)] bg-white p-4 shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--ib-primary)] hover:bg-[var(--ib-primary-soft)]/35">
-            <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
               <div className="min-w-0">
-                <h3 className="font-bold text-[var(--ib-text-primary)]">{group.title}</h3>
+                <h3 className="font-bold text-[var(--ib-text-primary)]">{group.title}<span className="ml-2 whitespace-nowrap text-xs font-normal tabular-nums text-[var(--ib-text-secondary)]">{group.count}</span></h3>
                 <p className="mt-1 text-xs font-medium text-[var(--ib-primary)]">{group.indonesian}</p>
               </div>
-              <span className="shrink-0 rounded-full bg-[var(--ib-primary-soft)] px-2.5 py-1 text-xs font-semibold tabular-nums text-[var(--ib-primary)]">{group.count} 个</span>
             </div>
             <p className="mt-3 text-sm leading-6 text-[var(--ib-text-secondary)]">{group.subtitle}</p>
           </Link>)}
@@ -132,8 +129,8 @@ export default function MicroSceneLibrary({ moduleSlug, roleSlug, categorySlug, 
       <Header eyebrow="马上会说" title="我现在想学哪个现实场景？" description="先选一个你现在会遇到的角色或生活模块，再找到马上能用的一句话。" />
       <section className="mt-5 grid gap-3 sm:grid-cols-2" aria-label="四个现实场景入口">
         {modules.map((item) => <Link key={item.slug} href={contextHref(item.slug)} className="flex min-h-32 flex-col rounded-[22px] border border-[var(--ib-border-soft)] bg-white p-5 shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--ib-primary)]">
-          <div className="flex items-start justify-between gap-3"><span className="text-3xl" aria-hidden="true">{item.icon}</span><span className="rounded-full bg-[var(--ib-primary-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--ib-primary)]">{item.count} 个</span></div>
-          <h2 className="mt-3 text-lg font-bold text-[var(--ib-text-primary)]">{item.title}</h2>
+          <span className="text-3xl" aria-hidden="true">{item.icon}</span>
+          <h2 className="mt-3 text-lg font-bold text-[var(--ib-text-primary)]">{item.title}<span className="ml-2 whitespace-nowrap text-xs font-normal tabular-nums text-[var(--ib-text-secondary)]">{item.count}</span></h2>
           <p className="mt-1 text-sm leading-6 text-[var(--ib-text-secondary)]">{item.subtitle}</p>
         </Link>)}
       </section>

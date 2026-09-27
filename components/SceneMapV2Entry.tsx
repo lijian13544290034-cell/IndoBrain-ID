@@ -11,16 +11,9 @@ function BackLink({ href, children }: { href: string; children: ReactNode }) {
   return <Link href={href} className="text-sm font-medium text-[var(--ib-text-secondary)] hover:text-[var(--ib-primary)]">← {children}</Link>;
 }
 
-function CountPill({ children }: { children: ReactNode }) {
-  return <span className="rounded-full bg-[var(--ib-primary-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--ib-primary)]">{children}</span>;
-}
-
 function SceneList({ title, entries, empty }: { title: string; entries: SceneMapEntry[]; empty: string }) {
   return <section className="rounded-[24px] border border-[var(--ib-border-soft)] bg-white p-4 shadow-[var(--ib-shadow-card)]">
-    <div className="flex items-center justify-between gap-3">
-      <h2 className="text-lg font-semibold text-[var(--ib-text-primary)]">{title}</h2>
-      <CountPill>{entries.length}</CountPill>
-    </div>
+    <h2 className="text-lg font-semibold text-[var(--ib-text-primary)]">{title}<span className="ml-2 whitespace-nowrap text-xs font-normal tabular-nums text-[var(--ib-text-secondary)]">{entries.length}</span></h2>
     {entries.length ? <div className="mt-4 grid gap-3 sm:grid-cols-2">
       {entries.map((entry) => <Link key={entry.id} href={entry.href} className="rounded-2xl border border-[var(--ib-border-soft)] bg-[var(--ib-bg-soft)] px-4 py-3 transition hover:border-[var(--ib-primary)] hover:bg-white">
         <div className="flex items-center justify-between gap-3">
@@ -53,11 +46,8 @@ export default function SceneMapV2Entry({ groupSlug, topicSlug, type, legacyCate
 
     {!group ? <section className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Scene Map V2 level 2">
       {sceneMapV2.map((item) => <Link key={item.slug} href={`/life?group=${item.slug}${typeQuery}`} className="flex min-h-36 flex-col rounded-[24px] border border-[var(--ib-border-soft)] bg-white p-5 shadow-[var(--ib-shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--ib-primary)]">
-        <div className="flex items-start justify-between gap-3">
-          <span className="text-3xl" aria-hidden="true">{item.icon}</span>
-          <CountPill>{getSceneMapGroupCount(item)} 条</CountPill>
-        </div>
-        <h2 className="mt-4 text-lg font-bold text-[var(--ib-text-primary)]">{item.title}</h2>
+        <span className="text-3xl" aria-hidden="true">{item.icon}</span>
+        <h2 className="mt-4 text-lg font-bold text-[var(--ib-text-primary)]">{item.title}<span className="ml-2 whitespace-nowrap text-xs font-normal tabular-nums text-[var(--ib-text-secondary)]">{getSceneMapGroupCount(item, selectedType)}</span></h2>
         <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">{item.subtitle}</p>
       </Link>)}
     </section> : null}
@@ -65,13 +55,13 @@ export default function SceneMapV2Entry({ groupSlug, topicSlug, type, legacyCate
     {group && !topic ? <>
       <div className="mt-5"><BackLink href={selectedType ? `/life?type=${selectedType}` : '/life'}>{selectedType === 'golden' ? '黄金场景' : '场景速查'}</BackLink></div>
       <section className="mt-4 rounded-[28px] border border-[var(--ib-border-soft)] bg-white p-5 shadow-[var(--ib-shadow-card)]">
-        <div className="flex items-center gap-3"><span className="text-3xl" aria-hidden="true">{group.icon}</span><div><h2 className="text-xl font-bold text-[var(--ib-text-primary)]">{group.title}</h2><p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{group.subtitle}</p></div></div>
+        <div className="flex items-center gap-3"><span className="text-3xl" aria-hidden="true">{group.icon}</span><div><h2 className="text-xl font-bold text-[var(--ib-text-primary)]">{group.title}<span className="ml-2 whitespace-nowrap text-sm font-normal tabular-nums text-[var(--ib-text-secondary)]">{getSceneMapGroupCount(group, selectedType)}</span></h2><p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{group.subtitle}</p></div></div>
       </section>
       <section className="mt-5 grid gap-3 sm:grid-cols-2" aria-label={`${group.title} level 3`}>
         {group.topics.map((item) => {
           const counts = getSceneMapTopicCounts(item);
           return <Link key={item.slug} href={`/life?group=${group.slug}&topic=${item.slug}${typeQuery}`} className="rounded-[22px] border border-[var(--ib-border-soft)] bg-white p-4 shadow-[var(--ib-shadow-card)] transition hover:border-[var(--ib-primary)] hover:bg-[var(--ib-primary-soft)]/40">
-            <div className="flex items-start justify-between gap-3"><h3 className="font-bold text-[var(--ib-text-primary)]">{item.title}</h3><CountPill>{counts.all}</CountPill></div>
+            <h3 className="font-bold text-[var(--ib-text-primary)]">{item.title}<span className="ml-2 whitespace-nowrap text-xs font-normal tabular-nums text-[var(--ib-text-secondary)]">{selectedType ? counts[selectedType] : counts.all}</span></h3>
             <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">{item.subtitle}</p>
             <p className="mt-3 text-xs text-[var(--ib-text-muted)]">⭐ {counts.golden} · ⚡ {counts.quick}</p>
           </Link>;
@@ -94,7 +84,7 @@ function TopicView({ groupSlug, groupTitle, topicSlug, topicTitle, topicSubtitle
   return <>
     <div className="mt-5 flex flex-wrap items-center gap-3 text-sm"><BackLink href={`/life?group=${groupSlug}${selectedType ? `&type=${selectedType}` : ''}`}>{groupTitle}</BackLink><span className="text-[var(--ib-text-muted)]">/</span><span className="font-semibold text-[var(--ib-text-primary)]">{topicTitle}</span></div>
     <section className="mt-4 rounded-[28px] border border-[var(--ib-border-soft)] bg-white p-5 shadow-[var(--ib-shadow-card)]">
-      <h2 className="text-xl font-bold text-[var(--ib-text-primary)]">{topicTitle}</h2>
+      <h2 className="text-xl font-bold text-[var(--ib-text-primary)]">{topicTitle}<span className="ml-2 whitespace-nowrap text-sm font-normal tabular-nums text-[var(--ib-text-secondary)]">{selectedType === 'golden' ? golden.length : selectedType === 'quick' ? quick.length : entries.length}</span></h2>
       <p className="mt-2 text-sm leading-6 text-[var(--ib-text-secondary)]">{topicSubtitle}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         {(['golden', 'quick'] as SceneMapEntryKind[]).map((kind) => <Link key={kind} href={`/life?group=${groupSlug}&topic=${topicSlug}&type=${kind}`} className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${selectedType === kind ? 'border-[var(--ib-primary)] bg-[var(--ib-primary)] text-white' : 'border-[var(--ib-border-soft)] bg-[var(--ib-bg-soft)] text-[var(--ib-text-primary)] hover:border-[var(--ib-primary)]'}`}>{typeLabel[kind]} <span className="ml-2 opacity-75">{kind === 'golden' ? golden.length : quick.length}</span></Link>)}
