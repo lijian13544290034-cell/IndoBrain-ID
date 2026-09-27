@@ -7,6 +7,7 @@ export type ChineseTtsProvider = {
 };
 
 export const chineseTtsVoice = 'zh-CN-XiaoxiaoNeural';
+export const chineseTtsRate = '-15%';
 
 function escapeXml(text: string) {
   return text.replace(/[<>&'"]/g, (character) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' })[character] ?? character);
@@ -29,7 +30,7 @@ export function getChineseTtsProvider(): ChineseTtsProvider {
           'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3',
           'User-Agent': 'IndoBrain Chinese Learning',
         },
-        body: `<speak version="1.0" xml:lang="zh-CN"><voice name="${chineseTtsVoice}">${escapeXml(text)}</voice></speak>`,
+        body: `<speak version="1.0" xml:lang="zh-CN"><voice name="${chineseTtsVoice}"><prosody rate="${chineseTtsRate}">${escapeXml(text)}</prosody></voice></speak>`,
       });
       if (!response.ok) throw new Error('Chinese TTS provider request failed');
       return { audio: new Uint8Array(await response.arrayBuffer()), voice: chineseTtsVoice };

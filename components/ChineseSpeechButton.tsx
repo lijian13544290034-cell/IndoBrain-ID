@@ -57,7 +57,7 @@ async function speakWithBrowser(text: string, onEnd: () => void) {
   speech.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'zh-CN';
-  utterance.rate = 0.82;
+  utterance.rate = 0.7;
   utterance.pitch = 1.05;
   utterance.voice = voice;
   stopActiveAudio = () => {
