@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { previewQaCookieName, verifyPreviewQaSession } from './lib/account/preview-qa';
 
 const SESSION_COOKIE = 'indobrain_account_session';
 
@@ -51,7 +52,15 @@ function redirectForDirection(request: NextRequest, direction: LearningDirection
   return NextResponse.redirect(new URL(direction === 'ID_TO_ZH' ? '/learn-chinese' : '/', request.url));
 }
 
+function isPreviewQaReviewPath(pathname: string) {
+  return pathname === '/' || ['/micro-scenes', '/driver', '/factory', '/life']
+    .some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+}
+
 export async function proxy(request: NextRequest) {
+  const previewQa = await verifyPreviewQaSession(request.cookies.get(previewQaCookieName())?.value);
+  if (previewQa && isPreviewQaReviewPath(request.nextUrl.pathname)) return NextResponse.next();
+
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   const access = token ? await getLearningAccess(token) : null;
 
