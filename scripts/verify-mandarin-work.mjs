@@ -53,12 +53,17 @@ for (const value of unknown) {
   if (unique.has(normalize(value.chinese)) || items.some((item) => item.coreWordIds.includes(value.chinese))) failures.push(`Unknown input leaked into learned content: ${value.chinese}`);
 }
 
-const page = read('app/learn-chinese/page.tsx'); const ui = read('components/MandarinWorkExperience.tsx'); const recorder = read('components/LocalPronunciationRecorder.tsx'); const button = read('components/ChineseSpeechButton.tsx'); const indonesianProvider = read('lib/tts-provider.ts'); const profile = read('lib/mandarin-work-profile.ts');
+const page = read('app/learn-chinese/page.tsx'); const ui = read('components/MandarinWorkExperience.tsx'); const feedback = read('components/MandarinWorkFeedback.tsx'); const feedbackRoute = read('app/api/feedback/route.ts'); const proxy = read('proxy.ts'); const recorder = read('components/LocalPronunciationRecorder.tsx'); const button = read('components/ChineseSpeechButton.tsx'); const chineseProvider = read('lib/chinese-tts-provider.ts'); const indonesianProvider = read('lib/tts-provider.ts'); const profile = read('lib/mandarin-work-profile.ts');
 if (!page.includes('MandarinWorkExperience')) failures.push('/learn-chinese is not wired to Mandarin for Work');
 for (const marker of ['30天工作中文','30 Hari Bisa Mandarin untuk Kerja','LocalPronunciationRecorder','SELF_RESCUE_DAY14','SELF_RESCUE_DAY30']) if (!ui.includes(marker)) failures.push(`Missing UI marker: ${marker}`);
+for (const marker of ['Beri Masukan','Bantu kami membuat kursus ini lebih baik','Nomor WhatsApp','showCompletionPrompt']) if (!feedback.includes(marker)) failures.push(`Missing feedback UI marker: ${marker}`);
+for (const marker of ["course: 'mandarin-work-30d'", 'experience_id:', 'crypto.randomUUID()', 'createdAt']) if (!feedbackRoute.includes(marker)) failures.push(`Missing feedback persistence marker: ${marker}`);
+if (!proxy.includes('if (isChineseLearningPath(request.nextUrl.pathname)) return NextResponse.next();')) failures.push('Mandarin for Work is not public without login');
 for (const marker of ['MediaRecorder','getUserMedia','URL.createObjectURL','URL.revokeObjectURL','getTracks']) if (!recorder.includes(marker)) failures.push(`Local-only recorder missing: ${marker}`);
 if (!profile.includes("mandarin-work-30d") && !profile.includes('MANDARIN_WORK_NAMESPACE')) failures.push('Progress profile lacks Mandarin namespace');
 if (!button.includes("voice.lang.trim().replace('_', '-').toLowerCase() === 'zh-cn'") || button.includes("lang.startsWith('zh')")) failures.push('Browser fallback is not exact zh-CN');
+if (!button.includes('utterance.rate = 0.7')) failures.push('Browser Mandarin speech rate changed');
+if (!chineseProvider.includes('zh-CN-XiaoxiaoNeural') || !chineseProvider.includes("chineseTtsRate = '-15%'")) failures.push('Azure Mandarin voice or speech rate changed');
 if (!indonesianProvider.includes('id-ID-GadisNeural')) failures.push('Indonesian TTS changed');
 
 if (failures.length) { console.error('MANDARIN WORK 30D: FAIL'); for (const failure of [...new Set(failures)]) console.error(`- ${failure}`); process.exit(1); }
