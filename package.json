@@ -23,6 +23,7 @@
     "verify:geo": "node scripts/verify-geo-foundation.mjs",
     "verify:geo:runtime": "node scripts/verify-geo-runtime.mjs",
     "verify:chinese-learning": "node scripts/verify-chinese-learning.mjs",
+    "verify:mandarin-work": "node scripts/verify-mandarin-work.mjs",
     "verify:tts:static": "node scripts/verify-tts-quality-gate.mjs",
     "verify:tts:real": "node scripts/tts-smoke-test.mjs",
     "verify:tts": "node scripts/verify-tts-quality-gate.mjs",

@@ -34,9 +34,7 @@ async function getAudioUrl(text: string) {
 }
 
 function isChineseVoice(voice: SpeechSynthesisVoice) {
-  const lang = voice.lang.toLowerCase();
-  const name = voice.name.toLowerCase();
-  return lang === 'zh-cn' || lang.startsWith('zh') || name.includes('chinese') || name.includes('mandarin') || name.includes('中文') || name.includes('普通话');
+  return voice.lang.trim().replace('_', '-').toLowerCase() === 'zh-cn';
 }
 
 async function loadVoices(speech: SpeechSynthesis) {
@@ -58,7 +56,7 @@ async function speakWithBrowser(text: string, onEnd: () => void) {
   if (!voice) throw new Error('Chinese browser voice is not available');
   speech.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = voice.lang || 'zh-CN';
+  utterance.lang = 'zh-CN';
   utterance.rate = 0.82;
   utterance.pitch = 1.05;
   utterance.voice = voice;

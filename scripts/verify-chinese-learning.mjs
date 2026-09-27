@@ -150,7 +150,7 @@ const indonesianRoute = read('app/api/tts/route.ts');
 const indonesianProvider = read('lib/tts-provider.ts');
 const applicationFrame = read('components/ApplicationFrame.tsx');
 
-if (!page.includes('ChineseLearningExperience')) failures.push('/learn-chinese route is not wired to ChineseLearningExperience');
+if (!page.includes('MandarinWorkExperience')) failures.push('/learn-chinese route is not wired to MandarinWorkExperience');
 if (page.includes('searchParams') || page.includes('groupId')) failures.push('/learn-chinese must not keep old group-query demo flow');
 if (!component.includes("'use client'")) failures.push('Chinese golden template must be an interactive client lesson');
 for (const state of ['EntryState', 'PahamState', 'DengarState', 'LihatState', 'UcapkanState', 'TemukanState', 'PakaiState', 'AkuBisaState', 'CompletionState']) {
@@ -166,7 +166,9 @@ if (!section(component, 'CompletionState').includes('3 ungkapan Mandarin sudah k
 if (/Chinese Learning Template V1|马上会用|下一组|首页|收藏|我的|场景/.test(component)) failures.push('Chinese learning UI must not use Chinese interface labels or old demo labels');
 if (!component.includes('Kembali') || !component.includes('Mulai') || !component.includes('Dengarkan') || !component.includes('Lanjut') || !component.includes('Ulangi')) failures.push('Chinese learning UI labels must be Bahasa Indonesia');
 if (!button.includes("fetch('/api/chinese-tts'")) failures.push('ChineseSpeechButton must use /api/chinese-tts');
-if (!button.includes("utterance.lang = voice.lang || 'zh-CN'")) failures.push('Chinese browser fallback must use Chinese voice/lang');
+if (!button.includes("voice.lang.trim().replace('_', '-').toLowerCase() === 'zh-cn'")) failures.push('Chinese browser fallback must accept exact zh-CN locale only');
+if (!button.includes("utterance.lang = 'zh-CN'")) failures.push('Chinese browser fallback must force zh-CN locale');
+if (button.includes("lang.startsWith('zh')") || /zh-tw|zh-hk|cantonese/i.test(button)) failures.push('Chinese browser fallback must reject non-Mainland Chinese locales');
 if (!button.includes('Chinese browser voice is not available')) failures.push('Chinese fallback must fail closed without Chinese voice');
 if (!route.includes('getChineseTtsProvider')) failures.push('/api/chinese-tts is not wired to Chinese provider');
 if (!route.includes('Only Chinese text is accepted')) failures.push('/api/chinese-tts must reject non-Chinese text');

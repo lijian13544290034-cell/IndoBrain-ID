@@ -1,5 +1,5 @@
-import ChineseLearningExperience from '@/components/ChineseLearningExperience';
+import MandarinWorkExperience from '@/components/MandarinWorkExperience';
 
 export default function LearnChinesePage() {
-  return <ChineseLearningExperience />;
+  return <MandarinWorkExperience />;
 }
