@@ -64,10 +64,11 @@ export default function V2HomeDashboard({ catalog, contentStats, microSceneStats
   }, [basicSearchEntries, catalog, query]);
 
   const quickLinks = [
-    { href: '/love-indonesian', step: '♥', label: '印尼语恋爱大全', description: '100句真实恋爱口语 · 永久免费', count: '100 句 · 免费', icon: 'heart' as const },
-    { href: '/basic-essentials', step: '1', label: '基础必会', description: '从最简单的开始', count: `${contentStats.basicEssentialsConceptCount} 个基础概念`, icon: 'book' as const },
-    { href: '/micro-scenes', step: '2', label: '微场景', description: '马上会说', count: `${microSceneStats.visibleAssetCount} 个微场景`, icon: 'scene' as const },
-    { href: '/life?type=golden', step: '3', label: '黄金场景', description: '处理完整真实场景', count: `${contentStats.goldenSceneCount} 个黄金场景`, icon: 'scene' as const },
+    { href: '/love-indonesian', step: '♥', label: '印尼语恋爱大全', description: '真实恋爱口语 · 永久免费', count: `${contentStats.loveSceneCount} 句`, icon: 'heart' as const },
+    { href: '/vocabulary', step: '词', label: '生词', description: '常用词汇与自然词组', count: `${contentStats.vocabularyCount} 个`, icon: 'book' as const },
+    { href: '/basic-essentials', step: '1', label: '基础必会', description: '从最简单的开始', count: `${contentStats.basicEssentialsConceptCount} 个`, icon: 'book' as const },
+    { href: '/micro-scenes', step: '2', label: '微场景', description: '马上会说', count: `${microSceneStats.visibleAssetCount} 个`, icon: 'scene' as const },
+    { href: '/life?type=golden', step: '3', label: '黄金场景', description: '处理完整真实场景', count: `${contentStats.goldenSceneCount} 个`, icon: 'scene' as const },
   ];
 
   return <main className="v2-home mx-auto min-h-[100dvh] w-full max-w-6xl overflow-hidden px-5 pb-4 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-8 sm:pb-10 sm:pt-8">
@@ -90,7 +91,7 @@ export default function V2HomeDashboard({ catalog, contentStats, microSceneStats
     <section data-home-part="quick-start" className="mt-4">
       <h2 className="h-6 text-[16px] font-semibold leading-6 text-[var(--ib-text-primary)]">学习路径</h2>
       <div data-home-part="quick-links" className="mt-2 overflow-hidden rounded-[18px] border border-[var(--ib-border-soft)] bg-[var(--ib-bg-card)] shadow-[var(--ib-shadow-card)]">
-        {quickLinks.map((link, index) => <Link key={link.href} href={link.href} className={`relative flex h-[66px] items-center gap-3 px-4 transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] ${index ? 'border-t border-[var(--ib-border-soft)]' : ''}`}><span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--ib-primary-soft)] text-xs font-bold text-[var(--ib-primary)]">{link.step}</span><span className="shrink-0 text-[var(--ib-primary)]"><Icon name={link.icon} /></span><span className="min-w-0 flex-1"><span className="block truncate text-[16px] font-semibold leading-5 text-[var(--ib-text-primary)]">{link.label}</span><span className="mt-0.5 block truncate text-[13px] leading-4 text-[var(--ib-text-secondary)]">{link.description}</span></span><span className="hidden shrink-0 text-[13px] text-[var(--ib-text-secondary)] sm:block">{link.count}</span><span aria-hidden="true" className="shrink-0 text-[var(--ib-text-secondary)]"><Icon name="arrow" /></span></Link>)}
+        {quickLinks.map((link, index) => <Link key={link.href} href={link.href} className={`relative flex h-[66px] items-center gap-3 px-4 transition hover:bg-[var(--ib-primary-soft)] active:bg-[var(--ib-primary-soft)] ${index ? 'border-t border-[var(--ib-border-soft)]' : ''}`}><span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--ib-primary-soft)] text-xs font-bold text-[var(--ib-primary)]">{link.step}</span><span className="shrink-0 text-[var(--ib-primary)]"><Icon name={link.icon} /></span><span className="min-w-0 flex-1"><span className="flex min-w-0 items-baseline gap-2"><span className="truncate text-[16px] font-semibold leading-5 text-[var(--ib-text-primary)]">{link.label}</span><span className="shrink-0 text-xs font-normal tabular-nums text-[var(--ib-text-secondary)]">{link.count}</span></span><span className="mt-0.5 block truncate text-[13px] leading-4 text-[var(--ib-text-secondary)]">{link.description}</span></span><span aria-hidden="true" className="shrink-0 text-[var(--ib-text-secondary)]"><Icon name="arrow" /></span></Link>)}
       </div>
     </section>
   </main>;
