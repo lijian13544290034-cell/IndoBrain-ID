@@ -15,6 +15,16 @@ export async function saveToSupabase(table: string, row: Record<string, unknown>
     body: JSON.stringify(row),
   });
 
-  if (!response.ok) throw new Error(`Supabase write failed: ${response.status}`);
+  if (!response.ok) {
+    let responseCode = 'unknown';
+    try {
+      const error = await response.json() as { code?: unknown };
+      if (typeof error.code === 'string') responseCode = error.code;
+    } catch {
+      // Keep diagnostics intentionally limited to non-sensitive metadata.
+    }
+    console.error('[supabase-write-failed]', { table, status: response.status, responseCode });
+    throw new Error(`Supabase write failed: ${response.status}`);
+  }
   return { saved: true };
 }
