@@ -64,8 +64,9 @@ export default function V2HomeDashboard({ catalog, contentStats, microSceneStats
   }, [basicSearchEntries, catalog, query]);
 
   const quickLinks = [
+    { href: '/love-indonesian', step: '♥', label: '印尼语恋爱大全', description: '100句真实恋爱口语 · 永久免费', count: '100 句 · 免费', icon: 'heart' as const },
     { href: '/basic-essentials', step: '1', label: '基础必会', description: '从最简单的开始', count: `${contentStats.basicEssentialsConceptCount} 个基础概念`, icon: 'book' as const },
-    { href: '/micro-scenes', step: '2', label: '微场景', description: '马上会说', count: `${microSceneStats.visibleAssetCount} 个微场景`, icon: 'heart' as const },
+    { href: '/micro-scenes', step: '2', label: '微场景', description: '马上会说', count: `${microSceneStats.visibleAssetCount} 个微场景`, icon: 'scene' as const },
     { href: '/life?type=golden', step: '3', label: '黄金场景', description: '处理完整真实场景', count: `${contentStats.goldenSceneCount} 个黄金场景`, icon: 'scene' as const },
   ];
 

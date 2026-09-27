@@ -18,6 +18,7 @@
     "verify:recruitment-interview": "node scripts/verify-recruitment-interview.mjs",
     "verify:restaurant-ordering": "node scripts/verify-restaurant-ordering.mjs",
     "verify:new-asset-library": "node scripts/verify-new-micro-scene-assets.mjs",
+    "verify:love": "node scripts/verify-love-indonesian.mjs",
     "verify:geo": "node scripts/verify-geo-foundation.mjs",
     "verify:geo:runtime": "node scripts/verify-geo-runtime.mjs",
     "verify:chinese-learning": "node scripts/verify-chinese-learning.mjs",

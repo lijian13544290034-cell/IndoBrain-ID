@@ -38,6 +38,7 @@ export default function ApplicationFrame({ children }: { children: ReactNode }) 
   const isHome = pathname == null || pathname === '/';
   const isChineseLearning = pathname?.startsWith('/learn-chinese');
   const isPublicGeo = publicGeoPaths.includes(pathname ?? '');
+  const isPublicFreeModule = pathname === '/love-indonesian';
   const [hash, setHash] = useState('');
   useEffect(() => {
     const syncHash = () => setHash(window.location.hash);
@@ -45,7 +46,7 @@ export default function ApplicationFrame({ children }: { children: ReactNode }) 
     window.addEventListener('hashchange', syncHash);
     return () => window.removeEventListener('hashchange', syncHash);
   }, []);
-  if (isHome || isChineseLearning || isPublicGeo) return <>{children}</>;
+  if (isHome || isChineseLearning || isPublicGeo || isPublicFreeModule) return <>{children}</>;
 
   return <div className="ib-app-shell min-h-screen pb-24">
     {children}

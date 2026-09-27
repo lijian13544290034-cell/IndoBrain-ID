@@ -7,9 +7,13 @@ import { RC3_GEO_SLUG } from '@/lib/geo/rc3';
 export default function sitemap(): MetadataRoute.Sitemap {
   const slugs = [...new Set([...GEO_PAGE_SLUGS, ...RC1_GEO_SLUGS, RC3_GEO_SLUG])];
 
-  return slugs.map((slug) => ({
+  return [...slugs.map((slug) => ({
     url: `${INDOBRAIN_SITE_URL}/${slug}`,
-    changeFrequency: 'monthly',
+    changeFrequency: 'monthly' as const,
     priority: slug === 'learn-indonesian-for-chinese' ? 1 : 0.8,
-  }));
+  })), {
+    url: `${INDOBRAIN_SITE_URL}/love-indonesian`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.9,
+  }];
 }
