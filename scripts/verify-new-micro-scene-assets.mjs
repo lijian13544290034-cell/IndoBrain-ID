@@ -29,6 +29,7 @@ const sessionSource = fs.readFileSync(path.join(root, 'components/MicroSceneLear
 const expectedIds = Array.from({ length: 50 }, (_, index) => `N${String(index + 1).padStart(2, '0')}`);
 const ids = newMicroSceneAssets.map((scene) => scene.id);
 const digest = crypto.createHash('sha256').update(JSON.stringify(newMicroSceneAssets)).digest('hex');
+let multiSentenceSceneCount = 0;
 
 if (digest !== '16b07e7412c5740c18ef1ddb250e84c2bdc6680b8b1a5fdbfb4882e2fadabcfd') failures.push(`Human-approved N01-N50 package digest changed: ${digest}`);
 if (newMicroSceneAssets.length !== 50) failures.push(`Expected 50 source scenes, found ${newMicroSceneAssets.length}`);
@@ -57,6 +58,7 @@ for (const scene of newMicroSceneAssets) {
 
   const indonesianSentences = scene.indonesian.split(/\r?\n/);
   const chineseSentences = scene.chinese.split(/\r?\n/);
+  if (indonesianSentences.length > 1) multiSentenceSceneCount += 1;
   if (indonesianSentences.length > 1 && indonesianSentences.length !== chineseSentences.length) failures.push(`${scene.id} sentence pairing count mismatch: ${indonesianSentences.length}/${chineseSentences.length}`);
   if (indonesianSentences.some((sentence) => !sentence) || chineseSentences.some((sentence) => !sentence)) failures.push(`${scene.id} sentence pairing contains an empty line`);
 
@@ -77,6 +79,15 @@ if (actualTips.join('|') !== expectedTips.join('|')) failures.push(`Learning Tip
 const allQuick = adapter.getHistoricalQuickExperiences();
 const adapted = allQuick.filter((scene) => scene.source === 'asset-library');
 if (adapted.length !== 50 || adapted.some((scene) => !scene.teachingContract)) failures.push('N01-N50 are not integrated through the canonical teaching contract');
+for (const scene of adapted) {
+  const source = newMicroSceneAssets.find((item) => item.id === scene.sourceId);
+  const expectedIndonesian = source.indonesian.split(/\r?\n/);
+  const expectedChinese = expectedIndonesian.length === 1 ? [source.chinese] : source.chinese.split(/\r?\n/);
+  if (!scene.bilingualPairs || scene.bilingualPairs.length !== expectedIndonesian.length) failures.push(`${scene.sourceId} canonical bilingualPairs are missing or incomplete`);
+  for (let index = 0; index < expectedIndonesian.length; index += 1) {
+    if (scene.bilingualPairs?.[index]?.indonesian !== expectedIndonesian[index] || scene.bilingualPairs?.[index]?.chinese !== expectedChinese[index]) failures.push(`${scene.sourceId} bilingual pair ${index + 1} changed or is out of order`);
+  }
+}
 const existing = allQuick.filter((scene) => scene.source !== 'asset-library');
 const exactDuplicates = newMicroSceneAssets.flatMap((scene) => existing.filter((item) => item.indonesian === scene.indonesian).map((item) => `${scene.id}:${item.sourceId}`));
 if (exactDuplicates.length !== 0) failures.push(`Unexpected exact duplicates found: ${exactDuplicates.join(', ')}`);
@@ -105,8 +116,12 @@ if (historicalCoreCount !== 421) failures.push(`Historical 421 changed: ${histor
 for (const contract of ['toggleFavorite(current.sourceId)', 'IndonesianSpeechButton text={current.ttsText ?? current.indonesian}', 'current.vocabulary']) {
   if (!sessionSource.includes(contract)) failures.push(`Existing shared learner architecture is missing: ${contract}`);
 }
-for (const bilingualContract of ["current.source === 'asset-library'", 'AssetBilingualSentencePairs', 'IndonesianSpeechButton text={sentence} compact']) {
+for (const bilingualContract of ['current.bilingualPairs', 'BilingualSentencePairs', 'IndonesianSpeechButton text={pair.indonesian} compact']) {
   if (!sessionSource.includes(bilingualContract)) failures.push(`N01-N50 bilingual sentence-pair rendering is missing: ${bilingualContract}`);
+}
+const adapterSource = fs.readFileSync(path.join(root, 'lib/quick-experience-adapter.ts'), 'utf8');
+for (const defaultRule of ['buildBilingualSentencePairs', 'BILINGUAL_SENTENCE_PAIRING_REQUIRED', 'bilingualPairs: buildBilingualSentencePairs']) {
+  if (!adapterSource.includes(defaultRule)) failures.push(`Future Micro Scene bilingual default rule is missing: ${defaultRule}`);
 }
 for (const internalField of ['assetMetadata', 'canonicalCategory', 'productStoryCandidate', 'geoPublicCandidate', 'freeAcquisitionCandidate']) {
   if (sessionSource.includes(internalField)) failures.push(`Internal metadata leaked into learner UI: ${internalField}`);
@@ -132,5 +147,7 @@ console.log('Fake token fragments: 0');
 console.log('Duplicate teaching blocks: 0');
 console.log('Malformed references: 0');
 console.log('Favorite/TTS/mobile shared architecture: PASS');
-console.log('Bilingual sentence pairing: 50/50 with sentence-level Indonesian TTS');
+console.log(`Bilingual sentence pairing: 50/50 audited; ${multiSentenceSceneCount} multi-sentence scenes; grouped layout remaining: 0`);
+console.log('Future Micro Scene default: BILINGUAL_SENTENCE_PAIRING = REQUIRED');
+console.log('Sentence-level Indonesian TTS: PASS');
 console.log('Frozen counts: 421 / Employee 31 / Recruitment 20 / Restaurant 62 / Youth 50 / Dating 42');

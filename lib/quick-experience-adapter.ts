@@ -12,6 +12,23 @@ import { youthChatScenes, type YouthChatVocabulary } from '@/lib/youth-chat-cont
 
 export type QuickExperienceSource = 'driver' | 'nanny' | 'factory' | 'life' | 'social' | 'asset-library' | 'recruitment' | 'restaurant-ordering' | 'youth' | 'module';
 
+export type BilingualSentencePair = {
+  indonesian: string;
+  chinese: string;
+};
+
+export function buildBilingualSentencePairs(indonesian: string, chinese: string): BilingualSentencePair[] {
+  const indonesianSentences = indonesian.split(/\r?\n/);
+  if (indonesianSentences.length === 1) return [{ indonesian, chinese }];
+
+  const chineseSentences = chinese.split(/\r?\n/);
+  if (indonesianSentences.length !== chineseSentences.length) {
+    throw new Error(`BILINGUAL_SENTENCE_PAIRING_REQUIRED:${indonesianSentences.length}/${chineseSentences.length}`);
+  }
+
+  return indonesianSentences.map((sentence, index) => ({ indonesian: sentence, chinese: chineseSentences[index] }));
+}
+
 export type QuickExperienceLearningUnit = {
   sourceId: string;
   source: QuickExperienceSource;
@@ -31,6 +48,7 @@ export type QuickExperienceLearningUnit = {
   ttsText?: string;
   canonicalCategory?: string;
   assetMetadata?: NewMicroSceneAsset['metadata'];
+  bilingualPairs?: BilingualSentencePair[];
 };
 
 type QuickSourceItem = {
@@ -128,6 +146,7 @@ function buildHistoricalQuickExperiencePool() {
     ttsText: item.indonesian,
     canonicalCategory: item.category,
     assetMetadata: item.metadata,
+    bilingualPairs: buildBilingualSentencePairs(item.indonesian, item.chinese),
   }));
   const youth = youthChatScenes.map((item) => ({
     sourceId: item.id,

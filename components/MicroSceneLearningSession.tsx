@@ -21,17 +21,14 @@ function isLearned(item: HistoricalMicroSceneCard, completedIds: string[]) {
   return [item.progressKey, ...item.legacyProgressKeys].some((key) => completedIds.includes(key));
 }
 
-function AssetBilingualSentencePairs({ indonesian, chinese }: { indonesian: string; chinese: string }) {
-  const indonesianSentences = indonesian.split(/\r?\n/);
-  const chineseSentences = indonesianSentences.length === 1 ? [chinese] : chinese.split(/\r?\n/);
-
+function BilingualSentencePairs({ pairs }: { pairs: NonNullable<HistoricalMicroSceneCard['bilingualPairs']> }) {
   return <div className="mt-4 overflow-hidden rounded-[20px] bg-[var(--ib-bg-soft)]">
     <p className="px-4 pt-4 text-xs font-semibold tracking-[0.08em] text-[var(--ib-text-muted)] sm:px-5">Bahasa Indonesia / 中文</p>
     <div className="divide-y divide-[var(--ib-border-soft)]">
-      {indonesianSentences.map((sentence, sentenceIndex) => <div key={`${sentenceIndex}:${sentence}`} className="min-w-0 px-4 py-4 sm:px-5">
-        <p lang="id" className="break-words text-[24px] font-bold leading-[1.35] tracking-tight text-[var(--ib-text-primary)] sm:text-[28px]">{sentence}</p>
-        <p lang="zh-CN" className="mt-2 whitespace-pre-line break-words text-[15px] leading-7 text-[var(--ib-text-secondary)]">{chineseSentences[sentenceIndex]}</p>
-        <IndonesianSpeechButton text={sentence} compact />
+      {pairs.map((pair, pairIndex) => <div key={`${pairIndex}:${pair.indonesian}`} className="min-w-0 px-4 py-4 sm:px-5">
+        <p lang="id" className="break-words text-[24px] font-bold leading-[1.35] tracking-tight text-[var(--ib-text-primary)] sm:text-[28px]">{pair.indonesian}</p>
+        <p lang="zh-CN" className="mt-2 whitespace-pre-line break-words text-[15px] leading-7 text-[var(--ib-text-secondary)]">{pair.chinese}</p>
+        <IndonesianSpeechButton text={pair.indonesian} compact />
       </div>)}
     </div>
   </div>;
@@ -89,7 +86,7 @@ export default function MicroSceneLearningSession({ items, moduleTitle, category
   const toggleCurrentFavorite = () => toggleFavorite(current.sourceId);
   const explanation = displayExplanation(current.explanation);
   const vocabulary = current.vocabulary ?? current.harvest.map((entry) => ({ term: harvestTerm(entry), meaning: harvestMeaning(entry) }));
-  const usesAssetBilingualPairs = current.source === 'asset-library';
+  const bilingualPairs = current.bilingualPairs;
 
   return <>
     <div className="mt-4 flex items-center justify-between gap-3 text-sm">
@@ -114,8 +111,8 @@ export default function MicroSceneLearningSession({ items, moduleTitle, category
         {current.teachingContract ? <p className="mt-3 text-xs font-semibold tracking-[0.08em] text-[var(--ib-text-muted)]">场景任务</p> : null}
         <h1 className={current.teachingContract ? 'mt-1 text-[22px] font-bold leading-8 text-[var(--ib-text-primary)] sm:text-2xl' : 'mt-3 text-[22px] font-bold leading-8 text-[var(--ib-text-primary)] sm:text-2xl'}>{current.sceneTitle}</h1>
 
-        {usesAssetBilingualPairs
-          ? <AssetBilingualSentencePairs indonesian={current.indonesian} chinese={current.chinese} />
+        {bilingualPairs
+          ? <BilingualSentencePairs pairs={bilingualPairs} />
           : <div className="mt-4 rounded-[20px] bg-[var(--ib-bg-soft)] px-4 py-4 sm:px-5">
             {current.teachingContract ? <p className="mb-2 text-xs font-semibold tracking-[0.08em] text-[var(--ib-text-muted)]">Bahasa Indonesia</p> : null}
             <p lang="id" className="whitespace-pre-line break-words text-[27px] font-bold leading-[1.3] tracking-tight text-[var(--ib-text-primary)] sm:text-[32px]">{current.indonesian}</p>
@@ -128,7 +125,7 @@ export default function MicroSceneLearningSession({ items, moduleTitle, category
         </div> : null}
 
         {current.teachingContract ? <>
-          {!usesAssetBilingualPairs ? <section className="mt-6 border-t border-[var(--ib-border-soft)] pt-5">
+          {!bilingualPairs ? <section className="mt-6 border-t border-[var(--ib-border-soft)] pt-5">
             <h2 className="text-sm font-bold text-[var(--ib-text-primary)]">中文翻译</h2>
             <p className="mt-2 whitespace-pre-line text-[15px] leading-7 text-[var(--ib-text-secondary)]">{current.chinese}</p>
           </section> : null}
