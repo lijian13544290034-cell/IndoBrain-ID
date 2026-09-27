@@ -55,6 +55,11 @@ for (const scene of newMicroSceneAssets) {
   if (scene.learningTip && (!chineseText.test(scene.learningTip) || normalized(scene.learningTip) === normalized(scene.explanation))) failures.push(`${scene.id} has invalid or duplicate Learning Tip`);
   teachingBlocks.push(scene.explanation, ...(scene.learningTip ? [scene.learningTip] : []));
 
+  const indonesianSentences = scene.indonesian.split(/\r?\n/);
+  const chineseSentences = scene.chinese.split(/\r?\n/);
+  if (indonesianSentences.length > 1 && indonesianSentences.length !== chineseSentences.length) failures.push(`${scene.id} sentence pairing count mismatch: ${indonesianSentences.length}/${chineseSentences.length}`);
+  if (indonesianSentences.some((sentence) => !sentence) || chineseSentences.some((sentence) => !sentence)) failures.push(`${scene.id} sentence pairing contains an empty line`);
+
   const metadata = scene.metadata;
   for (const field of ['realNeed', 'needSource', 'validationLevel', 'publicLayer', 'paidLayer']) if (!metadata?.[field]?.trim()) failures.push(`${scene.id} missing metadata.${field}`);
   if (!Array.isArray(metadata?.relatedScenes) || metadata.relatedScenes.some((id) => !expectedIds.includes(id) || id === scene.id)) failures.push(`${scene.id} has malformed relatedScenes`);
@@ -100,6 +105,9 @@ if (historicalCoreCount !== 421) failures.push(`Historical 421 changed: ${histor
 for (const contract of ['toggleFavorite(current.sourceId)', 'IndonesianSpeechButton text={current.ttsText ?? current.indonesian}', 'current.vocabulary']) {
   if (!sessionSource.includes(contract)) failures.push(`Existing shared learner architecture is missing: ${contract}`);
 }
+for (const bilingualContract of ["current.source === 'asset-library'", 'AssetBilingualSentencePairs', 'IndonesianSpeechButton text={sentence} compact']) {
+  if (!sessionSource.includes(bilingualContract)) failures.push(`N01-N50 bilingual sentence-pair rendering is missing: ${bilingualContract}`);
+}
 for (const internalField of ['assetMetadata', 'canonicalCategory', 'productStoryCandidate', 'geoPublicCandidate', 'freeAcquisitionCandidate']) {
   if (sessionSource.includes(internalField)) failures.push(`Internal metadata leaked into learner UI: ${internalField}`);
 }
@@ -124,4 +132,5 @@ console.log('Fake token fragments: 0');
 console.log('Duplicate teaching blocks: 0');
 console.log('Malformed references: 0');
 console.log('Favorite/TTS/mobile shared architecture: PASS');
+console.log('Bilingual sentence pairing: 50/50 with sentence-level Indonesian TTS');
 console.log('Frozen counts: 421 / Employee 31 / Recruitment 20 / Restaurant 62 / Youth 50 / Dating 42');
