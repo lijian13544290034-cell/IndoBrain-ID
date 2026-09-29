@@ -9,6 +9,11 @@ export type MandarinLevel2Item = {
 };
 
 export type MandarinLevel2Turn = { role: '老板' | '员工' | '主管'; chinese: string };
+export type MandarinLevel2UnknownInput = {
+  chinese: string;
+  classification: 'UNKNOWN_INPUT';
+  mode: 'SELF_RESCUE';
+};
 export type MandarinLevel2Day = {
   day: number;
   title: string;
@@ -17,7 +22,12 @@ export type MandarinLevel2Day = {
   recognition: string[];
   dialogue: MandarinLevel2Turn[];
   safety?: boolean;
-  unknownInputStatus?: 'CONTENT_REVIEW';
+  unknownInput?: MandarinLevel2UnknownInput;
+};
+
+const level2UnknownInputs: Record<40 | 50, MandarinLevel2UnknownInput> = {
+  40: { chinese: '你先把这个放到仓库，等一下再回来。', classification: 'UNKNOWN_INPUT', mode: 'SELF_RESCUE' },
+  50: { chinese: '这个数量跟昨天的不一样，你再确认一下。', classification: 'UNKNOWN_INPUT', mode: 'SELF_RESCUE' },
 };
 
 const item = (day: number, index: number, chinese: string, pinyin: string, indonesian: string, kind: MandarinLevel2Item['kind'] = 'CORE'): MandarinLevel2Item => ({
@@ -75,7 +85,7 @@ export const mandarinWorkLevel2Days: MandarinLevel2Day[] = [
   ]),
   day(40, '中国老板模式 1', 'boss-listening', [], ['这个先做。', '拿这个，放那边。', '今天能做完吗？', '能。', '今天来不及。'], [
     { role: '老板', chinese: '好了吗？' }, { role: '员工', chinese: '还没。' }, { role: '老板', chinese: '抓紧。' }, { role: '员工', chinese: '好的。' },
-  ], { unknownInputStatus: 'CONTENT_REVIEW' }),
+  ], { unknownInput: level2UnknownInputs[40] }),
   day(41, '东西找不到', 'problem-solving', [
     ['找不到', 'zhǎo bú dào', 'tidak bisa menemukan'], ['谁拿了？', 'shéi ná le', 'Siapa yang mengambil?'],
     ['在那边', 'zài nà biān', 'Ada di sana.'], ['我找一下', 'wǒ zhǎo yí xià', 'Saya cari dulu.'],
@@ -105,7 +115,7 @@ export const mandarinWorkLevel2Days: MandarinLevel2Day[] = [
   day(49, '主动汇报问题', 'problem-solving', [
     ['怎么办？', 'zěn me bàn', 'Bagaimana? / Harus bagaimana?'], ['现在怎么办？', 'xiàn zài zěn me bàn', 'Sekarang harus bagaimana?'],
   ], ['这里有问题。', '这个坏了。', '数量不对。', '我不懂。'], [{ role: '员工', chinese: '老板，这里有问题。' }, { role: '老板', chinese: '什么问题？' }, { role: '员工', chinese: '这个坏了。' }, { role: '老板', chinese: '先停一下。' }, { role: '员工', chinese: '好的。' }]),
-  day(50, '工作问题综合实战', 'problem-solving', [], ['数量不对', '东西找不到', '工作做错', '设备坏了', '进度汇报', '我不懂。', '没听清。', '慢一点。', '再说一次。', '什么意思？'], [], { unknownInputStatus: 'CONTENT_REVIEW' }),
+  day(50, '工作问题综合实战', 'problem-solving', [], ['数量不对', '东西找不到', '工作做错', '设备坏了', '进度汇报', '我不懂。', '没听清。', '慢一点。', '再说一次。', '什么意思？'], [], { unknownInput: level2UnknownInputs[50] }),
   day(51, '进入建筑工地', 'construction', [
     ['工地', 'gōng dì', 'lokasi proyek konstruksi'], ['工人', 'gōng rén', 'pekerja'],
     ['师傅', 'shī fu', 'pekerja berpengalaman / panggilan sopan untuk pekerja terampil'], ['现场', 'xiàn chǎng', 'lokasi kerja / lapangan'],

@@ -22,11 +22,18 @@ const catalogDays = [...catalog.matchAll(/\[(\d+),\s*'/g)].map((match) => Number
 if (catalogDays.length !== 30 || catalogDays.some((value, index) => value !== index + 31)) failures.push('Public catalog must contain Day 31-60 exactly once');
 if (days.filter((value) => value >= 51).length !== 10) failures.push('Construction module must contain exactly 10 days');
 if (!data.startsWith("import 'server-only';")) failures.push('Paid curriculum is not server-only');
-for (const marker of ['unknownInputStatus: \'CONTENT_REVIEW\'', "day(40", "day(50"]) if (!data.includes(marker)) failures.push(`Missing content-review marker: ${marker}`);
+for (const marker of ["day(40", "day(50", "classification: 'UNKNOWN_INPUT'", "mode: 'SELF_RESCUE'", 'unknownInput: level2UnknownInputs[40]', 'unknownInput: level2UnknownInputs[50]']) if (!data.includes(marker)) failures.push(`Missing self-rescue unknown-input marker: ${marker}`);
+const unknownInputs = ['你先把这个放到仓库，等一下再回来。', '这个数量跟昨天的不一样，你再确认一下。'];
+for (const text of unknownInputs) {
+  if (data.split(text).length !== 2) failures.push(`UNKNOWN_INPUT must occur exactly once: ${text}`);
+  if (data.match(new RegExp(`item\\([^\\n]*${text}`, 'u'))) failures.push(`UNKNOWN_INPUT leaked into learned items: ${text}`);
+}
+const unknownBlock = data.match(/const level2UnknownInputs:[\s\S]*?\n};/)?.[0] ?? '';
+for (const forbidden of ['id:', 'pinyin:', 'indonesian:', 'coreWordIds', 'favorite', 'review']) if (unknownBlock.includes(forbidden)) failures.push(`UNKNOWN_INPUT contains learned-content field: ${forbidden}`);
 for (const marker of ['mandarin.level2.access', 'hasMembershipPermission', "roles as string[]", 'verifyPreviewQaSession']) if (!(access + catalog).includes(marker)) failures.push(`Missing server entitlement marker: ${marker}`);
 if (catalogPage.includes('mandarin-work-level2.ts') || catalogPage.includes('getMandarinWorkLevel2Day')) failures.push('Public catalog imports paid curriculum');
 for (const marker of ['getMandarinLevel2Access', "redirect(`/login?next=/learn-chinese/level-2/", 'getMandarinWorkLevel2Day']) if (!dayPage.includes(marker)) failures.push(`Protected day route missing: ${marker}`);
-for (const marker of ['ChineseSpeechButton', 'LocalPronunciationRecorder', 'toggleMandarinFavorite', 'completeMandarinDay', 'MandarinWorkFeedback', 'text-[15px]', 'font-semibold']) if (!ui.includes(marker)) failures.push(`Level 2 UI missing: ${marker}`);
+for (const marker of ['ChineseSpeechButton', 'LocalPronunciationRecorder', 'toggleMandarinFavorite', 'completeMandarinDay', 'MandarinWorkFeedback', 'text-[15px]', 'font-semibold', 'lesson.unknownInput', 'Tidak perlu menebak artinya', 'Dengarkan UNKNOWN_INPUT']) if (!ui.includes(marker)) failures.push(`Level 2 UI missing: ${marker}`);
 if (!provider.includes('zh-CN-XiaoxiaoNeural') || !provider.includes("chineseTtsRate = '-15%'")) failures.push('Mandarin Azure voice/rate changed');
 if (!speech.includes("voice.lang.trim().replace('_', '-').toLowerCase() === 'zh-cn'") || speech.includes("lang.startsWith('zh')")) failures.push('Browser fallback is not exact zh-CN');
 if (!previewQa.includes("process.env.VERCEL_ENV === 'preview'") || !previewQa.includes("process.env.ENABLE_PREVIEW_QA === 'true'")) failures.push('Preview QA is not fail-closed outside Preview');
