@@ -23,12 +23,13 @@ type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
 type MandarinWorkFeedbackProps = {
   day: number;
+  level?: 1 | 2;
   itemId?: string | null;
   showCompletionPrompt: boolean;
   onDismissCompletionPrompt: () => void;
 };
 
-export default function MandarinWorkFeedback({ day, itemId = null, showCompletionPrompt, onDismissCompletionPrompt }: MandarinWorkFeedbackProps) {
+export default function MandarinWorkFeedback({ day, level = 1, itemId = null, showCompletionPrompt, onDismissCompletionPrompt }: MandarinWorkFeedbackProps) {
   const [open, setOpen] = useState(false);
   const [experience, setExperience] = useState('');
   const [improvements, setImprovements] = useState<string[]>([]);
@@ -55,6 +56,7 @@ export default function MandarinWorkFeedback({ day, itemId = null, showCompletio
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           course: 'mandarin-work-30d',
+          level,
           day,
           itemId,
           page: window.location.pathname,
