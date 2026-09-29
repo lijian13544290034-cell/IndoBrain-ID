@@ -8,7 +8,8 @@ export type MandarinLevel2Item = {
   kind?: 'CORE' | 'REVIEW' | 'COMBINATION';
 };
 
-export type MandarinLevel2Turn = { role: '老板' | '员工' | '主管'; chinese: string };
+export type MandarinLevel2Phrase = { chinese: string; pinyin: string };
+export type MandarinLevel2Turn = { role: '老板' | '员工' | '主管'; rolePinyin: string; chinese: string; pinyin: string };
 export type MandarinLevel2UnknownInput = {
   chinese: string;
   classification: 'UNKNOWN_INPUT';
@@ -17,9 +18,10 @@ export type MandarinLevel2UnknownInput = {
 export type MandarinLevel2Day = {
   day: number;
   title: string;
+  titlePinyin: string;
   module: 'boss-listening' | 'problem-solving' | 'construction';
   items: MandarinLevel2Item[];
-  recognition: string[];
+  recognition: MandarinLevel2Phrase[];
   dialogue: MandarinLevel2Turn[];
   safety?: boolean;
   unknownInput?: MandarinLevel2UnknownInput;
@@ -30,6 +32,80 @@ const level2UnknownInputs: Record<40 | 50, MandarinLevel2UnknownInput> = {
   50: { chinese: '这个数量跟昨天的不一样，你再确认一下。', classification: 'UNKNOWN_INPUT', mode: 'SELF_RESCUE' },
 };
 
+const level2VisiblePinyin: Record<string, string> = {
+  '老板': 'lǎo bǎn', '员工': 'yuán gōng', '主管': 'zhǔ guǎn',
+  '同一个指令，不同说法': 'tóng yí ge zhǐ lìng, bù tóng shuō fǎ',
+  '连续两个指令': 'lián xù liǎng ge zhǐ lìng', '先做，再做': 'xiān zuò, zài zuò',
+  '任务时间顺序': 'rèn wu shí jiān shùn xù', '做完以后汇报': 'zuò wán yǐ hòu huì bào',
+  '确认任务': 'què rèn rèn wu', '听不清怎么办': 'tīng bu qīng zěn me bàn',
+  '老板催进度': 'lǎo bǎn cuī jìn dù', '今天必须完成': 'jīn tiān bì xū wán chéng',
+  '中国老板模式 1': 'zhōng guó lǎo bǎn mó shì 1', '东西找不到': 'dōng xi zhǎo bú dào',
+  '数量不对': 'shù liàng bú duì', '做错了': 'zuò cuò le', '修改与返工': 'xiū gǎi yǔ fǎn gōng',
+  '质量问题': 'zhì liàng wèn tí', '工作进度': 'gōng zuò jìn dù', '叫人过来': 'jiào rén guò lái',
+  '人员分工': 'rén yuán fēn gōng', '主动汇报问题': 'zhǔ dòng huì bào wèn tí',
+  '工作问题综合实战': 'gōng zuò wèn tí zōng hé shí zhàn', '进入建筑工地': 'jìn rù jiàn zhù gōng dì',
+  '方向位置': 'fāng xiàng wèi zhi', '搬运移动': 'bān yùn yí dòng', '测量尺寸': 'cè liáng chǐ cùn',
+  '建筑材料 1': 'jiàn zhù cái liào 1', '建筑材料 2': 'jiàn zhù cái liào 2',
+  '图纸与施工': 'tú zhǐ yǔ shī gōng', '工地质量': 'gōng dì zhì liàng', '工地安全': 'gōng dì ān quán',
+  '建筑工地综合实战': 'jiàn zhù gōng dì zōng hé shí zhàn',
+  '把这个拿过来。': 'bǎ zhè ge ná guò lái', '这个拿过来。': 'zhè ge ná guò lái',
+  '拿过来。': 'ná guò lái', '这个，拿来。': 'zhè ge, ná lái',
+  '这个拿过去，放那边。': 'zhè ge ná guò qù, fàng nà biān', '这个先做。': 'zhè ge xiān zuò',
+  '马上做。': 'mǎ shàng zuò', '等一下再做。': 'děng yí xià zài zuò',
+  '这个晚一点做。': 'zhè ge wǎn yì diǎn zuò', '我不懂。': 'wǒ bù dǒng',
+  '慢一点。': 'màn yì diǎn', '再说一次。': 'zài shuō yí cì', '什么意思？': 'shén me yì si',
+  '拿这个，放那边。': 'ná zhè ge, fàng nà biān', '今天能做完吗？': 'jīn tiān néng zuò wán ma',
+  '能。': 'néng', '今天来不及。': 'jīn tiān lái bu jí', '东西呢？': 'dōng xi ne',
+  '放哪儿了？': 'fàng nǎr le', '谁拿走了？': 'shéi ná zǒu le', '错了。': 'cuò le',
+  '不对。': 'bú duì', '不是这么做。': 'bú shì zhè me zuò', '这个改一下。': 'zhè ge gǎi yí xià',
+  '这个重做。': 'zhè ge chóng zuò', '这个拆掉。': 'zhè ge chāi diào',
+  '拆掉，重新做。': 'chāi diào, chóng xīn zuò', '做到哪儿了？': 'zuò dào nǎr le',
+  '做多少了？': 'zuò duō shao le', '还差多少？': 'hái chà duō shao',
+  '什么时候能好？': 'shén me shí hou néng hǎo', '你做这个。': 'nǐ zuò zhè ge',
+  '他做那个。': 'tā zuò nà ge', '你们一起做。': 'nǐ men yì qǐ zuò',
+  '你们两个一起做。': 'nǐ men liǎng ge yì qǐ zuò', '这里有问题。': 'zhè lǐ yǒu wèn tí',
+  '这个坏了。': 'zhè ge huài le', '数量不对。': 'shù liàng bú duì',
+  '工作做错': 'gōng zuò zuò cuò',
+  '设备坏了': 'shè bèi huài le', '进度汇报': 'jìn dù huì bào', '没听清。': 'méi tīng qīng',
+  '他在工地。': 'tā zài gōng dì', '去现场。': 'qù xiàn chǎng', '叫他们来。': 'jiào tā men lái',
+  '去工地。': 'qù gōng dì', '到现场看一下。': 'dào xiàn chǎng kàn yí xià',
+  '叫两个工人过来。': 'jiào liǎng ge gōng rén guò lái', '放左边。': 'fàng zuǒ biān',
+  '放右边。': 'fàng yòu biān', '看上面。': 'kàn shàng miàn', '下面有问题。': 'xià miàn yǒu wèn tí',
+  '左一点。': 'zuǒ yì diǎn', '右一点。': 'yòu yì diǎn', '高一点。': 'gāo yì diǎn',
+  '低一点。': 'dī yì diǎn', '搬过来。': 'bān guò lái', '搬过去。': 'bān guò qù',
+  '抬一下。': 'tái yí xià', '往左移一点。': 'wǎng zuǒ yí yì diǎn', '这个搬过去。': 'zhè ge bān guò qù',
+  '你们两个抬一下。': 'nǐ men liǎng ge tái yí xià', '再往右一点。': 'zài wǎng yòu yì diǎn',
+  '量一下。': 'liáng yí xià', '多长？': 'duō cháng', '多宽？': 'duō kuān', '多高？': 'duō gāo',
+  '三米。': 'sān mǐ', '尺寸不对。': 'chǐ cùn bú duì', '水泥到了吗？': 'shuǐ ní dào le ma',
+  '还没。': 'hái méi', '钢筋放这里。': 'gāng jīn fàng zhè lǐ', '砖不够。': 'zhuān bú gòu',
+  '沙子还有吗？': 'shā zi hái yǒu ma', '看图纸。': 'kàn tú zhǐ', '按照图纸做。': 'àn zhào tú zhǐ zuò',
+  '这个尺寸不对。': 'zhè ge chǐ cùn bú duì', '这里要改。': 'zhè lǐ yào gǎi',
+  '按图纸做。': 'àn tú zhǐ zuò', '这里不对。': 'zhè lǐ bú duì', '这个尺寸改一下。': 'zhè ge chǐ cùn gǎi yí xià',
+  '这里不平。': 'zhè lǐ bù píng', '高了。': 'gāo le', '低了。': 'dī le', '再检查一下。': 'zài jiǎn chá yí xià',
+  '小心！': 'xiǎo xīn', '这里危险。': 'zhè lǐ wēi xiǎn', '先停一下。': 'xiān tíng yí xià',
+  '戴安全帽。': 'dài ān quán mào', '不要过去。': 'bú yào guò qù',
+  '你们两个搬这个。': 'nǐ men liǎng ge bān zhè ge', '放哪里？': 'fàng nǎ lǐ', '放那边。': 'fàng nà biān',
+  '钢筋到了吗？': 'gāng jīn dào le ma', '水泥呢？': 'shuǐ ní ne', '再量一下。': 'zài liáng yí xià',
+  '做到哪里了？': 'zuò dào nǎ lǐ le', '做了一半。': 'zuò le yí bàn', '停！': 'tíng',
+  '不要过去！': 'bú yào guò qù', '叫两个工人过来，把钢筋放这里。': 'jiào liǎng ge gōng rén guò lái, bǎ gāng jīn fàng zhè lǐ',
+  '好了吗？': 'hǎo le ma', '做完告诉我。': 'zuò wán gào su wǒ', '好的。': 'hǎo de',
+  '这个放那边。': 'zhè ge fàng nà biān', '这里吗？': 'zhè lǐ ma', '对。': 'duì', '抓紧。': 'zhuā jǐn',
+  '文件呢？': 'wén jiàn ne', '找不到。': 'zhǎo bú dào', '谁拿了？': 'shéi ná le',
+  '我问一下。': 'wǒ wèn yí xià', '不是十个吗？': 'bú shì shí ge ma', '只有八个。': 'zhǐ yǒu bā ge',
+  '差两个？': 'chà liǎng ge', '这个不行。': 'zhè ge bù xíng', '哪里不对？': 'nǎ lǐ bú duì',
+  '这里。再检查一下。': 'zhè lǐ. zài jiǎn chá yí xià', '老板，这里有问题。': 'lǎo bǎn, zhè lǐ yǒu wèn tí',
+  '什么问题？': 'shén me wèn tí', '你再量一下。': 'nǐ zài liáng yí xià',
+  '尺寸对吗？': 'chǐ cùn duì ma', '木板呢？': 'mù bǎn ne', '在那边。': 'zài nà biān',
+  '管子还有吗？': 'guǎn zi hái yǒu ma', '没有了。': 'méi yǒu le', '电线放哪里了？': 'diàn xiàn fàng nǎ lǐ le',
+  '我找一下。': 'wǒ zhǎo yí xià', '对，低一点。': 'duì, dī yì diǎn', '这样吗？': 'zhè yàng ma',
+};
+
+const requireVisiblePinyin = (chinese: string) => {
+  const pinyin = level2VisiblePinyin[chinese];
+  if (!pinyin) throw new Error(`PINYIN_REVIEW:${chinese}`);
+  return pinyin;
+};
+
 const item = (day: number, index: number, chinese: string, pinyin: string, indonesian: string, kind: MandarinLevel2Item['kind'] = 'CORE'): MandarinLevel2Item => ({
   id: `CN-WORK-L2-D${day}-I${String(index).padStart(2, '0')}`,
   chinese,
@@ -38,13 +114,16 @@ const item = (day: number, index: number, chinese: string, pinyin: string, indon
   kind,
 });
 
-const day = (dayNumber: number, title: string, module: MandarinLevel2Day['module'], values: Array<[string, string, string]>, recognition: string[] = [], dialogue: MandarinLevel2Turn[] = [], extra: Partial<MandarinLevel2Day> = {}): MandarinLevel2Day => ({
+type MandarinLevel2TurnDraft = Pick<MandarinLevel2Turn, 'role' | 'chinese'>;
+
+const day = (dayNumber: number, title: string, module: MandarinLevel2Day['module'], values: Array<[string, string, string]>, recognition: string[] = [], dialogue: MandarinLevel2TurnDraft[] = [], extra: Partial<MandarinLevel2Day> = {}): MandarinLevel2Day => ({
   day: dayNumber,
   title,
+  titlePinyin: requireVisiblePinyin(title),
   module,
   items: values.map((value, index) => item(dayNumber, index + 1, ...value)),
-  recognition,
-  dialogue,
+  recognition: recognition.map((chinese) => ({ chinese, pinyin: requireVisiblePinyin(chinese) })),
+  dialogue: dialogue.map((turn) => ({ ...turn, rolePinyin: requireVisiblePinyin(turn.role), pinyin: requireVisiblePinyin(turn.chinese) })),
   ...extra,
 });
 
