@@ -47,6 +47,7 @@ if (!server.includes('MUST stay within 1-3 short sentences')) failures.push('beg
 if (!server.includes('Do not add phonology theory unless asked')) failures.push('slow-request teaching guard is missing');
 if (!server.includes('generateConversationAnswer(SMART_MODEL, 240)')) failures.push('structured conversation retry is missing');
 if (!server.includes('generateClassification(SMART_MODEL, 140)')) failures.push('structured intent retry is missing');
+if (!server.includes('deterministic-explicit-roleplay')) failures.push('explicit roleplay fast path is missing');
 if (!server.includes('recentConversationSummary') || !server.includes('recentTurns.slice(-6)')) failures.push('bounded conversation context is missing');
 
 const proxy = fs.readFileSync('proxy.ts', 'utf8');

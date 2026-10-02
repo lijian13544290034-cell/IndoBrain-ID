@@ -200,6 +200,7 @@ export async function answerCoachConversation(input: {
     recentTurns: Array<{ role: 'user' | 'assistant'; text: string }>;
   };
 }) {
+  const explicitRoleplay = /\brole[ -]?play\b|bermain peran|角色扮演/i.test(input.message);
   const generateClassification = (model: string, maxOutputTokens: number) => generateText({
     model: gateway(model),
     output: Output.object({ schema: classificationSchema, name: 'mandarin_coach_intent' }),
@@ -216,16 +217,23 @@ export async function answerCoachConversation(input: {
     ].join(' '),
     prompt: input.message.slice(0, 500),
   });
-  let classificationModel = FAST_MODEL;
-  let classificationResult;
-  try {
-    classificationResult = await generateClassification(FAST_MODEL, 120);
-  } catch {
-    classificationModel = SMART_MODEL;
-    classificationResult = await generateClassification(SMART_MODEL, 140);
+  let classification: ConversationClassification;
+  let classificationUsage: CallUsage;
+  if (explicitRoleplay) {
+    classification = { intent: 'ROLEPLAY', detectedLanguage: /[\u3400-\u9FFF]/.test(input.message) ? 'MIXED' : 'INDONESIAN', modelTier: 'SMART', answerCategory: 'ROLEPLAY' };
+    classificationUsage = { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'deterministic-explicit-roleplay' };
+  } else {
+    let classificationModel = FAST_MODEL;
+    let classificationResult;
+    try {
+      classificationResult = await generateClassification(FAST_MODEL, 120);
+    } catch {
+      classificationModel = SMART_MODEL;
+      classificationResult = await generateClassification(SMART_MODEL, 140);
+    }
+    classification = classificationResult.output;
+    classificationUsage = usageFromResult(classificationResult, classificationModel);
   }
-  const classification = classificationResult.output;
-  const classificationUsage = usageFromResult(classificationResult, classificationModel);
 
   if (classification.intent === 'OFF_TOPIC') {
     return {
