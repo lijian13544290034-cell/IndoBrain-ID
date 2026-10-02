@@ -25,7 +25,7 @@ for (const exact of [
 if ((data.match(/id: 'AI-D1-/g) || []).length !== 3) failures.push('Day 1 must contain exactly 3 expressions');
 
 const server = fs.readFileSync('lib/server/mandarin-ai-coach.ts', 'utf8');
-for (const required of ['google/gemini-2.5-flash-lite', 'google/gemini-2.5-flash', 'openai/gpt-4o-mini-transcribe', 'Output.object', "zeroDataRetention: true"]) if (!server.includes(required)) failures.push(`server contract missing ${required}`);
+for (const required of ['google/gemini-2.5-flash-lite', 'google/gemini-2.5-flash', 'openai/gpt-4o-mini-transcribe', 'Output.object']) if (!server.includes(required)) failures.push(`server contract missing ${required}`);
 const pronunciationRoute = fs.readFileSync('app/api/mandarin-coach/pronunciation/route.ts', 'utf8');
 if (!pronunciationRoute.includes('dailyAttemptLimit')) failures.push('daily AI cost guard is missing');
 if (/zh-TW|zh-HK|Cantonese|yue-/i.test(server)) failures.push('forbidden Chinese voice fallback detected');

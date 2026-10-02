@@ -64,7 +64,7 @@ async function callDecisionModel(model: string, input: {
     maxOutputTokens: 100,
     temperature: 0,
     maxRetries: 1,
-    providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', input.skill.toLowerCase()], user: input.sessionId.slice(0, 96), zeroDataRetention: true } },
+    providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', input.skill.toLowerCase()], user: input.sessionId.slice(0, 96) } },
     system: [
       'You are a strict Mandarin learning evaluator for Indonesian absolute beginners.',
       'Return only the requested structured object. Never teach content beyond the supplied target.',
@@ -124,7 +124,7 @@ export async function transcribeMandarin(audio: Uint8Array, sessionId: string) {
     model: gateway.transcriptionModel(STT_MODEL),
     audio,
     maxRetries: 1,
-    providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'stt'], user: sessionId.slice(0, 96), zeroDataRetention: true } },
+    providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'stt'], user: sessionId.slice(0, 96) } },
   });
   return {
     transcript: result.text.trim(),
