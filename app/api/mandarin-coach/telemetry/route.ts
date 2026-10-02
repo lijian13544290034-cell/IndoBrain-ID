@@ -6,7 +6,8 @@ export const runtime = 'nodejs';
 const allowedEvents = new Set<CoachEventName>([
   'start_session', 'finish_session', 'expression_started', 'expression_pass', 'expression_retry',
   'expression_failed', 'audio_play', 'voice_attempt', 'comprehension_correct', 'comprehension_wrong',
-  'roleplay_started', 'roleplay_completed',
+  'roleplay_started', 'roleplay_completed', 'coach_conversation_opened', 'coach_question_submitted',
+  'coach_answer_received', 'coach_answer_helpful', 'coach_answer_unresolved',
 ]);
 
 export async function POST(request: Request) {

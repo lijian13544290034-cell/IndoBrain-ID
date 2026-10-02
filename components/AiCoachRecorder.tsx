@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-export default function AiCoachRecorder({ disabled, busy, onRecorded }: { disabled?: boolean; busy?: boolean; onRecorded: (audio: Blob) => Promise<void> }) {
+export default function AiCoachRecorder({ disabled, busy, onRecorded, idleLabel = '🎙️ Ucapkan sekarang', busyLabel = 'AI sedang memeriksa…' }: { disabled?: boolean; busy?: boolean; onRecorded: (audio: Blob) => Promise<void>; idleLabel?: string; busyLabel?: string }) {
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -51,7 +51,7 @@ export default function AiCoachRecorder({ disabled, busy, onRecorded }: { disabl
       className={`inline-flex min-h-12 w-full items-center justify-center rounded-full px-5 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50 ${recording ? 'bg-rose-600' : 'bg-[var(--ib-primary)]'}`}
       aria-label={recording ? 'Berhenti merekam' : 'Mulai merekam'}
     >
-      {busy ? 'AI sedang memeriksa…' : recording ? '■ Berhenti & periksa' : '🎙️ Ucapkan sekarang'}
+      {busy ? busyLabel : recording ? '■ Berhenti & kirim' : idleLabel}
     </button>
     {recording ? <p role="status" className="mt-2 text-center text-xs font-semibold text-rose-700">Merekam… ucapkan kalimat Mandarin, lalu tekan berhenti.</p> : null}
     {error ? <p role="alert" className="mt-2 text-sm text-rose-700">{error}</p> : null}

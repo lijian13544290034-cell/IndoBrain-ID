@@ -9,10 +9,39 @@ export const DAY_ONE_EXPRESSIONS = [
 export type ExpressionId = (typeof DAY_ONE_EXPRESSIONS)[number]['id'];
 export type CoachSkill = 'TEACH' | 'PRONUNCIATION' | 'COMPREHENSION' | 'ROLEPLAY' | 'MEMORY';
 export type CoachVerdict = 'PASS' | 'RETRY' | 'BREAKDOWN';
+export type CoachConversationMode = 'GUIDED_TRAINING' | 'COACH_CONVERSATION';
+export type CoachIntent = 'LEARNING_RELATED' | 'ROLEPLAY' | 'PRONUNCIATION' | 'MEANING' | 'GRAMMAR' | 'WORKPLACE_CHINESE' | 'GENERAL_CHINESE' | 'OFF_TOPIC';
+export type CoachDetectedLanguage = 'INDONESIAN' | 'CHINESE' | 'MIXED';
 export type CoachEventName =
   | 'start_session' | 'finish_session' | 'expression_started' | 'expression_pass'
   | 'expression_retry' | 'expression_failed' | 'audio_play' | 'voice_attempt'
-  | 'comprehension_correct' | 'comprehension_wrong' | 'roleplay_started' | 'roleplay_completed';
+  | 'comprehension_correct' | 'comprehension_wrong' | 'roleplay_started' | 'roleplay_completed'
+  | 'coach_conversation_opened' | 'coach_question_submitted' | 'coach_answer_received'
+  | 'coach_answer_helpful' | 'coach_answer_unresolved';
+
+export type CoachConversationTurn = {
+  id: string;
+  role: 'user' | 'assistant';
+  text: string;
+  chinese?: string;
+  pinyin?: string;
+  indonesian?: string;
+  intent?: CoachIntent;
+  createdAt: string;
+};
+
+export type CoachQuestionMemory = {
+  id: string;
+  question: string;
+  detected_language: CoachDetectedLanguage;
+  intent: CoachIntent;
+  current_day: number;
+  current_expression: ExpressionId | null;
+  answer_category: string;
+  resolved: boolean | null;
+  follow_up: boolean;
+  asked_at: string;
+};
 
 export type ExpressionMemory = {
   expression_id: ExpressionId;
@@ -38,13 +67,19 @@ export type CoachUsage = {
 };
 
 export type CoachProfile = {
-  version: 1;
+  version: 2;
   course: typeof AI_COACH_COURSE_ID;
   sessionId: string;
   startedAt: string;
   updatedAt: string;
   expressions: ExpressionMemory[];
   usage: CoachUsage;
+  conversation: {
+    mode: CoachConversationMode;
+    summary: string;
+    recentTurns: CoachConversationTurn[];
+    questions: CoachQuestionMemory[];
+  };
   completed: boolean;
 };
 
@@ -63,7 +98,7 @@ export type FeedbackId = keyof typeof FEEDBACK_COPY;
 export function emptyCoachProfile(): CoachProfile {
   const now = new Date().toISOString();
   return {
-    version: 1,
+    version: 2,
     course: AI_COACH_COURSE_ID,
     sessionId: `coach-${crypto.randomUUID()}`,
     startedAt: now,
@@ -82,6 +117,7 @@ export function emptyCoachProfile(): CoachProfile {
       mastery_level: 0,
     })),
     usage: { token_input: 0, token_output: 0, stt_seconds: 0, tts_calls: 0, model_calls: 0, estimated_ai_cost: 0 },
+    conversation: { mode: 'GUIDED_TRAINING', summary: '', recentTurns: [], questions: [] },
     completed: false,
   };
 }

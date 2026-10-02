@@ -3,11 +3,13 @@ import fs from 'node:fs';
 const requiredFiles = [
   'app/learn-chinese/ai-coach/page.tsx',
   'components/MandarinAiCoachExperience.tsx',
+  'components/AiCoachConversation.tsx',
   'components/AiCoachRecorder.tsx',
   'lib/mandarin-ai-coach.ts',
   'lib/mandarin-ai-coach-profile.ts',
   'lib/server/mandarin-ai-coach.ts',
   'app/api/mandarin-coach/pronunciation/route.ts',
+  'app/api/mandarin-coach/conversation/route.ts',
   'app/api/mandarin-coach/status/route.ts',
   'app/api/mandarin-coach/telemetry/route.ts',
 ];
@@ -33,7 +35,14 @@ if (!pronunciationRoute.includes("'audio/webm'")) failures.push('browser WebM re
 if (/zh-TW|zh-HK|Cantonese|yue-/i.test(server)) failures.push('forbidden Chinese voice fallback detected');
 
 const ui = fs.readFileSync('components/MandarinAiCoachExperience.tsx', 'utf8');
-for (const required of ['AI 中文教练', 'Pelatih Mandarin AI', 'Mulai Latihan', 'Hari pertama selesai!', '你叫什么名字？', 'Besok kita belajar cara menjawabnya.', "'/api/chinese-tts'", "'/api/mandarin-coach/pronunciation'"]) if (!ui.includes(required)) failures.push(`UI contract missing ${required}`);
+for (const required of ['AI 中文教练', 'Pelatih Mandarin AI', 'Mulai Latihan', 'Hari pertama selesai!', '你叫什么名字？', 'Besok kita belajar cara menjawabnya.', "'/api/chinese-tts'", "'/api/mandarin-coach/pronunciation'", 'AiCoachConversation']) if (!ui.includes(required)) failures.push(`UI contract missing ${required}`);
+const conversationUi = fs.readFileSync('components/AiCoachConversation.tsx', 'utf8');
+for (const required of ['Tanya AI Coach', '问AI教练', 'Tanya dalam Bahasa Indonesia atau 中文.', "'/api/mandarin-coach/conversation'", 'Kembali Belajar', 'Jawaban ini membantu?']) if (!conversationUi.includes(required)) failures.push(`conversation UI missing ${required}`);
+const conversationRoute = fs.readFileSync('app/api/mandarin-coach/conversation/route.ts', 'utf8');
+for (const required of ['dailyConversationLimit = 30', 'answerCoachConversation', '[mandarin-ai-coach-learning-insight]', 'anonymizeLearningQuestion', 'audio/webm']) if (!conversationRoute.includes(required)) failures.push(`conversation route missing ${required}`);
+for (const intent of ['LEARNING_RELATED', 'ROLEPLAY', 'PRONUNCIATION', 'MEANING', 'GRAMMAR', 'WORKPLACE_CHINESE', 'GENERAL_CHINESE', 'OFF_TOPIC']) if (!server.includes(intent)) failures.push(`intent classification missing ${intent}`);
+if (!server.includes('Maaf, saya fokus membantu kamu belajar Mandarin')) failures.push('fixed off-topic response is missing');
+if (!server.includes('recentConversationSummary') || !server.includes('recentTurns.slice(-6)')) failures.push('bounded conversation context is missing');
 
 const proxy = fs.readFileSync('proxy.ts', 'utf8');
 if (!proxy.includes("pathname.startsWith('/learn-chinese/')")) failures.push('AI coach route is not covered by public Mandarin access policy');

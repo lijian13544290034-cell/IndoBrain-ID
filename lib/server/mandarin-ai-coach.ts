@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { Output, experimental_transcribe as transcribe, gateway, generateText, jsonSchema } from 'ai';
-import { DAY_ONE_EXPRESSIONS, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, getExpression } from '@/lib/mandarin-ai-coach';
+import { DAY_ONE_EXPRESSIONS, type CoachDetectedLanguage, type CoachIntent, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, getExpression } from '@/lib/mandarin-ai-coach';
 
 const FAST_MODEL = process.env.FAST_MODEL || 'google/gemini-2.5-flash-lite';
 const SMART_MODEL = process.env.SMART_MODEL || 'google/gemini-2.5-flash';
@@ -22,6 +22,22 @@ type CallUsage = {
   model_used: string;
 };
 
+type ConversationClassification = {
+  intent: CoachIntent;
+  detectedLanguage: CoachDetectedLanguage;
+  modelTier: 'FAST' | 'SMART';
+  answerCategory: 'EXPLANATION' | 'EXAMPLE' | 'PRONUNCIATION_COACHING' | 'ROLEPLAY' | 'STUDY_SUPPORT' | 'OFF_TOPIC';
+};
+
+type ConversationAnswer = {
+  answer: string;
+  chinese: string;
+  pinyin: string;
+  indonesian: string;
+  followUp: string;
+  summary: string;
+};
+
 const decisionSchema = jsonSchema<StructuredDecision>({
   type: 'object',
   additionalProperties: false,
@@ -31,6 +47,32 @@ const decisionSchema = jsonSchema<StructuredDecision>({
     feedbackId: { type: 'string', enum: ['pronunciation_pass', 'pronunciation_retry', 'pronunciation_breakdown', 'comprehension_pass', 'comprehension_retry', 'roleplay_pass', 'roleplay_retry'] },
     nextAction: { type: 'string', enum: ['CONTINUE', 'REPEAT', 'SHOW_BREAKDOWN'] },
     confidence: { type: 'number', minimum: 0, maximum: 1 },
+  },
+});
+
+const classificationSchema = jsonSchema<ConversationClassification>({
+  type: 'object',
+  additionalProperties: false,
+  required: ['intent', 'detectedLanguage', 'modelTier', 'answerCategory'],
+  properties: {
+    intent: { type: 'string', enum: ['LEARNING_RELATED', 'ROLEPLAY', 'PRONUNCIATION', 'MEANING', 'GRAMMAR', 'WORKPLACE_CHINESE', 'GENERAL_CHINESE', 'OFF_TOPIC'] },
+    detectedLanguage: { type: 'string', enum: ['INDONESIAN', 'CHINESE', 'MIXED'] },
+    modelTier: { type: 'string', enum: ['FAST', 'SMART'] },
+    answerCategory: { type: 'string', enum: ['EXPLANATION', 'EXAMPLE', 'PRONUNCIATION_COACHING', 'ROLEPLAY', 'STUDY_SUPPORT', 'OFF_TOPIC'] },
+  },
+});
+
+const conversationAnswerSchema = jsonSchema<ConversationAnswer>({
+  type: 'object',
+  additionalProperties: false,
+  required: ['answer', 'chinese', 'pinyin', 'indonesian', 'followUp', 'summary'],
+  properties: {
+    answer: { type: 'string', minLength: 1, maxLength: 600 },
+    chinese: { type: 'string', maxLength: 120 },
+    pinyin: { type: 'string', maxLength: 180 },
+    indonesian: { type: 'string', maxLength: 300 },
+    followUp: { type: 'string', maxLength: 160 },
+    summary: { type: 'string', maxLength: 280 },
   },
 });
 
@@ -47,6 +89,28 @@ function numericCost(metadata: unknown) {
 function fallbackTextCost(model: string, input: number, output: number) {
   if (model === 'google/gemini-2.5-flash') return input * 0.30 / 1_000_000 + output * 2.50 / 1_000_000;
   return input * 0.10 / 1_000_000 + output * 0.40 / 1_000_000;
+}
+
+function usageFromResult(result: { usage: { inputTokens?: number; outputTokens?: number }; providerMetadata?: unknown }, model: string): CallUsage {
+  const tokenInput = result.usage.inputTokens || 0;
+  const tokenOutput = result.usage.outputTokens || 0;
+  return {
+    token_input: tokenInput,
+    token_output: tokenOutput,
+    model_calls: 1,
+    estimated_ai_cost: numericCost(result.providerMetadata) || fallbackTextCost(model, tokenInput, tokenOutput),
+    model_used: model,
+  };
+}
+
+function mergeUsage(first: CallUsage, second: CallUsage): CallUsage {
+  return {
+    token_input: first.token_input + second.token_input,
+    token_output: first.token_output + second.token_output,
+    model_calls: first.model_calls + second.model_calls,
+    estimated_ai_cost: first.estimated_ai_cost + second.estimated_ai_cost,
+    model_used: `${first.model_used} → ${second.model_used}`,
+  };
 }
 
 async function callDecisionModel(model: string, input: {
@@ -117,6 +181,106 @@ export async function evaluateCoachAttempt(input: {
       model_used: `${FAST_MODEL} → ${SMART_MODEL}`,
     } satisfies CallUsage,
   };
+}
+
+export async function answerCoachConversation(input: {
+  message: string;
+  sessionId: string;
+  context: {
+    currentDay: number;
+    currentExpression: ExpressionId | null;
+    currentSkill: CoachSkill;
+    userLevel: string;
+    recentMistakes: string[];
+    masteryState: Array<{ expressionId: ExpressionId; masteryLevel: number }>;
+    reviewQueue: ExpressionId[];
+    conversationMode: 'GUIDED_TRAINING' | 'COACH_CONVERSATION';
+    learningGoal: string;
+    recentConversationSummary: string;
+    recentTurns: Array<{ role: 'user' | 'assistant'; text: string }>;
+  };
+}) {
+  const classificationResult = await generateText({
+    model: gateway(FAST_MODEL),
+    output: Output.object({ schema: classificationSchema, name: 'mandarin_coach_intent' }),
+    maxOutputTokens: 80,
+    temperature: 0,
+    maxRetries: 1,
+    providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'intent'], user: input.sessionId.slice(0, 96) } },
+    system: [
+      'Classify a message sent to a Mandarin coach for Indonesian beginners.',
+      'Questions about Mandarin language, pronunciation, work/life Mandarin, Chinese workplace pragmatics, roleplay, or study difficulty are in scope.',
+      'Do not mark a real Mandarin learning question OFF_TOPIC merely because it mentions a boss, interview, work, or Chinese culture.',
+      'Use SMART only for grammar, nuanced workplace pragmatics, or open-ended roleplay; otherwise FAST.',
+      'Return only the structured object.',
+    ].join(' '),
+    prompt: input.message.slice(0, 500),
+  });
+  const classification = classificationResult.output;
+  const classificationUsage = usageFromResult(classificationResult, FAST_MODEL);
+
+  if (classification.intent === 'OFF_TOPIC') {
+    return {
+      classification,
+      answer: {
+        answer: 'Maaf, saya fokus membantu kamu belajar Mandarin 😊',
+        chinese: '',
+        pinyin: '',
+        indonesian: 'Kalau ada pertanyaan tentang bahasa Mandarin, pekerjaan, percakapan, atau pengucapan, tanya saya ya.',
+        followUp: 'Kembali Belajar',
+        summary: input.context.recentConversationSummary.slice(0, 280),
+      } satisfies ConversationAnswer,
+      usage: classificationUsage,
+    };
+  }
+
+  const answerModel = classification.modelTier === 'SMART' ? SMART_MODEL : FAST_MODEL;
+  const answerResult = await generateText({
+    model: gateway(answerModel),
+    output: Output.object({ schema: conversationAnswerSchema, name: 'mandarin_coach_answer' }),
+    maxOutputTokens: 220,
+    temperature: 0.2,
+    maxRetries: 1,
+    providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'conversation', classification.intent.toLowerCase()], user: input.sessionId.slice(0, 96) } },
+    system: [
+      'You are IndoBrain AI Mandarin Coach for Indonesian absolute beginners.',
+      'Stay strictly within Mandarin learning, pronunciation, grammar, work/life Mandarin, roleplay, study methods, and directly relevant language culture or pragmatics.',
+      'Default to a short answer of 1-3 sentences in simple Indonesian. Expand only when the learner explicitly requests detail.',
+      'When teaching a Chinese expression, put it in chinese, provide accurate tone-marked Hanyu Pinyin in pinyin, and a concise Indonesian meaning in indonesian.',
+      'Use only Simplified Chinese and standard Mainland Mandarin. Teaching explanations must be in simple Indonesian, never English.',
+      'If the learner says they do not understand or it is difficult, pause the lesson, reassure them, and break the expression into smaller pieces.',
+      'For roleplay, respond naturally in beginner-level Simplified Chinese, while allowing an Indonesian meaning question to pause and resume the roleplay.',
+      'Never pretend to know personal facts outside the supplied structured memory.',
+      'Return only the structured object. Empty strings are allowed when a field is not needed.',
+      `Locked Day 1 expressions: ${JSON.stringify(COACH_DAY_ONE_TARGETS)}.`,
+    ].join(' '),
+    prompt: JSON.stringify({
+      classification,
+      learnerMessage: input.message.slice(0, 500),
+      context: {
+        ...input.context,
+        recentConversationSummary: input.context.recentConversationSummary.slice(0, 280),
+        recentTurns: input.context.recentTurns.slice(-6).map((turn) => ({ role: turn.role, text: turn.text.slice(0, 240) })),
+        recentMistakes: input.context.recentMistakes.slice(0, 5),
+        masteryState: input.context.masteryState.slice(0, 10),
+        reviewQueue: input.context.reviewQueue.slice(0, 10),
+      },
+    }),
+  });
+  return {
+    classification,
+    answer: answerResult.output,
+    usage: mergeUsage(classificationUsage, usageFromResult(answerResult, answerModel)),
+  };
+}
+
+export function anonymizeLearningQuestion(value: string) {
+  return value
+    .replace(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g, '[email]')
+    .replace(/(?:\+?\d[\s().-]?){8,}/g, '[phone]')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 500);
 }
 
 export async function transcribeMandarin(audio: Uint8Array, sessionId: string) {
