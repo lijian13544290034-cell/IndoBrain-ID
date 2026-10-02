@@ -35,6 +35,8 @@ for (const required of ['AI 中文教练', 'Pelatih Mandarin AI', 'Mulai Latihan
 
 const proxy = fs.readFileSync('proxy.ts', 'utf8');
 if (!proxy.includes("pathname.startsWith('/learn-chinese/')")) failures.push('AI coach route is not covered by public Mandarin access policy');
+const telemetry = fs.readFileSync('app/api/mandarin-coach/telemetry/route.ts', 'utf8');
+if (!telemetry.includes("saveToSupabase('feedback'")) failures.push('telemetry must reuse the existing anonymous feedback storage');
 
 if (failures.length) {
   console.error(`Mandarin AI Coach verification failed (${failures.length})`);

@@ -16,11 +16,11 @@ export async function POST(request: Request) {
   }
   const safeData = body.data && typeof body.data === 'object' && !Array.isArray(body.data) ? body.data : {};
   try {
-    const result = await saveToSupabase('conversations', {
+    const result = await saveToSupabase('feedback', {
       session_id: body.sessionId.slice(0, 120),
-      role_type: 'mandarin-ai-coach-event',
-      user_message: body.event,
-      assistant_message: JSON.stringify({ course: AI_COACH_COURSE_ID, ...safeData }).slice(0, 8000),
+      experience_id: `${AI_COACH_COURSE_ID}:${body.event}`,
+      helpful: true,
+      comment: JSON.stringify({ course: AI_COACH_COURSE_ID, event: body.event, ...safeData }).slice(0, 8000),
     });
     return Response.json({ accepted: true, persisted: result.saved });
   } catch {
