@@ -200,10 +200,10 @@ export async function answerCoachConversation(input: {
     recentTurns: Array<{ role: 'user' | 'assistant'; text: string }>;
   };
 }) {
-  const classificationResult = await generateText({
-    model: gateway(FAST_MODEL),
+  const generateClassification = (model: string, maxOutputTokens: number) => generateText({
+    model: gateway(model),
     output: Output.object({ schema: classificationSchema, name: 'mandarin_coach_intent' }),
-    maxOutputTokens: 80,
+    maxOutputTokens,
     temperature: 0,
     maxRetries: 1,
     providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'intent'], user: input.sessionId.slice(0, 96) } },
@@ -216,8 +216,16 @@ export async function answerCoachConversation(input: {
     ].join(' '),
     prompt: input.message.slice(0, 500),
   });
+  let classificationModel = FAST_MODEL;
+  let classificationResult;
+  try {
+    classificationResult = await generateClassification(FAST_MODEL, 120);
+  } catch {
+    classificationModel = SMART_MODEL;
+    classificationResult = await generateClassification(SMART_MODEL, 140);
+  }
   const classification = classificationResult.output;
-  const classificationUsage = usageFromResult(classificationResult, FAST_MODEL);
+  const classificationUsage = usageFromResult(classificationResult, classificationModel);
 
   if (classification.intent === 'OFF_TOPIC') {
     return {
