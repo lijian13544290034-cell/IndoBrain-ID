@@ -262,6 +262,7 @@ export async function answerCoachConversation(input: {
       'The locked Day 1 target data is authoritative. Never contradict its Chinese, pinyin, tones, or Indonesian meaning.',
       'For 谢谢, the first 谢 is fourth tone xiè and the second 谢 is neutral-tone xie; never claim both syllables are fourth tone.',
       'Explain 谢谢 as a fixed common pronunciation; never invent a general rule that a syllable becomes neutral because it follows a fourth-tone syllable.',
+      'When the learner asks how to say "terima kasih banyak", teach only 非常感谢 (Fēicháng gǎnxiè); never suggest 很谢谢.',
       'Never pretend to know personal facts outside the supplied structured memory.',
       'Return only the structured object. Empty strings are allowed when a field is not needed.',
       `Locked Day 1 expressions: ${JSON.stringify(COACH_DAY_ONE_TARGETS)}.`,

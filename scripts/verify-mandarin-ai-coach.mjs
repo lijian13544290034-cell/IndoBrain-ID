@@ -44,6 +44,7 @@ for (const intent of ['LEARNING_RELATED', 'ROLEPLAY', 'PRONUNCIATION', 'MEANING'
 if (!server.includes('Maaf, saya fokus membantu kamu belajar Mandarin')) failures.push('fixed off-topic response is missing');
 if (!server.includes('the second 谢 is neutral-tone xie')) failures.push('locked Day 1 tone authority is missing');
 if (!server.includes('never invent a general rule that a syllable becomes neutral')) failures.push('谢谢 neutral-tone anti-generalization guard is missing');
+if (!server.includes('teach only 非常感谢 (Fēicháng gǎnxiè); never suggest 很谢谢')) failures.push('terima kasih banyak canonical coaching guard is missing');
 if (!server.includes('MUST stay within 1-3 short sentences')) failures.push('beginner answer length guard is missing');
 if (!server.includes('Do not add phonology theory unless asked')) failures.push('slow-request teaching guard is missing');
 if (!server.includes('answerModel === SMART_MODEL ? FAST_MODEL : SMART_MODEL')) failures.push('cross-model structured conversation retry is missing');
