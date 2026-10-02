@@ -28,7 +28,9 @@ export async function POST(request: Request) {
     const attempts = Number(form.get('attempts') || 0);
     const masteryLevel = Number(form.get('masteryLevel') || 0);
     const skill = form.get('skill') === 'ROLEPLAY' ? 'ROLEPLAY' : 'PRONUNCIATION';
-    if (!(audio instanceof File) || !allowedAudioTypes.has(audio.type) || audio.size < 128 || audio.size > 5_000_000) return Response.json({ error: 'Rekaman audio tidak valid.' }, { status: 400 });
+    if (!(audio instanceof File)) return Response.json({ error: 'Rekaman audio tidak valid.' }, { status: 400 });
+    const audioType = audio.type.toLowerCase().split(';', 1)[0].trim();
+    if (!allowedAudioTypes.has(audioType) || audio.size < 128 || audio.size > 5_000_000) return Response.json({ error: 'Rekaman audio tidak valid.' }, { status: 400 });
     if (!isExpressionId(expressionId) || typeof sessionId !== 'string' || !sessionId.startsWith('coach-')) return Response.json({ error: 'Permintaan latihan tidak valid.' }, { status: 400 });
     if (!allowAttempt(sessionId)) return Response.json({ error: 'Batas latihan harian sudah tercapai. Lanjutkan besok.' }, { status: 429 });
 

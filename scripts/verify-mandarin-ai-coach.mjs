@@ -28,6 +28,8 @@ const server = fs.readFileSync('lib/server/mandarin-ai-coach.ts', 'utf8');
 for (const required of ['google/gemini-2.5-flash-lite', 'google/gemini-2.5-flash', 'openai/gpt-4o-mini-transcribe', 'Output.object']) if (!server.includes(required)) failures.push(`server contract missing ${required}`);
 const pronunciationRoute = fs.readFileSync('app/api/mandarin-coach/pronunciation/route.ts', 'utf8');
 if (!pronunciationRoute.includes('dailyAttemptLimit')) failures.push('daily AI cost guard is missing');
+if (!pronunciationRoute.includes("audio.type.toLowerCase().split(';', 1)[0].trim()")) failures.push('browser audio MIME parameters are not normalized');
+if (!pronunciationRoute.includes("'audio/webm'")) failures.push('browser WebM recordings are not accepted');
 if (/zh-TW|zh-HK|Cantonese|yue-/i.test(server)) failures.push('forbidden Chinese voice fallback detected');
 
 const ui = fs.readFileSync('components/MandarinAiCoachExperience.tsx', 'utf8');
