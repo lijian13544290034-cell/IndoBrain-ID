@@ -45,6 +45,7 @@ if (!server.includes('Maaf, saya fokus membantu kamu belajar Mandarin')) failure
 if (!server.includes('the second 谢 is neutral-tone xie')) failures.push('locked Day 1 tone authority is missing');
 if (!server.includes('MUST stay within 1-3 short sentences')) failures.push('beginner answer length guard is missing');
 if (!server.includes('Do not add phonology theory unless asked')) failures.push('slow-request teaching guard is missing');
+if (!server.includes('generateConversationAnswer(SMART_MODEL, 240)')) failures.push('structured conversation retry is missing');
 if (!server.includes('recentConversationSummary') || !server.includes('recentTurns.slice(-6)')) failures.push('bounded conversation context is missing');
 
 const proxy = fs.readFileSync('proxy.ts', 'utf8');

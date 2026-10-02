@@ -235,14 +235,7 @@ export async function answerCoachConversation(input: {
   }
 
   const answerModel = classification.modelTier === 'SMART' ? SMART_MODEL : FAST_MODEL;
-  const answerResult = await generateText({
-    model: gateway(answerModel),
-    output: Output.object({ schema: conversationAnswerSchema, name: 'mandarin_coach_answer' }),
-    maxOutputTokens: 170,
-    temperature: 0.2,
-    maxRetries: 1,
-    providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'conversation', classification.intent.toLowerCase()], user: input.sessionId.slice(0, 96) } },
-    system: [
+  const answerSystem = [
       'You are IndoBrain AI Mandarin Coach for Indonesian absolute beginners.',
       'Stay strictly within Mandarin learning, pronunciation, grammar, work/life Mandarin, roleplay, study methods, and directly relevant language culture or pragmatics.',
       'The learner is an absolute beginner. The complete default reply MUST stay within 1-3 short sentences in simple Indonesian. Expand only when the learner explicitly requests detail.',
@@ -255,8 +248,8 @@ export async function answerCoachConversation(input: {
       'Never pretend to know personal facts outside the supplied structured memory.',
       'Return only the structured object. Empty strings are allowed when a field is not needed.',
       `Locked Day 1 expressions: ${JSON.stringify(COACH_DAY_ONE_TARGETS)}.`,
-    ].join(' '),
-    prompt: JSON.stringify({
+    ].join(' ');
+  const answerPrompt = JSON.stringify({
       classification,
       learnerMessage: input.message.slice(0, 500),
       context: {
@@ -267,12 +260,29 @@ export async function answerCoachConversation(input: {
         masteryState: input.context.masteryState.slice(0, 10),
         reviewQueue: input.context.reviewQueue.slice(0, 10),
       },
-    }),
+    });
+  const generateConversationAnswer = (model: string, maxOutputTokens: number) => generateText({
+    model: gateway(model),
+    output: Output.object({ schema: conversationAnswerSchema, name: 'mandarin_coach_answer' }),
+    maxOutputTokens,
+    temperature: 0.2,
+    maxRetries: 1,
+    providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'conversation', classification.intent.toLowerCase()], user: input.sessionId.slice(0, 96) } },
+    system: answerSystem,
+    prompt: answerPrompt,
   });
+  let usedAnswerModel = answerModel;
+  let answerResult;
+  try {
+    answerResult = await generateConversationAnswer(answerModel, 220);
+  } catch {
+    usedAnswerModel = SMART_MODEL;
+    answerResult = await generateConversationAnswer(SMART_MODEL, 240);
+  }
   return {
     classification,
     answer: answerResult.output,
-    usage: mergeUsage(classificationUsage, usageFromResult(answerResult, answerModel)),
+    usage: mergeUsage(classificationUsage, usageFromResult(answerResult, usedAnswerModel)),
   };
 }
 
