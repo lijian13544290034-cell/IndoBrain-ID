@@ -292,8 +292,8 @@ export async function answerCoachConversation(input: {
   try {
     answerResult = await generateConversationAnswer(answerModel, 220);
   } catch {
-    usedAnswerModel = SMART_MODEL;
-    answerResult = await generateConversationAnswer(SMART_MODEL, 240);
+    usedAnswerModel = answerModel === SMART_MODEL ? FAST_MODEL : SMART_MODEL;
+    answerResult = await generateConversationAnswer(usedAnswerModel, 240);
   }
   return {
     classification,
