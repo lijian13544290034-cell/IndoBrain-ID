@@ -50,8 +50,18 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    const name = error instanceof Error ? error.name : 'UnknownError';
-    console.error('[mandarin-coach-pronunciation]', { name });
+    const details = error && typeof error === 'object' ? error as { name?: unknown; message?: unknown; type?: unknown; statusCode?: unknown; generationId?: unknown; cause?: unknown } : {};
+    const cause = details.cause && typeof details.cause === 'object' ? details.cause as { name?: unknown; message?: unknown; statusCode?: unknown } : {};
+    console.error('[mandarin-coach-pronunciation]', {
+      name: typeof details.name === 'string' ? details.name : 'UnknownError',
+      message: typeof details.message === 'string' ? details.message.slice(0, 240) : undefined,
+      type: typeof details.type === 'string' ? details.type : undefined,
+      statusCode: typeof details.statusCode === 'number' ? details.statusCode : undefined,
+      generationId: typeof details.generationId === 'string' ? details.generationId : undefined,
+      causeName: typeof cause.name === 'string' ? cause.name : undefined,
+      causeMessage: typeof cause.message === 'string' ? cause.message.slice(0, 240) : undefined,
+      causeStatusCode: typeof cause.statusCode === 'number' ? cause.statusCode : undefined,
+    });
     return Response.json({ error: 'Pelatih AI belum dapat memeriksa suara. Coba lagi sebentar.' }, { status: 503 });
   }
 }
