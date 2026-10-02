@@ -1,0 +1,38 @@
+'use client';
+
+import { AI_COACH_COURSE_ID, emptyCoachProfile, type CoachProfile } from '@/lib/mandarin-ai-coach';
+
+const STORAGE_KEY = 'indobrain:mandarin-ai-coach-day1:v1';
+const EVENT_NAME = 'indobrain:mandarin-ai-coach-profile';
+
+export function readCoachProfile(): CoachProfile {
+  if (typeof window === 'undefined') return emptyCoachProfile();
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') as Partial<CoachProfile> | null;
+    if (parsed?.version === 1 && parsed.course === AI_COACH_COURSE_ID && Array.isArray(parsed.expressions)) return parsed as CoachProfile;
+  } catch {
+    // A malformed local draft is replaced with a clean isolated profile.
+  }
+  const fresh = emptyCoachProfile();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+  return fresh;
+}
+
+export function saveCoachProfile(profile: CoachProfile) {
+  const next = { ...profile, updatedAt: new Date().toISOString() };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  window.dispatchEvent(new Event(EVENT_NAME));
+  return next;
+}
+
+export function subscribeCoachProfile(listener: () => void) {
+  window.addEventListener(EVENT_NAME, listener);
+  return () => window.removeEventListener(EVENT_NAME, listener);
+}
+
+export function resetCoachProfile() {
+  const fresh = emptyCoachProfile();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+  window.dispatchEvent(new Event(EVENT_NAME));
+  return fresh;
+}

@@ -25,6 +25,7 @@
     "verify:chinese-learning": "node scripts/verify-chinese-learning.mjs",
     "verify:mandarin-work": "node scripts/verify-mandarin-work.mjs",
     "verify:mandarin-level2": "node scripts/verify-mandarin-level2.mjs",
+    "verify:mandarin-ai-coach": "node scripts/verify-mandarin-ai-coach.mjs",
     "verify:tts:static": "node scripts/verify-tts-quality-gate.mjs",
     "verify:tts:real": "node scripts/tts-smoke-test.mjs",
     "verify:tts": "node scripts/verify-tts-quality-gate.mjs",
@@ -33,6 +34,8 @@
     "verify:indobrain": "node scripts/verify-indobrain.mjs"
   },
   "dependencies": {
+    "@ai-sdk/gateway": "^4.0.103",
+    "ai": "^7.0.127",
     "next": "latest",
     "qrcode": "^1.5.4",
     "react": "latest",
