@@ -42,6 +42,7 @@ const conversationRoute = fs.readFileSync('app/api/mandarin-coach/conversation/r
 for (const required of ['dailyConversationLimit = 30', 'answerCoachConversation', '[mandarin-ai-coach-learning-insight]', 'anonymizeLearningQuestion', 'audio/webm']) if (!conversationRoute.includes(required)) failures.push(`conversation route missing ${required}`);
 for (const intent of ['LEARNING_RELATED', 'ROLEPLAY', 'PRONUNCIATION', 'MEANING', 'GRAMMAR', 'WORKPLACE_CHINESE', 'GENERAL_CHINESE', 'OFF_TOPIC']) if (!server.includes(intent)) failures.push(`intent classification missing ${intent}`);
 if (!server.includes('Maaf, saya fokus membantu kamu belajar Mandarin')) failures.push('fixed off-topic response is missing');
+if (!server.includes('the second 谢 is neutral-tone xie')) failures.push('locked Day 1 tone authority is missing');
 if (!server.includes('recentConversationSummary') || !server.includes('recentTurns.slice(-6)')) failures.push('bounded conversation context is missing');
 
 const proxy = fs.readFileSync('proxy.ts', 'utf8');

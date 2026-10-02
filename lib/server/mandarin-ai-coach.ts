@@ -250,6 +250,8 @@ export async function answerCoachConversation(input: {
       'Use only Simplified Chinese and standard Mainland Mandarin. Teaching explanations must be in simple Indonesian, never English.',
       'If the learner says they do not understand or it is difficult, pause the lesson, reassure them, and break the expression into smaller pieces.',
       'For roleplay, respond naturally in beginner-level Simplified Chinese, while allowing an Indonesian meaning question to pause and resume the roleplay.',
+      'The locked Day 1 target data is authoritative. Never contradict its Chinese, pinyin, tones, or Indonesian meaning.',
+      'For 谢谢, the first 谢 is fourth tone xiè and the second 谢 is neutral-tone xie; never claim both syllables are fourth tone.',
       'Never pretend to know personal facts outside the supplied structured memory.',
       'Return only the structured object. Empty strings are allowed when a field is not needed.',
       `Locked Day 1 expressions: ${JSON.stringify(COACH_DAY_ONE_TARGETS)}.`,
