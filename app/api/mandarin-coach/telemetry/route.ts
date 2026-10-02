@@ -1,5 +1,5 @@
+import { createHash } from 'node:crypto';
 import { AI_COACH_COURSE_ID, type CoachEventName } from '@/lib/mandarin-ai-coach';
-import { saveToSupabase } from '@/lib/supabase-server';
 
 export const runtime = 'nodejs';
 
@@ -15,15 +15,12 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Invalid telemetry event.' }, { status: 400 });
   }
   const safeData = body.data && typeof body.data === 'object' && !Array.isArray(body.data) ? body.data : {};
-  try {
-    const result = await saveToSupabase('feedback', {
-      session_id: body.sessionId.slice(0, 120),
-      experience_id: `${AI_COACH_COURSE_ID}:${body.event}`,
-      helpful: true,
-      comment: JSON.stringify({ course: AI_COACH_COURSE_ID, event: body.event, ...safeData }).slice(0, 8000),
-    });
-    return Response.json({ accepted: true, persisted: result.saved });
-  } catch {
-    return Response.json({ accepted: true, persisted: false });
-  }
+  const sessionKey = createHash('sha256').update(body.sessionId).digest('hex').slice(0, 16);
+  console.info('[mandarin-ai-coach-event]', {
+    course: AI_COACH_COURSE_ID,
+    event: body.event,
+    sessionKey,
+    ...safeData,
+  });
+  return Response.json({ accepted: true, recorded: 'vercel-observability' });
 }
