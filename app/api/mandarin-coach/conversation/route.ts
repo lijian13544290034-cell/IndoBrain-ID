@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { isExpressionId, type CoachSkill, type ExpressionId } from '@/lib/mandarin-ai-coach';
+import { isExpressionId, type CoachSkill, type ExpressionId, type UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import { anonymizeLearningQuestion, answerCoachConversation, transcribeMandarin } from '@/lib/server/mandarin-ai-coach';
 
 export const runtime = 'nodejs';
@@ -38,6 +38,21 @@ function safeContext(value: FormDataEntryValue | null) {
       if ((record.role !== 'user' && record.role !== 'assistant') || typeof record.text !== 'string') return [];
       return [{ role: record.role as 'user' | 'assistant', text: record.text.slice(0, 240) }];
     }) : [];
+    const userInitiatedMemory = Array.isArray(parsed.userInitiatedMemory) ? parsed.userInitiatedMemory.flatMap((item) => {
+      if (!item || typeof item !== 'object') return [];
+      const record = item as Record<string, unknown>;
+      if (typeof record.expression !== 'string' || typeof record.pinyin !== 'string' || typeof record.meaning_id !== 'string') return [];
+      return [{
+        id: typeof record.id === 'string' ? record.id.slice(0, 120) : `user-${record.expression.slice(0, 24)}`,
+        expression: record.expression.slice(0, 120), pinyin: record.pinyin.slice(0, 180), meaning_id: record.meaning_id.slice(0, 240), source: 'USER_INITIATED' as const,
+        first_seen_at: typeof record.first_seen_at === 'string' ? record.first_seen_at : '', last_seen_at: typeof record.last_seen_at === 'string' ? record.last_seen_at : '',
+        last_attempt_at: typeof record.last_attempt_at === 'string' ? record.last_attempt_at : null, last_success_at: typeof record.last_success_at === 'string' ? record.last_success_at : null,
+        mastery_level: typeof record.mastery_level === 'number' && record.mastery_level >= 0 && record.mastery_level <= 4 ? record.mastery_level as 0 | 1 | 2 | 3 | 4 : 0,
+        pronunciation_status: ['NOT_STARTED', 'PASS', 'RETRY', 'BREAKDOWN', 'NEEDS_REVIEW'].includes(String(record.pronunciation_status)) ? record.pronunciation_status as UserInitiatedMemory['pronunciation_status'] : 'NOT_STARTED',
+        fail_count: typeof record.fail_count === 'number' ? Math.max(0, record.fail_count) : 0, review_count: typeof record.review_count === 'number' ? Math.max(0, record.review_count) : 0,
+        saved_for_review: record.saved_for_review === true,
+      } satisfies UserInitiatedMemory];
+    }) : [];
     return {
       currentDay: 1,
       currentExpression: expression,
@@ -48,6 +63,8 @@ function safeContext(value: FormDataEntryValue | null) {
       reviewQueue,
       conversationMode: parsed.conversationMode === 'COACH_CONVERSATION' ? 'COACH_CONVERSATION' as const : 'GUIDED_TRAINING' as const,
       learningGoal: typeof parsed.learningGoal === 'string' ? parsed.learningGoal.slice(0, 160) : 'Mandarin praktis untuk kerja',
+      preferredExplanationLanguage: parsed.preferredExplanationLanguage === 'MIXED' ? 'MIXED' as const : 'INDONESIAN' as const,
+      userInitiatedMemory: userInitiatedMemory.slice(-20),
       recentConversationSummary: typeof parsed.recentConversationSummary === 'string' ? parsed.recentConversationSummary.slice(0, 280) : '',
       recentTurns: recentTurns.slice(-6),
     };
@@ -86,13 +103,18 @@ export async function POST(request: Request) {
       sessionKey,
       user_question: anonymizeLearningQuestion(message),
       detected_language: result.classification.detectedLanguage,
-      intent: result.classification.intent,
+      input_language: result.classification.detectedLanguage,
+      detected_intents: result.classification.intents,
+      target_chinese: result.classification.targetChinese || null,
+      skill_used: result.classification.skillIds,
       current_day: context.currentDay,
       current_expression: context.currentExpression,
       answer_category: result.classification.answerCategory,
+      answer_type: result.answer.teachingStrategy,
       resolved: null,
       continued_follow_up: context.recentTurns.length > 0,
       slow_request: /pelan|lambat|perlahan|慢一点|慢点/i.test(message),
+      skill_gap: result.answer.skillGap,
       timestamp,
     });
     return Response.json({
@@ -100,6 +122,9 @@ export async function POST(request: Request) {
       transcript: transcription?.transcript || null,
       detectedLanguage: result.classification.detectedLanguage,
       intent: result.classification.intent,
+      intents: result.classification.intents,
+      skillIds: result.classification.skillIds,
+      normalizedInput: result.classification.normalizedInput,
       answerCategory: result.classification.answerCategory,
       ...result.answer,
       usage: {

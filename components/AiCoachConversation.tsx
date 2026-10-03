@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import AiCoachRecorder from '@/components/AiCoachRecorder';
-import type { CoachConversationTurn, CoachIntent, CoachProfile, CoachQuestionMemory, CoachSkill, ExpressionId } from '@/lib/mandarin-ai-coach';
+import type { CoachBrainSkillId, CoachConversationTurn, CoachEventName, CoachIntent, CoachProfile, CoachQuestionMemory, CoachSkill, ExpressionId, UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 
 type ConversationResponse = {
   questionId: string;
   transcript: string | null;
   detectedLanguage: 'INDONESIAN' | 'CHINESE' | 'MIXED';
   intent: CoachIntent;
+  intents: CoachIntent[];
+  skillIds: CoachBrainSkillId[];
   answerCategory: string;
   answer: string;
   chinese: string;
@@ -16,11 +18,19 @@ type ConversationResponse = {
   indonesian: string;
   followUp: string;
   summary: string;
+  ttsRate: 'normal' | 'slow';
+  teachingStrategy: string;
+  rememberTarget: boolean;
+  targetChinese: string;
+  targetPinyin: string;
+  targetMeaning: string;
+  skillGap: boolean;
+  skillGapReason: string;
   timestamp: string;
   usage: { token_input: number; token_output: number; model_calls: number; estimated_ai_cost: number; model_used: string; stt_seconds: number; stt_model: string | null };
 };
 
-function telemetry(profile: CoachProfile, event: 'coach_conversation_opened' | 'coach_question_submitted' | 'coach_answer_received' | 'coach_answer_helpful' | 'coach_answer_unresolved', data: Record<string, unknown> = {}) {
+function telemetry(profile: CoachProfile, event: CoachEventName, data: Record<string, unknown> = {}) {
   void fetch('/api/mandarin-coach/telemetry', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -47,16 +57,17 @@ export default function AiCoachConversation({ profile, currentExpression, curren
     onProfileChange({ ...profile, conversation: { ...profile.conversation, mode: next ? 'COACH_CONVERSATION' : 'GUIDED_TRAINING' } });
   }
 
-  async function playCoachChinese(text: string) {
+  async function playCoachChinese(text: string, rate: 'normal' | 'slow' = 'normal') {
     setError('');
     try {
-      const response = await fetch('/api/chinese-tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+      const response = await fetch('/api/chinese-tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, rate }) });
       if (!response.ok || response.headers.get('X-IndoBrain-Chinese-TTS-Voice') !== 'zh-CN-XiaoxiaoNeural') throw new Error('tts');
       const url = URL.createObjectURL(await response.blob());
       const audio = new Audio(url);
       audio.onended = () => URL.revokeObjectURL(url);
       await audio.play();
       onProfileChange({ ...profile, usage: { ...profile.usage, tts_calls: profile.usage.tts_calls + 1 } });
+      if (rate === 'slow') telemetry(profile, 'coach_slow_audio_requested', { chinese: text.slice(0, 80), tts_rate: 'slow' });
     } catch {
       setError('Audio Mandarin zh-CN belum tersedia. Tidak ada suara pengganti yang digunakan.');
     }
@@ -85,6 +96,8 @@ export default function AiCoachConversation({ profile, currentExpression, curren
         reviewQueue,
         conversationMode: 'COACH_CONVERSATION',
         learningGoal: 'Mandarin praktis untuk kerja dan percakapan dasar',
+        preferredExplanationLanguage: profile.learning.preferredExplanationLanguage,
+        userInitiatedMemory: profile.learning.userInitiated,
         recentConversationSummary: profile.conversation.summary,
         recentTurns: profile.conversation.recentTurns.slice(-6).map(({ role, text }) => ({ role, text })),
       }));
@@ -98,13 +111,23 @@ export default function AiCoachConversation({ profile, currentExpression, curren
       const assistantTurn: CoachConversationTurn = {
         id: `${result.questionId}-assistant`, role: 'assistant', text: result.answer,
         chinese: result.chinese || undefined, pinyin: result.pinyin || undefined, indonesian: result.indonesian || undefined,
-        intent: result.intent, createdAt: now,
+        intent: result.intent, intents: result.intents, skillIds: result.skillIds, ttsRate: result.ttsRate, createdAt: now,
       };
       const question: CoachQuestionMemory = {
         id: result.questionId, question: userText, detected_language: result.detectedLanguage, intent: result.intent,
+        detected_intents: result.intents, target_chinese: result.targetChinese || result.chinese || null, skill_used: result.skillIds,
         current_day: 1, current_expression: currentExpression, answer_category: result.answerCategory,
         resolved: null, follow_up: profile.conversation.recentTurns.length > 0, asked_at: now,
       };
+      let userInitiated = profile.learning.userInitiated;
+      if (result.rememberTarget && result.targetChinese && result.targetPinyin && result.targetMeaning) {
+        const existing = userInitiated.find((item) => item.expression === result.targetChinese);
+        const remembered: UserInitiatedMemory = existing ? { ...existing, pinyin: result.targetPinyin, meaning_id: result.targetMeaning, last_seen_at: now } : {
+          id: `user-${crypto.randomUUID()}`, expression: result.targetChinese, pinyin: result.targetPinyin, meaning_id: result.targetMeaning, source: 'USER_INITIATED',
+          first_seen_at: now, last_seen_at: now, last_attempt_at: null, last_success_at: null, mastery_level: 0, pronunciation_status: 'NOT_STARTED', fail_count: 0, review_count: 0, saved_for_review: false,
+        };
+        userInitiated = existing ? userInitiated.map((item) => item.id === existing.id ? remembered : item) : [...userInitiated, remembered].slice(-50);
+      }
       const next: CoachProfile = {
         ...profile,
         usage: {
@@ -120,11 +143,13 @@ export default function AiCoachConversation({ profile, currentExpression, curren
           recentTurns: [...profile.conversation.recentTurns, userTurn, assistantTurn].slice(-12),
           questions: [...profile.conversation.questions, question].slice(-20),
         },
+        learning: { ...profile.learning, userInitiated },
       };
       onProfileChange(next);
       setInput('');
       setPendingResolution(result.questionId);
       telemetry(next, 'coach_answer_received', { question_id: result.questionId, intent: result.intent, answer_category: result.answerCategory, ...result.usage });
+      if (result.skillGap) telemetry(next, 'coach_skill_gap', { question_id: result.questionId, target: result.targetChinese || null, current_skill: result.skillIds, reason: result.skillGapReason });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'AI Coach belum tersedia.');
     } finally {
@@ -152,7 +177,7 @@ export default function AiCoachConversation({ profile, currentExpression, curren
     <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Coach Conversation</p><h2 className="mt-1 text-xl font-bold text-[var(--ib-primary-strong)]">Tanya AI Coach</h2><p className="mt-1 text-xs text-[var(--ib-text-secondary)]">Tanya dalam Bahasa Indonesia atau 中文.</p></div><button type="button" onClick={() => setConversationOpen(false)} className="min-h-10 shrink-0 rounded-full border border-[var(--ib-border-soft)] px-3 text-sm font-bold text-[var(--ib-primary)]">Kembali Belajar</button></div>
     <div className="mt-4 max-h-80 space-y-3 overflow-y-auto rounded-2xl bg-[var(--ib-bg-muted)] p-3" aria-live="polite">
       {profile.conversation.recentTurns.length === 0 ? <div className="rounded-2xl bg-white p-3 text-sm leading-6 text-[var(--ib-text-secondary)]"><p className="font-semibold text-[var(--ib-primary-strong)]">Contoh pertanyaan:</p><p>“Kenapa 谢谢 dibaca xiè xie?”</p><p>“Kalau di tempat kerja bilang apa?”</p><p>“Saya tidak mengerti. Bisa lebih pelan?”</p></div> : null}
-      {profile.conversation.recentTurns.map((turn) => <div key={turn.id} className={`rounded-2xl p-3 ${turn.role === 'user' ? 'ml-7 bg-[var(--ib-primary)] text-white' : 'mr-7 bg-white text-[var(--ib-text-primary)]'}`}><p className="whitespace-pre-wrap text-sm leading-6">{turn.text}</p>{turn.chinese ? <div className="mt-3 rounded-xl bg-[var(--ib-primary-soft)] p-3 text-[var(--ib-text-primary)]"><p className="text-2xl font-bold text-[var(--ib-primary-strong)]">{turn.chinese}</p>{turn.pinyin ? <p className="mt-1 font-semibold text-[var(--ib-primary)]">{turn.pinyin}</p> : null}{turn.indonesian ? <p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}<button type="button" onClick={() => playCoachChinese(turn.chinese!)} className="mt-2 text-sm font-bold text-[var(--ib-primary)]">🔊 Dengarkan</button></div> : turn.indonesian ? <p className="mt-2 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}</div>)}
+      {profile.conversation.recentTurns.map((turn) => <div key={turn.id} className={`rounded-2xl p-3 ${turn.role === 'user' ? 'ml-7 bg-[var(--ib-primary)] text-white' : 'mr-7 bg-white text-[var(--ib-text-primary)]'}`}><p className="whitespace-pre-wrap text-sm leading-6">{turn.text}</p>{turn.chinese ? <div className="mt-3 rounded-xl bg-[var(--ib-primary-soft)] p-3 text-[var(--ib-text-primary)]"><p className="text-2xl font-bold text-[var(--ib-primary-strong)]">{turn.chinese}</p>{turn.pinyin ? <p className="mt-1 font-semibold text-[var(--ib-primary)]">{turn.pinyin}</p> : null}{turn.indonesian ? <p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}<button type="button" onClick={() => playCoachChinese(turn.chinese!, turn.ttsRate)} className="mt-2 text-sm font-bold text-[var(--ib-primary)]">🔊 {turn.ttsRate === 'slow' ? 'Dengarkan pelan' : 'Dengarkan'}</button></div> : turn.indonesian ? <p className="mt-2 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}</div>)}
     </div>
     {pendingResolution ? <div className="mt-3 flex items-center gap-2 text-xs text-[var(--ib-text-secondary)]"><span>Jawaban ini membantu?</span><button type="button" onClick={() => resolveAnswer(true)} className="rounded-full border border-[var(--ib-border-soft)] px-3 py-2 font-semibold text-[var(--ib-primary)]">Ya</button><button type="button" onClick={() => resolveAnswer(false)} className="rounded-full border border-[var(--ib-border-soft)] px-3 py-2 font-semibold text-[var(--ib-primary)]">Belum</button></div> : null}
     <label className="mt-4 block text-xs font-bold text-[var(--ib-text-secondary)]" htmlFor="coach-question">Ketik pertanyaan atau jawabanmu</label>

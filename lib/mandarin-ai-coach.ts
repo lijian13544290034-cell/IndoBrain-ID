@@ -10,14 +10,16 @@ export type ExpressionId = (typeof DAY_ONE_EXPRESSIONS)[number]['id'];
 export type CoachSkill = 'TEACH' | 'PRONUNCIATION' | 'COMPREHENSION' | 'ROLEPLAY' | 'MEMORY';
 export type CoachVerdict = 'PASS' | 'RETRY' | 'BREAKDOWN';
 export type CoachConversationMode = 'GUIDED_TRAINING' | 'COACH_CONVERSATION';
-export type CoachIntent = 'LEARNING_RELATED' | 'ROLEPLAY' | 'PRONUNCIATION' | 'MEANING' | 'GRAMMAR' | 'WORKPLACE_CHINESE' | 'GENERAL_CHINESE' | 'OFF_TOPIC';
+export type CoachBrainSkillId = 'VOCABULARY' | 'PRONUNCIATION' | 'MEANING' | 'CORRECTION' | 'EXAMPLE' | 'CONVERSATION' | 'WORKPLACE' | 'REVIEW';
+export type CoachIntent = CoachBrainSkillId | 'ROLEPLAY' | 'GRAMMAR' | 'OFF_TOPIC';
 export type CoachDetectedLanguage = 'INDONESIAN' | 'CHINESE' | 'MIXED';
 export type CoachEventName =
   | 'start_session' | 'finish_session' | 'expression_started' | 'expression_pass'
   | 'expression_retry' | 'expression_failed' | 'audio_play' | 'voice_attempt'
   | 'comprehension_correct' | 'comprehension_wrong' | 'roleplay_started' | 'roleplay_completed'
   | 'coach_conversation_opened' | 'coach_question_submitted' | 'coach_answer_received'
-  | 'coach_answer_helpful' | 'coach_answer_unresolved';
+  | 'coach_answer_helpful' | 'coach_answer_unresolved' | 'expression_saved_for_review'
+  | 'coach_slow_audio_requested' | 'coach_skill_gap';
 
 export type CoachConversationTurn = {
   id: string;
@@ -27,6 +29,9 @@ export type CoachConversationTurn = {
   pinyin?: string;
   indonesian?: string;
   intent?: CoachIntent;
+  intents?: CoachIntent[];
+  skillIds?: CoachBrainSkillId[];
+  ttsRate?: 'normal' | 'slow';
   createdAt: string;
 };
 
@@ -35,12 +40,32 @@ export type CoachQuestionMemory = {
   question: string;
   detected_language: CoachDetectedLanguage;
   intent: CoachIntent;
+  detected_intents: CoachIntent[];
+  target_chinese: string | null;
+  skill_used: CoachBrainSkillId[];
   current_day: number;
   current_expression: ExpressionId | null;
   answer_category: string;
   resolved: boolean | null;
   follow_up: boolean;
   asked_at: string;
+};
+
+export type UserInitiatedMemory = {
+  id: string;
+  expression: string;
+  pinyin: string;
+  meaning_id: string;
+  source: 'USER_INITIATED';
+  first_seen_at: string;
+  last_seen_at: string;
+  last_attempt_at: string | null;
+  last_success_at: string | null;
+  mastery_level: 0 | 1 | 2 | 3 | 4;
+  pronunciation_status: 'NOT_STARTED' | CoachVerdict | 'NEEDS_REVIEW';
+  fail_count: number;
+  review_count: number;
+  saved_for_review: boolean;
 };
 
 export type ExpressionMemory = {
@@ -51,10 +76,12 @@ export type ExpressionMemory = {
   attempts: number;
   correct_count: number;
   wrong_count: number;
-  pronunciation_status: 'NOT_STARTED' | CoachVerdict;
+  pronunciation_status: 'NOT_STARTED' | CoachVerdict | 'NEEDS_REVIEW';
   comprehension_status: 'NOT_STARTED' | 'PASS' | 'RETRY';
   last_seen: string | null;
   mastery_level: 0 | 1 | 2 | 3 | 4;
+  saved_for_review: boolean;
+  review_count: number;
 };
 
 export type CoachUsage = {
@@ -67,7 +94,7 @@ export type CoachUsage = {
 };
 
 export type CoachProfile = {
-  version: 2;
+  version: 3;
   course: typeof AI_COACH_COURSE_ID;
   sessionId: string;
   startedAt: string;
@@ -80,8 +107,18 @@ export type CoachProfile = {
     recentTurns: CoachConversationTurn[];
     questions: CoachQuestionMemory[];
   };
+  learning: {
+    userLevel: 'BEGINNER' | 'ELEMENTARY' | 'INTERMEDIATE';
+    preferredExplanationLanguage: 'INDONESIAN' | 'MIXED';
+    userInitiated: UserInitiatedMemory[];
+  };
   completed: boolean;
 };
+
+export const COACH_RETRY_POLICY = {
+  changeStrategyAt: 2,
+  offerSaveAndSkipAt: 3,
+} as const;
 
 export const FEEDBACK_COPY = {
   pronunciation_pass: 'Bagus! Pengucapanmu sudah bisa dipahami.',
@@ -98,7 +135,7 @@ export type FeedbackId = keyof typeof FEEDBACK_COPY;
 export function emptyCoachProfile(): CoachProfile {
   const now = new Date().toISOString();
   return {
-    version: 2,
+    version: 3,
     course: AI_COACH_COURSE_ID,
     sessionId: `coach-${crypto.randomUUID()}`,
     startedAt: now,
@@ -115,9 +152,12 @@ export function emptyCoachProfile(): CoachProfile {
       comprehension_status: 'NOT_STARTED',
       last_seen: null,
       mastery_level: 0,
+      saved_for_review: false,
+      review_count: 0,
     })),
     usage: { token_input: 0, token_output: 0, stt_seconds: 0, tts_calls: 0, model_calls: 0, estimated_ai_cost: 0 },
     conversation: { mode: 'GUIDED_TRAINING', summary: '', recentTurns: [], questions: [] },
+    learning: { userLevel: 'BEGINNER', preferredExplanationLanguage: 'INDONESIAN', userInitiated: [] },
     completed: false,
   };
 }

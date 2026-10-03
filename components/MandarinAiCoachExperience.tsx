@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import AiCoachConversation from '@/components/AiCoachConversation';
 import AiCoachRecorder from '@/components/AiCoachRecorder';
-import { DAY_ONE_EXPRESSIONS, type CoachEventName, type CoachProfile, type ExpressionId, type FeedbackId, FEEDBACK_COPY, emptyCoachProfile, getExpression } from '@/lib/mandarin-ai-coach';
+import { COACH_RETRY_POLICY, DAY_ONE_EXPRESSIONS, type CoachEventName, type CoachProfile, type ExpressionId, type FeedbackId, FEEDBACK_COPY, emptyCoachProfile, getExpression } from '@/lib/mandarin-ai-coach';
 import { readCoachProfile, resetCoachProfile, saveCoachProfile } from '@/lib/mandarin-ai-coach-profile';
 
 type Phase = 'WELCOME' | 'TEACH' | 'COMPREHENSION' | 'ROLEPLAY' | 'COMPLETE';
@@ -129,23 +129,36 @@ export default function MandarinAiCoachExperience() {
     }
   }
 
-  function continueTeaching() {
+  function advanceTeaching(currentProfile: CoachProfile) {
     setFeedback('');
     setShowBreakdown(false);
-    const currentMemory = profile.expressions.find((item) => item.expression_id === active.id)!;
-    const firstTwoWrong = activeIndex === 1 && profile.expressions.slice(0, 2).reduce((sum, item) => sum + item.wrong_count, 0) >= 3;
+    const currentMemory = currentProfile.expressions.find((item) => item.expression_id === active.id)!;
+    const firstTwoWrong = activeIndex === 1 && currentProfile.expressions.slice(0, 2).reduce((sum, item) => sum + item.wrong_count, 0) >= 3;
     if (activeIndex < DAY_ONE_EXPRESSIONS.length - 1 && !firstTwoWrong) {
       const nextIndex = activeIndex + 1;
       setActiveIndex(nextIndex);
-      telemetry(profile, 'expression_started', { expression_id: DAY_ONE_EXPRESSIONS[nextIndex].id, previous_mastery: currentMemory.mastery_level });
+      telemetry(currentProfile, 'expression_started', { expression_id: DAY_ONE_EXPRESSIONS[nextIndex].id, previous_mastery: currentMemory.mastery_level });
       return;
     }
-    const candidates = profile.expressions.filter((item) => item.pronunciation_status !== 'NOT_STARTED');
+    const candidates = currentProfile.expressions.filter((item) => item.pronunciation_status !== 'NOT_STARTED');
     const minimum = Math.min(...candidates.map((item) => item.mastery_level));
     const weakCandidates = candidates.filter((item) => item.mastery_level === minimum);
-    const selected = weakCandidates[Math.floor(Math.random() * weakCandidates.length)] || profile.expressions[0];
+    const selected = weakCandidates[Math.floor(Math.random() * weakCandidates.length)] || currentProfile.expressions[0];
     setComprehensionTarget(selected.expression_id);
     setPhase('COMPREHENSION');
+  }
+
+  function continueTeaching() {
+    advanceTeaching(profile);
+  }
+
+  function saveAndSkip() {
+    const next = persist({
+      ...profile,
+      expressions: profile.expressions.map((item) => item.expression_id === active.id ? { ...item, saved_for_review: true, pronunciation_status: 'NEEDS_REVIEW' as const } : item),
+    });
+    telemetry(next, 'expression_saved_for_review', { expression_id: active.id, attempts: currentMemory.attempts, wrong_count: currentMemory.wrong_count });
+    advanceTeaching(next);
   }
 
   function answerComprehension(indonesian: string) {
@@ -188,7 +201,7 @@ export default function MandarinAiCoachExperience() {
   const conversationExpression = phase === 'TEACH' ? active.id : phase === 'COMPREHENSION' ? comprehensionTarget : roleplayStep === 0 ? 'AI-D1-01' : 'AI-D1-03';
   const conversationSkill = phase === 'TEACH' ? 'TEACH' : phase === 'COMPREHENSION' ? 'COMPREHENSION' : 'ROLEPLAY';
   return <main className="min-h-screen bg-[var(--ib-bg-page)] px-4 pb-10 pt-5 text-[var(--ib-text-primary)]"><div className="mx-auto max-w-xl"><div className="flex items-center justify-between"><Link href="/learn-chinese" className="text-sm font-semibold text-[var(--ib-primary)]">← Kembali</Link><span className="text-xs font-bold text-[var(--ib-text-muted)]">Hari 1 · {phase === 'TEACH' ? `${activeIndex + 1}/${learned.length > 2 ? 3 : 3}` : phase}</span></div><div className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--ib-border-soft)]"><div className="h-full bg-[var(--ib-primary)] transition-all" style={{ width: phase === 'TEACH' ? `${15 + activeIndex * 20}%` : phase === 'COMPREHENSION' ? '70%' : '88%' }} /></div><AiCoachConversation profile={profile} currentExpression={conversationExpression} currentSkill={conversationSkill} onProfileChange={persist} />
-    {phase === 'TEACH' ? <section className="mt-5 rounded-[32px] bg-white p-6 text-center shadow-[var(--ib-shadow-card)]"><div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--ib-primary-soft)] text-2xl">🧑‍🏫</div><p className="mt-5 text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Dengarkan dan ucapkan</p><p className="mt-3 text-5xl font-bold tracking-wide text-[var(--ib-primary-strong)]">{active.chinese}</p><p className="mt-3 text-xl font-semibold text-[var(--ib-primary)]">{active.pinyin}</p><p className="mt-2 text-lg text-[var(--ib-text-secondary)]">{active.indonesian}</p><button type="button" onClick={() => playChinese(active.chinese, active.id)} className="mt-6 min-h-12 rounded-full border border-[var(--ib-border-soft)] px-6 font-bold text-[var(--ib-primary)]">🔊 Dengarkan</button>{showBreakdown ? <div className="mt-5 flex justify-center gap-3">{active.chunks.map((chunk, index) => <div key={`${chunk.chinese}-${index}`} className="min-w-20 rounded-2xl bg-[var(--ib-primary-soft)] p-3"><p className="text-3xl font-bold text-[var(--ib-primary-strong)]">{chunk.chinese}</p><p className="mt-1 font-semibold text-[var(--ib-primary)]">{chunk.pinyin}</p></div>)}</div> : null}<div className="mt-6"><AiCoachRecorder busy={busy} onRecorded={(audio) => submitVoice(audio, 'PRONUNCIATION', active.id)} /></div>{feedback ? <div role="status" className="mt-4 rounded-2xl bg-[var(--ib-primary-soft)] p-4 text-left text-sm font-semibold leading-6 text-[var(--ib-primary-strong)]">{feedback}</div> : null}{serviceError ? <p role="alert" className="mt-4 text-sm text-rose-700">{serviceError}</p> : null}{currentMemory.pronunciation_status !== 'NOT_STARTED' ? <button type="button" onClick={continueTeaching} className="mt-5 min-h-12 w-full rounded-full bg-[var(--ib-primary-strong)] px-5 font-bold text-white">Lanjut</button> : null}</section> : null}
+    {phase === 'TEACH' ? <section className="mt-5 rounded-[32px] bg-white p-6 text-center shadow-[var(--ib-shadow-card)]"><div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--ib-primary-soft)] text-2xl">🧑‍🏫</div><p className="mt-5 text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Dengarkan dan ucapkan</p><p className="mt-3 text-5xl font-bold tracking-wide text-[var(--ib-primary-strong)]">{active.chinese}</p><p className="mt-3 text-xl font-semibold text-[var(--ib-primary)]">{active.pinyin}</p><p className="mt-2 text-lg text-[var(--ib-text-secondary)]">{active.indonesian}</p><button type="button" onClick={() => playChinese(active.chinese, active.id)} className="mt-6 min-h-12 rounded-full border border-[var(--ib-border-soft)] px-6 font-bold text-[var(--ib-primary)]">🔊 Dengarkan</button>{showBreakdown ? <div className="mt-5 flex justify-center gap-3">{active.chunks.map((chunk, index) => <div key={`${chunk.chinese}-${index}`} className="min-w-20 rounded-2xl bg-[var(--ib-primary-soft)] p-3"><p className="text-3xl font-bold text-[var(--ib-primary-strong)]">{chunk.chinese}</p><p className="mt-1 font-semibold text-[var(--ib-primary)]">{chunk.pinyin}</p></div>)}</div> : null}<div className="mt-6"><AiCoachRecorder busy={busy} onRecorded={(audio) => submitVoice(audio, 'PRONUNCIATION', active.id)} /></div>{feedback ? <div role="status" className="mt-4 rounded-2xl bg-[var(--ib-primary-soft)] p-4 text-left text-sm font-semibold leading-6 text-[var(--ib-primary-strong)]">{feedback}</div> : null}{serviceError ? <p role="alert" className="mt-4 text-sm text-rose-700">{serviceError}</p> : null}{currentMemory.wrong_count >= COACH_RETRY_POLICY.offerSaveAndSkipAt ? <button type="button" onClick={saveAndSkip} className="mt-5 min-h-12 w-full rounded-full border border-[var(--ib-border-soft)] px-5 font-bold text-[var(--ib-primary)]">Simpan untuk review &amp; lewati</button> : null}{currentMemory.pronunciation_status !== 'NOT_STARTED' ? <button type="button" onClick={continueTeaching} className="mt-3 min-h-12 w-full rounded-full bg-[var(--ib-primary-strong)] px-5 font-bold text-white">Lanjut</button> : null}</section> : null}
     {phase === 'COMPREHENSION' ? <section className="mt-5 rounded-[32px] bg-white p-6 shadow-[var(--ib-shadow-card)]"><p className="text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Cek pemahaman</p><h1 className="mt-3 text-2xl font-bold text-[var(--ib-primary-strong)]">Apa arti ungkapan ini?</h1><button type="button" onClick={() => playChinese(getExpression(comprehensionTarget).chinese, comprehensionTarget)} className="mt-5 min-h-12 rounded-full border border-[var(--ib-border-soft)] px-5 font-bold text-[var(--ib-primary)]">🔊 Dengarkan tanpa melihat</button><div className="mt-5 grid gap-3">{DAY_ONE_EXPRESSIONS.map((item) => <button type="button" key={item.id} onClick={() => answerComprehension(item.indonesian)} className="min-h-12 rounded-2xl border border-[var(--ib-border-soft)] p-3 text-left font-semibold text-[var(--ib-text-primary)]">{item.indonesian}</button>)}</div>{feedback ? <p role="status" className="mt-4 rounded-2xl bg-[var(--ib-primary-soft)] p-4 text-sm font-semibold text-[var(--ib-primary-strong)]">{feedback}</p> : null}</section> : null}
     {phase === 'ROLEPLAY' ? <section className="mt-5 rounded-[32px] bg-white p-6 shadow-[var(--ib-shadow-card)]"><p className="text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Hari pertama di tempat kerja</p><h1 className="mt-3 text-2xl font-bold text-[var(--ib-primary-strong)]">{roleplayStep === 0 ? 'Seorang rekan menyapamu.' : 'Bos memberi instruksi sederhana.'}</h1><div className="mt-5 rounded-2xl bg-[var(--ib-primary-soft)] p-4"><p className="text-sm text-[var(--ib-text-secondary)]">{roleplayStep === 0 ? 'Rekan kerja:' : 'Bos:'}</p><p className="mt-2 text-3xl font-bold text-[var(--ib-primary-strong)]">{roleplayStep === 0 ? '你好' : '现在开始。'}</p><button type="button" onClick={() => playChinese(roleplayStep === 0 ? '你好' : '现在开始。', roleplayStep === 0 ? 'AI-D1-01' : 'AI-D1-03')} className="mt-3 text-sm font-bold text-[var(--ib-primary)]">🔊 Dengarkan</button></div><p className="mt-5 text-sm leading-6 text-[var(--ib-text-secondary)]">Jawab dengan: <strong className="text-[var(--ib-primary-strong)]">{roleplayStep === 0 ? '你好' : '好的'}</strong></p><div className="mt-4"><AiCoachRecorder busy={busy} onRecorded={async (audio) => { const id = roleplayStep === 0 ? 'AI-D1-01' : 'AI-D1-03'; await submitVoice(audio, 'ROLEPLAY', id); }} /></div>{feedback ? <div role="status" className="mt-4 rounded-2xl bg-[var(--ib-primary-soft)] p-4 text-sm font-semibold text-[var(--ib-primary-strong)]">{feedback}</div> : null}{serviceError ? <p role="alert" className="mt-4 text-sm text-rose-700">{serviceError}</p> : null}{feedback === FEEDBACK_COPY.roleplay_pass || feedback === FEEDBACK_COPY.pronunciation_pass ? <button type="button" onClick={() => { setFeedback(''); if (roleplayStep === 0) setRoleplayStep(1); else finishSession(); }} className="mt-5 min-h-12 w-full rounded-full bg-[var(--ib-primary)] font-bold text-white">{roleplayStep === 0 ? 'Lanjut ke situasi berikutnya' : 'Selesaikan latihan'}</button> : null}</section> : null}
   </div></main>;

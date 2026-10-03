@@ -1,7 +1,8 @@
 import 'server-only';
 
 import { Output, experimental_transcribe as transcribe, gateway, generateText, jsonSchema } from 'ai';
-import { DAY_ONE_EXPRESSIONS, type CoachDetectedLanguage, type CoachIntent, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, getExpression } from '@/lib/mandarin-ai-coach';
+import { DAY_ONE_EXPRESSIONS, type CoachBrainSkillId, type CoachDetectedLanguage, type CoachIntent, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, type UserInitiatedMemory, getExpression } from '@/lib/mandarin-ai-coach';
+import { buildSkillGrounding, composeKnownCoachResponse, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
 
 const FAST_MODEL = process.env.FAST_MODEL || 'google/gemini-2.5-flash-lite';
 const SMART_MODEL = process.env.SMART_MODEL || 'google/gemini-2.5-flash';
@@ -24,19 +25,16 @@ type CallUsage = {
 
 type ConversationClassification = {
   intent: CoachIntent;
+  intents: CoachIntent[];
   detectedLanguage: CoachDetectedLanguage;
+  skillIds: CoachBrainSkillId[];
+  targetChinese: string;
+  normalizedInput: string;
   modelTier: 'FAST' | 'SMART';
   answerCategory: 'EXPLANATION' | 'EXAMPLE' | 'PRONUNCIATION_COACHING' | 'ROLEPLAY' | 'STUDY_SUPPORT' | 'OFF_TOPIC';
 };
 
-type ConversationAnswer = {
-  answer: string;
-  chinese: string;
-  pinyin: string;
-  indonesian: string;
-  followUp: string;
-  summary: string;
-};
+type ConversationAnswer = CoachBrainAnswer;
 
 const decisionSchema = jsonSchema<StructuredDecision>({
   type: 'object',
@@ -53,10 +51,14 @@ const decisionSchema = jsonSchema<StructuredDecision>({
 const classificationSchema = jsonSchema<ConversationClassification>({
   type: 'object',
   additionalProperties: false,
-  required: ['intent', 'detectedLanguage', 'modelTier', 'answerCategory'],
+  required: ['intent', 'intents', 'detectedLanguage', 'skillIds', 'targetChinese', 'normalizedInput', 'modelTier', 'answerCategory'],
   properties: {
-    intent: { type: 'string', enum: ['LEARNING_RELATED', 'ROLEPLAY', 'PRONUNCIATION', 'MEANING', 'GRAMMAR', 'WORKPLACE_CHINESE', 'GENERAL_CHINESE', 'OFF_TOPIC'] },
+    intent: { type: 'string', enum: ['VOCABULARY', 'PRONUNCIATION', 'MEANING', 'CORRECTION', 'EXAMPLE', 'CONVERSATION', 'WORKPLACE', 'REVIEW', 'ROLEPLAY', 'GRAMMAR', 'OFF_TOPIC'] },
+    intents: { type: 'array', minItems: 1, maxItems: 4, items: { type: 'string', enum: ['VOCABULARY', 'PRONUNCIATION', 'MEANING', 'CORRECTION', 'EXAMPLE', 'CONVERSATION', 'WORKPLACE', 'REVIEW', 'ROLEPLAY', 'GRAMMAR', 'OFF_TOPIC'] } },
     detectedLanguage: { type: 'string', enum: ['INDONESIAN', 'CHINESE', 'MIXED'] },
+    skillIds: { type: 'array', minItems: 1, maxItems: 5, items: { type: 'string', enum: ['VOCABULARY', 'PRONUNCIATION', 'MEANING', 'CORRECTION', 'EXAMPLE', 'CONVERSATION', 'WORKPLACE', 'REVIEW'] } },
+    targetChinese: { type: 'string', maxLength: 80 },
+    normalizedInput: { type: 'string', maxLength: 500 },
     modelTier: { type: 'string', enum: ['FAST', 'SMART'] },
     answerCategory: { type: 'string', enum: ['EXPLANATION', 'EXAMPLE', 'PRONUNCIATION_COACHING', 'ROLEPLAY', 'STUDY_SUPPORT', 'OFF_TOPIC'] },
   },
@@ -65,7 +67,7 @@ const classificationSchema = jsonSchema<ConversationClassification>({
 const conversationAnswerSchema = jsonSchema<ConversationAnswer>({
   type: 'object',
   additionalProperties: false,
-  required: ['answer', 'chinese', 'pinyin', 'indonesian', 'followUp', 'summary'],
+  required: ['answer', 'chinese', 'pinyin', 'indonesian', 'followUp', 'summary', 'ttsRate', 'teachingStrategy', 'rememberTarget', 'targetChinese', 'targetPinyin', 'targetMeaning', 'skillGap', 'skillGapReason'],
   properties: {
     answer: { type: 'string', minLength: 1, maxLength: 320 },
     chinese: { type: 'string', maxLength: 120 },
@@ -73,6 +75,14 @@ const conversationAnswerSchema = jsonSchema<ConversationAnswer>({
     indonesian: { type: 'string', maxLength: 300 },
     followUp: { type: 'string', maxLength: 160 },
     summary: { type: 'string', maxLength: 280 },
+    ttsRate: { type: 'string', enum: ['normal', 'slow'] },
+    teachingStrategy: { type: 'string', maxLength: 80 },
+    rememberTarget: { type: 'boolean' },
+    targetChinese: { type: 'string', maxLength: 120 },
+    targetPinyin: { type: 'string', maxLength: 180 },
+    targetMeaning: { type: 'string', maxLength: 240 },
+    skillGap: { type: 'boolean' },
+    skillGapReason: { type: 'string', maxLength: 240 },
   },
 });
 
@@ -196,11 +206,13 @@ export async function answerCoachConversation(input: {
     reviewQueue: ExpressionId[];
     conversationMode: 'GUIDED_TRAINING' | 'COACH_CONVERSATION';
     learningGoal: string;
+    preferredExplanationLanguage: 'INDONESIAN' | 'MIXED';
+    userInitiatedMemory: UserInitiatedMemory[];
     recentConversationSummary: string;
     recentTurns: Array<{ role: 'user' | 'assistant'; text: string }>;
   };
 }) {
-  const explicitRoleplay = /\brole[ -]?play\b|bermain peran|角色扮演/i.test(input.message);
+  const brainPlan = routeCoachInput(input.message);
   const generateClassification = (model: string, maxOutputTokens: number) => generateText({
     model: gateway(model),
     output: Output.object({ schema: classificationSchema, name: 'mandarin_coach_intent' }),
@@ -209,20 +221,23 @@ export async function answerCoachConversation(input: {
     maxRetries: 1,
     providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'intent'], user: input.sessionId.slice(0, 96) } },
     system: [
-      'Classify a message sent to a Mandarin coach for Indonesian beginners.',
-      'Questions about Mandarin language, pronunciation, work/life Mandarin, Chinese workplace pragmatics, roleplay, or study difficulty are in scope.',
-      'Do not mark a real Mandarin learning question OFF_TOPIC merely because it mentions a boss, interview, work, or Chinese culture.',
-      'Use SMART only for grammar, nuanced workplace pragmatics, or open-ended roleplay; otherwise FAST.',
-      'Return only the structured object.',
+      'You are the Language and Teaching Intent Router for an Indonesian learner of Mandarin.',
+      'Return one or more intents. Mixed Indonesian, Chinese, pinyin, slang and misspellings are normal.',
+      'Input language does not determine explanation language. Workplace language and roleplay are in scope.',
+      'Select one or more of the eight available skill IDs. Use SMART only for nuanced grammar, correction, workplace pragmatics or roleplay.',
+      'Never reject an in-scope word merely because it is absent from the current course.',
+      'Return only the structured object and preserve a concise normalizedInput.',
     ].join(' '),
-    prompt: input.message.slice(0, 500),
+    prompt: JSON.stringify({ learnerInput: input.message.slice(0, 500), deterministicHints: brainPlan }),
   });
-  let classification: ConversationClassification;
-  let classificationUsage: CallUsage;
-  if (explicitRoleplay) {
-    classification = { intent: 'ROLEPLAY', detectedLanguage: /[\u3400-\u9FFF]/.test(input.message) ? 'MIXED' : 'INDONESIAN', modelTier: 'SMART', answerCategory: 'ROLEPLAY' };
-    classificationUsage = { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'deterministic-explicit-roleplay' };
-  } else {
+  const deterministicClassification: ConversationClassification = {
+    intent: brainPlan.learningIntents[0], intents: brainPlan.learningIntents, detectedLanguage: brainPlan.inputLanguage,
+    skillIds: brainPlan.skillIds, targetChinese: brainPlan.targetChinese || '', normalizedInput: brainPlan.normalizedInput,
+    modelTier: brainPlan.modelTier, answerCategory: brainPlan.offTopic ? 'OFF_TOPIC' : brainPlan.learningIntents.includes('ROLEPLAY') ? 'ROLEPLAY' : brainPlan.skillIds.includes('PRONUNCIATION') ? 'PRONUNCIATION_COACHING' : brainPlan.skillIds.includes('EXAMPLE') || brainPlan.skillIds.includes('VOCABULARY') ? 'EXAMPLE' : 'EXPLANATION',
+  };
+  let classification = deterministicClassification;
+  let classificationUsage: CallUsage = { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'mandarin-coach-brain-v0.1' };
+  if (brainPlan.confidence < 0.8) {
     let classificationModel = FAST_MODEL;
     let classificationResult;
     try {
@@ -235,37 +250,29 @@ export async function answerCoachConversation(input: {
     classificationUsage = usageFromResult(classificationResult, classificationModel);
   }
 
-  if (classification.intent === 'OFF_TOPIC') {
+  const knownAnswer = composeKnownCoachResponse(brainPlan, input.context.userInitiatedMemory);
+  if (knownAnswer) {
     return {
       classification,
-      answer: {
-        answer: 'Maaf, saya fokus membantu kamu belajar Mandarin 😊',
-        chinese: '',
-        pinyin: '',
-        indonesian: 'Kalau ada pertanyaan tentang bahasa Mandarin, pekerjaan, percakapan, atau pengucapan, tanya saya ya.',
-        followUp: 'Kembali Belajar',
-        summary: input.context.recentConversationSummary.slice(0, 280),
-      } satisfies ConversationAnswer,
+      answer: { ...knownAnswer, summary: knownAnswer.summary || input.context.recentConversationSummary.slice(0, 280) } satisfies ConversationAnswer,
       usage: classificationUsage,
     };
   }
 
   const answerModel = classification.modelTier === 'SMART' ? SMART_MODEL : FAST_MODEL;
+  const skillGrounding = buildSkillGrounding({ ...brainPlan, learningIntents: classification.intents, skillIds: classification.skillIds, targetChinese: classification.targetChinese || brainPlan.targetChinese });
   const answerSystem = [
-      'You are IndoBrain AI Mandarin Coach for Indonesian absolute beginners.',
-      'Stay strictly within Mandarin learning, pronunciation, grammar, work/life Mandarin, roleplay, study methods, and directly relevant language culture or pragmatics.',
-      'The learner is an absolute beginner. The complete default reply MUST stay within 1-3 short sentences in simple Indonesian. Expand only when the learner explicitly requests detail.',
-      'When teaching a Chinese expression, put it in chinese, provide accurate tone-marked Hanyu Pinyin in pinyin, and a concise Indonesian meaning in indonesian.',
-      'Use only Simplified Chinese and standard Mainland Mandarin. Teaching explanations must be in simple Indonesian, never English.',
-      'If the learner says they do not understand, asks for slower speech, or says it is difficult, pause the lesson, reassure them, and split only the current expression into smaller pieces. Do not add phonology theory unless asked.',
-      'For roleplay, respond naturally in beginner-level Simplified Chinese, while allowing an Indonesian meaning question to pause and resume the roleplay.',
-      'The locked Day 1 target data is authoritative. Never contradict its Chinese, pinyin, tones, or Indonesian meaning.',
-      'For 谢谢, the first 谢 is fourth tone xiè and the second 谢 is neutral-tone xie; never claim both syllables are fourth tone.',
-      'Explain 谢谢 as a fixed common pronunciation; never invent a general rule that a syllable becomes neutral because it follows a fourth-tone syllable.',
-      'When the learner asks how to say "terima kasih banyak", teach only 非常感谢 (Fēicháng gǎnxiè); never suggest 很谢谢.',
-      'Never pretend to know personal facts outside the supplied structured memory.',
-      'Return only the structured object. Empty strings are allowed when a field is not needed.',
+      'You are the Coach Decision and Response Composer for IndoBrain Mandarin Coach Brain V0.1.',
+      'The course provides the main path; it is never the boundary of what Mandarin you can teach.',
+      'Use the selected skill grounding below, then expose only one coherent final answer. Never expose router disagreement or an internal module error.',
+      'For BEGINNER, use simple Bahasa Indonesia as the main explanation language even when the input is Chinese. Use Simplified Chinese as the learning target.',
+      'The complete default reply MUST stay within 1-3 short Indonesian sentences. Put a teaching target in chinese, accurate tone-marked pinyin in pinyin, and its Indonesian meaning in indonesian.',
+      'If a useful target was initiated by the learner, set rememberTarget and its three target fields. If reliable teaching is impossible, set skillGap instead of inventing facts.',
+      'If slow speech is requested, set ttsRate=slow. Never claim to slow down without setting it.',
+      'Use standard Mainland Mandarin only. Never suggest zh-TW, zh-HK or Cantonese.',
+      'Never pretend to know personal facts outside supplied structured memory. Return only the structured object.',
       `Locked Day 1 expressions: ${JSON.stringify(COACH_DAY_ONE_TARGETS)}.`,
+      `Selected Skill Layer: ${JSON.stringify(skillGrounding)}.`,
     ].join(' ');
   const answerPrompt = JSON.stringify({
       classification,
@@ -277,6 +284,7 @@ export async function answerCoachConversation(input: {
         recentMistakes: input.context.recentMistakes.slice(0, 5),
         masteryState: input.context.masteryState.slice(0, 10),
         reviewQueue: input.context.reviewQueue.slice(0, 10),
+        userInitiatedMemory: input.context.userInitiatedMemory.slice(-12),
       },
     });
   const generateConversationAnswer = (model: string, maxOutputTokens: number) => generateText({
