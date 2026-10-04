@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { AI_COACH_COURSE_ID, type CoachEventName } from '@/lib/mandarin-ai-coach';
+import { saveCoachTelemetryEvent } from '@/lib/server/mandarin-coach-analytics';
 
 export const runtime = 'nodejs';
 
@@ -8,6 +9,7 @@ const allowedEvents = new Set<CoachEventName>([
   'expression_failed', 'audio_play', 'voice_attempt', 'comprehension_correct', 'comprehension_wrong',
   'roleplay_started', 'roleplay_completed', 'coach_conversation_opened', 'coach_question_submitted',
   'coach_answer_received', 'coach_answer_helpful', 'coach_answer_unresolved',
+  'expression_saved_for_review', 'coach_slow_audio_requested', 'coach_skill_gap', 'coach_response_audio_play',
 ]);
 
 export async function POST(request: Request) {
@@ -23,5 +25,6 @@ export async function POST(request: Request) {
     sessionKey,
     ...safeData,
   });
-  return Response.json({ accepted: true, recorded: 'vercel-observability' });
+  const database = await saveCoachTelemetryEvent({ sessionId: body.sessionId, event: body.event, data: safeData as Record<string, unknown> });
+  return Response.json({ accepted: true, recorded: database.saved ? 'supabase+vercel-observability' : 'vercel-observability' });
 }

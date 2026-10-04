@@ -1,7 +1,7 @@
 import 'server-only';
 
 import type { CoachBrainSkillId, CoachDetectedLanguage, CoachIntent, UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
-import { getCoachSkills } from '@/lib/mandarin-coach-skills';
+import { getCoachCapabilities, getCoachCapabilityIds, getCoachSkills } from '@/lib/mandarin-coach-skills';
 import { pronunciationGrounding } from '@/lib/mandarin-pronunciation-knowledge';
 
 export type CoachBrainPlan = {
@@ -33,7 +33,7 @@ export type CoachBrainAnswer = {
   skillGapReason: string;
 };
 
-const OFF_TOPIC = /bitcoin|saham|cuaca|weather|game|gim|seleb|artis|coding|programming|matematika|berita hari ini/i;
+const OFF_TOPIC = /bitcoin|比特币|saham|股票|cuaca|天气|weather|game|gim|游戏|seleb|artis|明星|coding|programming|写程序|matematika|数学|berita hari ini|政治/i;
 const WORKPLACE = /bos|老板|atasan|hr\b|interview|面试|pabrik|工厂|gudang|仓库|供应商|supplier|客户|kantor|办公室|logistik|produksi|库存|发货|mesin|机器|文件|辛苦了/i;
 const PRONUNCIATION = /怎么读|baca|ucap|pelafalan|pengucapan|tone|nada|声调|pelan|perlahan|慢一点|慢点/i;
 const MEANING = /什么意思|apa artinya|artinya apa|maksudnya|berarti apa/i;
@@ -92,7 +92,8 @@ export function routeCoachInput(input: string): CoachBrainPlan {
   const normalizedInput = normalizeCoachInput(input);
   const inputLanguage = detectLanguage(normalizedInput);
   const learningIntents = new Set<CoachIntent>();
-  const offTopic = OFF_TOPIC.test(normalizedInput) && !WORKPLACE.test(normalizedInput) && !/[\u3400-\u9FFF]/.test(normalizedInput);
+  const explicitlyLearningChinese = /中文怎么说|mandarin apa|apa artinya|什么意思|怎么读|发音|pengucapan/i.test(normalizedInput);
+  const offTopic = OFF_TOPIC.test(normalizedInput) && !WORKPLACE.test(normalizedInput) && !explicitlyLearningChinese;
   if (offTopic) learningIntents.add('OFF_TOPIC');
   else {
     if (ROLEPLAY.test(normalizedInput)) learningIntents.add('ROLEPLAY');
@@ -115,7 +116,10 @@ export function routeCoachInput(input: string): CoachBrainPlan {
 }
 
 export function buildSkillGrounding(plan: CoachBrainPlan) {
+  const capabilityIds = getCoachCapabilityIds(plan.learningIntents, plan.skillIds, plan.offTopic);
   return {
+    capabilityIds,
+    capabilities: getCoachCapabilities(capabilityIds),
     selectedSkills: getCoachSkills(plan.skillIds).map((skill) => ({
       skill_id: skill.skill_id, version: skill.version, teaching_goal: skill.teaching_goal,
       teaching_strategy: skill.teaching_strategy, rules: skill.rules, indonesian_learner_notes: skill.indonesian_learner_notes,
@@ -135,6 +139,10 @@ function answer(values: Partial<CoachBrainAnswer> & Pick<CoachBrainAnswer, 'answ
 export function composeKnownCoachResponse(plan: CoachBrainPlan, memory: UserInitiatedMemory[]): CoachBrainAnswer | null {
   const message = plan.normalizedInput.toLowerCase();
   if (plan.offTopic) return answer({ answer: 'Maaf, saya fokus membantu kamu belajar Mandarin 😊', indonesian: 'Kalau ada pertanyaan tentang bahasa Mandarin, pekerjaan, percakapan, atau pengucapan, tanya saya ya.', followUp: 'Kembali Belajar', teachingStrategy: 'OFF_TOPIC_FIXED_REPLY' });
+  if (/di mana.*(?:中文怎么说|mandarin)|在哪里.*(?:pakai|gimana|怎么用)/i.test(plan.normalizedInput)) return answer({ answer: '“Di mana?” dalam Mandarin adalah:', chinese: '在哪里？', pinyin: 'zài nǎ lǐ?', indonesian: 'Di mana?', followUp: 'Contoh singkat: 厕所在哪里？ · Toilet di mana? Mau coba ucapkan “在哪里”？', teachingStrategy: 'TRANSLATION_TO_SHORT_PRACTICE', rememberTarget: true, targetChinese: '在哪里', targetPinyin: 'zài nǎ lǐ', targetMeaning: 'di mana' });
+  if (/货没有到了/.test(plan.normalizedInput)) return answer({ answer: 'Maksudmu sudah benar 👍 Lebih alami bilang:', chinese: '货还没到。', pinyin: 'huò hái méi dào', indonesian: 'Barangnya masih belum sampai.', followUp: 'Coba ulangi: 货还没到。', teachingStrategy: 'WORKPLACE_MINIMAL_CORRECTION', rememberTarget: true, targetChinese: '货还没到', targetPinyin: 'huò hái méi dào', targetMeaning: 'barangnya masih belum sampai' });
+  if (/货到了吗/.test(plan.normalizedInput) && /什么意思|apa artinya|maksudnya|berarti/.test(message)) return answer({ answer: 'Artinya menanyakan apakah barang sudah tiba.', chinese: '货到了吗？', pinyin: 'huò dào le ma?', indonesian: 'Apakah barangnya sudah sampai?', followUp: 'Sekarang saya jadi bos: 货到了吗？ Kamu bisa jawab “到了” atau “还没到”。', teachingStrategy: 'MEANING_TO_WORKPLACE_ROLEPLAY', rememberTarget: true, targetChinese: '货到了吗', targetPinyin: 'huò dào le ma', targetMeaning: 'apakah barangnya sudah sampai' });
+  if (/明天早点来/.test(plan.normalizedInput)) return answer({ answer: 'Bos meminta kamu datang lebih awal besok.', chinese: '明天早点来。', pinyin: 'míng tiān zǎo diǎn lái', indonesian: 'Besok datang lebih awal.', followUp: 'Jawaban singkat yang natural: 好的。', teachingStrategy: 'WORKPLACE_MEANING_TO_RESPONSE', rememberTarget: true, targetChinese: '明天早点来', targetPinyin: 'míng tiān zǎo diǎn lái', targetMeaning: 'besok datang lebih awal' });
   if (plan.skillIds.includes('REVIEW')) {
     const item = [...memory].sort((a, b) => Number(b.saved_for_review) - Number(a.saved_for_review) || b.fail_count - a.fail_count || a.mastery_level - b.mastery_level)[0];
     if (item) return answer({ answer: `Kamu pernah belajar ${item.expression}. Masih ingat artinya?`, chinese: item.expression, pinyin: item.pinyin, indonesian: item.meaning_id, followUp: 'Coba jawab tanpa melihat.', teachingStrategy: 'EXPLAINABLE_MEMORY_REVIEW' });

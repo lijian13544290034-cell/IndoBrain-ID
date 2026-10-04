@@ -1,14 +1,22 @@
-export async function saveToSupabase(table: string, row: Record<string, unknown>) {
+import { accountServerKey } from '@/lib/account/config';
+
+function environment() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const key = accountServerKey();
 
-  if (!url || !key) return { saved: false, reason: 'not_configured' as const };
+  return url && key ? { url, key } : null;
+}
 
-  const response = await fetch(`${url}/rest/v1/${table}`, {
+export async function saveToSupabase(table: string, row: Record<string, unknown>) {
+  const config = environment();
+
+  if (!config) return { saved: false, reason: 'not_configured' as const };
+
+  const response = await fetch(`${config.url}/rest/v1/${table}`, {
     method: 'POST',
     headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
+      apikey: config.key,
+      Authorization: `Bearer ${config.key}`,
       'Content-Type': 'application/json',
       Prefer: 'return=minimal',
     },
@@ -27,4 +35,19 @@ export async function saveToSupabase(table: string, row: Record<string, unknown>
     throw new Error(`Supabase write failed: ${response.status}`);
   }
   return { saved: true };
+}
+
+export async function readFromSupabase<T>(path: string) {
+  const config = environment();
+  if (!config) return { configured: false as const, rows: [] as T[] };
+  const response = await fetch(`${config.url}/rest/v1/${path}`, {
+    headers: {
+      apikey: config.key,
+      Authorization: `Bearer ${config.key}`,
+      Accept: 'application/json',
+    },
+    cache: 'no-store',
+  });
+  if (!response.ok) throw new Error(`Supabase read failed: ${response.status}`);
+  return { configured: true as const, rows: await response.json() as T[] };
 }

@@ -1,5 +1,9 @@
 import { createHash, randomUUID } from 'node:crypto';
+import { getCurrentAccountUser } from '@/lib/account/auth';
 import { isExpressionId, type CoachSkill, type ExpressionId, type UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
+import { getCoachCapabilityIds } from '@/lib/mandarin-coach-skills';
+import { buildCoachSpeechSegments } from '@/lib/mandarin-coach-speech';
+import { saveCoachInteraction } from '@/lib/server/mandarin-coach-analytics';
 import { anonymizeLearningQuestion, answerCoachConversation, transcribeMandarin } from '@/lib/server/mandarin-ai-coach';
 
 export const runtime = 'nodejs';
@@ -67,6 +71,8 @@ function safeContext(value: FormDataEntryValue | null) {
       userInitiatedMemory: userInitiatedMemory.slice(-20),
       recentConversationSummary: typeof parsed.recentConversationSummary === 'string' ? parsed.recentConversationSummary.slice(0, 280) : '',
       recentTurns: recentTurns.slice(-6),
+      sessionStartedAt: typeof parsed.sessionStartedAt === 'string' ? parsed.sessionStartedAt : '',
+      messageCount: typeof parsed.messageCount === 'number' ? Math.max(0, Math.min(200, parsed.messageCount)) : recentTurns.length,
     };
   } catch {
     return null;
@@ -74,6 +80,7 @@ function safeContext(value: FormDataEntryValue | null) {
 }
 
 export async function POST(request: Request) {
+  const startedAt = Date.now();
   try {
     const form = await request.formData();
     const sessionId = form.get('sessionId');
@@ -97,6 +104,15 @@ export async function POST(request: Request) {
     const questionId = randomUUID();
     const timestamp = new Date().toISOString();
     const sessionKey = createHash('sha256').update(sessionId).digest('hex').slice(0, 16);
+    const inputMode = audio instanceof File ? 'VOICE' as const : 'TEXT' as const;
+    const capabilityIds = getCoachCapabilityIds(result.classification.intents, result.classification.skillIds, result.classification.intent === 'OFF_TOPIC');
+    const speechSegments = buildCoachSpeechSegments(result.answer);
+    const currentUser = await getCurrentAccountUser();
+    const responseLatencyMs = Date.now() - startedAt;
+    const sttSeconds = transcription?.durationInSeconds || 0;
+    const estimatedCost = result.usage.estimated_ai_cost + (transcription?.estimatedCost || 0);
+    const sessionStarted = Date.parse(context.sessionStartedAt);
+    const sessionDurationSeconds = Number.isFinite(sessionStarted) ? Math.max(0, Math.round((Date.now() - sessionStarted) / 1000)) : 0;
     console.info('[mandarin-ai-coach-learning-insight]', {
       course: 'mandarin-ai-coach-day1',
       question_id: questionId,
@@ -117,6 +133,29 @@ export async function POST(request: Request) {
       skill_gap: result.answer.skillGap,
       timestamp,
     });
+    await saveCoachInteraction({
+      sessionId,
+      userId: currentUser?.id || null,
+      inputMode,
+      userMessage: message,
+      assistantMessage: [result.answer.answer, result.answer.chinese, result.answer.indonesian, result.answer.followUp].filter(Boolean).join(' '),
+      detectedLanguage: result.classification.detectedLanguage,
+      intent: result.classification.intent,
+      skills: [...capabilityIds, ...result.classification.skillIds],
+      currentDay: context.currentDay,
+      currentExpression: context.currentExpression,
+      answerCategory: result.classification.answerCategory,
+      targetChinese: result.classification.targetChinese || result.answer.targetChinese || null,
+      model: result.usage.model_used,
+      inputTokens: result.usage.token_input,
+      outputTokens: result.usage.token_output,
+      estimatedCost,
+      sttSeconds,
+      responseLatencyMs,
+      messageCount: context.messageCount + 1,
+      sessionDurationSeconds,
+      offTopic: result.classification.intent === 'OFF_TOPIC',
+    });
     return Response.json({
       questionId,
       transcript: transcription?.transcript || null,
@@ -124,14 +163,17 @@ export async function POST(request: Request) {
       intent: result.classification.intent,
       intents: result.classification.intents,
       skillIds: result.classification.skillIds,
+      capabilityIds,
+      speechSegments,
       normalizedInput: result.classification.normalizedInput,
       answerCategory: result.classification.answerCategory,
       ...result.answer,
       usage: {
         ...result.usage,
-        stt_seconds: transcription?.durationInSeconds || 0,
+        stt_seconds: sttSeconds,
         stt_model: transcription?.model || null,
-        estimated_ai_cost: result.usage.estimated_ai_cost + (transcription?.estimatedCost || 0),
+        estimated_ai_cost: estimatedCost,
+        response_latency_ms: responseLatencyMs,
       },
       timestamp,
     });

@@ -8,13 +8,17 @@ const requiredFiles = [
   'lib/mandarin-ai-coach.ts',
   'lib/mandarin-ai-coach-profile.ts',
   'lib/mandarin-coach-skills.ts',
+  'lib/mandarin-coach-speech.ts',
   'lib/mandarin-pronunciation-knowledge.ts',
   'lib/server/mandarin-ai-coach.ts',
   'lib/server/mandarin-coach-brain.ts',
+  'lib/server/mandarin-coach-analytics.ts',
   'app/api/mandarin-coach/pronunciation/route.ts',
   'app/api/mandarin-coach/conversation/route.ts',
   'app/api/mandarin-coach/status/route.ts',
   'app/api/mandarin-coach/telemetry/route.ts',
+  'app/api/admin/mandarin-coach-analytics/route.ts',
+  'components/MandarinCoachAnalytics.tsx',
 ];
 
 const failures = [];
@@ -52,6 +56,9 @@ const pronunciation = fs.readFileSync('lib/mandarin-pronunciation-knowledge.ts',
 for (const skill of ['VOCABULARY', 'PRONUNCIATION', 'MEANING', 'CORRECTION', 'EXAMPLE', 'CONVERSATION', 'WORKPLACE', 'REVIEW']) {
   if (!skills.includes(`skill_id: '${skill}'`)) failures.push(`skill layer missing ${skill}`);
 }
+for (const capability of ['LANGUAGE_ROUTER', 'TRANSLATION_EXPLANATION', 'CHINESE_TEACHER', 'CORRECTION', 'ROLE_PLAY', 'PRONUNCIATION_SPEAKING', 'DIFFICULTY_CONTROL', 'LEARNING_MEMORY']) {
+  if (!skills.includes(`${capability}:`)) failures.push(`coach V1 capability missing ${capability}`);
+}
 for (const intent of ['ROLEPLAY', 'PRONUNCIATION', 'MEANING', 'GRAMMAR', 'WORKPLACE', 'OFF_TOPIC']) if (!server.includes(intent)) failures.push(`intent classification missing ${intent}`);
 if (!brain.includes('Maaf, saya fokus membantu kamu belajar Mandarin')) failures.push('fixed off-topic response is missing');
 if (!brain.includes("pinyin: 'xiè xie'")) failures.push('locked Day 1 neutral-tone target is missing');
@@ -60,18 +67,26 @@ if (!server.includes('MUST stay within 1-3 short Indonesian sentences')) failure
 if (!brain.includes("ttsRate: 'slow'")) failures.push('actual slow-request response is missing');
 if (!pronunciation.includes('THIRD_TONE_SANDHI') || !pronunciation.includes('nǐ hǎo → ní hǎo')) failures.push('third-tone sandhi knowledge is missing');
 if (!brain.includes("targetChinese: '喝'") || !brain.includes("targetPinyin: 'hē'")) failures.push('user-initiated vocabulary memory target is missing');
+for (const marker of ["targetChinese: '在哪里'", "targetChinese: '货到了吗'", "targetChinese: '货还没到'", "targetChinese: '明天早点来'"]) if (!brain.includes(marker)) failures.push(`locked V1 acceptance response missing ${marker}`);
 if (!server.includes('answerModel === SMART_MODEL ? FAST_MODEL : SMART_MODEL')) failures.push('cross-model structured conversation retry is missing');
 if (!server.includes('generateClassification(SMART_MODEL, 140)')) failures.push('structured intent retry is missing');
 if (!server.includes('recentConversationSummary') || !server.includes('recentTurns.slice(-6)')) failures.push('bounded conversation context is missing');
 if (!data.includes('offerSaveAndSkipAt: 3')) failures.push('centralized three-failure save-and-skip policy is missing');
 if (!ui.includes('Simpan untuk review &amp; lewati')) failures.push('save-and-skip UI is missing');
-if (!conversationUi.includes("body: JSON.stringify({ text, rate })")) failures.push('conversation TTS rate is not sent to the server');
+for (const marker of ["'/api/chinese-tts'", "'/api/tts'", "voice !== 'zh-CN-XiaoxiaoNeural'", "voice?.startsWith('id-ID-')", 'Dengarkan jawaban', 'Balas dengan suara']) if (!conversationUi.includes(marker)) failures.push(`voice conversation UI missing ${marker}`);
+const speech = fs.readFileSync('lib/mandarin-coach-speech.ts', 'utf8');
+for (const marker of ['zh-CN', 'id-ID', 'splitCoachSpeechText', 'buildCoachSpeechSegments']) if (!speech.includes(marker)) failures.push(`mixed-language speech segmentation missing ${marker}`);
 
 const proxy = fs.readFileSync('proxy.ts', 'utf8');
 if (!proxy.includes("pathname.startsWith('/learn-chinese/')")) failures.push('AI coach route is not covered by public Mandarin access policy');
 const telemetry = fs.readFileSync('app/api/mandarin-coach/telemetry/route.ts', 'utf8');
 if (!telemetry.includes("console.info('[mandarin-ai-coach-event]'")) failures.push('structured observability telemetry is missing');
 if (!telemetry.includes("createHash('sha256')")) failures.push('telemetry session pseudonymization is missing');
+if (!telemetry.includes('saveCoachTelemetryEvent')) failures.push('telemetry persistence is missing');
+const analytics = fs.readFileSync('lib/server/mandarin-coach-analytics.ts', 'utf8');
+for (const marker of ['anonymousCoachId', "role_type: interactionRole", 'input_tokens', 'output_tokens', 'estimated_cost', 'speech_duration', 'response_latency']) if (!analytics.includes(marker)) failures.push(`analytics data contract missing ${marker}`);
+const adminAnalytics = fs.readFileSync('components/MandarinCoachAnalytics.tsx', 'utf8');
+for (const marker of ['今日活跃用户', '高频问题', '高频错误', '今日估算 AI 成本']) if (!adminAnalytics.includes(marker)) failures.push(`analytics dashboard missing ${marker}`);
 
 if (failures.length) {
   console.error(`Mandarin AI Coach verification failed (${failures.length})`);

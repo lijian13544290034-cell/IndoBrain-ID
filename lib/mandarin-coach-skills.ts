@@ -1,4 +1,4 @@
-import type { CoachBrainSkillId } from '@/lib/mandarin-ai-coach';
+import type { CoachBrainSkillId, CoachCapabilityId, CoachIntent } from '@/lib/mandarin-ai-coach';
 
 export type MandarinCoachSkill = {
   skill_id: CoachBrainSkillId;
@@ -83,4 +83,29 @@ export const MANDARIN_COACH_SKILLS: Record<CoachBrainSkillId, MandarinCoachSkill
 
 export function getCoachSkills(ids: CoachBrainSkillId[]) {
   return ids.map((id) => MANDARIN_COACH_SKILLS[id]);
+}
+
+export const MANDARIN_COACH_CAPABILITIES: Record<CoachCapabilityId, { goal: string; rules: string[] }> = {
+  LANGUAGE_ROUTER: { goal: 'Understand Indonesian, Chinese, mixed input, slang and simple pinyin without a language selector.', rules: ['Route by learning intent, not keywords alone.', 'Keep authentic workplace-language questions in scope.'] },
+  TRANSLATION_EXPLANATION: { goal: 'Use translation as a short bridge into learning Mandarin.', rules: ['Default explanations to simple Indonesian.', 'Teach standard Mandarin with tone-marked pinyin.'] },
+  CHINESE_TEACHER: { goal: 'Turn a useful answer into one optional low-pressure practice step.', rules: ['Answer first.', 'Offer one short example or practice turn; never force it.'] },
+  CORRECTION: { goal: 'Correct the smallest useful issue and invite one retry.', rules: ['Acknowledge communicative intent.', 'Do not produce a linguistic lecture.'] },
+  ROLE_PLAY: { goal: 'Practice natural work and life Mandarin through short roleplay turns.', rules: ['Pause roleplay for meaning questions.', 'Resume with a clear short model answer.'] },
+  PRONUNCIATION_SPEAKING: { goal: 'Support voice-first Mandarin listening, speaking and pronunciation feedback.', rules: ['Mandarin TTS is zh-CN only.', 'Mixed-language responses use language-specific speech segments.'] },
+  DIFFICULTY_CONTROL: { goal: 'Keep beginner output short and adapt after repeated difficulty.', rules: ['Use one learning point at a time.', 'Change strategy at retry two and offer save/skip at retry three.'] },
+  LEARNING_MEMORY: { goal: 'Use structured memory to select review and personalize the next step.', rules: ['Remember learning evidence, not unrelated personal details.', 'Do not put unlimited raw conversation into model context.'] },
+};
+
+export function getCoachCapabilityIds(intents: CoachIntent[], skills: CoachBrainSkillId[], offTopic: boolean): CoachCapabilityId[] {
+  if (offTopic) return ['LANGUAGE_ROUTER'];
+  const ids = new Set<CoachCapabilityId>(['LANGUAGE_ROUTER', 'CHINESE_TEACHER', 'DIFFICULTY_CONTROL', 'LEARNING_MEMORY']);
+  if (skills.some((skill) => ['VOCABULARY', 'MEANING', 'EXAMPLE'].includes(skill)) || intents.includes('GRAMMAR')) ids.add('TRANSLATION_EXPLANATION');
+  if (skills.includes('CORRECTION')) ids.add('CORRECTION');
+  if (intents.includes('ROLEPLAY') || skills.includes('WORKPLACE')) ids.add('ROLE_PLAY');
+  if (skills.includes('PRONUNCIATION') || intents.includes('CONVERSATION')) ids.add('PRONUNCIATION_SPEAKING');
+  return [...ids];
+}
+
+export function getCoachCapabilities(ids: CoachCapabilityId[]) {
+  return ids.map((id) => ({ capability_id: id, ...MANDARIN_COACH_CAPABILITIES[id] }));
 }

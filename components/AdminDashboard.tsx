@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import type { AccountUser, AdminStats, LearningDirection, LoginHistoryEntry, MembershipLevel } from '@/lib/account/types';
 import BulkStudentImport from './BulkStudentImport';
 import PasswordVisibilityField from './PasswordVisibilityField';
+import MandarinCoachAnalytics from './MandarinCoachAnalytics';
 
 const plans: MembershipLevel[] = ['BASIC', 'PRO', 'VIP', 'ENTERPRISE', 'SVIP'];
 const planLabels: Record<MembershipLevel, string> = {
@@ -185,6 +186,7 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
   ];
 
   return <div className="space-y-8">
+    <MandarinCoachAnalytics />
     <section className="flex flex-col gap-4 rounded-2xl border border-stone-200 bg-stone-50 p-5 sm:flex-row sm:items-center sm:justify-between">
       <div><h2 className="text-lg font-semibold"><Label indonesian="Kelola Akun" chinese="账号管理" /></h2><p className="mt-1 text-sm text-gray-500">仅 SUPER_ADMIN 可以创建和管理测试账号。</p></div>
       <button onClick={() => { setShowCreateForm((visible) => !visible); setCreatedAccount(null); setCreateError(''); }} className="rounded-xl bg-stone-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-stone-700"><Label indonesian={showCreateForm ? 'Tutup Formulir' : 'Buat Akun'} chinese={showCreateForm ? '关闭表单' : '创建账号'} /></button>

@@ -237,6 +237,14 @@ export async function answerCoachConversation(input: {
   };
   let classification = deterministicClassification;
   let classificationUsage: CallUsage = { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'mandarin-coach-brain-v0.1' };
+  const deterministicAnswer = composeKnownCoachResponse(brainPlan, input.context.userInitiatedMemory);
+  if (deterministicAnswer) {
+    return {
+      classification: deterministicClassification,
+      answer: { ...deterministicAnswer, summary: deterministicAnswer.summary || input.context.recentConversationSummary.slice(0, 280) } satisfies ConversationAnswer,
+      usage: classificationUsage,
+    };
+  }
   if (brainPlan.confidence < 0.8) {
     let classificationModel = FAST_MODEL;
     let classificationResult;
@@ -248,15 +256,6 @@ export async function answerCoachConversation(input: {
     }
     classification = classificationResult.output;
     classificationUsage = usageFromResult(classificationResult, classificationModel);
-  }
-
-  const knownAnswer = composeKnownCoachResponse(brainPlan, input.context.userInitiatedMemory);
-  if (knownAnswer) {
-    return {
-      classification,
-      answer: { ...knownAnswer, summary: knownAnswer.summary || input.context.recentConversationSummary.slice(0, 280) } satisfies ConversationAnswer,
-      usage: classificationUsage,
-    };
   }
 
   const answerModel = classification.modelTier === 'SMART' ? SMART_MODEL : FAST_MODEL;

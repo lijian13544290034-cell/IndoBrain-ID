@@ -11,6 +11,15 @@ export type CoachSkill = 'TEACH' | 'PRONUNCIATION' | 'COMPREHENSION' | 'ROLEPLAY
 export type CoachVerdict = 'PASS' | 'RETRY' | 'BREAKDOWN';
 export type CoachConversationMode = 'GUIDED_TRAINING' | 'COACH_CONVERSATION';
 export type CoachBrainSkillId = 'VOCABULARY' | 'PRONUNCIATION' | 'MEANING' | 'CORRECTION' | 'EXAMPLE' | 'CONVERSATION' | 'WORKPLACE' | 'REVIEW';
+export type CoachCapabilityId =
+  | 'LANGUAGE_ROUTER'
+  | 'TRANSLATION_EXPLANATION'
+  | 'CHINESE_TEACHER'
+  | 'CORRECTION'
+  | 'ROLE_PLAY'
+  | 'PRONUNCIATION_SPEAKING'
+  | 'DIFFICULTY_CONTROL'
+  | 'LEARNING_MEMORY';
 export type CoachIntent = CoachBrainSkillId | 'ROLEPLAY' | 'GRAMMAR' | 'OFF_TOPIC';
 export type CoachDetectedLanguage = 'INDONESIAN' | 'CHINESE' | 'MIXED';
 export type CoachEventName =
@@ -19,7 +28,7 @@ export type CoachEventName =
   | 'comprehension_correct' | 'comprehension_wrong' | 'roleplay_started' | 'roleplay_completed'
   | 'coach_conversation_opened' | 'coach_question_submitted' | 'coach_answer_received'
   | 'coach_answer_helpful' | 'coach_answer_unresolved' | 'expression_saved_for_review'
-  | 'coach_slow_audio_requested' | 'coach_skill_gap';
+  | 'coach_slow_audio_requested' | 'coach_skill_gap' | 'coach_response_audio_play';
 
 export type CoachConversationTurn = {
   id: string;
@@ -31,6 +40,8 @@ export type CoachConversationTurn = {
   intent?: CoachIntent;
   intents?: CoachIntent[];
   skillIds?: CoachBrainSkillId[];
+  capabilityIds?: CoachCapabilityId[];
+  speechSegments?: Array<{ language: 'zh-CN' | 'id-ID'; text: string }>;
   ttsRate?: 'normal' | 'slow';
   createdAt: string;
 };
