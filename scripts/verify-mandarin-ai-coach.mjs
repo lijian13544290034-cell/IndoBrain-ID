@@ -61,6 +61,7 @@ for (const capability of ['LANGUAGE_ROUTER', 'TRANSLATION_EXPLANATION', 'CHINESE
 }
 for (const intent of ['ROLEPLAY', 'PRONUNCIATION', 'MEANING', 'GRAMMAR', 'WORKPLACE', 'OFF_TOPIC']) if (!server.includes(intent)) failures.push(`intent classification missing ${intent}`);
 if (!brain.includes('Maaf, saya fokus membantu kamu belajar Mandarin')) failures.push('fixed off-topic response is missing');
+if (!brain.includes('\\bgim\\b') || brain.includes('|gim|')) failures.push('off-topic router must not classify “gimana” as the game term “gim”');
 if (!brain.includes("pinyin: 'xiè xie'")) failures.push('locked Day 1 neutral-tone target is missing');
 if (!brain.includes("targetChinese: '非常'")) failures.push('mixed-language 非常 target handling is missing');
 if (!server.includes('MUST stay within 1-3 short Indonesian sentences')) failures.push('beginner answer length guard is missing');

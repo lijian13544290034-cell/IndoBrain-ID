@@ -33,7 +33,7 @@ export type CoachBrainAnswer = {
   skillGapReason: string;
 };
 
-const OFF_TOPIC = /bitcoin|比特币|saham|股票|cuaca|天气|weather|game|gim|游戏|seleb|artis|明星|coding|programming|写程序|matematika|数学|berita hari ini|政治/i;
+const OFF_TOPIC = /bitcoin|比特币|saham|股票|cuaca|天气|weather|game|\bgim\b|游戏|seleb|artis|明星|coding|programming|写程序|matematika|数学|berita hari ini|政治/i;
 const WORKPLACE = /bos|老板|atasan|hr\b|interview|面试|pabrik|工厂|gudang|仓库|供应商|supplier|客户|kantor|办公室|logistik|produksi|库存|发货|mesin|机器|文件|辛苦了/i;
 const PRONUNCIATION = /怎么读|baca|ucap|pelafalan|pengucapan|tone|nada|声调|pelan|perlahan|慢一点|慢点/i;
 const MEANING = /什么意思|apa artinya|artinya apa|maksudnya|berarti apa/i;
