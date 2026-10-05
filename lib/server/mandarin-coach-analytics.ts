@@ -42,6 +42,9 @@ export async function saveCoachInteraction(input: {
   estimatedCost: number;
   structuredRetries: number;
   safeFallbacks: number;
+  retryTokenInput: number;
+  retryTokenOutput: number;
+  retryEstimatedCost: number;
   sttSeconds: number;
   responseLatencyMs: number;
   messageCount: number;
@@ -76,6 +79,9 @@ export async function saveCoachInteraction(input: {
     estimated_cost: input.estimatedCost,
     structured_retries: input.structuredRetries,
     safe_fallbacks: input.safeFallbacks,
+    retry_input_tokens: input.retryTokenInput,
+    retry_output_tokens: input.retryTokenOutput,
+    retry_estimated_cost: input.retryEstimatedCost,
     response_latency: input.responseLatencyMs,
   };
   try {

@@ -23,6 +23,9 @@ type CallUsage = {
   model_used: string;
   structured_retries: number;
   safe_fallbacks: number;
+  retry_token_input: number;
+  retry_token_output: number;
+  retry_estimated_cost: number;
 };
 
 type ConversationClassification = {
@@ -114,12 +117,15 @@ function usageFromResult(result: { usage: { inputTokens?: number; outputTokens?:
     model_used: model,
     structured_retries: 0,
     safe_fallbacks: 0,
+    retry_token_input: 0,
+    retry_token_output: 0,
+    retry_estimated_cost: 0,
   };
 }
 
 function usageFromStructuredError(error: unknown, model: string): CallUsage {
   if (!NoObjectGeneratedError.isInstance(error) || !error.usage) {
-    return { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: model, structured_retries: 0, safe_fallbacks: 0 };
+    return { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: model, structured_retries: 0, safe_fallbacks: 0, retry_token_input: 0, retry_token_output: 0, retry_estimated_cost: 0 };
   }
   const tokenInput = error.usage.inputTokens || 0;
   const tokenOutput = error.usage.outputTokens || 0;
@@ -131,6 +137,9 @@ function usageFromStructuredError(error: unknown, model: string): CallUsage {
     model_used: model,
     structured_retries: 0,
     safe_fallbacks: 0,
+    retry_token_input: 0,
+    retry_token_output: 0,
+    retry_estimated_cost: 0,
   };
 }
 
@@ -143,6 +152,9 @@ function mergeUsage(first: CallUsage, second: CallUsage): CallUsage {
     model_used: `${first.model_used} → ${second.model_used}`,
     structured_retries: first.structured_retries + second.structured_retries,
     safe_fallbacks: first.safe_fallbacks + second.safe_fallbacks,
+    retry_token_input: first.retry_token_input + second.retry_token_input,
+    retry_token_output: first.retry_token_output + second.retry_token_output,
+    retry_estimated_cost: first.retry_estimated_cost + second.retry_estimated_cost,
   };
 }
 
@@ -225,6 +237,9 @@ async function callDecisionModel(model: string, input: {
       model_used: model,
       structured_retries: 0,
       safe_fallbacks: 0,
+      retry_token_input: 0,
+      retry_token_output: 0,
+      retry_estimated_cost: 0,
     } satisfies CallUsage,
   };
 }
@@ -250,6 +265,9 @@ export async function evaluateCoachAttempt(input: {
       model_used: `${FAST_MODEL} → ${SMART_MODEL}`,
       structured_retries: first.usage.structured_retries + second.usage.structured_retries,
       safe_fallbacks: first.usage.safe_fallbacks + second.usage.safe_fallbacks,
+      retry_token_input: first.usage.retry_token_input + second.usage.retry_token_input,
+      retry_token_output: first.usage.retry_token_output + second.usage.retry_token_output,
+      retry_estimated_cost: first.usage.retry_estimated_cost + second.usage.retry_estimated_cost,
     } satisfies CallUsage,
   };
 }
@@ -279,7 +297,7 @@ export async function answerCoachConversation(input: {
     output: Output.object({ schema: classificationSchema, name: 'mandarin_coach_intent' }),
     maxOutputTokens,
     temperature: 0,
-    maxRetries: 1,
+    maxRetries: 0,
     providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'intent'], user: input.sessionId.slice(0, 96) } },
     system: [
       'You are the Language and Teaching Intent Router for an Indonesian learner of Mandarin.',
@@ -297,7 +315,7 @@ export async function answerCoachConversation(input: {
     modelTier: brainPlan.modelTier, answerCategory: brainPlan.offTopic ? 'OFF_TOPIC' : brainPlan.learningIntents.includes('ROLEPLAY') ? 'ROLEPLAY' : brainPlan.skillIds.includes('PRONUNCIATION') ? 'PRONUNCIATION_COACHING' : brainPlan.skillIds.includes('EXAMPLE') || brainPlan.skillIds.includes('VOCABULARY') ? 'EXAMPLE' : 'EXPLANATION',
   };
   let classification = deterministicClassification;
-  let classificationUsage: CallUsage = { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'mandarin-coach-brain-v0.1', structured_retries: 0, safe_fallbacks: 0 };
+  let classificationUsage: CallUsage = { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'mandarin-coach-brain-v0.1', structured_retries: 0, safe_fallbacks: 0, retry_token_input: 0, retry_token_output: 0, retry_estimated_cost: 0 };
   const deterministicAnswer = composeKnownCoachResponse(brainPlan, input.context.userInitiatedMemory);
   if (deterministicAnswer) {
     return {
@@ -308,7 +326,7 @@ export async function answerCoachConversation(input: {
   }
   if (brainPlan.confidence < 0.8) {
     try {
-      const classificationResult = await generateClassification(FAST_MODEL, 120);
+      const classificationResult = await generateClassification(FAST_MODEL, 220);
       classification = classificationResult.output;
       classificationUsage = usageFromResult(classificationResult, FAST_MODEL);
     } catch (error) {
@@ -359,7 +377,7 @@ export async function answerCoachConversation(input: {
   });
   let answerUsage = classificationUsage;
   try {
-    const answerResult = await generateConversationAnswer(answerModel, 220);
+    const answerResult = await generateConversationAnswer(answerModel, 480);
     return {
       classification,
       answer: answerResult.output,
@@ -370,9 +388,12 @@ export async function answerCoachConversation(input: {
     console.warn('[mandarin-coach-structured-answer-failed]', { model: answerModel, ...safeErrorDetails(error) });
     try {
       const malformedCandidate = NoObjectGeneratedError.isInstance(error) ? error.text || '' : '';
-      const repaired = await generateConversationAnswer(FAST_MODEL, 240, malformedCandidate);
+      const repaired = await generateConversationAnswer(FAST_MODEL, 480, malformedCandidate);
       const repairUsage = usageFromResult(repaired, FAST_MODEL);
       repairUsage.structured_retries = 1;
+      repairUsage.retry_token_input = repairUsage.token_input;
+      repairUsage.retry_token_output = repairUsage.token_output;
+      repairUsage.retry_estimated_cost = repairUsage.estimated_ai_cost;
       console.info('[mandarin-coach-structured-retry]', { fromModel: answerModel, repairModel: FAST_MODEL, success: true });
       return {
         classification,
@@ -383,6 +404,9 @@ export async function answerCoachConversation(input: {
       const repairUsage = usageFromStructuredError(repairError, FAST_MODEL);
       repairUsage.structured_retries = 1;
       repairUsage.safe_fallbacks = 1;
+      repairUsage.retry_token_input = repairUsage.token_input;
+      repairUsage.retry_token_output = repairUsage.token_output;
+      repairUsage.retry_estimated_cost = repairUsage.estimated_ai_cost;
       console.warn('[mandarin-coach-safe-fallback]', { repairModel: FAST_MODEL, ...safeErrorDetails(repairError) });
       return {
         classification,
