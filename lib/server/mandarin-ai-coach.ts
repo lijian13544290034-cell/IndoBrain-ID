@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { Output, experimental_transcribe as transcribe, gateway, generateText, jsonSchema } from 'ai';
+import { NoObjectGeneratedError, Output, experimental_transcribe as transcribe, gateway, generateText, jsonSchema } from 'ai';
 import { DAY_ONE_EXPRESSIONS, type CoachBrainSkillId, type CoachDetectedLanguage, type CoachIntent, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, type UserInitiatedMemory, getExpression } from '@/lib/mandarin-ai-coach';
 import { buildSkillGrounding, composeKnownCoachResponse, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
 
@@ -21,6 +21,8 @@ type CallUsage = {
   model_calls: number;
   estimated_ai_cost: number;
   model_used: string;
+  structured_retries: number;
+  safe_fallbacks: number;
 };
 
 type ConversationClassification = {
@@ -110,6 +112,25 @@ function usageFromResult(result: { usage: { inputTokens?: number; outputTokens?:
     model_calls: 1,
     estimated_ai_cost: numericCost(result.providerMetadata) || fallbackTextCost(model, tokenInput, tokenOutput),
     model_used: model,
+    structured_retries: 0,
+    safe_fallbacks: 0,
+  };
+}
+
+function usageFromStructuredError(error: unknown, model: string): CallUsage {
+  if (!NoObjectGeneratedError.isInstance(error) || !error.usage) {
+    return { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: model, structured_retries: 0, safe_fallbacks: 0 };
+  }
+  const tokenInput = error.usage.inputTokens || 0;
+  const tokenOutput = error.usage.outputTokens || 0;
+  return {
+    token_input: tokenInput,
+    token_output: tokenOutput,
+    model_calls: 1,
+    estimated_ai_cost: fallbackTextCost(model, tokenInput, tokenOutput),
+    model_used: model,
+    structured_retries: 0,
+    safe_fallbacks: 0,
   };
 }
 
@@ -120,6 +141,42 @@ function mergeUsage(first: CallUsage, second: CallUsage): CallUsage {
     model_calls: first.model_calls + second.model_calls,
     estimated_ai_cost: first.estimated_ai_cost + second.estimated_ai_cost,
     model_used: `${first.model_used} → ${second.model_used}`,
+    structured_retries: first.structured_retries + second.structured_retries,
+    safe_fallbacks: first.safe_fallbacks + second.safe_fallbacks,
+  };
+}
+
+function safeErrorDetails(error: unknown) {
+  if (!NoObjectGeneratedError.isInstance(error)) {
+    return { name: error instanceof Error ? error.name : 'UnknownError' };
+  }
+  return {
+    name: error.name,
+    cause: error.cause instanceof Error ? error.cause.name : undefined,
+    finishReason: error.finishReason,
+    rawTextLength: error.text?.length || 0,
+  };
+}
+
+function safeTeachingFallback(plan: ReturnType<typeof routeCoachInput>, classification: ConversationClassification, summary: string): ConversationAnswer {
+  const target = classification.targetChinese || plan.targetChinese || '';
+  return {
+    answer: target
+      ? 'Mari kita fokus pada satu bagian dulu. Kirim frasa ini lagi jika kamu ingin arti atau cara bacanya.'
+      : 'Saya belum bisa menyusun jawaban lengkap. Coba tanyakan satu frasa Mandarin, arti, atau cara bacanya.',
+    chinese: target,
+    pinyin: '',
+    indonesian: '',
+    followUp: target ? `Apa yang ingin kamu pelajari dari “${target}”?` : 'Frasa Mandarin mana yang ingin kamu pelajari?',
+    summary: summary.slice(0, 280),
+    ttsRate: plan.slowSpeech ? 'slow' : 'normal',
+    teachingStrategy: 'SAFE_PLAIN_TEXT_FALLBACK',
+    rememberTarget: false,
+    targetChinese: '',
+    targetPinyin: '',
+    targetMeaning: '',
+    skillGap: true,
+    skillGapReason: 'Structured teaching response unavailable after one controlled repair attempt.',
   };
 }
 
@@ -166,6 +223,8 @@ async function callDecisionModel(model: string, input: {
       model_calls: 1,
       estimated_ai_cost: gatewayCost || fallbackTextCost(model, tokenInput, tokenOutput),
       model_used: model,
+      structured_retries: 0,
+      safe_fallbacks: 0,
     } satisfies CallUsage,
   };
 }
@@ -189,6 +248,8 @@ export async function evaluateCoachAttempt(input: {
       model_calls: 2,
       estimated_ai_cost: first.usage.estimated_ai_cost + second.usage.estimated_ai_cost,
       model_used: `${FAST_MODEL} → ${SMART_MODEL}`,
+      structured_retries: first.usage.structured_retries + second.usage.structured_retries,
+      safe_fallbacks: first.usage.safe_fallbacks + second.usage.safe_fallbacks,
     } satisfies CallUsage,
   };
 }
@@ -236,7 +297,7 @@ export async function answerCoachConversation(input: {
     modelTier: brainPlan.modelTier, answerCategory: brainPlan.offTopic ? 'OFF_TOPIC' : brainPlan.learningIntents.includes('ROLEPLAY') ? 'ROLEPLAY' : brainPlan.skillIds.includes('PRONUNCIATION') ? 'PRONUNCIATION_COACHING' : brainPlan.skillIds.includes('EXAMPLE') || brainPlan.skillIds.includes('VOCABULARY') ? 'EXAMPLE' : 'EXPLANATION',
   };
   let classification = deterministicClassification;
-  let classificationUsage: CallUsage = { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'mandarin-coach-brain-v0.1' };
+  let classificationUsage: CallUsage = { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'mandarin-coach-brain-v0.1', structured_retries: 0, safe_fallbacks: 0 };
   const deterministicAnswer = composeKnownCoachResponse(brainPlan, input.context.userInitiatedMemory);
   if (deterministicAnswer) {
     return {
@@ -246,16 +307,14 @@ export async function answerCoachConversation(input: {
     };
   }
   if (brainPlan.confidence < 0.8) {
-    let classificationModel = FAST_MODEL;
-    let classificationResult;
     try {
-      classificationResult = await generateClassification(FAST_MODEL, 120);
-    } catch {
-      classificationModel = SMART_MODEL;
-      classificationResult = await generateClassification(SMART_MODEL, 140);
+      const classificationResult = await generateClassification(FAST_MODEL, 120);
+      classification = classificationResult.output;
+      classificationUsage = usageFromResult(classificationResult, FAST_MODEL);
+    } catch (error) {
+      classificationUsage = usageFromStructuredError(error, FAST_MODEL);
+      console.warn('[mandarin-coach-structured-classification-fallback]', safeErrorDetails(error));
     }
-    classification = classificationResult.output;
-    classificationUsage = usageFromResult(classificationResult, classificationModel);
   }
 
   const answerModel = classification.modelTier === 'SMART' ? SMART_MODEL : FAST_MODEL;
@@ -286,29 +345,52 @@ export async function answerCoachConversation(input: {
         userInitiatedMemory: input.context.userInitiatedMemory.slice(-12),
       },
     });
-  const generateConversationAnswer = (model: string, maxOutputTokens: number) => generateText({
+  const generateConversationAnswer = (model: string, maxOutputTokens: number, repairText?: string) => generateText({
     model: gateway(model),
     output: Output.object({ schema: conversationAnswerSchema, name: 'mandarin_coach_answer' }),
     maxOutputTokens,
     temperature: 0.2,
-    maxRetries: 1,
+    maxRetries: 0,
     providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'conversation', classification.intent.toLowerCase()], user: input.sessionId.slice(0, 96) } },
-    system: answerSystem,
-    prompt: answerPrompt,
+    system: repairText
+      ? `${answerSystem} This is one controlled repair attempt. Convert the prior malformed candidate into the exact requested object. Do not add commentary outside the object.`
+      : answerSystem,
+    prompt: repairText ? JSON.stringify({ originalRequest: JSON.parse(answerPrompt), malformedCandidate: repairText.slice(0, 1600) }) : answerPrompt,
   });
-  let usedAnswerModel = answerModel;
-  let answerResult;
+  let answerUsage = classificationUsage;
   try {
-    answerResult = await generateConversationAnswer(answerModel, 220);
-  } catch {
-    usedAnswerModel = answerModel === SMART_MODEL ? FAST_MODEL : SMART_MODEL;
-    answerResult = await generateConversationAnswer(usedAnswerModel, 240);
+    const answerResult = await generateConversationAnswer(answerModel, 220);
+    return {
+      classification,
+      answer: answerResult.output,
+      usage: mergeUsage(classificationUsage, usageFromResult(answerResult, answerModel)),
+    };
+  } catch (error) {
+    answerUsage = mergeUsage(classificationUsage, usageFromStructuredError(error, answerModel));
+    console.warn('[mandarin-coach-structured-answer-failed]', { model: answerModel, ...safeErrorDetails(error) });
+    try {
+      const malformedCandidate = NoObjectGeneratedError.isInstance(error) ? error.text || '' : '';
+      const repaired = await generateConversationAnswer(FAST_MODEL, 240, malformedCandidate);
+      const repairUsage = usageFromResult(repaired, FAST_MODEL);
+      repairUsage.structured_retries = 1;
+      console.info('[mandarin-coach-structured-retry]', { fromModel: answerModel, repairModel: FAST_MODEL, success: true });
+      return {
+        classification,
+        answer: repaired.output,
+        usage: mergeUsage(answerUsage, repairUsage),
+      };
+    } catch (repairError) {
+      const repairUsage = usageFromStructuredError(repairError, FAST_MODEL);
+      repairUsage.structured_retries = 1;
+      repairUsage.safe_fallbacks = 1;
+      console.warn('[mandarin-coach-safe-fallback]', { repairModel: FAST_MODEL, ...safeErrorDetails(repairError) });
+      return {
+        classification,
+        answer: safeTeachingFallback(brainPlan, classification, input.context.recentConversationSummary),
+        usage: mergeUsage(answerUsage, repairUsage),
+      };
+    }
   }
-  return {
-    classification,
-    answer: answerResult.output,
-    usage: mergeUsage(classificationUsage, usageFromResult(answerResult, usedAnswerModel)),
-  };
 }
 
 export function anonymizeLearningQuestion(value: string) {

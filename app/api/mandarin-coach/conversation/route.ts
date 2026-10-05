@@ -150,6 +150,8 @@ export async function POST(request: Request) {
       inputTokens: result.usage.token_input,
       outputTokens: result.usage.token_output,
       estimatedCost,
+      structuredRetries: result.usage.structured_retries,
+      safeFallbacks: result.usage.safe_fallbacks,
       sttSeconds,
       responseLatencyMs,
       messageCount: context.messageCount + 1,

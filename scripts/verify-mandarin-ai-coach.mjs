@@ -69,8 +69,9 @@ if (!brain.includes("ttsRate: 'slow'")) failures.push('actual slow-request respo
 if (!pronunciation.includes('THIRD_TONE_SANDHI') || !pronunciation.includes('nǐ hǎo → ní hǎo')) failures.push('third-tone sandhi knowledge is missing');
 if (!brain.includes("targetChinese: '喝'") || !brain.includes("targetPinyin: 'hē'")) failures.push('user-initiated vocabulary memory target is missing');
 for (const marker of ["targetChinese: '在哪里'", "targetChinese: '货到了吗'", "targetChinese: '货还没到'", "targetChinese: '明天早点来'"]) if (!brain.includes(marker)) failures.push(`locked V1 acceptance response missing ${marker}`);
-if (!server.includes('answerModel === SMART_MODEL ? FAST_MODEL : SMART_MODEL')) failures.push('cross-model structured conversation retry is missing');
-if (!server.includes('generateClassification(SMART_MODEL, 140)')) failures.push('structured intent retry is missing');
+for (const marker of ['NoObjectGeneratedError', '[mandarin-coach-structured-retry]', '[mandarin-coach-safe-fallback]', 'SAFE_PLAIN_TEXT_FALLBACK', 'maxRetries: 0']) {
+  if (!server.includes(marker)) failures.push(`bounded structured-output reliability contract missing ${marker}`);
+}
 if (!server.includes('recentConversationSummary') || !server.includes('recentTurns.slice(-6)')) failures.push('bounded conversation context is missing');
 if (!data.includes('offerSaveAndSkipAt: 3')) failures.push('centralized three-failure save-and-skip policy is missing');
 if (!ui.includes('Simpan untuk review &amp; lewati')) failures.push('save-and-skip UI is missing');
