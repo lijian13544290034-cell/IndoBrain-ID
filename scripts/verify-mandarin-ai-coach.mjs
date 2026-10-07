@@ -45,7 +45,7 @@ if (!ttsProvider.includes("chineseTtsSlowRate = '-35%'")) failures.push('actual 
 if (/voice[^\n]*(zh-TW|zh-HK|Cantonese|yue-)/i.test(ttsProvider)) failures.push('forbidden Chinese voice fallback detected');
 
 const ui = fs.readFileSync('components/MandarinAiCoachExperience.tsx', 'utf8');
-for (const required of ['AI 中文教练', 'Pelatih Mandarin AI', 'Mulai Latihan', 'Hari pertama selesai!', '你叫什么名字？', 'Besok kita belajar cara menjawabnya.', "'/api/chinese-tts'", "'/api/mandarin-coach/pronunciation'", 'AiCoachConversation']) if (!ui.includes(required)) failures.push(`UI contract missing ${required}`);
+for (const required of ['AI 中文教练', 'Pelatih Mandarin AI', 'Pilih materi Mandarin yang sudah tersedia.', 'Mulai Latihan', 'Latihan selesai!', 'CurriculumPicker', "'/api/chinese-tts'", "'/api/mandarin-coach/pronunciation'", 'AiCoachConversation']) if (!ui.includes(required)) failures.push(`UI contract missing ${required}`);
 const conversationUi = fs.readFileSync('components/AiCoachConversation.tsx', 'utf8');
 for (const required of ['Tanya AI Coach', '问AI教练', 'Tanya dalam Bahasa Indonesia atau 中文.', "'/api/mandarin-coach/conversation'", 'Kembali Belajar', 'Jawaban ini membantu?']) if (!conversationUi.includes(required)) failures.push(`conversation UI missing ${required}`);
 const conversationRoute = fs.readFileSync('app/api/mandarin-coach/conversation/route.ts', 'utf8');
@@ -86,7 +86,7 @@ if (!telemetry.includes("console.info('[mandarin-ai-coach-event]'")) failures.pu
 if (!telemetry.includes("createHash('sha256')")) failures.push('telemetry session pseudonymization is missing');
 if (!telemetry.includes('saveCoachTelemetryEvent')) failures.push('telemetry persistence is missing');
 const analytics = fs.readFileSync('lib/server/mandarin-coach-analytics.ts', 'utf8');
-for (const marker of ['anonymousCoachId', "role_type: interactionRole", 'input_tokens', 'output_tokens', 'estimated_cost', 'speech_duration', 'response_latency']) if (!analytics.includes(marker)) failures.push(`analytics data contract missing ${marker}`);
+for (const marker of ['anonymousCoachId', "role_type: interactionRole", 'lesson_id', 'course_source', 'input_tokens', 'output_tokens', 'estimated_cost', 'speech_duration', 'response_latency']) if (!analytics.includes(marker)) failures.push(`analytics data contract missing ${marker}`);
 const adminAnalytics = fs.readFileSync('components/MandarinCoachAnalytics.tsx', 'utf8');
 for (const marker of ['今日活跃用户', '高频问题', '高频错误', '今日估算 AI 成本']) if (!adminAnalytics.includes(marker)) failures.push(`analytics dashboard missing ${marker}`);
 

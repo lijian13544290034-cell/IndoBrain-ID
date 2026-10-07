@@ -18,9 +18,10 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Invalid telemetry event.' }, { status: 400 });
   }
   const safeData = body.data && typeof body.data === 'object' && !Array.isArray(body.data) ? body.data : {};
+  const lessonId = 'lesson_id' in safeData && typeof safeData.lesson_id === 'string' ? safeData.lesson_id.slice(0, 120) : AI_COACH_COURSE_ID;
   const sessionKey = createHash('sha256').update(body.sessionId).digest('hex').slice(0, 16);
   console.info('[mandarin-ai-coach-event]', {
-    course: AI_COACH_COURSE_ID,
+    course: lessonId,
     event: body.event,
     sessionKey,
     ...safeData,

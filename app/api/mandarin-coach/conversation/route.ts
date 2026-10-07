@@ -5,6 +5,8 @@ import { getCoachCapabilityIds } from '@/lib/mandarin-coach-skills';
 import { buildCoachSpeechSegments } from '@/lib/mandarin-coach-speech';
 import { saveCoachInteraction } from '@/lib/server/mandarin-coach-analytics';
 import { anonymizeLearningQuestion, answerCoachConversation, transcribeMandarin } from '@/lib/server/mandarin-ai-coach';
+import { getMandarinLevel2Access } from '@/lib/server/mandarin-work-level2-access';
+import { getMandarinCoachLesson } from '@/lib/server/mandarin-coach-curriculum';
 
 export const runtime = 'nodejs';
 
@@ -58,7 +60,7 @@ function safeContext(value: FormDataEntryValue | null) {
       } satisfies UserInitiatedMemory];
     }) : [];
     return {
-      currentDay: 1,
+      lessonId: typeof parsed.lessonId === 'string' ? parsed.lessonId.slice(0, 120) : '',
       currentExpression: expression,
       currentSkill: skill,
       userLevel: typeof parsed.userLevel === 'string' ? parsed.userLevel.slice(0, 80) : 'absolute beginner',
@@ -88,6 +90,11 @@ export async function POST(request: Request) {
     const text = typeof form.get('message') === 'string' ? String(form.get('message')).trim() : '';
     const context = safeContext(form.get('context'));
     if (typeof sessionId !== 'string' || !sessionId.startsWith('coach-') || !context) return Response.json({ error: 'Permintaan percakapan tidak valid.' }, { status: 400 });
+    const courseLesson = getMandarinCoachLesson(context.lessonId);
+    if (!courseLesson) return Response.json({ error: 'Materi AI Coach tidak ditemukan.' }, { status: 404 });
+    if (courseLesson.source === 'MANDARIN_WORK_LEVEL_2' && (await getMandarinLevel2Access()).state !== 'authorized') return Response.json({ error: 'Akses Level 2 diperlukan.' }, { status: 403 });
+    const currentExpression = context.currentExpression && courseLesson.expressions.some((item) => item.id === context.currentExpression) ? context.currentExpression : null;
+    const securedContext = { ...context, currentDay: courseLesson.day ?? 0, currentExpression, courseLesson };
     if (!allowConversation(sessionId)) return Response.json({ error: 'Batas percakapan harian sudah tercapai. Lanjutkan besok.' }, { status: 429 });
 
     let message = text;
@@ -100,7 +107,7 @@ export async function POST(request: Request) {
     }
     if (!message || message.length > 500) return Response.json({ error: 'Tulis atau ucapkan pertanyaan singkat.' }, { status: 400 });
 
-    const result = await answerCoachConversation({ message, sessionId, context });
+    const result = await answerCoachConversation({ message, sessionId, context: securedContext });
     const questionId = randomUUID();
     const timestamp = new Date().toISOString();
     const sessionKey = createHash('sha256').update(sessionId).digest('hex').slice(0, 16);
@@ -111,10 +118,10 @@ export async function POST(request: Request) {
     const responseLatencyMs = Date.now() - startedAt;
     const sttSeconds = transcription?.durationInSeconds || 0;
     const estimatedCost = result.usage.estimated_ai_cost + (transcription?.estimatedCost || 0);
-    const sessionStarted = Date.parse(context.sessionStartedAt);
+    const sessionStarted = Date.parse(securedContext.sessionStartedAt);
     const sessionDurationSeconds = Number.isFinite(sessionStarted) ? Math.max(0, Math.round((Date.now() - sessionStarted) / 1000)) : 0;
     console.info('[mandarin-ai-coach-learning-insight]', {
-      course: 'mandarin-ai-coach-day1',
+      course: courseLesson.id,
       question_id: questionId,
       sessionKey,
       user_question: anonymizeLearningQuestion(message),
@@ -123,12 +130,12 @@ export async function POST(request: Request) {
       detected_intents: result.classification.intents,
       target_chinese: result.classification.targetChinese || null,
       skill_used: result.classification.skillIds,
-      current_day: context.currentDay,
-      current_expression: context.currentExpression,
+      current_day: securedContext.currentDay,
+      current_expression: securedContext.currentExpression,
       answer_category: result.classification.answerCategory,
       answer_type: result.answer.teachingStrategy,
       resolved: null,
-      continued_follow_up: context.recentTurns.length > 0,
+      continued_follow_up: securedContext.recentTurns.length > 0,
       slow_request: /pelan|lambat|perlahan|慢一点|慢点/i.test(message),
       skill_gap: result.answer.skillGap,
       timestamp,
@@ -142,8 +149,10 @@ export async function POST(request: Request) {
       detectedLanguage: result.classification.detectedLanguage,
       intent: result.classification.intent,
       skills: [...capabilityIds, ...result.classification.skillIds],
-      currentDay: context.currentDay,
-      currentExpression: context.currentExpression,
+      lessonId: courseLesson.id,
+      courseSource: courseLesson.source,
+      currentDay: securedContext.currentDay,
+      currentExpression: securedContext.currentExpression,
       answerCategory: result.classification.answerCategory,
       targetChinese: result.classification.targetChinese || result.answer.targetChinese || null,
       model: result.usage.model_used,
@@ -157,7 +166,7 @@ export async function POST(request: Request) {
       retryEstimatedCost: result.usage.retry_estimated_cost,
       sttSeconds,
       responseLatencyMs,
-      messageCount: context.messageCount + 1,
+      messageCount: securedContext.messageCount + 1,
       sessionDurationSeconds,
       offTopic: result.classification.intent === 'OFF_TOPIC',
     });

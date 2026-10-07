@@ -1,7 +1,8 @@
 import 'server-only';
 
 import { NoObjectGeneratedError, Output, experimental_transcribe as transcribe, gateway, generateText, jsonSchema } from 'ai';
-import { DAY_ONE_EXPRESSIONS, type CoachBrainSkillId, type CoachDetectedLanguage, type CoachIntent, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, type UserInitiatedMemory, getExpression } from '@/lib/mandarin-ai-coach';
+import { DAY_ONE_EXPRESSIONS, type CoachBrainSkillId, type CoachDetectedLanguage, type CoachIntent, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, type UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
+import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
 import { buildSkillGrounding, composeKnownCoachResponse, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
 
 const FAST_MODEL = process.env.FAST_MODEL || 'google/gemini-2.5-flash-lite';
@@ -195,12 +196,12 @@ function safeTeachingFallback(plan: ReturnType<typeof routeCoachInput>, classifi
 async function callDecisionModel(model: string, input: {
   skill: CoachSkill;
   expressionId: ExpressionId;
+  target: { chinese: string; pinyin: string; indonesian: string };
   transcript: string;
   attempts: number;
   masteryLevel: number;
   sessionId: string;
 }) {
-  const expression = getExpression(input.expressionId);
   const result = await generateText({
     model: gateway(model),
     output: Output.object({ schema: decisionSchema, name: 'mandarin_coach_decision' }),
@@ -218,7 +219,7 @@ async function callDecisionModel(model: string, input: {
     ].join(' '),
     prompt: JSON.stringify({
       skill: input.skill,
-      target: { chinese: expression.chinese, pinyin: expression.pinyin, indonesian: expression.indonesian },
+      target: input.target,
       learnerTranscript: input.transcript.slice(0, 120),
       attempts: Math.min(5, Math.max(0, input.attempts)),
       masteryLevel: Math.min(4, Math.max(0, input.masteryLevel)),
@@ -247,6 +248,7 @@ async function callDecisionModel(model: string, input: {
 export async function evaluateCoachAttempt(input: {
   skill: Extract<CoachSkill, 'PRONUNCIATION' | 'ROLEPLAY'>;
   expressionId: ExpressionId;
+  target: { chinese: string; pinyin: string; indonesian: string };
   transcript: string;
   attempts: number;
   masteryLevel: number;
@@ -276,6 +278,7 @@ export async function answerCoachConversation(input: {
   message: string;
   sessionId: string;
   context: {
+    courseLesson: MandarinCoachCurriculumLesson;
     currentDay: number;
     currentExpression: ExpressionId | null;
     currentSkill: CoachSkill;
@@ -347,7 +350,7 @@ export async function answerCoachConversation(input: {
       'If slow speech is requested, set ttsRate=slow. Never claim to slow down without setting it.',
       'Use standard Mainland Mandarin only. Never suggest zh-TW, zh-HK or Cantonese.',
       'Never pretend to know personal facts outside supplied structured memory. Return only the structured object.',
-      `Locked Day 1 expressions: ${JSON.stringify(COACH_DAY_ONE_TARGETS)}.`,
+      `Approved course lesson context: ${JSON.stringify(input.context.courseLesson)}.`,
       `Selected Skill Layer: ${JSON.stringify(skillGrounding)}.`,
     ].join(' ');
   const answerPrompt = JSON.stringify({

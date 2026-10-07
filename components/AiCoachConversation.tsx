@@ -4,6 +4,7 @@ import { useState } from 'react';
 import AiCoachRecorder from '@/components/AiCoachRecorder';
 import type { CoachBrainSkillId, CoachCapabilityId, CoachConversationTurn, CoachEventName, CoachIntent, CoachProfile, CoachQuestionMemory, CoachSkill, ExpressionId, UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import type { CoachSpeechSegment } from '@/lib/mandarin-coach-speech';
+import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
 
 type ConversationResponse = {
   questionId: string;
@@ -37,13 +38,14 @@ function telemetry(profile: CoachProfile, event: CoachEventName, data: Record<st
   void fetch('/api/mandarin-coach/telemetry', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId: profile.sessionId, event, data: { day: 1, page: '/learn-chinese/ai-coach', ...data } }),
+    body: JSON.stringify({ sessionId: profile.sessionId, event, data: { day: profile.currentDay, lesson_id: profile.lessonId, page: '/learn-chinese/ai-coach', ...data } }),
     keepalive: true,
   });
 }
 
-export default function AiCoachConversation({ profile, currentExpression, currentSkill, onProfileChange }: {
+export default function AiCoachConversation({ profile, lesson, currentExpression, currentSkill, onProfileChange }: {
   profile: CoachProfile;
+  lesson: MandarinCoachCurriculumLesson;
   currentExpression: ExpressionId | null;
   currentSkill: CoachSkill;
   onProfileChange: (profile: CoachProfile) => void;
@@ -109,7 +111,8 @@ export default function AiCoachConversation({ profile, currentExpression, curren
       if (cleanMessage) form.set('message', cleanMessage);
       if (audio) form.set('audio', audio, `coach-question.${audio.type.includes('mp4') ? 'm4a' : 'webm'}`);
       form.set('context', JSON.stringify({
-        currentDay: 1,
+        lessonId: lesson.id,
+        currentDay: lesson.day,
         currentExpression,
         currentSkill,
         userLevel: 'absolute beginner',
@@ -117,7 +120,7 @@ export default function AiCoachConversation({ profile, currentExpression, curren
         masteryState: profile.expressions.map((item) => ({ expressionId: item.expression_id, masteryLevel: item.mastery_level })),
         reviewQueue,
         conversationMode: 'COACH_CONVERSATION',
-        learningGoal: 'Mandarin praktis untuk kerja dan percakapan dasar',
+        learningGoal: `${lesson.courseTitleId} · ${lesson.title} · ${lesson.scenario}`,
         preferredExplanationLanguage: profile.learning.preferredExplanationLanguage,
         userInitiatedMemory: profile.learning.userInitiated,
         recentConversationSummary: profile.conversation.summary,
@@ -141,7 +144,7 @@ export default function AiCoachConversation({ profile, currentExpression, curren
       const question: CoachQuestionMemory = {
         id: result.questionId, question: userText, detected_language: result.detectedLanguage, intent: result.intent,
         detected_intents: result.intents, target_chinese: result.targetChinese || result.chinese || null, skill_used: result.skillIds,
-        current_day: 1, current_expression: currentExpression, answer_category: result.answerCategory,
+        current_day: lesson.day ?? 0, current_expression: currentExpression, answer_category: result.answerCategory,
         resolved: null, follow_up: profile.conversation.recentTurns.length > 0, asked_at: now,
       };
       let userInitiated = profile.learning.userInitiated;

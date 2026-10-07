@@ -32,6 +32,8 @@ export async function saveCoachInteraction(input: {
   detectedLanguage: string;
   intent: string;
   skills: string[];
+  lessonId: string;
+  courseSource: string;
   currentDay: number;
   currentExpression: string | null;
   answerCategory: string;
@@ -61,6 +63,8 @@ export async function saveCoachInteraction(input: {
     user_message: anonymizeLearningQuestion(input.userMessage),
     intent: input.intent,
     skill_used: input.skills,
+    lesson_id: input.lessonId,
+    course_source: input.courseSource,
     day: input.currentDay,
     current_expression: input.currentExpression,
     target_chinese: input.targetChinese,

@@ -1,3 +1,5 @@
+import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
+
 export const AI_COACH_COURSE_ID = 'mandarin-ai-coach-day1';
 
 export const DAY_ONE_EXPRESSIONS = [
@@ -6,7 +8,7 @@ export const DAY_ONE_EXPRESSIONS = [
   { id: 'AI-D1-03', chinese: '好的', pinyin: 'Hǎo de', indonesian: 'Baik / Oke', chunks: [{ chinese: '好', pinyin: 'hǎo' }, { chinese: '的', pinyin: 'de' }] },
 ] as const;
 
-export type ExpressionId = (typeof DAY_ONE_EXPRESSIONS)[number]['id'];
+export type ExpressionId = string;
 export type CoachSkill = 'TEACH' | 'PRONUNCIATION' | 'COMPREHENSION' | 'ROLEPLAY' | 'MEMORY';
 export type CoachVerdict = 'PASS' | 'RETRY' | 'BREAKDOWN';
 export type CoachConversationMode = 'GUIDED_TRAINING' | 'COACH_CONVERSATION';
@@ -105,8 +107,10 @@ export type CoachUsage = {
 };
 
 export type CoachProfile = {
-  version: 3;
-  course: typeof AI_COACH_COURSE_ID;
+  version: 4;
+  course: string;
+  lessonId: string;
+  currentDay: number | null;
   sessionId: string;
   startedAt: string;
   updatedAt: string;
@@ -143,15 +147,30 @@ export const FEEDBACK_COPY = {
 
 export type FeedbackId = keyof typeof FEEDBACK_COPY;
 
-export function emptyCoachProfile(): CoachProfile {
+const defaultLesson: MandarinCoachCurriculumLesson = {
+  id: 'mandarin-work-level-1-day-1',
+  source: 'MANDARIN_WORK_LEVEL_1',
+  courseTitle: '30天工作中文',
+  courseTitleId: '30 Hari Bisa Mandarin untuk Kerja',
+  group: 'Dasar kerja',
+  day: 1,
+  title: '第一次开口',
+  scenario: 'greeting',
+  expressions: DAY_ONE_EXPRESSIONS.map((item) => ({ ...item, kind: 'CORE' as const })),
+  dialogue: [],
+};
+
+export function createCoachProfile(lesson: MandarinCoachCurriculumLesson): CoachProfile {
   const now = new Date().toISOString();
   return {
-    version: 3,
-    course: AI_COACH_COURSE_ID,
+    version: 4,
+    course: lesson.courseTitleId,
+    lessonId: lesson.id,
+    currentDay: lesson.day,
     sessionId: `coach-${crypto.randomUUID()}`,
     startedAt: now,
     updatedAt: now,
-    expressions: DAY_ONE_EXPRESSIONS.map((item) => ({
+    expressions: lesson.expressions.map((item) => ({
       expression_id: item.id,
       chinese: item.chinese,
       pinyin: item.pinyin,
@@ -173,8 +192,12 @@ export function emptyCoachProfile(): CoachProfile {
   };
 }
 
+export function emptyCoachProfile(): CoachProfile {
+  return createCoachProfile(defaultLesson);
+}
+
 export function isExpressionId(value: unknown): value is ExpressionId {
-  return typeof value === 'string' && DAY_ONE_EXPRESSIONS.some((item) => item.id === value);
+  return typeof value === 'string' && /^[A-Z0-9:-]{3,120}$/i.test(value);
 }
 
 export function getExpression(id: ExpressionId) {
