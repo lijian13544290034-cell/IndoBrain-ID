@@ -27,6 +27,7 @@
     "verify:mandarin-level2": "node scripts/verify-mandarin-level2.mjs",
     "verify:mandarin-ai-coach": "node scripts/verify-mandarin-ai-coach.mjs",
     "verify:mandarin-coach-curriculum": "node scripts/verify-mandarin-coach-curriculum.mjs",
+    "verify:mandarin-adaptive-course": "node --experimental-strip-types scripts/verify-mandarin-adaptive-course.mjs",
     "verify:tts:static": "node scripts/verify-tts-quality-gate.mjs",
     "verify:tts:real": "node scripts/tts-smoke-test.mjs",
     "verify:tts": "node scripts/verify-tts-quality-gate.mjs",

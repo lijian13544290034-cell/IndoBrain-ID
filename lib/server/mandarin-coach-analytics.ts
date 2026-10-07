@@ -178,6 +178,12 @@ export async function readCoachAnalytics() {
     topIntents: top(interactions.map(({ user }) => String(user.intent || ''))),
     topErrors: top(events.filter(({ data }) => ['expression_retry', 'expression_failed'].includes(String(data.event))).map(({ data }) => String(data.expression_id || ''))),
     favorites: top(events.filter(({ data }) => data.event === 'expression_saved_for_review').map(({ data }) => String(data.expression_id || ''))),
+    careerGoals: top(events.filter(({ data }) => data.event === 'learner_profile_updated').map(({ data }) => String(data.career_family || 'NEEDS_CLARIFICATION'))),
+    requestedCapabilities: top(events.filter(({ data }) => data.event === 'personal_plan_generated').flatMap(({ data }) => Array.isArray(data.capabilities) ? data.capabilities.map(String) : [])),
+    knowledgeGapDemand: top(events.filter(({ data }) => data.event === 'knowledge_gap_demand').map(({ data }) => String(data.requested_capability || ''))),
+    reusedLessons: top(events.filter(({ data }) => data.event === 'personal_plan_generated').flatMap(({ data }) => Array.isArray(data.lesson_ids) ? data.lesson_ids.map(String) : [])),
+    masteredAdaptive: top(events.filter(({ data }) => data.event === 'adaptive_mastery_updated' && data.success === true).map(({ data }) => String(data.expression_id || ''))),
+    skippedAdaptive: top(events.filter(({ data }) => data.event === 'expression_saved_for_review').map(({ data }) => String(data.expression_id || ''))),
     recentUsers,
   };
 }

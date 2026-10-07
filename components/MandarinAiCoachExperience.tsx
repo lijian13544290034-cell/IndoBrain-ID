@@ -1,9 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import AiCoachConversation from '@/components/AiCoachConversation';
 import AiCoachRecorder from '@/components/AiCoachRecorder';
+import MandarinAdaptiveCoursePanel from '@/components/MandarinAdaptiveCoursePanel';
+import { decideNextBestAction } from '@/lib/mandarin-adaptive-course';
+import { recordAdaptiveResult, refreshAdaptivePlan } from '@/lib/mandarin-adaptive-course-profile';
 import { COACH_RETRY_POLICY, FEEDBACK_COPY, createCoachProfile, type CoachEventName, type CoachProfile, type ExpressionId, type FeedbackId } from '@/lib/mandarin-ai-coach';
 import { readCoachProfile, resetCoachProfile, saveCoachProfile } from '@/lib/mandarin-ai-coach-profile';
 import type { MandarinCoachCatalogEntry, MandarinCoachCurriculumPayload } from '@/lib/mandarin-coach-curriculum-types';
@@ -40,8 +43,22 @@ export default function MandarinAiCoachExperience({ curriculum }: { curriculum: 
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [comprehensionTarget, setComprehensionTarget] = useState<ExpressionId>(firstLesson.expressions[0]?.id ?? '');
   const [serviceError, setServiceError] = useState('');
+  const pendingAdaptiveStart = useRef<{ lessonId: string; expressionId?: string } | null>(null);
 
-  useEffect(() => { const next = readCoachProfile(lesson); setProfile(next); setPhase('WELCOME'); setActiveIndex(0); setFeedback(''); setShowBreakdown(false); setComprehensionTarget(lesson.expressions[0]?.id ?? ''); }, [lesson]);
+  useEffect(() => {
+    const next = readCoachProfile(lesson);
+    setProfile(next); setFeedback(''); setShowBreakdown(false); setComprehensionTarget(lesson.expressions[0]?.id ?? '');
+    const adaptiveStart = pendingAdaptiveStart.current;
+    pendingAdaptiveStart.current = null;
+    if (adaptiveStart?.lessonId === lesson.id) {
+      const preferredIndex = adaptiveStart.expressionId ? lesson.expressions.findIndex((item) => item.id === adaptiveStart.expressionId) : -1;
+      const weakest = next.expressions.reduce((current, item) => item.mastery_level < current.mastery_level ? item : current, next.expressions[0]);
+      const startingIndex = preferredIndex >= 0 ? preferredIndex : Math.max(0, lesson.expressions.findIndex((item) => item.id === weakest?.expression_id));
+      setActiveIndex(startingIndex); setPhase('TEACH');
+      telemetry(next, 'start_session', { course: lesson.courseTitleId, source: lesson.source, startedAt: next.startedAt, adaptive: true });
+      const chosen = lesson.expressions[startingIndex]; if (chosen) telemetry(next, 'expression_started', { expression_id: chosen.id, prioritized_by_adaptive_plan: true });
+    } else { setPhase('WELCOME'); setActiveIndex(0); }
+  }, [lesson]);
 
   const active = lesson.expressions[activeIndex] ?? lesson.expressions[0];
   const meaningOptions = useMemo(() => lesson.expressions.filter((item) => item.indonesian).slice(0, 4), [lesson]);
@@ -51,6 +68,33 @@ export default function MandarinAiCoachExperience({ curriculum }: { curriculum: 
   const roleplayTarget = lesson.expressions.find((item) => item.chinese === roleplayTargetTurn?.chinese) ?? active;
 
   function persist(next: CoachProfile) { const saved = saveCoachProfile(next); setProfile(saved); return saved; }
+  function updateAdaptiveResult(input: Parameters<typeof recordAdaptiveResult>[0]) {
+    const next = recordAdaptiveResult(input);
+    const record = next.mastery.find((item) => item.expressionId === input.expressionId);
+    if (record) {
+      const failureCount = next.mistakes.filter((item) => item.expressionId === input.expressionId).reduce((sum, item) => sum + item.count, 0);
+      const action = decideNextBestAction({ record, repeatedFailures: failureCount, recentSkips: record.skips, reviewDue: Boolean(record.nextReviewAt && Date.parse(record.nextReviewAt) <= Date.now()) });
+      telemetry(profile, 'adaptive_mastery_updated', { expression_id: input.expressionId, dimension: input.dimension, success: input.success, next_review_at: record.nextReviewAt });
+      telemetry(profile, 'next_best_action_selected', { expression_id: input.expressionId, action: action.action, reason: action.reason, model_level: action.level });
+    }
+    refreshAdaptivePlan(curriculum);
+  }
+  function beginAdaptive(lessonId: string, expressionId?: string) {
+    const targetLesson = curriculum.lessons.find((entry) => entry.id === lessonId);
+    if (!targetLesson) return;
+    if (targetLesson.id !== lesson.id) {
+      pendingAdaptiveStart.current = { lessonId, expressionId };
+      setSelectedLessonId(targetLesson.id);
+      return;
+    }
+    const existing = readCoachProfile(targetLesson);
+    const preferredIndex = expressionId ? targetLesson.expressions.findIndex((item) => item.id === expressionId) : -1;
+    const weakest = existing.expressions.reduce((current, item) => item.mastery_level < current.mastery_level ? item : current, existing.expressions[0]);
+    const startingIndex = preferredIndex >= 0 ? preferredIndex : Math.max(0, targetLesson.expressions.findIndex((item) => item.id === weakest?.expression_id));
+    setProfile(existing); setPhase('TEACH'); setActiveIndex(startingIndex);
+    telemetry(existing, 'start_session', { course: targetLesson.courseTitleId, source: targetLesson.source, startedAt: existing.startedAt, adaptive: true });
+    const chosen = targetLesson.expressions[startingIndex]; if (chosen) telemetry(existing, 'expression_started', { expression_id: chosen.id, prioritized_by_adaptive_plan: true });
+  }
   function begin() {
     const existing = readCoachProfile(lesson);
     const weakest = existing.expressions.reduce((current, item) => item.mastery_level < current.mastery_level ? item : current, existing.expressions[0]);
@@ -81,6 +125,7 @@ export default function MandarinAiCoachExperience({ curriculum }: { curriculum: 
       setFeedback(result.feedback); setShowBreakdown(result.verdict === 'BREAKDOWN'); const passed = result.verdict === 'PASS'; const now = new Date().toISOString();
       const expressions = profile.expressions.map((item) => item.expression_id === expressionId ? { ...item, attempts: item.attempts + 1, correct_count: item.correct_count + (passed ? 1 : 0), wrong_count: item.wrong_count + (passed ? 0 : 1), pronunciation_status: result.verdict, last_seen: now, mastery_level: Math.max(0, Math.min(4, item.mastery_level + (passed ? 2 : 0))) as 0 | 1 | 2 | 3 | 4 } : item);
       const next = persist({ ...profile, expressions, usage: { token_input: profile.usage.token_input + result.usage.token_input, token_output: profile.usage.token_output + result.usage.token_output, stt_seconds: profile.usage.stt_seconds + result.usage.stt_seconds, tts_calls: profile.usage.tts_calls, model_calls: profile.usage.model_calls + result.usage.model_calls, estimated_ai_cost: profile.usage.estimated_ai_cost + result.usage.estimated_ai_cost } });
+      updateAdaptiveResult({ expressionId, lessonId: lesson.id, dimension: skill === 'ROLEPLAY' ? 'realSceneUsage' : 'speaking', success: passed, changedContext: skill === 'ROLEPLAY', hintLevel: result.verdict === 'BREAKDOWN' ? 5 : result.verdict === 'RETRY' ? 2 : 0, mistakeKind: passed ? undefined : skill === 'ROLEPLAY' ? 'SCENE_USAGE' : 'PRONUNCIATION' });
       telemetry(next, passed ? 'expression_pass' : result.verdict === 'RETRY' ? 'expression_retry' : 'expression_failed', { expression_id: expressionId, skill, verdict: result.verdict, ...result.usage }); if (skill === 'ROLEPLAY' && passed) telemetry(next, 'roleplay_completed', { expression_id: expressionId });
     } catch (error) { setServiceError(error instanceof Error ? error.message : 'Pelatih AI belum tersedia.'); } finally { setBusy(false); }
   }
@@ -92,14 +137,15 @@ export default function MandarinAiCoachExperience({ curriculum }: { curriculum: 
     if (meaningOptions.length >= 2) { const candidates = currentProfile.expressions.filter((item) => meaningOptions.some((option) => option.id === item.expression_id)); const selected = candidates.sort((a, b) => a.mastery_level - b.mastery_level)[0]; setComprehensionTarget(selected?.expression_id ?? meaningOptions[0].id); setPhase('COMPREHENSION'); return; }
     if (roleplayTarget) { setPhase('ROLEPLAY'); telemetry(currentProfile, 'roleplay_started', { lesson_id: lesson.id }); return; } finishSession(currentProfile);
   }
-  function saveAndSkip() { if (!active) return; const next = persist({ ...profile, expressions: profile.expressions.map((item) => item.expression_id === active.id ? { ...item, saved_for_review: true, pronunciation_status: 'NEEDS_REVIEW' as const } : item) }); telemetry(next, 'expression_saved_for_review', { expression_id: active.id }); advanceTeaching(next); }
+  function saveAndSkip() { if (!active) return; const next = persist({ ...profile, expressions: profile.expressions.map((item) => item.expression_id === active.id ? { ...item, saved_for_review: true, pronunciation_status: 'NEEDS_REVIEW' as const } : item) }); updateAdaptiveResult({ expressionId: active.id, lessonId: lesson.id, dimension: 'speaking', success: false, skipped: true, mistakeKind: 'PRONUNCIATION' }); telemetry(next, 'expression_saved_for_review', { expression_id: active.id }); advanceTeaching(next); }
   function answerComprehension(indonesian: string) {
     if (!comprehensionExpression) return; const correct = indonesian === comprehensionExpression.indonesian; setFeedback(correct ? FEEDBACK_COPY.comprehension_pass : FEEDBACK_COPY.comprehension_retry);
     const expressions = profile.expressions.map((item) => item.expression_id === comprehensionExpression.id ? { ...item, correct_count: item.correct_count + (correct ? 1 : 0), wrong_count: item.wrong_count + (correct ? 0 : 1), comprehension_status: correct ? 'PASS' as const : 'RETRY' as const, last_seen: new Date().toISOString(), mastery_level: Math.max(0, Math.min(4, item.mastery_level + (correct ? 1 : 0))) as 0 | 1 | 2 | 3 | 4 } : item);
+    updateAdaptiveResult({ expressionId: comprehensionExpression.id, lessonId: lesson.id, dimension: 'meaning', success: correct, hintLevel: 0, mistakeKind: correct ? undefined : 'MEANING' });
     const next = persist({ ...profile, expressions }); telemetry(next, correct ? 'comprehension_correct' : 'comprehension_wrong', { expression_id: comprehensionExpression.id }); if (correct) setTimeout(() => { setFeedback(''); if (roleplayTarget) { setPhase('ROLEPLAY'); telemetry(next, 'roleplay_started', { lesson_id: lesson.id }); } else finishSession(next); }, 700);
   }
 
-  if (phase === 'WELCOME') return <main className="min-h-screen bg-[var(--ib-bg-page)] px-4 py-8 text-[var(--ib-text-primary)]"><div className="mx-auto max-w-5xl"><Link href="/learn-chinese" className="text-sm font-semibold text-[var(--ib-primary)]">← 30天工作中文</Link><section className="mt-6 overflow-hidden rounded-[32px] border border-[var(--ib-border-soft)] bg-white p-6 shadow-[var(--ib-shadow-card)] sm:p-8"><div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--ib-primary-soft)] text-3xl" aria-hidden="true">🧑‍🏫</div><p className="mt-6 text-sm font-bold text-[var(--ib-primary)]">尼会说 · IndoBrain</p><h1 className="mt-2 text-4xl font-bold text-[var(--ib-primary-strong)]">AI 中文教练</h1><p className="mt-2 text-xl font-semibold text-[var(--ib-text-secondary)]">Pelatih Mandarin AI</p><p className="mt-5 leading-7 text-[var(--ib-text-secondary)]">Pilih materi Mandarin yang sudah tersedia. AI Coach menggunakan isi kursus yang sama, tanpa membuat ulang materi.</p><CurriculumPicker catalog={curriculum.catalog} selectedId={lesson.id} onSelect={setSelectedLessonId}/><div className="mt-5 rounded-3xl bg-[var(--ib-primary-soft)] p-4"><p className="text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Materi dipilih</p><p className="mt-1 text-xl font-bold text-[var(--ib-primary-strong)]">{lesson.day ? `Day ${lesson.day} · ` : ''}{lesson.title}</p><p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{lesson.courseTitleId} · {lesson.expressions.length} latihan</p></div><button type="button" onClick={begin} disabled={!lesson.expressions.length} className="mt-6 min-h-14 w-full rounded-full bg-[var(--ib-primary)] px-6 text-lg font-bold text-white disabled:opacity-50">Mulai Latihan</button></section></div></main>;
+  if (phase === 'WELCOME') return <main className="min-h-screen bg-[var(--ib-bg-page)] px-4 py-8 text-[var(--ib-text-primary)]"><div className="mx-auto max-w-5xl"><Link href="/learn-chinese" className="text-sm font-semibold text-[var(--ib-primary)]">← 30天工作中文</Link><section className="mt-6 overflow-hidden rounded-[32px] border border-[var(--ib-border-soft)] bg-white p-6 shadow-[var(--ib-shadow-card)] sm:p-8"><div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--ib-primary-soft)] text-3xl" aria-hidden="true">🧑‍🏫</div><p className="mt-6 text-sm font-bold text-[var(--ib-primary)]">尼会说 · IndoBrain</p><h1 className="mt-2 text-4xl font-bold text-[var(--ib-primary-strong)]">AI 中文教练</h1><p className="mt-2 text-xl font-semibold text-[var(--ib-text-secondary)]">Pelatih Mandarin AI</p><p className="mt-5 leading-7 text-[var(--ib-text-secondary)]">Pilih materi Mandarin yang sudah tersedia. AI Coach menggunakan isi kursus yang sama, tanpa membuat ulang materi.</p><MandarinAdaptiveCoursePanel curriculum={curriculum} onStart={beginAdaptive}/><CurriculumPicker catalog={curriculum.catalog} selectedId={lesson.id} onSelect={setSelectedLessonId}/><div className="mt-5 rounded-3xl bg-[var(--ib-primary-soft)] p-4"><p className="text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Materi dipilih</p><p className="mt-1 text-xl font-bold text-[var(--ib-primary-strong)]">{lesson.day ? `Day ${lesson.day} · ` : ''}{lesson.title}</p><p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{lesson.courseTitleId} · {lesson.expressions.length} latihan</p></div><button type="button" onClick={begin} disabled={!lesson.expressions.length} className="mt-6 min-h-14 w-full rounded-full bg-[var(--ib-primary)] px-6 text-lg font-bold text-white disabled:opacity-50">Mulai Latihan</button></section></div></main>;
 
   if (phase === 'COMPLETE') return <main className="min-h-screen bg-[var(--ib-bg-page)] px-4 py-8 text-[var(--ib-text-primary)]"><div className="mx-auto max-w-xl rounded-[32px] bg-white p-6 shadow-[var(--ib-shadow-card)] sm:p-8"><div className="text-5xl">🎉</div><h1 className="mt-5 text-3xl font-bold text-[var(--ib-primary-strong)]">Latihan selesai!</h1><p className="mt-2 text-[var(--ib-text-secondary)]">{lesson.day ? `Day ${lesson.day} · ` : ''}{lesson.title}</p><div className="mt-5 grid gap-3">{profile.expressions.map((item) => <div key={item.expression_id} className="flex items-center justify-between rounded-2xl bg-[var(--ib-bg-muted)] p-4"><div><p className="text-xl font-bold text-[var(--ib-primary-strong)]">{item.chinese}</p><p className="text-sm text-[var(--ib-text-secondary)]">{item.indonesian}</p></div><MasteryDots level={item.mastery_level}/></div>)}</div><AiCoachConversation profile={profile} lesson={lesson} currentExpression={null} currentSkill="MEMORY" onProfileChange={persist}/><button type="button" onClick={() => { setProfile(resetCoachProfile(lesson)); setPhase('WELCOME'); }} className="mt-6 min-h-12 w-full rounded-full border border-[var(--ib-border-soft)] font-bold text-[var(--ib-primary)]">Pilih materi lain</button></div></main>;
 
