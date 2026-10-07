@@ -3,6 +3,7 @@ import { accountSessionCookieName } from '@/lib/account/config';
 import { bindDevice, clearLoginFailures, createServerSession, findUserByPhone, getLoginLock, getUserRoles, hasActiveSessionOnOtherDevice, normalizePhone, recordLoginHistory, registerLoginFailure, releaseDeviceBinding, updateUser } from '@/lib/account/repository';
 import { verifyPassword } from '@/lib/account/password';
 import { requestMetadata } from '@/lib/account/request-metadata';
+import { isAccountAllowedAtRuntime, isPreviewTestAccount } from '@/lib/account/preview-test';
 
 export const runtime = 'nodejs';
 
@@ -55,7 +56,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: newLock ? 'Too many failed attempts. Try again after 15 minutes.' : 'Phone number or password is incorrect.' }, { status: newLock ? 429 : 401 });
     }
     stage = 'account-status:check';
-    if (user.account_status !== 'ACTIVE') {
+    if (!isAccountAllowedAtRuntime(user)) {
       stage = 'login-history:suspended';
       await recordLoginHistory({ user_id: user.id, phone, login_at: new Date().toISOString(), device_id: body.deviceId?.trim() || null, login_status: 'FAILED', failure_reason: 'ACCOUNT_SUSPENDED', ...metadata });
       return NextResponse.json({ error: 'This account is suspended.' }, { status: 403 });
@@ -72,7 +73,7 @@ export async function POST(request: Request) {
     const isSuperAdmin = roles.includes('SUPER_ADMIN');
     const deviceId = body.deviceId?.trim() || null;
     stage = 'device-session:check';
-    if (!isSuperAdmin && await hasActiveSessionOnOtherDevice(user.id, deviceId)) {
+    if (!isSuperAdmin && !isPreviewTestAccount(user) && await hasActiveSessionOnOtherDevice(user.id, deviceId)) {
       stage = 'login-history:device-bound';
       await recordLoginHistory({ user_id: user.id, phone, login_at: new Date().toISOString(), device_id: deviceId, login_status: 'FAILED', failure_reason: 'DEVICE_BOUND', ...metadata });
       return NextResponse.json({ error: 'This account is bound to another device. Ask an administrator to unbind it.' }, { status: 409 });

@@ -2,10 +2,11 @@
 
 import { AI_COACH_COURSE_ID, createCoachProfile, emptyCoachProfile, type CoachProfile } from '@/lib/mandarin-ai-coach';
 import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
+import { currentLearningScope } from '@/lib/account/client-scope';
 
 const LEGACY_STORAGE_KEY = 'indobrain:mandarin-ai-coach-day1:v1';
 const EVENT_NAME = 'indobrain:mandarin-ai-coach-profile';
-const storageKey = (lesson?: MandarinCoachCurriculumLesson) => lesson ? `indobrain:mandarin-ai-coach:${lesson.id}:v1` : LEGACY_STORAGE_KEY;
+const storageKey = (lesson?: MandarinCoachCurriculumLesson) => `indobrain:mandarin-ai-coach:${currentLearningScope()}:${lesson?.id || 'day-1'}:v1`;
 
 export function readCoachProfile(lesson?: MandarinCoachCurriculumLesson): CoachProfile {
   const fresh = lesson ? createCoachProfile(lesson) : emptyCoachProfile();
@@ -13,7 +14,7 @@ export function readCoachProfile(lesson?: MandarinCoachCurriculumLesson): CoachP
   try {
     type StoredProfile = Omit<Partial<CoachProfile>, 'version' | 'conversation' | 'learning'> & { version?: 1 | 2 | 3 | 4; conversation?: CoachProfile['conversation']; learning?: CoachProfile['learning'] };
     const key = storageKey(lesson);
-    const legacy = lesson?.day === 1 ? localStorage.getItem(LEGACY_STORAGE_KEY) : null;
+    const legacy = currentLearningScope() === 'guest' && lesson?.day === 1 ? localStorage.getItem(LEGACY_STORAGE_KEY) : null;
     const parsed = JSON.parse(localStorage.getItem(key) || legacy || 'null') as StoredProfile | null;
     const correctLesson = lesson ? parsed?.lessonId === lesson.id || (!parsed?.lessonId && lesson.day === 1 && parsed?.course === AI_COACH_COURSE_ID) : parsed?.course === AI_COACH_COURSE_ID;
     if ((parsed?.version === 1 || parsed?.version === 2 || parsed?.version === 3 || parsed?.version === 4) && correctLesson && Array.isArray(parsed.expressions)) {
@@ -43,7 +44,7 @@ export function readCoachProfile(lesson?: MandarinCoachCurriculumLesson): CoachP
 
 export function saveCoachProfile(profile: CoachProfile) {
   const next = { ...profile, updatedAt: new Date().toISOString() };
-  localStorage.setItem(`indobrain:mandarin-ai-coach:${profile.lessonId}:v1`, JSON.stringify(next));
+  localStorage.setItem(`indobrain:mandarin-ai-coach:${currentLearningScope()}:${profile.lessonId}:v1`, JSON.stringify(next));
   window.dispatchEvent(new Event(EVENT_NAME));
   return next;
 }

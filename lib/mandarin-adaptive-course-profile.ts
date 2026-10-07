@@ -2,8 +2,9 @@
 
 import { assemblePersonalPlan, buildAdaptiveKnowledge, judgeMastery, profileLearner, type AdaptiveCourseState, type AdaptiveLearnerProfile, type AdaptiveMistake, type MandarinLevel, type LearningPurpose } from '@/lib/mandarin-adaptive-course';
 import type { MandarinCoachCurriculumPayload } from '@/lib/mandarin-coach-curriculum-types';
+import { scopedClientStorageKey } from '@/lib/account/client-scope';
 
-const STORAGE_KEY = 'indobrain:mandarin-adaptive-course:v1';
+const storageKey = () => scopedClientStorageKey('indobrain:mandarin-adaptive-course:v1');
 const EVENT_NAME = 'indobrain:mandarin-adaptive-course';
 
 export const emptyAdaptiveCourseState = (): AdaptiveCourseState => ({ version: 1, sessionId: `coach-adaptive-${crypto.randomUUID()}`, learner: null, mastery: [], mistakes: [], generatedCandidates: [], lastPlan: null });
@@ -11,16 +12,16 @@ export const emptyAdaptiveCourseState = (): AdaptiveCourseState => ({ version: 1
 export function readAdaptiveCourseState(): AdaptiveCourseState {
   if (typeof window === 'undefined') return emptyAdaptiveCourseState();
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') as AdaptiveCourseState | null;
+    const parsed = JSON.parse(localStorage.getItem(storageKey()) || 'null') as AdaptiveCourseState | null;
     if (parsed?.version === 1 && parsed.sessionId?.startsWith('coach-') && Array.isArray(parsed.mastery) && Array.isArray(parsed.mistakes)) return parsed;
   } catch { /* Invalid local learning memory is replaced, never merged. */ }
   const fresh = emptyAdaptiveCourseState();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+  localStorage.setItem(storageKey(), JSON.stringify(fresh));
   return fresh;
 }
 
 export function saveAdaptiveCourseState(state: AdaptiveCourseState) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  localStorage.setItem(storageKey(), JSON.stringify(state));
   window.dispatchEvent(new Event(EVENT_NAME));
   return state;
 }

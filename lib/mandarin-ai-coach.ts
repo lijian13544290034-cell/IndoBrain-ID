@@ -32,7 +32,8 @@ export type CoachEventName =
   | 'coach_answer_helpful' | 'coach_answer_unresolved' | 'expression_saved_for_review'
   | 'coach_slow_audio_requested' | 'coach_skill_gap' | 'coach_response_audio_play'
   | 'learner_profile_updated' | 'personal_plan_generated' | 'knowledge_gap_demand'
-  | 'adaptive_mastery_updated' | 'next_best_action_selected' | 'career_goal_changed';
+  | 'adaptive_mastery_updated' | 'next_best_action_selected' | 'career_goal_changed'
+  | 'first_coach_message';
 
 export type CoachConversationTurn = {
   id: string;

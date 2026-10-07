@@ -10,6 +10,7 @@ import { recordAdaptiveResult, refreshAdaptivePlan } from '@/lib/mandarin-adapti
 import { COACH_RETRY_POLICY, FEEDBACK_COPY, createCoachProfile, type CoachEventName, type CoachProfile, type ExpressionId, type FeedbackId } from '@/lib/mandarin-ai-coach';
 import { readCoachProfile, resetCoachProfile, saveCoachProfile } from '@/lib/mandarin-ai-coach-profile';
 import type { MandarinCoachCatalogEntry, MandarinCoachCurriculumPayload } from '@/lib/mandarin-coach-curriculum-types';
+import { applyPreviewTestReset } from '@/lib/mandarin-preview-test-reset';
 
 type Phase = 'WELCOME' | 'TEACH' | 'COMPREHENSION' | 'ROLEPLAY' | 'COMPLETE';
 type AttemptResponse = { transcript: string; verdict: 'PASS' | 'RETRY' | 'BREAKDOWN'; feedback: string; feedbackId: FeedbackId; nextAction: 'CONTINUE' | 'REPEAT' | 'SHOW_BREAKDOWN'; usage: { token_input: number; token_output: number; model_calls: number; estimated_ai_cost: number; model_used: string; stt_seconds: number; stt_model: string } };
@@ -44,6 +45,10 @@ export default function MandarinAiCoachExperience({ curriculum }: { curriculum: 
   const [comprehensionTarget, setComprehensionTarget] = useState<ExpressionId>(firstLesson.expressions[0]?.id ?? '');
   const [serviceError, setServiceError] = useState('');
   const pendingAdaptiveStart = useRef<{ lessonId: string; expressionId?: string } | null>(null);
+
+  useEffect(() => {
+    void applyPreviewTestReset().then((reset) => { if (reset) window.location.reload(); }).catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     const next = readCoachProfile(lesson);

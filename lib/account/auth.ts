@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { accountSessionCookieName } from './config';
 import { findSession, getUserRoles, hasRolePermission } from './repository';
 import type { AccountUser } from './types';
+import { isAccountAllowedAtRuntime } from './preview-test';
 
 function unwrapUser(value: AccountUser | AccountUser[] | null) {
   return Array.isArray(value) ? value[0] ?? null : value;
@@ -14,7 +15,7 @@ export async function getCurrentAccountUser() {
     const session = await findSession(token);
     if (!session || session.revoked_at || new Date(session.expires_at) <= new Date()) return null;
     const user = unwrapUser(session.users);
-    if (!user || user.account_status !== 'ACTIVE' || user.deleted_at) return null;
+    if (!user || !isAccountAllowedAtRuntime(user)) return null;
     if (user.expires_at && new Date(user.expires_at) <= new Date()) return null;
     return user;
   } catch {

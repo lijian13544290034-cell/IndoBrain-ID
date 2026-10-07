@@ -3,7 +3,7 @@ import { getCurrentAccountUser } from '@/lib/account/auth';
 import { isExpressionId, type CoachSkill, type ExpressionId, type UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import { getCoachCapabilityIds } from '@/lib/mandarin-coach-skills';
 import { buildCoachSpeechSegments } from '@/lib/mandarin-coach-speech';
-import { saveCoachInteraction } from '@/lib/server/mandarin-coach-analytics';
+import { saveCoachInteraction, saveCoachTelemetryEvent } from '@/lib/server/mandarin-coach-analytics';
 import { anonymizeLearningQuestion, answerCoachConversation, transcribeMandarin } from '@/lib/server/mandarin-ai-coach';
 import { getMandarinLevel2Access } from '@/lib/server/mandarin-work-level2-access';
 import { getMandarinCoachLesson } from '@/lib/server/mandarin-coach-curriculum';
@@ -170,6 +170,14 @@ export async function POST(request: Request) {
       sessionDurationSeconds,
       offTopic: result.classification.intent === 'OFF_TOPIC',
     });
+    if (securedContext.messageCount === 0) {
+      await saveCoachTelemetryEvent({
+        sessionId,
+        userId: currentUser?.id || null,
+        event: 'first_coach_message',
+        data: { message: anonymizeLearningQuestion(message), detected_language: result.classification.detectedLanguage, intent: result.classification.intent, lesson_id: courseLesson.id, current_day: securedContext.currentDay },
+      });
+    }
     return Response.json({
       questionId,
       transcript: transcription?.transcript || null,
