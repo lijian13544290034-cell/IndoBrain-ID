@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { careerLabel, type LearningPurpose, type MandarinLevel, type PersonalLearningPlan } from '@/lib/mandarin-adaptive-course';
 import { readAdaptiveCourseState, subscribeAdaptiveCourse, updateAdaptiveLearner, type AdaptiveProfileForm } from '@/lib/mandarin-adaptive-course-profile';
+import { mandarinNavigationTitleId } from '@/lib/mandarin-coach-navigation';
 import type { MandarinCoachCurriculumPayload } from '@/lib/mandarin-coach-curriculum-types';
 
 const blankForm: AdaptiveProfileForm = {
@@ -38,7 +39,7 @@ export default function MandarinAdaptiveCoursePanel({ curriculum, onStart }: { c
     return subscribeAdaptiveCourse(load);
   }, []);
 
-  const lessonNames = useMemo(() => new Map(curriculum.catalog.map((entry) => [entry.id, `${entry.day ? `Day ${entry.day}` : 'Topik'} · ${entry.title}`])), [curriculum.catalog]);
+  const lessonNames = useMemo(() => new Map(curriculum.catalog.map((entry) => [entry.id, `${entry.day ? `Hari ${entry.day}` : 'Topik'} · ${mandarinNavigationTitleId(entry)}`])), [curriculum.catalog]);
 
   function createPlan() {
     const before = readAdaptiveCourseState();

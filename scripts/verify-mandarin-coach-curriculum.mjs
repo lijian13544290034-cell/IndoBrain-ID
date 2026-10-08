@@ -7,6 +7,7 @@ const page = read('app/learn-chinese/ai-coach/page.tsx');
 const conversation = read('app/api/mandarin-coach/conversation/route.ts');
 const pronunciation = read('app/api/mandarin-coach/pronunciation/route.ts');
 const ui = read('components/MandarinAiCoachExperience.tsx');
+const navigation = read('lib/mandarin-coach-navigation.ts');
 const levelOne = read('lib/mandarin-work-course.ts');
 const levelTwo = read('lib/server/mandarin-work-level2.ts');
 
@@ -69,6 +70,23 @@ for (const marker of [
   'lesson.expressions',
   "form.set('lessonId', lesson.id)",
 ]) if (!ui.includes(marker)) failures.push(`curriculum UI marker missing ${marker}`);
+
+const navigationDays = [...navigation.matchAll(/^\s+(\d+):\s'/gm)].map((match) => Number(match[1]));
+const expectedNavigationDays = Array.from({ length: 60 }, (_, index) => index + 1);
+if (navigationDays.join(',') !== expectedNavigationDays.join(',')) failures.push(`Indonesian navigation titles are not complete for Day 1–60: ${navigationDays.join(',')}`);
+
+for (const marker of [
+  "`Hari ${lesson.day} · ${expressionCount} ungkapan`",
+  "return 'Jumlah dalam Bahasa Mandarin'",
+  "'GOLDEN_QUANTITY:专题 / Topik': 'Topik Khusus · Jumlah dalam Bahasa Mandarin'",
+  'mandarinNavigationTitleId(entry)',
+  'mandarinNavigationTitleZh(entry)',
+  'grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3',
+]) {
+  if (!navigation.includes(marker) && !ui.includes(marker)) failures.push(`Indonesian navigation UI contract missing ${marker}`);
+}
+
+if (ui.includes('`Day ${entry.day}`') || ui.includes('`Day ${lesson.day}`')) failures.push('English Day label remains in Mandarin course navigation');
 
 if (failures.length) {
   console.error(`Mandarin Coach curriculum verification failed (${failures.length})`);
