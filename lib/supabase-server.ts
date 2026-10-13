@@ -1,5 +1,7 @@
 import { accountServerKey } from '@/lib/account/config';
 
+const writableTables = new Set(['conversations', 'experience_events', 'feedback', 'learning_progress']);
+
 function environment() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = accountServerKey();
@@ -8,6 +10,7 @@ function environment() {
 }
 
 export async function saveToSupabase(table: string, row: Record<string, unknown>) {
+  if (!writableTables.has(table)) throw new Error('Supabase table is not allowed');
   const config = environment();
 
   if (!config) return { saved: false, reason: 'not_configured' as const };
@@ -38,6 +41,7 @@ export async function saveToSupabase(table: string, row: Record<string, unknown>
 }
 
 export async function readFromSupabase<T>(path: string) {
+  if (!path.startsWith('conversations?') || path.includes('..') || path.includes('/')) throw new Error('Supabase read path is not allowed');
   const config = environment();
   if (!config) return { configured: false as const, rows: [] as T[] };
   const response = await fetch(`${config.url}/rest/v1/${path}`, {

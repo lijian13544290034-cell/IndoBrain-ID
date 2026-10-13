@@ -111,7 +111,7 @@ export async function saveCoachTelemetryEvent(input: { sessionId: string; userId
     return await saveToSupabase('conversations', {
       session_id: anonymousId,
       role_type: eventRole,
-      user_message: safeJson({ version: 1, anonymous_id: anonymousId, tester_id: input.userId ? anonymousId : null, event: input.event, ...input.data }),
+      user_message: safeJson({ version: 1, ...input.data, anonymous_id: anonymousId, tester_id: input.userId ? anonymousId : null, event: input.event }),
       assistant_message: '{}',
     });
   } catch (error) {
