@@ -44,10 +44,13 @@ export async function POST(request: Request) {
   try {
     const body = await request.json() as Record<string, unknown>;
     if (isMandarinWorkFeedback(body)) return await saveMandarinWorkFeedback(body);
-    if (!body.session_id || !body.experience_id || typeof body.helpful !== 'boolean') {
+    const experienceId = typeof body.experience_id === 'string' ? body.experience_id : '';
+    const helpful = typeof body.helpful === 'boolean' ? body.helpful : null;
+    const comment = typeof body.comment === 'string' ? body.comment.trim().slice(0, 2000) : '';
+    if (!experienceId || experienceId.length > 120 || helpful === null) {
       return NextResponse.json({ error: 'Invalid feedback' }, { status: 400 });
     }
-    const result = await saveToSupabase('feedback', body);
+    const result = await saveToSupabase('feedback', { session_id: crypto.randomUUID(), experience_id: experienceId, helpful, comment: comment || null });
     return NextResponse.json(result);
   } catch {
     return NextResponse.json({ saved: false, error: 'Unable to save feedback' }, { status: 500 });

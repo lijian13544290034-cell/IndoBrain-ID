@@ -1,12 +1,12 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { getCurrentAccountUser } from '@/lib/account/auth';
 import { isExpressionId, type CoachSkill, type ExpressionId, type UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import { getCoachCapabilityIds } from '@/lib/mandarin-coach-skills';
 import { buildCoachSpeechSegments } from '@/lib/mandarin-coach-speech';
-import { saveCoachInteraction } from '@/lib/server/mandarin-coach-analytics';
+import { saveCoachInteraction, saveCoachTelemetryEvent } from '@/lib/server/mandarin-coach-analytics';
 import { anonymizeLearningQuestion, answerCoachConversation, transcribeMandarin } from '@/lib/server/mandarin-ai-coach';
 import { getMandarinLevel2Access } from '@/lib/server/mandarin-work-level2-access';
 import { getMandarinCoachLesson } from '@/lib/server/mandarin-coach-curriculum';
+import { resolveRequestAccountScope } from '@/lib/server/request-account-scope';
 
 export const runtime = 'nodejs';
 
@@ -90,31 +90,33 @@ export async function POST(request: Request) {
     const text = typeof form.get('message') === 'string' ? String(form.get('message')).trim() : '';
     const context = safeContext(form.get('context'));
     if (typeof sessionId !== 'string' || !sessionId.startsWith('coach-') || !context) return Response.json({ error: 'Permintaan percakapan tidak valid.' }, { status: 400 });
+    const scope = await resolveRequestAccountScope(sessionId);
+    if (!scope) return Response.json({ error: 'Authentication required.' }, { status: 401 });
+    const scopedSessionId = scope.sessionId;
     const courseLesson = getMandarinCoachLesson(context.lessonId);
     if (!courseLesson) return Response.json({ error: 'Materi AI Coach tidak ditemukan.' }, { status: 404 });
     if (courseLesson.source === 'MANDARIN_WORK_LEVEL_2' && (await getMandarinLevel2Access()).state !== 'authorized') return Response.json({ error: 'Akses Level 2 diperlukan.' }, { status: 403 });
     const currentExpression = context.currentExpression && courseLesson.expressions.some((item) => item.id === context.currentExpression) ? context.currentExpression : null;
     const securedContext = { ...context, currentDay: courseLesson.day ?? 0, currentExpression, courseLesson };
-    if (!allowConversation(sessionId)) return Response.json({ error: 'Batas percakapan harian sudah tercapai. Lanjutkan besok.' }, { status: 429 });
+    if (!allowConversation(scopedSessionId)) return Response.json({ error: 'Batas percakapan harian sudah tercapai. Lanjutkan besok.' }, { status: 429 });
 
     let message = text;
     let transcription: Awaited<ReturnType<typeof transcribeMandarin>> | null = null;
     if (audio instanceof File) {
       const audioType = audio.type.toLowerCase().split(';', 1)[0].trim();
       if (!allowedAudioTypes.has(audioType) || audio.size < 128 || audio.size > 5_000_000) return Response.json({ error: 'Rekaman audio tidak valid.' }, { status: 400 });
-      transcription = await transcribeMandarin(new Uint8Array(await audio.arrayBuffer()), sessionId);
+      transcription = await transcribeMandarin(new Uint8Array(await audio.arrayBuffer()), scopedSessionId);
       message = transcription.transcript;
     }
     if (!message || message.length > 500) return Response.json({ error: 'Tulis atau ucapkan pertanyaan singkat.' }, { status: 400 });
 
-    const result = await answerCoachConversation({ message, sessionId, context: securedContext });
+    const result = await answerCoachConversation({ message, sessionId: scopedSessionId, context: securedContext });
     const questionId = randomUUID();
     const timestamp = new Date().toISOString();
-    const sessionKey = createHash('sha256').update(sessionId).digest('hex').slice(0, 16);
+    const sessionKey = createHash('sha256').update(scopedSessionId).digest('hex').slice(0, 16);
     const inputMode = audio instanceof File ? 'VOICE' as const : 'TEXT' as const;
     const capabilityIds = getCoachCapabilityIds(result.classification.intents, result.classification.skillIds, result.classification.intent === 'OFF_TOPIC');
     const speechSegments = buildCoachSpeechSegments(result.answer);
-    const currentUser = await getCurrentAccountUser();
     const responseLatencyMs = Date.now() - startedAt;
     const sttSeconds = transcription?.durationInSeconds || 0;
     const estimatedCost = result.usage.estimated_ai_cost + (transcription?.estimatedCost || 0);
@@ -141,8 +143,8 @@ export async function POST(request: Request) {
       timestamp,
     });
     await saveCoachInteraction({
-      sessionId,
-      userId: currentUser?.id || null,
+      sessionId: scopedSessionId,
+      userId: scope.user?.id || null,
       inputMode,
       userMessage: message,
       assistantMessage: [result.answer.answer, result.answer.chinese, result.answer.indonesian, result.answer.followUp].filter(Boolean).join(' '),
@@ -170,6 +172,14 @@ export async function POST(request: Request) {
       sessionDurationSeconds,
       offTopic: result.classification.intent === 'OFF_TOPIC',
     });
+    if (securedContext.messageCount === 0) {
+      await saveCoachTelemetryEvent({
+        sessionId: scopedSessionId,
+        userId: scope.user?.id || null,
+        event: 'first_coach_message',
+        data: { message: anonymizeLearningQuestion(message), detected_language: result.classification.detectedLanguage, intent: result.classification.intent, lesson_id: courseLesson.id, current_day: securedContext.currentDay },
+      });
+    }
     return Response.json({
       questionId,
       transcript: transcription?.transcript || null,

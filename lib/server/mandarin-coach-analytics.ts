@@ -19,6 +19,10 @@ export function anonymousCoachId(sessionId: string) {
   return createHash('sha256').update(sessionId).digest('hex').slice(0, 20);
 }
 
+export function anonymousTesterId(userId: string) {
+  return `tester-${createHash('sha256').update(`account:${userId}`).digest('hex').slice(0, 16)}`;
+}
+
 function safeJson(value: unknown) {
   try { return JSON.stringify(value); } catch { return '{}'; }
 }
@@ -53,11 +57,11 @@ export async function saveCoachInteraction(input: {
   sessionDurationSeconds: number;
   offTopic: boolean;
 }) {
-  const anonymousId = anonymousCoachId(input.sessionId);
+  const anonymousId = input.userId ? anonymousTesterId(input.userId) : anonymousCoachId(input.sessionId);
   const userPayload = {
     version: 1,
     anonymous_id: anonymousId,
-    user_id: input.userId || null,
+    tester_id: input.userId ? anonymousTesterId(input.userId) : null,
     input_mode: input.inputMode,
     input_language: input.detectedLanguage,
     user_message: anonymizeLearningQuestion(input.userMessage),
@@ -101,13 +105,13 @@ export async function saveCoachInteraction(input: {
   }
 }
 
-export async function saveCoachTelemetryEvent(input: { sessionId: string; event: string; data: Record<string, unknown> }) {
-  const anonymousId = anonymousCoachId(input.sessionId);
+export async function saveCoachTelemetryEvent(input: { sessionId: string; userId?: string | null; event: string; data: Record<string, unknown> }) {
+  const anonymousId = input.userId ? anonymousTesterId(input.userId) : anonymousCoachId(input.sessionId);
   try {
     return await saveToSupabase('conversations', {
       session_id: anonymousId,
       role_type: eventRole,
-      user_message: safeJson({ version: 1, anonymous_id: anonymousId, event: input.event, ...input.data }),
+      user_message: safeJson({ version: 1, ...input.data, anonymous_id: anonymousId, tester_id: input.userId ? anonymousId : null, event: input.event }),
       assistant_message: '{}',
     });
   } catch (error) {
@@ -174,10 +178,17 @@ export async function readCoachAnalytics() {
       estimatedCost: Number(costs.toFixed(6)),
     },
     topQuestions: top(interactions.map(({ user }) => String(user.user_message || ''))),
+    firstCoachMessages: top(events.filter(({ data }) => data.event === 'first_coach_message').map(({ data }) => String(data.message || ''))),
     topChinese: top(interactions.map(({ user }) => String(user.target_chinese || ''))),
     topIntents: top(interactions.map(({ user }) => String(user.intent || ''))),
     topErrors: top(events.filter(({ data }) => ['expression_retry', 'expression_failed'].includes(String(data.event))).map(({ data }) => String(data.expression_id || ''))),
     favorites: top(events.filter(({ data }) => data.event === 'expression_saved_for_review').map(({ data }) => String(data.expression_id || ''))),
+    careerGoals: top(events.filter(({ data }) => data.event === 'learner_profile_updated').map(({ data }) => String(data.career_family || 'NEEDS_CLARIFICATION'))),
+    requestedCapabilities: top(events.filter(({ data }) => data.event === 'personal_plan_generated').flatMap(({ data }) => Array.isArray(data.capabilities) ? data.capabilities.map(String) : [])),
+    knowledgeGapDemand: top(events.filter(({ data }) => data.event === 'knowledge_gap_demand').map(({ data }) => String(data.requested_capability || ''))),
+    reusedLessons: top(events.filter(({ data }) => data.event === 'personal_plan_generated').flatMap(({ data }) => Array.isArray(data.lesson_ids) ? data.lesson_ids.map(String) : [])),
+    masteredAdaptive: top(events.filter(({ data }) => data.event === 'adaptive_mastery_updated' && data.success === true).map(({ data }) => String(data.expression_id || ''))),
+    skippedAdaptive: top(events.filter(({ data }) => data.event === 'expression_saved_for_review').map(({ data }) => String(data.expression_id || ''))),
     recentUsers,
   };
 }
