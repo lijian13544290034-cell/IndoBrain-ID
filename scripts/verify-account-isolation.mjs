@@ -34,6 +34,11 @@ assert.match(read('app/api/mandarin-coach/reset-state/route.ts'), /anonymousTest
 const storage = read('lib/supabase-server.ts');
 assert.match(storage, /writableTables\.has\(table\)/);
 assert.match(storage, /path\.startsWith\('conversations\?'\)/);
+const accountConfig = read('lib/account/config.ts');
+assert.match(accountConfig, /VERCEL_ENV === 'preview'/);
+assert.match(accountConfig, /STATELESS_PREVIEW_TEST_MODE === 'true'/);
+assert.match(accountConfig, /if \(isStatelessPreviewTestMode\(\)\) return false/);
+assert.match(accountConfig, /if \(isStatelessPreviewTestMode\(\)\) return undefined/);
 assert.match(read('components/PhoneLoginForm.tsx'), /setLearningProfileScope/);
 assert.match(read('components/AccountLogoutActions.tsx'), /clearLearningProfileScope/);
 console.log('ACCOUNT ISOLATION VERIFIED');
