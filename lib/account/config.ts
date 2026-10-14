@@ -1,8 +1,14 @@
+export function isStatelessPreviewTestMode() {
+  return process.env.VERCEL_ENV === 'preview' && process.env.STATELESS_PREVIEW_TEST_MODE === 'true';
+}
+
 export function isAccountDatabaseConfigured() {
+  if (isStatelessPreviewTestMode()) return false;
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY));
 }
 
 export function accountServerKey() {
+  if (isStatelessPreviewTestMode()) return undefined;
   return process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
 }
 
