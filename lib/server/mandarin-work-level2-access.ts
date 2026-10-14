@@ -2,6 +2,7 @@ import 'server-only';
 
 import { cookies } from 'next/headers';
 import { getCurrentAccountUser } from '@/lib/account/auth';
+import { isStatelessPreviewTestMode } from '@/lib/account/config';
 import { getUserRoles, hasMembershipPermission } from '@/lib/account/repository';
 import { previewQaCookieName, verifyPreviewQaSession } from '@/lib/account/preview-qa';
 import { MANDARIN_LEVEL2_PERMISSION } from '@/lib/mandarin-work-level2-catalog';
@@ -13,6 +14,8 @@ export type MandarinLevel2Access = {
 };
 
 export async function getMandarinLevel2Access(): Promise<MandarinLevel2Access> {
+  if (isStatelessPreviewTestMode()) return { state: 'authorized', source: 'preview-qa' };
+
   const previewToken = (await cookies()).get(previewQaCookieName())?.value;
   if (await verifyPreviewQaSession(previewToken)) return { state: 'authorized', source: 'preview-qa' };
 

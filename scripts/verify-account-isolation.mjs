@@ -10,6 +10,7 @@ assert.equal(scoped('tester-01', 'coach-shared-client-value'), scoped('tester-01
 const helper = read('lib/server/request-account-scope.ts');
 assert.match(helper, /getCurrentAccountUser\(\)/);
 assert.match(helper, /AUTH_REQUIRED === 'true'/);
+assert.match(helper, /!isStatelessPreviewTestMode\(\)/);
 assert.ok(helper.includes('account:${userId}'));
 assert.ok(helper.includes('${owner}:session:${clientSessionId}'));
 
@@ -39,6 +40,8 @@ assert.match(accountConfig, /VERCEL_ENV === 'preview'/);
 assert.match(accountConfig, /STATELESS_PREVIEW_TEST_MODE === 'true'/);
 assert.match(accountConfig, /if \(isStatelessPreviewTestMode\(\)\) return false/);
 assert.match(accountConfig, /if \(isStatelessPreviewTestMode\(\)\) return undefined/);
+const level2Access = read('lib/server/mandarin-work-level2-access.ts');
+assert.match(level2Access, /if \(isStatelessPreviewTestMode\(\)\) return \{ state: 'authorized', source: 'preview-qa' \}/);
 assert.match(read('components/PhoneLoginForm.tsx'), /setLearningProfileScope/);
 assert.match(read('components/AccountLogoutActions.tsx'), /clearLearningProfileScope/);
 console.log('ACCOUNT ISOLATION VERIFIED');

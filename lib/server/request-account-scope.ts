@@ -2,6 +2,7 @@ import 'server-only';
 
 import { createHash } from 'node:crypto';
 import { getCurrentAccountUser } from '@/lib/account/auth';
+import { isStatelessPreviewTestMode } from '@/lib/account/config';
 
 const CLIENT_SESSION_PATTERN = /^[a-zA-Z0-9:_-]{8,180}$/;
 
@@ -13,6 +14,6 @@ export function scopedServerSessionId(userId: string | null, clientSessionId: st
 export async function resolveRequestAccountScope(clientSessionId: string) {
   if (!CLIENT_SESSION_PATTERN.test(clientSessionId)) return null;
   const user = await getCurrentAccountUser();
-  if (process.env.AUTH_REQUIRED === 'true' && !user) return null;
+  if (process.env.AUTH_REQUIRED === 'true' && !user && !isStatelessPreviewTestMode()) return null;
   return { user, sessionId: scopedServerSessionId(user?.id || null, clientSessionId) };
 }
