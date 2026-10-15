@@ -7,6 +7,10 @@ import { readFromSupabase, saveToSupabase } from '@/lib/supabase-server';
 const interactionRole = 'mandarin_coach_v1';
 const eventRole = 'mandarin_coach_event';
 
+function productionPersistenceDisabled() {
+  return process.env.VERCEL_ENV === 'production';
+}
+
 type StoredConversation = {
   session_id: string;
   role_type: string;
@@ -57,6 +61,7 @@ export async function saveCoachInteraction(input: {
   sessionDurationSeconds: number;
   offTopic: boolean;
 }) {
+  if (productionPersistenceDisabled()) return { saved: false, reason: 'production_persistence_disabled' as const };
   const anonymousId = input.userId ? anonymousTesterId(input.userId) : anonymousCoachId(input.sessionId);
   const userPayload = {
     version: 1,
@@ -106,6 +111,7 @@ export async function saveCoachInteraction(input: {
 }
 
 export async function saveCoachTelemetryEvent(input: { sessionId: string; userId?: string | null; event: string; data: Record<string, unknown> }) {
+  if (productionPersistenceDisabled()) return { saved: false, reason: 'production_persistence_disabled' as const };
   const anonymousId = input.userId ? anonymousTesterId(input.userId) : anonymousCoachId(input.sessionId);
   try {
     return await saveToSupabase('conversations', {
@@ -131,6 +137,7 @@ function top(values: string[], limit = 8) {
 }
 
 export async function readCoachAnalytics() {
+  if (productionPersistenceDisabled()) return { configured: false as const };
   const query = 'conversations?role_type=in.(mandarin_coach_v1,mandarin_coach_event)&select=session_id,role_type,user_message,assistant_message,created_at&order=created_at.desc&limit=1000';
   const result = await readFromSupabase<StoredConversation>(query);
   if (!result.configured) return { configured: false as const };
@@ -183,12 +190,7 @@ export async function readCoachAnalytics() {
     topIntents: top(interactions.map(({ user }) => String(user.intent || ''))),
     topErrors: top(events.filter(({ data }) => ['expression_retry', 'expression_failed'].includes(String(data.event))).map(({ data }) => String(data.expression_id || ''))),
     favorites: top(events.filter(({ data }) => data.event === 'expression_saved_for_review').map(({ data }) => String(data.expression_id || ''))),
-    careerGoals: top(events.filter(({ data }) => data.event === 'learner_profile_updated').map(({ data }) => String(data.career_family || 'NEEDS_CLARIFICATION'))),
-    requestedCapabilities: top(events.filter(({ data }) => data.event === 'personal_plan_generated').flatMap(({ data }) => Array.isArray(data.capabilities) ? data.capabilities.map(String) : [])),
-    knowledgeGapDemand: top(events.filter(({ data }) => data.event === 'knowledge_gap_demand').map(({ data }) => String(data.requested_capability || ''))),
-    reusedLessons: top(events.filter(({ data }) => data.event === 'personal_plan_generated').flatMap(({ data }) => Array.isArray(data.lesson_ids) ? data.lesson_ids.map(String) : [])),
-    masteredAdaptive: top(events.filter(({ data }) => data.event === 'adaptive_mastery_updated' && data.success === true).map(({ data }) => String(data.expression_id || ''))),
-    skippedAdaptive: top(events.filter(({ data }) => data.event === 'expression_saved_for_review').map(({ data }) => String(data.expression_id || ''))),
+
     recentUsers,
   };
 }

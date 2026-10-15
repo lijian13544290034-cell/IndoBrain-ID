@@ -55,7 +55,7 @@ for (const required of ['prepareBrowserAudio', 'AudioContext', 'decodeAudioData'
 if (!ui.includes('prepareBrowserAudio()')) failures.push('guided Mandarin playback does not unlock audio from the user gesture');
 if (!conversationUi.includes('prepareBrowserAudio()')) failures.push('coach mixed-language playback does not unlock audio from the user gesture');
 const conversationRoute = fs.readFileSync('app/api/mandarin-coach/conversation/route.ts', 'utf8');
-for (const required of ['dailyConversationLimit = 30', 'answerCoachConversation', '[mandarin-ai-coach-learning-insight]', 'anonymizeLearningQuestion', 'audio/webm']) if (!conversationRoute.includes(required)) failures.push(`conversation route missing ${required}`);
+for (const required of ['dailyConversationLimit = 30', 'answerCoachConversation', '[mandarin-ai-coach-learning-insight]', 'anonymizeLearningQuestion', 'audio/webm', 'Suara belum terdengar jelas. Silakan rekam lagi.', 'status: 422']) if (!conversationRoute.includes(required)) failures.push(`conversation route missing ${required}`);
 const brain = fs.readFileSync('lib/server/mandarin-coach-brain.ts', 'utf8');
 const skills = fs.readFileSync('lib/mandarin-coach-skills.ts', 'utf8');
 const pronunciation = fs.readFileSync('lib/mandarin-pronunciation-knowledge.ts', 'utf8');
@@ -75,7 +75,7 @@ if (!brain.includes("ttsRate: 'slow'")) failures.push('actual slow-request respo
 if (!pronunciation.includes('THIRD_TONE_SANDHI') || !pronunciation.includes('nǐ hǎo → ní hǎo')) failures.push('third-tone sandhi knowledge is missing');
 if (!brain.includes("targetChinese: '喝'") || !brain.includes("targetPinyin: 'hē'")) failures.push('user-initiated vocabulary memory target is missing');
 for (const marker of ["targetChinese: '在哪里'", "targetChinese: '货到了吗'", "targetChinese: '货还没到'", "targetChinese: '明天早点来'"]) if (!brain.includes(marker)) failures.push(`locked V1 acceptance response missing ${marker}`);
-for (const marker of ['NoObjectGeneratedError', '[mandarin-coach-structured-retry]', '[mandarin-coach-safe-fallback]', 'SAFE_PLAIN_TEXT_FALLBACK', 'maxRetries: 0']) {
+for (const marker of ['NoObjectGeneratedError', 'NoTranscriptGeneratedError', '[mandarin-coach-structured-retry]', '[mandarin-coach-pronunciation-safe-fallback]', '[mandarin-coach-safe-fallback]', 'SAFE_PLAIN_TEXT_FALLBACK', 'maxRetries: 0']) {
   if (!server.includes(marker)) failures.push(`bounded structured-output reliability contract missing ${marker}`);
 }
 if (!server.includes('recentConversationSummary') || !server.includes('recentTurns.slice(-6)')) failures.push('bounded conversation context is missing');
@@ -93,7 +93,11 @@ const requestScope = fs.readFileSync('lib/server/request-account-scope.ts', 'utf
 if (!telemetry.includes('resolveRequestAccountScope') || !requestScope.includes("createHash('sha256')")) failures.push('telemetry session pseudonymization is missing');
 if (!telemetry.includes('saveCoachTelemetryEvent')) failures.push('telemetry persistence is missing');
 const analytics = fs.readFileSync('lib/server/mandarin-coach-analytics.ts', 'utf8');
-for (const marker of ['anonymousCoachId', "role_type: interactionRole", 'lesson_id', 'course_source', 'input_tokens', 'output_tokens', 'estimated_cost', 'speech_duration', 'response_latency']) if (!analytics.includes(marker)) failures.push(`analytics data contract missing ${marker}`);
+for (const marker of ['anonymousCoachId', "role_type: interactionRole", 'lesson_id', 'course_source', 'input_tokens', 'output_tokens', 'estimated_cost', 'speech_duration', 'response_latency', "process.env.VERCEL_ENV === 'production'", 'production_persistence_disabled']) if (!analytics.includes(marker)) failures.push(`analytics data contract missing ${marker}`);
+for (const adaptiveFile of ['components/MandarinAdaptiveCoursePanel.tsx', 'lib/mandarin-adaptive-course.ts', 'lib/mandarin-adaptive-course-profile.ts', 'scripts/verify-mandarin-adaptive-course.mjs']) {
+  if (fs.existsSync(adaptiveFile)) failures.push(`V1.2 file leaked into V1.1: ${adaptiveFile}`);
+}
+if (/adaptive_mastery_updated|next_best_action_selected|personal_plan_generated|knowledge_gap_demand/.test(telemetry)) failures.push('V1.2 telemetry leaked into V1.1');
 const adminAnalytics = fs.readFileSync('components/MandarinCoachAnalytics.tsx', 'utf8');
 for (const marker of ['今日活跃用户', '高频问题', '高频错误', '今日估算 AI 成本']) if (!adminAnalytics.includes(marker)) failures.push(`analytics dashboard missing ${marker}`);
 

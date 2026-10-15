@@ -107,6 +107,7 @@ export async function POST(request: Request) {
       if (!allowedAudioTypes.has(audioType) || audio.size < 128 || audio.size > 5_000_000) return Response.json({ error: 'Rekaman audio tidak valid.' }, { status: 400 });
       transcription = await transcribeMandarin(new Uint8Array(await audio.arrayBuffer()), scopedSessionId);
       message = transcription.transcript;
+      if (!message) return Response.json({ error: 'Suara belum terdengar jelas. Silakan rekam lagi.' }, { status: 422 });
     }
     if (!message || message.length > 500) return Response.json({ error: 'Tulis atau ucapkan pertanyaan singkat.' }, { status: 400 });
 

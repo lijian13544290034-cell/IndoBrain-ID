@@ -8,8 +8,8 @@ const allowedEvents = new Set<CoachEventName>([
   'start_session', 'finish_session', 'expression_started', 'expression_pass', 'expression_retry', 'expression_failed', 'audio_play', 'voice_attempt',
   'comprehension_correct', 'comprehension_wrong', 'roleplay_started', 'roleplay_completed', 'coach_conversation_opened', 'coach_question_submitted',
   'coach_answer_received', 'coach_answer_helpful', 'coach_answer_unresolved', 'expression_saved_for_review', 'coach_slow_audio_requested',
-  'coach_skill_gap', 'coach_response_audio_play', 'learner_profile_updated', 'personal_plan_generated', 'knowledge_gap_demand',
-  'adaptive_mastery_updated', 'next_best_action_selected', 'career_goal_changed', 'first_coach_message',
+  'coach_skill_gap', 'coach_response_audio_play', 'first_coach_message',
+
 ]);
 const reservedKeys = new Set(['anonymous_id', 'tester_id', 'user_id', 'session_id', 'event', 'created_at']);
 

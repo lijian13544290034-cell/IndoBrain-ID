@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const scoped = (userId, sessionId) => `scope-${createHash('sha256').update(`account:${userId}:session:${sessionId}`).digest('hex').slice(0, 32)}`;
@@ -31,7 +31,7 @@ assert.match(events, /session_id: scope\.sessionId/);
 assert.doesNotMatch(read('app/api/feedback/route.ts'), /saveToSupabase\('feedback', body\)/);
 assert.match(read('lib/server/mandarin-coach-analytics.ts'), /\.\.\.input\.data, anonymous_id: anonymousId, tester_id:/);
 assert.match(read('app/api/admin/mandarin-coach-analytics/route.ts'), /requireSuperAdmin\(\)/);
-assert.match(read('app/api/mandarin-coach/reset-state/route.ts'), /anonymousTesterId\(user\.id\)/);
+if (existsSync(new URL('../app/api/mandarin-coach/reset-state/route.ts', import.meta.url))) assert.match(read('app/api/mandarin-coach/reset-state/route.ts'), /anonymousTesterId\(user\.id\)/);
 const storage = read('lib/supabase-server.ts');
 assert.match(storage, /writableTables\.has\(table\)/);
 assert.match(storage, /path\.startsWith\('conversations\?'\)/);

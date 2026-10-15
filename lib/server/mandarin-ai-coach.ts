@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { NoObjectGeneratedError, Output, experimental_transcribe as transcribe, gateway, generateText, jsonSchema } from 'ai';
+import { NoObjectGeneratedError, NoTranscriptGeneratedError, Output, transcribe, gateway, generateText, jsonSchema } from 'ai';
 import { DAY_ONE_EXPRESSIONS, type CoachBrainSkillId, type CoachDetectedLanguage, type CoachIntent, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, type UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
 import { buildSkillGrounding, composeKnownCoachResponse, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
@@ -254,24 +254,55 @@ export async function evaluateCoachAttempt(input: {
   masteryLevel: number;
   sessionId: string;
 }) {
-  const first = await callDecisionModel(FAST_MODEL, input);
-  if (first.decision.confidence >= 0.67) return first;
-  const second = await callDecisionModel(SMART_MODEL, input);
-  return {
-    decision: second.decision,
-    usage: {
-      token_input: first.usage.token_input + second.usage.token_input,
-      token_output: first.usage.token_output + second.usage.token_output,
-      model_calls: 2,
-      estimated_ai_cost: first.usage.estimated_ai_cost + second.usage.estimated_ai_cost,
-      model_used: `${FAST_MODEL} → ${SMART_MODEL}`,
-      structured_retries: first.usage.structured_retries + second.usage.structured_retries,
-      safe_fallbacks: first.usage.safe_fallbacks + second.usage.safe_fallbacks,
-      retry_token_input: first.usage.retry_token_input + second.usage.retry_token_input,
-      retry_token_output: first.usage.retry_token_output + second.usage.retry_token_output,
-      retry_estimated_cost: first.usage.retry_estimated_cost + second.usage.retry_estimated_cost,
-    } satisfies CallUsage,
-  };
+  let firstUsage: CallUsage;
+  let repairingStructuredFailure = false;
+  try {
+    const first = await callDecisionModel(FAST_MODEL, input);
+    if (first.decision.confidence >= 0.67) return first;
+    firstUsage = first.usage;
+  } catch (error) {
+    firstUsage = usageFromStructuredError(error, FAST_MODEL);
+    repairingStructuredFailure = true;
+    console.warn('[mandarin-coach-pronunciation-repair]', safeErrorDetails(error));
+  }
+
+  try {
+    const second = await callDecisionModel(SMART_MODEL, input);
+    const usage = mergeUsage(firstUsage, second.usage);
+    return {
+      decision: second.decision,
+      usage: repairingStructuredFailure ? {
+        ...usage,
+        structured_retries: 1,
+        retry_token_input: second.usage.token_input,
+        retry_token_output: second.usage.token_output,
+        retry_estimated_cost: second.usage.estimated_ai_cost,
+      } : usage,
+    };
+  } catch (error) {
+    const failedRepair = usageFromStructuredError(error, SMART_MODEL);
+    const usage = mergeUsage(firstUsage, failedRepair);
+    console.warn('[mandarin-coach-pronunciation-safe-fallback]', safeErrorDetails(error));
+    const breakdown = input.attempts >= 2;
+    return {
+      decision: {
+        verdict: breakdown ? 'BREAKDOWN' as const : 'RETRY' as const,
+        feedbackId: input.skill === 'PRONUNCIATION'
+          ? (breakdown ? 'pronunciation_breakdown' as const : 'pronunciation_retry' as const)
+          : 'roleplay_retry' as const,
+        nextAction: breakdown ? 'SHOW_BREAKDOWN' as const : 'REPEAT' as const,
+        confidence: 0,
+      },
+      usage: {
+        ...usage,
+        structured_retries: repairingStructuredFailure ? 1 : 0,
+        safe_fallbacks: 1,
+        retry_token_input: repairingStructuredFailure ? failedRepair.token_input : 0,
+        retry_token_output: repairingStructuredFailure ? failedRepair.token_output : 0,
+        retry_estimated_cost: repairingStructuredFailure ? failedRepair.estimated_ai_cost : 0,
+      },
+    };
+  }
 }
 
 export async function answerCoachConversation(input: {
@@ -430,19 +461,33 @@ export function anonymizeLearningQuestion(value: string) {
 }
 
 export async function transcribeMandarin(audio: Uint8Array, sessionId: string) {
-  const result = await transcribe({
-    model: gateway.transcriptionModel(STT_MODEL),
-    audio,
-    maxRetries: 1,
-    providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'stt'], user: sessionId.slice(0, 96) } },
-  });
-  return {
-    transcript: result.text.trim(),
-    language: result.language,
-    durationInSeconds: result.durationInSeconds || 0,
-    model: STT_MODEL,
-    estimatedCost: numericCost(result.providerMetadata),
-  };
+  try {
+    const result = await transcribe({
+      model: gateway.transcriptionModel(STT_MODEL),
+      audio,
+      maxRetries: 1,
+      providerOptions: { gateway: { tags: ['indobrain', 'mandarin-ai-coach', 'stt'], user: sessionId.slice(0, 96) } },
+    });
+    return {
+      transcript: result.text.trim(),
+      language: result.language,
+      durationInSeconds: result.durationInSeconds || 0,
+      model: STT_MODEL,
+      estimatedCost: numericCost(result.providerMetadata),
+      noTranscript: false,
+    };
+  } catch (error) {
+    if (!NoTranscriptGeneratedError.isInstance(error)) throw error;
+    console.info('[mandarin-coach-stt-empty]', { name: error.name });
+    return {
+      transcript: '',
+      language: undefined,
+      durationInSeconds: 0,
+      model: STT_MODEL,
+      estimatedCost: 0,
+      noTranscript: true,
+    };
+  }
 }
 
 export function coachConfiguration() {

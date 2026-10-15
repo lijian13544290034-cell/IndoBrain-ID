@@ -3,7 +3,7 @@ import path from 'node:path';
 import ts from 'typescript';
 
 const root = process.cwd();
-const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
+const read = (file) => fs.readFileSync(path.join(root, file), 'utf8').replace(/\r\n/g, '\n');
 const failures = [];
 const data = read('lib/server/mandarin-work-level2.ts');
 const catalog = read('lib/mandarin-work-level2-catalog.ts');
