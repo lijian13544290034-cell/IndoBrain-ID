@@ -48,6 +48,12 @@ const ui = fs.readFileSync('components/MandarinAiCoachExperience.tsx', 'utf8');
 for (const required of ['AI 中文教练', 'Pelatih Mandarin AI', 'Pilih materi Mandarin yang sudah tersedia.', 'Mulai Latihan', 'Latihan selesai!', 'CurriculumPicker', "'/api/chinese-tts'", "'/api/mandarin-coach/pronunciation'", 'AiCoachConversation']) if (!ui.includes(required)) failures.push(`UI contract missing ${required}`);
 const conversationUi = fs.readFileSync('components/AiCoachConversation.tsx', 'utf8');
 for (const required of ['Tanya AI Coach', '问AI教练', 'Tanya dalam Bahasa Indonesia atau 中文.', "'/api/mandarin-coach/conversation'", 'Kembali Belajar', 'Jawaban ini membantu?']) if (!conversationUi.includes(required)) failures.push(`conversation UI missing ${required}`);
+const browserAudio = fs.readFileSync('lib/browser-audio.ts', 'utf8');
+for (const required of ['prepareBrowserAudio', 'AudioContext', 'decodeAudioData', 'context.destination']) {
+  if (!browserAudio.includes(required)) failures.push(`mobile audio playback guard missing ${required}`);
+}
+if (!ui.includes('prepareBrowserAudio()')) failures.push('guided Mandarin playback does not unlock audio from the user gesture');
+if (!conversationUi.includes('prepareBrowserAudio()')) failures.push('coach mixed-language playback does not unlock audio from the user gesture');
 const conversationRoute = fs.readFileSync('app/api/mandarin-coach/conversation/route.ts', 'utf8');
 for (const required of ['dailyConversationLimit = 30', 'answerCoachConversation', '[mandarin-ai-coach-learning-insight]', 'anonymizeLearningQuestion', 'audio/webm']) if (!conversationRoute.includes(required)) failures.push(`conversation route missing ${required}`);
 const brain = fs.readFileSync('lib/server/mandarin-coach-brain.ts', 'utf8');

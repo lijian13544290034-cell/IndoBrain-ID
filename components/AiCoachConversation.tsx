@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import AiCoachRecorder from '@/components/AiCoachRecorder';
+import { playBrowserAudioBlob, prepareBrowserAudio } from '@/lib/browser-audio';
 import type { CoachBrainSkillId, CoachCapabilityId, CoachConversationTurn, CoachEventName, CoachIntent, CoachProfile, CoachQuestionMemory, CoachSkill, ExpressionId, UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import type { CoachSpeechSegment } from '@/lib/mandarin-coach-speech';
 import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
@@ -62,19 +63,10 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
     onProfileChange({ ...profile, conversation: { ...profile.conversation, mode: next ? 'COACH_CONVERSATION' : 'GUIDED_TRAINING' } });
   }
 
-  async function playAudioBlob(blob: Blob) {
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    await new Promise<void>((resolve, reject) => {
-      audio.onended = () => { URL.revokeObjectURL(url); resolve(); };
-      audio.onerror = () => { URL.revokeObjectURL(url); reject(new Error('audio')); };
-      void audio.play().catch(reject);
-    });
-  }
-
   async function playCoachSegments(segments: CoachSpeechSegment[], rate: 'normal' | 'slow' = 'normal', sourceProfile = profile) {
     setError('');
     try {
+      const preparedAudio = prepareBrowserAudio();
       for (const segment of segments) {
         const isChinese = segment.language === 'zh-CN';
         const response = await fetch(isChinese ? '/api/chinese-tts' : '/api/tts', {
@@ -83,7 +75,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
         });
         const voice = response.headers.get(isChinese ? 'X-IndoBrain-Chinese-TTS-Voice' : 'X-IndoBrain-TTS-Voice');
         if (!response.ok || (isChinese ? voice !== 'zh-CN-XiaoxiaoNeural' : !voice?.startsWith('id-ID-'))) throw new Error('tts');
-        await playAudioBlob(await response.blob());
+        await playBrowserAudioBlob(await response.blob(), preparedAudio);
       }
       onProfileChange({ ...sourceProfile, usage: { ...sourceProfile.usage, tts_calls: sourceProfile.usage.tts_calls + segments.length } });
       telemetry(sourceProfile, 'coach_response_audio_play', { segments: segments.length, zh_cn_segments: segments.filter((item) => item.language === 'zh-CN').length, id_id_segments: segments.filter((item) => item.language === 'id-ID').length, characters: segments.reduce((sum, item) => sum + item.text.length, 0), tts_rate: rate });

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import AiCoachConversation from '@/components/AiCoachConversation';
 import AiCoachRecorder from '@/components/AiCoachRecorder';
+import { playBrowserAudioBlob, prepareBrowserAudio } from '@/lib/browser-audio';
 import MandarinAdaptiveCoursePanel from '@/components/MandarinAdaptiveCoursePanel';
 import { decideNextBestAction } from '@/lib/mandarin-adaptive-course';
 import { recordAdaptiveResult, refreshAdaptivePlan } from '@/lib/mandarin-adaptive-course-profile';
@@ -115,10 +116,11 @@ export default function MandarinAiCoachExperience({ curriculum }: { curriculum: 
 
   async function playChinese(text: string, expressionId: ExpressionId) {
     setServiceError('');
+    const preparedAudio = prepareBrowserAudio();
     try {
       const response = await fetch('/api/chinese-tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
       if (!response.ok || response.headers.get('X-IndoBrain-Chinese-TTS-Voice') !== 'zh-CN-XiaoxiaoNeural') throw new Error('tts');
-      const url = URL.createObjectURL(await response.blob()); const audio = new Audio(url); audio.onended = () => URL.revokeObjectURL(url); await audio.play();
+      await playBrowserAudioBlob(await response.blob(), preparedAudio);
       const next = persist({ ...profile, usage: { ...profile.usage, tts_calls: profile.usage.tts_calls + 1 } }); telemetry(next, 'audio_play', { expression_id: expressionId, voice: 'zh-CN-XiaoxiaoNeural' });
     } catch { setServiceError('Audio Mandarin zh-CN belum tersedia. Tidak ada suara pengganti yang digunakan.'); }
   }
