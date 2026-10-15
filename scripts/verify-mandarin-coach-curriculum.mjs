@@ -66,7 +66,8 @@ for (const marker of [
 for (const marker of [
   'Pilih materi Mandarin yang sudah tersedia.',
   '/login?next=/learn-chinese/ai-coach',
-  'Materi dipilih',
+  'onStart={startLesson}',
+  'focus-visible:ring-2',
   'lesson.expressions',
   "form.set('lessonId', lesson.id)",
 ]) if (!ui.includes(marker)) failures.push(`curriculum UI marker missing ${marker}`);

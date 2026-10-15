@@ -45,7 +45,8 @@ if (!ttsProvider.includes("chineseTtsSlowRate = '-35%'")) failures.push('actual 
 if (/voice[^\n]*(zh-TW|zh-HK|Cantonese|yue-)/i.test(ttsProvider)) failures.push('forbidden Chinese voice fallback detected');
 
 const ui = fs.readFileSync('components/MandarinAiCoachExperience.tsx', 'utf8');
-for (const required of ['AI 中文教练', 'Pelatih Mandarin AI', 'Pilih materi Mandarin yang sudah tersedia.', 'Mulai Latihan', 'Latihan selesai!', 'CurriculumPicker', "'/api/chinese-tts'", "'/api/mandarin-coach/pronunciation'", 'AiCoachConversation']) if (!ui.includes(required)) failures.push(`UI contract missing ${required}`);
+for (const required of ['AI 中文教练', 'Pelatih Mandarin AI', 'Pilih materi Mandarin yang sudah tersedia.', 'Latihan selesai!', 'CurriculumPicker', 'onStart={startLesson}', 'pendingDirectLessonId', 'focus-visible:ring-2', "'/api/chinese-tts'", "'/api/mandarin-coach/pronunciation'", 'AiCoachConversation']) if (!ui.includes(required)) failures.push(`UI contract missing ${required}`);
+if (ui.includes('Mulai Latihan')) failures.push('course cards must enter lessons directly without a second Mulai action');
 const conversationUi = fs.readFileSync('components/AiCoachConversation.tsx', 'utf8');
 for (const required of ['Tanya AI Coach', '问AI教练', 'Tanya dalam Bahasa Indonesia atau 中文.', "'/api/mandarin-coach/conversation'", 'Kembali Belajar', 'Jawaban ini membantu?']) if (!conversationUi.includes(required)) failures.push(`conversation UI missing ${required}`);
 const browserAudio = fs.readFileSync('lib/browser-audio.ts', 'utf8');

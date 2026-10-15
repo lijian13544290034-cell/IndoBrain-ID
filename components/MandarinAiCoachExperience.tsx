@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import AiCoachConversation from '@/components/AiCoachConversation';
 import AiCoachRecorder from '@/components/AiCoachRecorder';
 import { playBrowserAudioBlob, prepareBrowserAudio } from '@/lib/browser-audio';
@@ -21,7 +21,7 @@ function MasteryDots({ level }: { level: number }) {
   return <span className="inline-flex gap-1" aria-label={`Tingkat penguasaan ${level} dari 4`}>{[1, 2, 3, 4].map((value) => <span key={value} className={`h-2 w-2 rounded-full ${value <= level ? 'bg-[var(--ib-primary)]' : 'bg-[var(--ib-border-soft)]'}`} />)}</span>;
 }
 
-function CurriculumPicker({ catalog, selectedId, onSelect }: { catalog: MandarinCoachCatalogEntry[]; selectedId: string; onSelect: (id: string) => void }) {
+function CurriculumPicker({ catalog, onStart }: { catalog: MandarinCoachCatalogEntry[]; onStart: (id: string) => void }) {
   const sections = useMemo(() => {
     const groups = new Map<string, MandarinCoachCatalogEntry[]>();
     for (const entry of catalog) { const key = mandarinNavigationSectionId(entry); groups.set(key, [...(groups.get(key) ?? []), entry]); }
@@ -29,7 +29,8 @@ function CurriculumPicker({ catalog, selectedId, onSelect }: { catalog: Mandarin
   }, [catalog]);
   return <div className="mt-6 space-y-4">{sections.map(([group, entries]) => <section key={group} className="rounded-3xl border border-[var(--ib-border-soft)] bg-[var(--ib-bg-muted)] p-4"><h2 className="text-sm font-bold leading-5 text-[var(--ib-primary-strong)]">{group}</h2><div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">{entries.map((entry) => {
     const content = <><span className={`block text-xs font-bold ${entry.locked ? 'text-[var(--ib-text-muted)]' : 'text-[var(--ib-primary)]'}`}>{mandarinNavigationMeta(entry, entry.expressionCount)}{entry.locked ? ' · 🔒' : ''}</span><span className="mt-1 block text-sm font-bold leading-5 text-[var(--ib-primary-strong)]">{mandarinNavigationTitleId(entry)}</span><span lang="zh-CN" className="mt-1 block text-xs leading-5 text-[var(--ib-text-muted)]">{mandarinNavigationTitleZh(entry)}</span></>;
-    return entry.locked ? <Link key={entry.id} href="/login?next=/learn-chinese/ai-coach" className="min-w-0 rounded-2xl border border-[var(--ib-border-soft)] bg-white p-3 text-left opacity-70">{content}</Link> : <button key={entry.id} type="button" onClick={() => onSelect(entry.id)} className={`min-w-0 rounded-2xl border p-3 text-left ${selectedId === entry.id ? 'border-[var(--ib-primary)] bg-[var(--ib-primary-soft)]' : 'border-[var(--ib-border-soft)] bg-white'}`}>{content}</button>;
+    const focusClasses = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-primary)] focus-visible:ring-offset-2';
+    return entry.locked ? <Link key={entry.id} href="/login?next=/learn-chinese/ai-coach" className={`min-w-0 rounded-2xl border border-[var(--ib-border-soft)] bg-white p-3 text-left opacity-70 ${focusClasses}`}>{content}</Link> : <button key={entry.id} type="button" onClick={() => onStart(entry.id)} className={`min-w-0 rounded-2xl border border-[var(--ib-border-soft)] bg-white p-3 text-left transition hover:border-[var(--ib-primary)] hover:bg-[var(--ib-primary-soft)] ${focusClasses}`}>{content}</button>;
   })}</div></section>)}</div>;
 }
 
@@ -45,8 +46,20 @@ export default function MandarinAiCoachExperience({ curriculum }: { curriculum: 
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [comprehensionTarget, setComprehensionTarget] = useState<ExpressionId>(firstLesson.expressions[0]?.id ?? '');
   const [serviceError, setServiceError] = useState('');
+  const pendingDirectLessonId = useRef<string | null>(null);
 
-  useEffect(() => { const next = readCoachProfile(lesson); setProfile(next); setPhase('WELCOME'); setActiveIndex(0); setFeedback(''); setShowBreakdown(false); setComprehensionTarget(lesson.expressions[0]?.id ?? ''); }, [lesson]);
+  useEffect(() => {
+    const next = readCoachProfile(lesson);
+    const shouldStart = pendingDirectLessonId.current === lesson.id && lesson.expressions.length > 0;
+    pendingDirectLessonId.current = null;
+    setProfile(next); setActiveIndex(0); setFeedback(''); setShowBreakdown(false); setComprehensionTarget(lesson.expressions[0]?.id ?? '');
+    if (!shouldStart) { setPhase('WELCOME'); return; }
+    const weakest = next.expressions.reduce((current, item) => item.mastery_level < current.mastery_level ? item : current, next.expressions[0]);
+    const startingIndex = Math.max(0, lesson.expressions.findIndex((item) => item.id === weakest?.expression_id));
+    setPhase('TEACH'); setActiveIndex(startingIndex);
+    telemetry(next, 'start_session', { course: lesson.courseTitleId, source: lesson.source, startedAt: next.startedAt });
+    if (weakest) telemetry(next, 'expression_started', { expression_id: weakest.expression_id, prioritized_by_memory: true });
+  }, [lesson]);
 
   const active = lesson.expressions[activeIndex] ?? lesson.expressions[0];
   const meaningOptions = useMemo(() => lesson.expressions.filter((item) => item.indonesian).slice(0, 4), [lesson]);
@@ -56,12 +69,20 @@ export default function MandarinAiCoachExperience({ curriculum }: { curriculum: 
   const roleplayTarget = lesson.expressions.find((item) => item.chinese === roleplayTargetTurn?.chinese) ?? active;
 
   function persist(next: CoachProfile) { const saved = saveCoachProfile(next); setProfile(saved); return saved; }
-  function begin() {
-    const existing = readCoachProfile(lesson);
+  function startLesson(lessonId: string) {
+    const targetCatalogEntry = curriculum.catalog.find((entry) => entry.id === lessonId);
+    const targetLesson = curriculum.lessons.find((entry) => entry.id === lessonId);
+    if (!targetLesson || targetCatalogEntry?.locked || !targetLesson.expressions.length) return;
+    if (targetLesson.id !== lesson.id) {
+      pendingDirectLessonId.current = targetLesson.id;
+      setSelectedLessonId(targetLesson.id);
+      return;
+    }
+    const existing = readCoachProfile(targetLesson);
     const weakest = existing.expressions.reduce((current, item) => item.mastery_level < current.mastery_level ? item : current, existing.expressions[0]);
-    const startingIndex = Math.max(0, lesson.expressions.findIndex((item) => item.id === weakest?.expression_id));
+    const startingIndex = Math.max(0, targetLesson.expressions.findIndex((item) => item.id === weakest?.expression_id));
     setProfile(existing); setPhase('TEACH'); setActiveIndex(startingIndex);
-    telemetry(existing, 'start_session', { course: lesson.courseTitleId, source: lesson.source, startedAt: existing.startedAt });
+    telemetry(existing, 'start_session', { course: targetLesson.courseTitleId, source: targetLesson.source, startedAt: existing.startedAt });
     if (weakest) telemetry(existing, 'expression_started', { expression_id: weakest.expression_id, prioritized_by_memory: true });
   }
 
@@ -105,7 +126,7 @@ export default function MandarinAiCoachExperience({ curriculum }: { curriculum: 
     const next = persist({ ...profile, expressions }); telemetry(next, correct ? 'comprehension_correct' : 'comprehension_wrong', { expression_id: comprehensionExpression.id }); if (correct) setTimeout(() => { setFeedback(''); if (roleplayTarget) { setPhase('ROLEPLAY'); telemetry(next, 'roleplay_started', { lesson_id: lesson.id }); } else finishSession(next); }, 700);
   }
 
-  if (phase === 'WELCOME') return <main className="min-h-screen bg-[var(--ib-bg-page)] px-4 py-8 text-[var(--ib-text-primary)]"><div className="mx-auto max-w-5xl"><Link href="/learn-chinese" className="text-sm font-semibold text-[var(--ib-primary)]">← 30 Hari Bisa Mandarin untuk Kerja</Link><section className="mt-6 overflow-hidden rounded-[32px] border border-[var(--ib-border-soft)] bg-white p-6 shadow-[var(--ib-shadow-card)] sm:p-8"><div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--ib-primary-soft)] text-3xl" aria-hidden="true">🧑‍🏫</div><p className="mt-6 text-sm font-bold text-[var(--ib-primary)]">尼会说 · IndoBrain</p><h1 className="mt-2 text-4xl font-bold text-[var(--ib-primary-strong)]">Pelatih Mandarin AI</h1><p lang="zh-CN" className="mt-2 text-lg font-semibold text-[var(--ib-text-secondary)]">AI 中文教练</p><p className="mt-5 leading-7 text-[var(--ib-text-secondary)]">Pilih materi Mandarin yang sudah tersedia. AI Coach menggunakan isi kursus yang sama, tanpa membuat ulang materi.</p><CurriculumPicker catalog={curriculum.catalog} selectedId={lesson.id} onSelect={setSelectedLessonId}/><div className="mt-5 rounded-3xl bg-[var(--ib-primary-soft)] p-4"><p className="text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Materi dipilih</p><p className="mt-1 text-xs font-bold text-[var(--ib-primary)]">{mandarinNavigationMeta(lesson, lesson.expressions.length)}</p><p className="mt-1 text-xl font-bold leading-7 text-[var(--ib-primary-strong)]">{mandarinNavigationTitleId(lesson)}</p><p lang="zh-CN" className="mt-1 text-sm text-[var(--ib-text-secondary)]">{mandarinNavigationTitleZh(lesson)}</p></div><button type="button" onClick={begin} disabled={!lesson.expressions.length} className="mt-6 min-h-14 w-full rounded-full bg-[var(--ib-primary)] px-6 text-lg font-bold text-white disabled:opacity-50">Mulai Latihan</button></section></div></main>;
+  if (phase === 'WELCOME') return <main className="min-h-screen bg-[var(--ib-bg-page)] px-4 py-8 text-[var(--ib-text-primary)]"><div className="mx-auto max-w-5xl"><Link href="/learn-chinese" className="text-sm font-semibold text-[var(--ib-primary)]">← 30 Hari Bisa Mandarin untuk Kerja</Link><section className="mt-6 overflow-hidden rounded-[32px] border border-[var(--ib-border-soft)] bg-white p-6 shadow-[var(--ib-shadow-card)] sm:p-8"><div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--ib-primary-soft)] text-3xl" aria-hidden="true">🧑‍🏫</div><p className="mt-6 text-sm font-bold text-[var(--ib-primary)]">尼会说 · IndoBrain</p><h1 className="mt-2 text-4xl font-bold text-[var(--ib-primary-strong)]">Pelatih Mandarin AI</h1><p lang="zh-CN" className="mt-2 text-lg font-semibold text-[var(--ib-text-secondary)]">AI 中文教练</p><p className="mt-5 leading-7 text-[var(--ib-text-secondary)]">Pilih materi Mandarin yang sudah tersedia. AI Coach menggunakan isi kursus yang sama, tanpa membuat ulang materi.</p><CurriculumPicker catalog={curriculum.catalog} onStart={startLesson}/></section></div></main>;
 
   if (phase === 'COMPLETE') return <main className="min-h-screen bg-[var(--ib-bg-page)] px-4 py-8 text-[var(--ib-text-primary)]"><div className="mx-auto max-w-xl rounded-[32px] bg-white p-6 shadow-[var(--ib-shadow-card)] sm:p-8"><div className="text-5xl">🎉</div><h1 className="mt-5 text-3xl font-bold text-[var(--ib-primary-strong)]">Latihan selesai!</h1><p className="mt-2 font-semibold text-[var(--ib-text-secondary)]">{mandarinNavigationMeta(lesson, lesson.expressions.length)} · {mandarinNavigationTitleId(lesson)}</p><p lang="zh-CN" className="mt-1 text-sm text-[var(--ib-text-muted)]">{mandarinNavigationTitleZh(lesson)}</p><div className="mt-5 grid gap-3">{profile.expressions.map((item) => <div key={item.expression_id} className="flex items-center justify-between rounded-2xl bg-[var(--ib-bg-muted)] p-4"><div><p className="text-xl font-bold text-[var(--ib-primary-strong)]">{item.chinese}</p><p className="text-sm text-[var(--ib-text-secondary)]">{item.indonesian}</p></div><MasteryDots level={item.mastery_level}/></div>)}</div><AiCoachConversation profile={profile} lesson={lesson} currentExpression={null} currentSkill="MEMORY" onProfileChange={persist}/><button type="button" onClick={() => { setProfile(resetCoachProfile(lesson)); setPhase('WELCOME'); }} className="mt-6 min-h-12 w-full rounded-full border border-[var(--ib-border-soft)] font-bold text-[var(--ib-primary)]">Pilih materi lain</button></div></main>;
 
