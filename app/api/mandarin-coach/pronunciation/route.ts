@@ -36,12 +36,18 @@ export async function POST(request: Request) {
     const audioType = audio.type.toLowerCase().split(';', 1)[0].trim();
     if (!allowedAudioTypes.has(audioType) || audio.size < 128 || audio.size > 5_000_000) return Response.json({ error: 'Rekaman audio tidak valid.' }, { status: 400 });
     if (typeof expressionId !== 'string' || typeof lessonId !== 'string' || typeof sessionId !== 'string' || !sessionId.startsWith('coach-')) return Response.json({ error: 'Permintaan latihan tidak valid.' }, { status: 400 });
-    const scope = await resolveRequestAccountScope(sessionId);
-    if (!scope) return Response.json({ error: 'Authentication required.' }, { status: 401 });
-    const scopedSessionId = scope.sessionId;
     const curriculumTarget = getMandarinCoachExpression(expressionId);
     if (!curriculumTarget || curriculumTarget.lesson.id !== lessonId) return Response.json({ error: 'Materi latihan tidak ditemukan.' }, { status: 404 });
-    if (curriculumTarget.lesson.source === 'MANDARIN_WORK_LEVEL_2' && (await getMandarinLevel2Access()).state !== 'authorized') return Response.json({ error: 'Akses Level 2 diperlukan.' }, { status: 403 });
+    const isLevelTwo = curriculumTarget.lesson.source === 'MANDARIN_WORK_LEVEL_2';
+    const levelTwoAccess = isLevelTwo ? await getMandarinLevel2Access() : null;
+    if (levelTwoAccess?.state === 'anonymous') return Response.json({ error: 'Masuk ke akun IndoBrain untuk menggunakan latihan suara Level 2.', code: 'LOGIN_REQUIRED' }, { status: 401 });
+    if (levelTwoAccess?.state === 'locked') return Response.json({ error: 'Akun ini belum memiliki akses Level 2.', code: 'LEVEL2_ACCESS_REQUIRED' }, { status: 403 });
+    const scopePolicy = isLevelTwo
+      ? levelTwoAccess?.source === 'preview-qa' ? 'EXTERNAL_ACCESS_VERIFIED' : 'ACCOUNT_REQUIRED'
+      : 'ANONYMOUS_TRIAL_ALLOWED';
+    const scope = await resolveRequestAccountScope(sessionId, scopePolicy);
+    if (!scope) return Response.json({ error: 'Masuk ke akun IndoBrain, lalu coba latihan suara lagi.', code: 'LOGIN_REQUIRED' }, { status: 401 });
+    const scopedSessionId = scope.sessionId;
     if (!allowAttempt(scopedSessionId)) return Response.json({ error: 'Batas latihan harian sudah tercapai. Lanjutkan besok.' }, { status: 429 });
 
     const transcription = await transcribeMandarin(new Uint8Array(await audio.arrayBuffer()), scopedSessionId);

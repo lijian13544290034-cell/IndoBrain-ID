@@ -10,9 +10,13 @@ assert.equal(scoped('tester-01', 'coach-shared-client-value'), scoped('tester-01
 const helper = read('lib/server/request-account-scope.ts');
 assert.match(helper, /getCurrentAccountUser\(\)/);
 assert.match(helper, /AUTH_REQUIRED === 'true'/);
-assert.match(helper, /!isStatelessPreviewTestMode\(\)/);
+assert.match(helper, /policy: RequestAccountScopePolicy = 'ACCOUNT_REQUIRED'/);
+assert.match(helper, /requestScopeAllowsAnonymous\(policy, statelessPreview\)/);
 assert.ok(helper.includes('account:${userId}'));
 assert.ok(helper.includes('${owner}:session:${clientSessionId}'));
+const scopePolicy = read('lib/mandarin-coach-access-continuity.ts');
+assert.match(scopePolicy, /policy === 'ANONYMOUS_TRIAL_ALLOWED'/);
+assert.match(scopePolicy, /policy === 'EXTERNAL_ACCESS_VERIFIED'/);
 
 for (const route of ['app/api/mandarin-coach/conversation/route.ts','app/api/mandarin-coach/pronunciation/route.ts','app/api/mandarin-coach/telemetry/route.ts','app/api/events/route.ts','app/api/chat/route.ts']) {
   const source = read(route);
