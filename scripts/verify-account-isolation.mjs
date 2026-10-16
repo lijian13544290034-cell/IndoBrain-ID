@@ -24,7 +24,7 @@ for (const route of ['app/api/mandarin-coach/conversation/route.ts','app/api/man
   assert.match(source, /status: 401/);
 }
 const conversation = read('app/api/mandarin-coach/conversation/route.ts');
-assert.ok(conversation.indexOf('resolveRequestAccountScope(sessionId)') < conversation.indexOf('answerCoachConversation('));
+assert.ok(conversation.indexOf('resolveRequestAccountScope(sessionId, scopePolicy)') < conversation.indexOf('answerCoachConversation('));
 assert.match(conversation, /sessionId: scopedSessionId/);
 const pronunciation = read('app/api/mandarin-coach/pronunciation/route.ts');
 assert.ok(pronunciation.indexOf('resolveRequestAccountScope(sessionId)') < pronunciation.indexOf('transcribeMandarin('));

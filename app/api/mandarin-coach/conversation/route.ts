@@ -90,12 +90,17 @@ export async function POST(request: Request) {
     const text = typeof form.get('message') === 'string' ? String(form.get('message')).trim() : '';
     const context = safeContext(form.get('context'));
     if (typeof sessionId !== 'string' || !sessionId.startsWith('coach-') || !context) return Response.json({ error: 'Permintaan percakapan tidak valid.' }, { status: 400 });
-    const scope = await resolveRequestAccountScope(sessionId);
-    if (!scope) return Response.json({ error: 'Authentication required.' }, { status: 401 });
-    const scopedSessionId = scope.sessionId;
     const courseLesson = getMandarinCoachLesson(context.lessonId);
     if (!courseLesson) return Response.json({ error: 'Materi AI Coach tidak ditemukan.' }, { status: 404 });
-    if (courseLesson.source === 'MANDARIN_WORK_LEVEL_2' && (await getMandarinLevel2Access()).state !== 'authorized') return Response.json({ error: 'Akses Level 2 diperlukan.' }, { status: 403 });
+    const isLevelTwo = courseLesson.source === 'MANDARIN_WORK_LEVEL_2';
+    const levelTwoAccess = isLevelTwo ? await getMandarinLevel2Access() : null;
+    if (isLevelTwo && levelTwoAccess?.state !== 'authorized') return Response.json({ error: 'Akses Level 2 diperlukan.', code: 'LEVEL2_ACCESS_REQUIRED' }, { status: 403 });
+    const scopePolicy = courseLesson.source === 'MANDARIN_WORK_LEVEL_1'
+      ? 'ANONYMOUS_TRIAL_ALLOWED'
+      : levelTwoAccess?.source === 'preview-qa' ? 'EXTERNAL_ACCESS_VERIFIED' : 'ACCOUNT_REQUIRED';
+    const scope = await resolveRequestAccountScope(sessionId, scopePolicy);
+    if (!scope) return Response.json({ error: 'Masuk ke akun IndoBrain untuk menggunakan materi ini.', code: 'LOGIN_REQUIRED' }, { status: 401 });
+    const scopedSessionId = scope.sessionId;
     const currentExpression = context.currentExpression && courseLesson.expressions.some((item) => item.id === context.currentExpression) ? context.currentExpression : null;
     const securedContext = { ...context, currentDay: courseLesson.day ?? 0, currentExpression, courseLesson };
     if (!allowConversation(scopedSessionId)) return Response.json({ error: 'Batas percakapan harian sudah tercapai. Lanjutkan besok.' }, { status: 429 });
