@@ -43,7 +43,19 @@ export function readCoachProfile(lesson?: MandarinCoachCurriculumLesson): CoachP
 
 export function saveCoachProfile(profile: CoachProfile) {
   const next = { ...profile, updatedAt: new Date().toISOString() };
-  localStorage.setItem(`indobrain:mandarin-ai-coach:${profile.lessonId}:v1`, JSON.stringify(next));
+  const key = `indobrain:mandarin-ai-coach:${profile.lessonId}:v1`;
+  let persisted = next;
+  try {
+    const previous = JSON.parse(localStorage.getItem(key) || 'null') as Partial<CoachProfile> | null;
+    if (previous?.lessonId === profile.lessonId && Array.isArray(previous.expressions)) {
+      const incoming = new Map(next.expressions.map((item) => [item.expression_id, item]));
+      const preserved = previous.expressions.filter((item) => !incoming.has(item.expression_id));
+      persisted = { ...next, expressions: [...preserved, ...next.expressions] };
+    }
+  } catch {
+    // A malformed local draft is safely replaced by the current lesson state.
+  }
+  localStorage.setItem(key, JSON.stringify(persisted));
   window.dispatchEvent(new Event(EVENT_NAME));
   return next;
 }

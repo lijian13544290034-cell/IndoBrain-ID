@@ -3,6 +3,7 @@
 import {
   applyMasteryEvidence,
   createPersonalizationState,
+  replaceLearnerProfileAndPlan,
   updateProfileFromEvidence,
   type LearnerProfileV1,
   type MasteryEvidence,
@@ -42,7 +43,7 @@ export function savePersonalizationState(state: PersonalizationStateV1) {
 
 export function saveLearnerProfile(profile: LearnerProfileV1, plan: SevenDayPlan) {
   const current = readPersonalizationState();
-  return savePersonalizationState({ ...current, profile, plan });
+  return savePersonalizationState(replaceLearnerProfileAndPlan(current, profile, plan));
 }
 
 export function recordPersonalizationEvidence(evidence: MasteryEvidence) {
