@@ -13,20 +13,20 @@ export type MandarinDialogue = { id: string; role: '老板' | '员工' | '同事
 export type MandarinDay = { day: number; title: string; scenario: string; items: MandarinWorkItem[]; dialogue: MandarinDialogue[]; listeningItemId: string };
 
 const translations: Record<string, string> = {
-  '你好':'Halo.','我':'saya / aku','你':'kamu / Anda','我叫':'Nama saya…','谢谢':'Terima kasih.','好的':'Baik / oke.','再见':'Sampai jumpa.',
+  '你好':'Halo.','我':'saya / aku','你':'kamu / Anda','我们':'kami / kita','我叫':'Nama saya…','谢谢':'Terima kasih.','好的':'Baik / oke.','再见':'Sampai jumpa.','请':'silakan / tolong','不客气':'Sama-sama.',
   '来':'datang','去':'pergi','这里':'di sini','那里':'di sana','来这里':'Datang ke sini.','去那里':'Pergi ke sana.','一':'satu','二':'dua',
   '这':'ini','这个':'ini / yang ini','那':'itu','那个':'itu / yang itu','什么':'apa','哪个':'yang mana','要这个':'Mau yang ini.','三':'tiga','四':'empat',
   '个':'kata bantu bilangan umum','一个':'satu buah / satu unit','两个':'dua buah / dua unit','几个':'Berapa buah?','多少':'Berapa?','五个':'lima buah','六个':'enam buah','五':'lima','六':'enam',
   '有':'ada / punya','没有':'tidak ada / tidak punya','有吗':'Ada?','还有吗':'Masih ada?','不要':'tidak mau / jangan','七个':'tujuh buah','八个':'delapan buah','七':'tujuh','八':'delapan',
   '今天':'hari ini','明天':'besok','现在':'sekarang','做':'kerjakan / melakukan','今天做':'Kerjakan hari ini.','明天做':'Kerjakan besok.','现在做':'Kerjakan sekarang.','九':'sembilan','九个':'sembilan buah',
-  '点':'jam','几点':'Jam berapa?','一点':'jam satu','两点':'jam dua','三点':'jam tiga','十':'sepuluh','十个':'sepuluh buah',
-  '谁':'siapa','哪里':'di mana','他是谁':'Dia siapa?','在哪里':'Di mana?',
-  '对':'benar','不对':'salah / tidak benar','快':'cepat','慢':'pelan / lambat','快一点':'Lebih cepat sedikit.','慢一点':'Lebih pelan.',
+  '点':'jam','几点':'Jam berapa?','一点':'jam satu','两点':'jam dua','三点':'jam tiga','十':'sepuluh','十个':'sepuluh buah','十一':'sebelas','二十':'dua puluh','二十一':'dua puluh satu','五十':'lima puluh','一百':'seratus','分钟':'menit','上午':'pagi','下午':'siang / sore',
+  '谁':'siapa','哪里':'di mana','他是谁':'Dia siapa?','在哪里':'Di mana?','前面':'di depan','后面':'di belakang',
+  '对':'benar','不对':'salah / tidak benar','是':'ya / benar','不是':'bukan','快':'cepat','慢':'pelan / lambat','快一点':'Lebih cepat sedikit.','慢一点':'Lebih pelan.',
   '拿':'ambil','给':'beri / kasih','放':'taruh','找':'cari','拿这个':'Ambil yang ini.','给我':'Berikan kepada saya.','给他':'Berikan kepadanya.','放这里':'Taruh di sini.','找一下':'Coba cari sebentar.',
   '看':'lihat','听':'dengar','说':'bicara','问':'tanya','看一下':'Lihat sebentar.','听一下':'Dengarkan sebentar.','问一下':'Coba tanyakan.',
   '好了':'sudah selesai / sudah siap','还没':'belum','做好了':'Sudah selesai dikerjakan.','好了吗':'Sudah selesai?','还没有':'Belum.',
   '可以':'boleh / bisa','不可以':'tidak boleh / tidak bisa','会':'bisa / tahu cara','不会':'tidak bisa / tidak tahu caranya','可以吗':'Bisa? / Boleh?','你会吗':'Kamu bisa?','我不会':'Saya tidak bisa / Saya tidak tahu caranya.',
-  '不懂':'tidak mengerti','我不懂':'Saya tidak mengerti.','再说一次':'Tolong ulangi sekali lagi.','什么意思':'Artinya apa?','懂了':'Sudah mengerti.',
+  '不懂':'tidak mengerti','我不懂':'Saya tidak mengerti.','再说一次':'Tolong ulangi sekali lagi.','什么意思':'Artinya apa?','懂了':'Sudah mengerti.','对不起':'Maaf.','不好意思':'Maaf / permisi.','请帮我':'Tolong bantu saya.',
   '正在做':'Sedang dikerjakan.','多':'banyak','少':'sedikit','够':'cukup','不够':'Tidak cukup.','多了':'Kelebihan.','少了':'Kurang.','少两个':'Kurang dua.','十个够吗':'Sepuluh, cukup?',
   '坏了':'rusak','问题':'masalah','有问题':'Ada masalah.','这里坏了':'Di sini rusak.','这个坏了':'Yang ini rusak.',
   '一样':'sama','不一样':'Tidak sama / berbeda.','数量':'jumlah / kuantitas','数量不对':'Jumlahnya tidak benar.','这个不一样':'Yang ini berbeda.',
@@ -55,11 +55,13 @@ const pinyin: Record<string, string> = {
   '老':'lǎo','板':'bǎn','同':'tóng','事':'shì','经':'jīng','理':'lǐ','到':'dào','发':'fā','库':'kù','存':'cún','机':'jī','器':'qì','生':'shēng','产':'chǎn','停':'tíng','开':'kāi','先':'xiān','始':'shǐ',
   '文':'wén','件':'jiàn','表':'biǎo','格':'gé','照':'zhào','片':'piàn','价':'jià','报':'bào','供':'gōng','应':'yìng','商':'shāng','贵':'guì','太':'tài','便':'pián','宜':'yi','钱':'qián',
   '上':'shàng','班':'bān','加':'jiā','请':'qǐng','假':'jià','迟':'chí','吃':'chī','饭':'fàn','喝':'hē','水':'shuǐ','休':'xiū','息':'xi','起':'qǐ','把':'bǎ','昨':'zuó','销':'xiāo','售':'shòu','整':'zhěng','办':'bàn','公':'gōng','室':'shì',
+  '们':'men','客':'kè','气':'qì','帮':'bāng','百':'bǎi','分':'fēn','钟':'zhōng','午':'wǔ','前':'qián','面':'miàn','后':'hòu',
 };
 
 const exactPinyin: Record<string, string[]> = {
   '一个':['yí','ge'],'一点':['yì','diǎn'],'一样':['yí','yàng'],'一起':['yì','qǐ'],'一下':['yí','xià'],
   '不对':['bú','duì'],'不会':['bú','huì'],'不够':['bú','gòu'],'不要':['bú','yào'],'不在':['bú','zài'],'不一样':['bù','yí','yàng'],'不可以':['bù','kě','yǐ'],'不能':['bù','néng'],'不懂':['bù','dǒng'],'来不及':['lái','bu','jí'],
+  '不客气':['bú','kè','qi'],'对不起':['duì','bu','qǐ'],
 };
 
 export function toPinyinSegments(chinese: string): PinyinSegment[] {
@@ -79,20 +81,20 @@ const scenarios = ['greeting','movement','object-selection','quantity','availabi
 const titles = ['第一次开口','来、去','这个、那个','数量','有没有','今天、明天、现在','几点','谁、哪里','对错、快慢','拿、给、放、找','看、听、说、问','工作完成没有','可以、会不会','听不懂也能沟通','工作进度','够不够','出了问题','检查结果','返工','今天能好吗','为什么','找人','仓库物流','生产现场','办公室','采购','上班','公司里的生活中文','第一个完整中文工作日','最终“中国老板模式”'];
 
 const daily: string[][] = [
-  ['你好','我','你','我叫……','谢谢','好的','再见'],
+  ['你好','我','你','我叫……','谢谢','好的','再见','我们','请','不客气'],
   ['来','去','这里','那里','来这里','去那里','一','二'],
   ['这','这个','那','那个','什么？','哪个？','要这个','三','四'],
   ['个','一个','两个','几个？','多少？','五个','六个','五','六'],
   ['有','没有','有吗？','还有吗？','不要','七个','八个','七','八'],
   ['今天','明天','现在','做','今天做','明天做','现在做','九','九个'],
-  ['点','几点？','一点','两点','三点','十','十个'],
-  ['谁？','哪里？','他是谁？','在哪里？','这里','那里'],
-  ['对','不对','快','慢','快一点','慢一点'],
+  ['点','几点？','一点','两点','三点','十','十个','十一','二十','二十一','五十','一百','分钟','上午','下午'],
+  ['谁？','哪里？','他是谁？','在哪里？','这里','那里','前面','后面'],
+  ['对','不对','快','慢','快一点','慢一点','是','不是'],
   ['拿','给','放','找','拿这个','给我','给他','放这里','找一下'],
   ['看','听','说','问','看一下','听一下','问一下'],
   ['好了','还没','做好了','好了吗？','还没有'],
   ['可以','不可以','会','不会','可以吗？','你会吗？','我不会'],
-  ['不懂','我不懂','再说一次','慢一点','什么意思？','懂了'],
+  ['不懂','我不懂','再说一次','慢一点','什么意思？','懂了','对不起','不好意思','请帮我'],
   ['好了','还没','正在做','现在做'],
   ['多','少','够','不够','多了','少了','少两个','十个，够吗？'],
   ['坏了','问题','有问题','这里坏了','这个坏了'],
@@ -132,7 +134,8 @@ const explanations: Record<string, string> = {
 function difficulty(day: number): 1 | 2 | 3 { return day <= 14 ? 1 : day <= 28 ? 2 : 3; }
 const coreLexicon = [
   '供应商','来得及','来不及','为什么','不一样','还没有','正在做','今天','明天','现在','这里','那里','这个','那个','什么','哪个','没有','不要','再见','谢谢','好的','你好','一下','多少','哪里','不对','好了','还没','做好了','可以','不可以','不会','不懂','意思','多了','少了','坏了','问题','一样','数量','重做','检查','没货','老板','同事','经理','到了','发货','库存','机器','生产','开始','文件','表格','照片','价格','报价','便宜','上班','下班','加班','请假','迟到','吃饭','喝水','休息','一起','一个','两个','五个','六个','七个','八个','九个','十个','我叫',
-  '我','你','叫','来','去','一','二','这','那','要','三','四','个','两','几','五','六','有','还','七','八','做','九','点','十','谁','他','是','在','对','快','慢','拿','给','放','找','看','听','说','问','了','吗','会','懂','再','次','正','多','少','够','坏','样','数','量','改','能','因为','货','叫','停','开','先','发','贵','钱',
+  '不好意思','对不起','不客气','请帮我','二十一','十一','二十','五十','一百','分钟','上午','下午','前面','后面','我们','不是',
+  '我','你','们','叫','来','去','一','二','这','那','要','三','四','个','两','几','五','六','有','还','七','八','做','九','点','十','百','分','钟','午','前','面','后','谁','他','是','在','对','快','慢','拿','给','放','找','看','听','说','问','了','吗','会','懂','再','次','正','多','少','够','坏','样','数','量','改','能','因为','货','叫','停','开','先','发','贵','钱','请','客','气','帮',
 ].sort((a,b) => b.length - a.length);
 function coreIds(chinese: string) {
   const clean = normalize(chinese); const words: string[] = [];

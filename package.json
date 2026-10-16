@@ -24,6 +24,7 @@
     "verify:geo:runtime": "node scripts/verify-geo-runtime.mjs",
     "verify:chinese-learning": "node scripts/verify-chinese-learning.mjs",
     "verify:mandarin-work": "node scripts/verify-mandarin-work.mjs",
+    "verify:mandarin-foundations": "node scripts/verify-mandarin-foundation-coverage.mjs",
     "verify:mandarin-level2": "node scripts/verify-mandarin-level2.mjs",
     "verify:mandarin-ai-coach": "node scripts/verify-mandarin-ai-coach.mjs",
     "verify:mandarin-coach-personalization": "node scripts/verify-mandarin-coach-personalization.mjs",

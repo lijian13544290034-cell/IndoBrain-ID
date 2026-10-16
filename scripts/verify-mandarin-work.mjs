@@ -19,7 +19,7 @@ const normalize = (value) => value.replace(/[？?。！!，,、…\s]/g, '');
 if (MANDARIN_WORK_NAMESPACE !== 'mandarin-work-30d') failures.push('Course namespace changed');
 if (mandarinWorkDays.length !== 30 || mandarinWorkDays.some((day, index) => day.day !== index + 1)) failures.push('Day order must be exactly 1-30');
 const items = allMandarinWorkItems(); const unique = new Set(items.map((item) => normalize(item.chinese)));
-if (unique.size !== 194) failures.push(`Required expression count must be 194, found ${unique.size}`);
+if (unique.size !== 212) failures.push(`Required expression count must be 212 (194 approved originals + 18 foundation additions), found ${unique.size}`);
 for (const item of items) {
   if (!item.id.startsWith(`CN-WORK-D${String(item.day).padStart(2,'0')}-`)) failures.push(`Invalid course item id: ${item.id}`);
   if (!item.favoriteId.startsWith(`${MANDARIN_WORK_NAMESPACE}:`)) failures.push(`Favorite namespace leak: ${item.favoriteId}`);
@@ -42,7 +42,7 @@ for (const day of mandarinWorkDays) {
   const listening = [...day.items, ...day.dialogue.map((turn) => turn.item)].find((item) => item.id === day.listeningItemId);
   if (!listening?.reviewTags.includes('listening')) failures.push(`Day ${day.day} listening item is not tagged`);
 }
-for (const [text, expected] of [['一个','yí ge'],['快一点','kuài yì diǎn'],['找一下','zhǎo yí xià'],['一起吃饭','yì qǐ chī fàn'],['不对','bú duì'],['不会','bú huì'],['不可以','bù kě yǐ'],['来不及','lái bu jí']]) {
+for (const [text, expected] of [['一个','yí ge'],['快一点','kuài yì diǎn'],['找一下','zhǎo yí xià'],['一起吃饭','yì qǐ chī fàn'],['不对','bú duì'],['不会','bú huì'],['不可以','bù kě yǐ'],['来不及','lái bu jí'],['一百','yì bǎi'],['不客气','bú kè qi'],['对不起','duì bu qǐ'],['请帮我','qǐng bāng wǒ']]) {
   const actual = course.toPinyinSegments(text).map((segment) => segment.pinyin).join(' ');
   if (actual !== expected) failures.push(`Mandarin sandhi mismatch: ${text} -> ${actual}, expected ${expected}`);
 }
@@ -67,4 +67,4 @@ if (!chineseProvider.includes('zh-CN-XiaoxiaoNeural') || !chineseProvider.includ
 if (!indonesianProvider.includes('id-ID-GadisNeural')) failures.push('Indonesian TTS changed');
 
 if (failures.length) { console.error('MANDARIN WORK 30D: FAIL'); for (const failure of [...new Set(failures)]) console.error(`- ${failure}`); process.exit(1); }
-console.log(`MANDARIN WORK 30D: PASS (30/30 days, ${unique.size}/194 canonical translations, strict zh-CN, isolated profile)`);
+console.log(`MANDARIN WORK 30D: PASS (30/30 days, ${unique.size}/212 canonical translations, strict zh-CN, isolated profile)`);
