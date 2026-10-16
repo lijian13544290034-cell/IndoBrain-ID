@@ -33,6 +33,19 @@ export type CoachBrainAnswer = {
   skillGapReason: string;
 };
 
+export type UnifiedCoachTurnPlan = {
+  route: CoachBrainPlan;
+  capabilityIds: ReturnType<typeof getCoachCapabilityIds>;
+  skillGrounding: ReturnType<typeof buildSkillGrounding>;
+  policy: {
+    explanationLanguage: 'INDONESIAN';
+    maxTeachingPoints: 1;
+    correctionMode: 'MINIMUM_USEFUL_CORRECTION';
+    difficultyMode: 'BEGINNER_SHORT';
+    modelCalls: 'ZERO_OR_ONE_PRIMARY_WITH_ONE_BOUNDED_REPAIR';
+  };
+};
+
 const OFF_TOPIC = /bitcoin|比特币|saham|股票|cuaca|天气|weather|game|\bgim\b|游戏|seleb|artis|明星|coding|programming|写程序|matematika|数学|berita hari ini|政治/i;
 const WORKPLACE = /bos|老板|atasan|hr\b|interview|面试|pabrik|工厂|gudang|仓库|供应商|supplier|客户|kantor|办公室|logistik|produksi|库存|发货|mesin|机器|文件|辛苦了/i;
 const PRONUNCIATION = /怎么读|baca|ucap|pelafalan|pengucapan|tone|nada|声调|pelan|perlahan|慢一点|慢点/i;
@@ -126,6 +139,22 @@ export function buildSkillGrounding(plan: CoachBrainPlan) {
       fallback_strategy: skill.fallback_strategy, output_constraints: skill.output_constraints,
     })),
     pronunciationKnowledge: plan.skillIds.includes('PRONUNCIATION') ? pronunciationGrounding(plan.normalizedInput, plan.targetChinese) : [],
+  };
+}
+
+export function planCoachTurn(input: string): UnifiedCoachTurnPlan {
+  const route = routeCoachInput(input);
+  return {
+    route,
+    capabilityIds: getCoachCapabilityIds(route.learningIntents, route.skillIds, route.offTopic),
+    skillGrounding: buildSkillGrounding(route),
+    policy: {
+      explanationLanguage: 'INDONESIAN',
+      maxTeachingPoints: 1,
+      correctionMode: 'MINIMUM_USEFUL_CORRECTION',
+      difficultyMode: 'BEGINNER_SHORT',
+      modelCalls: 'ZERO_OR_ONE_PRIMARY_WITH_ONE_BOUNDED_REPAIR',
+    },
   };
 }
 

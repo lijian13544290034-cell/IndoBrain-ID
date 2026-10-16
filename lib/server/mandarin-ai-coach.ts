@@ -3,7 +3,7 @@ import 'server-only';
 import { NoObjectGeneratedError, NoTranscriptGeneratedError, Output, transcribe, gateway, generateText, jsonSchema } from 'ai';
 import { DAY_ONE_EXPRESSIONS, type CoachBrainSkillId, type CoachDetectedLanguage, type CoachIntent, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, type UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
-import { buildSkillGrounding, composeKnownCoachResponse, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
+import { buildSkillGrounding, composeKnownCoachResponse, planCoachTurn, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
 
 const FAST_MODEL = process.env.FAST_MODEL || 'google/gemini-2.5-flash-lite';
 const SMART_MODEL = process.env.SMART_MODEL || 'google/gemini-2.5-flash';
@@ -325,7 +325,8 @@ export async function answerCoachConversation(input: {
     recentTurns: Array<{ role: 'user' | 'assistant'; text: string }>;
   };
 }) {
-  const brainPlan = routeCoachInput(input.message);
+  const teachingPlan = planCoachTurn(input.message);
+  const brainPlan = teachingPlan.route;
   const generateClassification = (model: string, maxOutputTokens: number) => generateText({
     model: gateway(model),
     output: Output.object({ schema: classificationSchema, name: 'mandarin_coach_intent' }),
@@ -370,7 +371,8 @@ export async function answerCoachConversation(input: {
   }
 
   const answerModel = classification.modelTier === 'SMART' ? SMART_MODEL : FAST_MODEL;
-  const skillGrounding = buildSkillGrounding({ ...brainPlan, learningIntents: classification.intents, skillIds: classification.skillIds, targetChinese: classification.targetChinese || brainPlan.targetChinese });
+  const classifiedPlan = { ...brainPlan, learningIntents: classification.intents, skillIds: classification.skillIds, targetChinese: classification.targetChinese || brainPlan.targetChinese };
+  const skillGrounding = classification === deterministicClassification ? teachingPlan.skillGrounding : buildSkillGrounding(classifiedPlan);
   const answerSystem = [
       'You are the Coach Decision and Response Composer for IndoBrain Mandarin Coach Brain V0.1.',
       'The course provides the main path; it is never the boundary of what Mandarin you can teach.',
@@ -382,7 +384,8 @@ export async function answerCoachConversation(input: {
       'Use standard Mainland Mandarin only. Never suggest zh-TW, zh-HK or Cantonese.',
       'Never pretend to know personal facts outside supplied structured memory. Return only the structured object.',
       `Approved course lesson context: ${JSON.stringify(input.context.courseLesson)}.`,
-      `Selected Skill Layer: ${JSON.stringify(skillGrounding)}.`,
+      `Unified teaching policy: ${JSON.stringify(teachingPlan.policy)}.`,
+      `Selected Skill Layer: ${JSON.stringify({ ...skillGrounding, route: classifiedPlan })}.`,
     ].join(' ');
   const answerPrompt = JSON.stringify({
       classification,
