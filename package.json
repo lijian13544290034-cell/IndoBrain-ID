@@ -33,7 +33,8 @@
     "smoke:tts": "node scripts/tts-smoke-test.mjs",
     "admin:unbind": "node scripts/admin-unbind.mjs",
     "verify:indobrain": "node scripts/verify-indobrain.mjs",
-    "verify:account-isolation": "node scripts/verify-account-isolation.mjs"
+    "verify:account-isolation": "node scripts/verify-account-isolation.mjs",
+    "verify:super-admin-learner-access": "node scripts/verify-super-admin-learner-access.mjs"
   },
   "dependencies": {
     "@ai-sdk/gateway": "^4.0.103",
