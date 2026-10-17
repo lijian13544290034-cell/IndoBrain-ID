@@ -3,6 +3,7 @@
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { setLearningProfileScope } from '@/lib/learning-profile';
+import { resolvePostLoginDestination } from '@/lib/account/post-login-destination';
 
 function browserDeviceId() {
   const key = 'indobrain_account_device_id';
@@ -20,7 +21,7 @@ function PasswordVisibilityIcon({ visible }: { visible: boolean }) {
   return <svg {...common}><path d="M2.1 12.3a1 1 0 0 1 0-.7A10.8 10.8 0 0 1 22 12a10.8 10.8 0 0 1-19.9.3Z" /><circle cx="12" cy="12" r="3" /></svg>;
 }
 
-export default function PhoneLoginForm() {
+export default function PhoneLoginForm({ nextPath }: { nextPath?: string | null }) {
   const router = useRouter();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -43,7 +44,11 @@ export default function PhoneLoginForm() {
       return setMessage('Learning direction is not configured. Please contact an administrator.');
     }
     if (data.user?.publicId && data.user.learningDirection) setLearningProfileScope(`${data.user.publicId}:${data.user.learningDirection}`);
-    router.push(data.user?.mustChangePassword ? '/change-initial-password' : data.user?.isSuperAdmin ? '/admin' : data.user?.learningDirection === 'ID_TO_ZH' ? '/learn-chinese' : '/');
+    router.push(resolvePostLoginDestination({
+      isSuperAdmin: Boolean(data.user?.isSuperAdmin),
+      learningDirection: data.user?.learningDirection,
+      mustChangePassword: Boolean(data.user?.mustChangePassword),
+    }, nextPath));
     router.refresh();
   }
 
