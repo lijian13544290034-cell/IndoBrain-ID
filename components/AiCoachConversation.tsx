@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AiCoachRecorder from '@/components/AiCoachRecorder';
 import { playBrowserAudioBlob, prepareBrowserAudio } from '@/lib/browser-audio';
+import { normalizeCoachConversationError, parseCoachConversationResponse } from '@/lib/mandarin-coach-conversation-client';
 import type { CoachBrainSkillId, CoachCapabilityId, CoachConversationTurn, CoachEventName, CoachIntent, CoachProfile, CoachQuestionMemory, CoachSkill, ExpressionId, UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import type { CoachSpeechSegment } from '@/lib/mandarin-coach-speech';
 import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
@@ -56,6 +57,17 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [pendingResolution, setPendingResolution] = useState<string | null>(null);
+  const [lastFailedRequest, setLastFailedRequest] = useState<{ message?: string; audio?: Blob } | null>(null);
+  const profileRef = useRef(profile);
+  const historyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { profileRef.current = profile; }, [profile]);
+  useEffect(() => {
+    if (!open) return;
+    const history = historyRef.current;
+    if (!history) return;
+    history.scrollTo({ top: history.scrollHeight, behavior: 'smooth' });
+  }, [open, profile.conversation.recentTurns.length, busy, error]);
 
   function setConversationOpen(next: boolean) {
     setOpen(next);
@@ -94,6 +106,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
     if (!cleanMessage && !audio) return;
     setBusy(true);
     setError('');
+    setLastFailedRequest(null);
     telemetry(profile, 'coach_question_submitted', { input_mode: audio ? 'VOICE' : 'TEXT', current_expression: currentExpression, current_skill: currentSkill });
     try {
       const recentMistakes = profile.expressions.filter((item) => item.wrong_count > item.correct_count).map((item) => item.expression_id);
@@ -120,10 +133,17 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
         sessionStartedAt: profile.startedAt,
         messageCount: profile.conversation.questions.length,
       }));
-      const response = await fetch('/api/mandarin-coach/conversation', { method: 'POST', body: form });
-      const result = await response.json() as ConversationResponse | { error: string };
-      if (!response.ok || !('questionId' in result)) throw new Error('error' in result ? result.error : 'AI Coach belum tersedia.');
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 45_000);
+      let response: Response;
+      try {
+        response = await fetch('/api/mandarin-coach/conversation', { method: 'POST', body: form, signal: controller.signal });
+      } finally {
+        window.clearTimeout(timeout);
+      }
+      const result = await parseCoachConversationResponse<ConversationResponse>(response);
 
+      const currentProfile = profileRef.current;
       const now = result.timestamp;
       const userText = cleanMessage || result.transcript || '';
       const userTurn: CoachConversationTurn = { id: `${result.questionId}-user`, role: 'user', text: userText, intent: result.intent, createdAt: now };
@@ -137,9 +157,9 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
         id: result.questionId, question: userText, detected_language: result.detectedLanguage, intent: result.intent,
         detected_intents: result.intents, target_chinese: result.targetChinese || result.chinese || null, skill_used: result.skillIds,
         current_day: lesson.day ?? 0, current_expression: currentExpression, answer_category: result.answerCategory,
-        resolved: null, follow_up: profile.conversation.recentTurns.length > 0, asked_at: now,
+        resolved: null, follow_up: currentProfile.conversation.recentTurns.length > 0, asked_at: now,
       };
-      let userInitiated = profile.learning.userInitiated;
+      let userInitiated = currentProfile.learning.userInitiated;
       if (result.rememberTarget && result.targetChinese && result.targetPinyin && result.targetMeaning) {
         const existing = userInitiated.find((item) => item.expression === result.targetChinese);
         const remembered: UserInitiatedMemory = existing ? { ...existing, pinyin: result.targetPinyin, meaning_id: result.targetMeaning, last_seen_at: now } : {
@@ -149,22 +169,23 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
         userInitiated = existing ? userInitiated.map((item) => item.id === existing.id ? remembered : item) : [...userInitiated, remembered].slice(-50);
       }
       const next: CoachProfile = {
-        ...profile,
+        ...currentProfile,
         usage: {
-          token_input: profile.usage.token_input + result.usage.token_input,
-          token_output: profile.usage.token_output + result.usage.token_output,
-          stt_seconds: profile.usage.stt_seconds + result.usage.stt_seconds,
-          tts_calls: profile.usage.tts_calls,
-          model_calls: profile.usage.model_calls + result.usage.model_calls,
-          estimated_ai_cost: profile.usage.estimated_ai_cost + result.usage.estimated_ai_cost,
+          token_input: currentProfile.usage.token_input + result.usage.token_input,
+          token_output: currentProfile.usage.token_output + result.usage.token_output,
+          stt_seconds: currentProfile.usage.stt_seconds + result.usage.stt_seconds,
+          tts_calls: currentProfile.usage.tts_calls,
+          model_calls: currentProfile.usage.model_calls + result.usage.model_calls,
+          estimated_ai_cost: currentProfile.usage.estimated_ai_cost + result.usage.estimated_ai_cost,
         },
         conversation: {
           mode: 'COACH_CONVERSATION', summary: result.summary,
-          recentTurns: [...profile.conversation.recentTurns, userTurn, assistantTurn].slice(-12),
-          questions: [...profile.conversation.questions, question].slice(-20),
+          recentTurns: [...currentProfile.conversation.recentTurns, userTurn, assistantTurn].slice(-12),
+          questions: [...currentProfile.conversation.questions, question].slice(-20),
         },
-        learning: { ...profile.learning, userInitiated },
+        learning: { ...currentProfile.learning, userInitiated },
       };
+      profileRef.current = next;
       onProfileChange(next);
       setInput('');
       setPendingResolution(result.questionId);
@@ -172,7 +193,9 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
       if (result.skillGap) telemetry(next, 'coach_skill_gap', { question_id: result.questionId, target: result.targetChinese || null, current_skill: result.skillIds, reason: result.skillGapReason });
       if (audio && result.speechSegments.length) void playCoachSegments(result.speechSegments, result.ttsRate, next);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'AI Coach belum tersedia.');
+      const failure = normalizeCoachConversationError(caught);
+      setError(failure.message);
+      setLastFailedRequest({ message: cleanMessage || undefined, audio });
     } finally {
       setBusy(false);
     }
@@ -196,7 +219,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
 
   return <section className="mt-4 rounded-[28px] border border-[var(--ib-border-soft)] bg-white p-4 shadow-[var(--ib-shadow-card)] sm:p-5" aria-label="Coach Conversation">
     <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Coach Conversation</p><h2 className="mt-1 text-xl font-bold text-[var(--ib-primary-strong)]">Tanya AI Coach</h2><p className="mt-1 text-xs text-[var(--ib-text-secondary)]">Tanya dalam Bahasa Indonesia atau 中文.</p></div><button type="button" onClick={() => setConversationOpen(false)} className="min-h-10 shrink-0 rounded-full border border-[var(--ib-border-soft)] px-3 text-sm font-bold text-[var(--ib-primary)]">Kembali Belajar</button></div>
-    <div className="mt-4 max-h-80 space-y-3 overflow-y-auto rounded-2xl bg-[var(--ib-bg-muted)] p-3" aria-live="polite">
+    <div ref={historyRef} className="mt-4 max-h-80 space-y-3 overflow-y-auto rounded-2xl bg-[var(--ib-bg-muted)] p-3" aria-live="polite">
       {profile.conversation.recentTurns.length === 0 ? <div className="rounded-2xl bg-white p-3 text-sm leading-6 text-[var(--ib-text-secondary)]"><p className="font-semibold text-[var(--ib-primary-strong)]">Contoh pertanyaan:</p><p>“Kenapa 谢谢 dibaca xiè xie?”</p><p>“Kalau di tempat kerja bilang apa?”</p><p>“Saya tidak mengerti. Bisa lebih pelan?”</p></div> : null}
       {profile.conversation.recentTurns.map((turn) => <div key={turn.id} className={`rounded-2xl p-3 ${turn.role === 'user' ? 'ml-7 bg-[var(--ib-primary)] text-white' : 'mr-7 bg-white text-[var(--ib-text-primary)]'}`}><p className="whitespace-pre-wrap text-sm leading-6">{turn.text}</p>{turn.chinese ? <div className="mt-3 rounded-xl bg-[var(--ib-primary-soft)] p-3 text-[var(--ib-text-primary)]"><p className="text-2xl font-bold text-[var(--ib-primary-strong)]">{turn.chinese}</p>{turn.pinyin ? <p className="mt-1 font-semibold text-[var(--ib-primary)]">{turn.pinyin}</p> : null}{turn.indonesian ? <p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}<button type="button" onClick={() => playCoachChinese(turn.chinese!, turn.ttsRate)} className="mt-2 text-sm font-bold text-[var(--ib-primary)]">🔊 Mandarin</button></div> : turn.indonesian ? <p className="mt-2 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}{turn.role === 'assistant' && turn.speechSegments?.length ? <div className="mt-3 flex flex-wrap gap-2"><button type="button" onClick={() => playCoachSegments(turn.speechSegments!, 'normal')} className="min-h-10 rounded-full border border-[var(--ib-border-soft)] px-3 text-xs font-bold text-[var(--ib-primary)]">🔊 Dengarkan jawaban</button><button type="button" onClick={() => playCoachSegments(turn.speechSegments!, 'slow')} className="min-h-10 rounded-full border border-[var(--ib-border-soft)] px-3 text-xs font-bold text-[var(--ib-primary)]">🐢 Pelan</button></div> : null}</div>)}
     </div>
@@ -204,8 +227,8 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
     <label className="mt-4 block text-xs font-bold text-[var(--ib-text-secondary)]" htmlFor="coach-question">Ketik pertanyaan atau jawabanmu</label>
     <textarea id="coach-question" value={input} onChange={(event) => setInput(event.target.value)} maxLength={500} rows={3} placeholder="Contoh: Apa artinya? / 这个怎么发音？" className="mt-2 w-full resize-none rounded-2xl border border-[var(--ib-border-soft)] bg-white p-3 text-sm outline-none focus:border-[var(--ib-primary)]" />
     <button type="button" disabled={busy || !input.trim()} onClick={() => send(input)} className="mt-2 min-h-11 w-full rounded-full bg-[var(--ib-primary-strong)] px-5 font-bold text-white disabled:opacity-50">{busy ? 'AI sedang menjawab…' : 'Kirim ke AI Coach'}</button>
+    {error ? <div role="alert" className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800"><p>{error}</p>{lastFailedRequest ? <button type="button" disabled={busy} onClick={() => send(lastFailedRequest.message, lastFailedRequest.audio)} className="mt-2 min-h-10 rounded-full border border-rose-300 bg-white px-4 font-bold text-rose-800 disabled:opacity-50">Coba lagi</button> : null}</div> : null}
     <div className="my-3 flex items-center gap-3 text-xs text-[var(--ib-text-muted)]"><span className="h-px flex-1 bg-[var(--ib-border-soft)]"/><span>atau bicara</span><span className="h-px flex-1 bg-[var(--ib-border-soft)]"/></div>
     <AiCoachRecorder busy={busy} idleLabel={profile.conversation.recentTurns.length ? '🎙️ Balas dengan suara' : '🎙️ Tanya dengan suara'} busyLabel="AI sedang mendengarkan…" onRecorded={(audio) => send(undefined, audio)} />
-    {error ? <p role="alert" className="mt-3 text-sm text-rose-700">{error}</p> : null}
   </section>;
 }
