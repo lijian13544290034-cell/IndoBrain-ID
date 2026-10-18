@@ -12,6 +12,6 @@ export const mandarinLevelOneFavoriteEntries: MandarinFavoriteEntry[] = allManda
   pinyin: item.pinyinSegments.map((segment) => segment.pinyin).join(' '),
   indonesian: item.indonesian,
   audioText: item.audioText,
-  href: '/learn-chinese/course',
+  href: `/learn-chinese/course?day=${item.day}`,
   level: 1,
 }));

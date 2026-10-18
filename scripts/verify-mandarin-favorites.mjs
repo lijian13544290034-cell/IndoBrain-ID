@@ -24,7 +24,7 @@ const toLevelOneFavorite = (item) => ({
   pinyin: item.pinyinSegments.map((segment) => segment.pinyin).join(' '),
   indonesian: item.indonesian,
   audioText: item.audioText,
-  href: '/learn-chinese/course',
+  href: `/learn-chinese/course?day=${item.day}`,
   level: 1,
 });
 
@@ -57,6 +57,7 @@ const authorized = resolveMandarinFavoriteIds(
   true,
 );
 assert.deepEqual(authorized.entries.map((entry) => entry.day), [1, 30, 31], 'real canonical Day 1, Day 30, and authorized Level 2 favorites resolve');
+assert.equal(authorized.entries.find((entry) => entry.day === 30)?.href, '/learn-chinese/course?day=30', 'Level 1 favorites deep-link to their canonical Day');
 assert.deepEqual(authorized.unresolvedIds, ['mandarin-work-30d:CN-WORK-L2-60-01', 'invalid-old-id'], 'Day 60 without an item and invalid IDs remain preserved and unresolved');
 
 const locked = resolveMandarinFavoriteIds([day31.favoriteId], [toLevelOneFavorite(actualDay1)], [], false);
@@ -71,6 +72,20 @@ const favoritesComponent = read('components/MandarinFavorites.tsx');
 assert.match(favoritesComponent, /setProfile\(toggleMandarinFavorite\(favoriteId\)\)/, 'removal reuses the existing favorite toggle');
 assert.match(favoritesComponent, /ChineseSpeechButton/, 'favorite cards reuse the existing zh-CN speech component');
 assert.match(favoritesComponent, /subscribeMandarinWorkProfile/, 'favorite state follows the scoped profile subscription');
+
+const workExperience = read('components/MandarinWorkExperience.tsx');
+assert.match(workExperience, /createMandarinWorkDaySelection\(initialDay\)/, 'course state initializes from the validated deep-link Day');
+assert.match(workExperience, /toggleMandarinFavorite\(turn\.item\.favoriteId\)/, 'dialogue cards reuse the canonical favorite toggle');
+for (const day of [29, 30]) {
+  const lesson = mandarinWorkDays[day - 1];
+  assert.equal(lesson.items.length, 0, `Day ${day} remains dialogue-only`);
+  assert.ok(lesson.dialogue.length > 0, `Day ${day} has canonical dialogue expressions`);
+  const favoriteIds = lesson.dialogue.map((turn) => turn.item.favoriteId);
+  assert.equal(new Set(favoriteIds).size, favoriteIds.length, `Day ${day} dialogue favorite IDs are unique`);
+  const resolved = resolveMandarinFavoriteIds(favoriteIds, mandarinWorkDays.flatMap((entry) => entry.items.concat(entry.dialogue.map((turn) => turn.item))).map(toLevelOneFavorite), [], false);
+  assert.equal(resolved.entries.length, favoriteIds.length, `Day ${day} dialogue favorites resolve without copying them into items`);
+  assert.ok(resolved.entries.every((entry) => entry.href === `/learn-chinese/course?day=${day}`), `Day ${day} favorites return to the correct lesson`);
+}
 
 const profileSource = read('lib/mandarin-work-profile.ts');
 assert.match(profileSource, /currentMandarinLearningScope\(\)/, 'favorite persistence remains account scoped');
