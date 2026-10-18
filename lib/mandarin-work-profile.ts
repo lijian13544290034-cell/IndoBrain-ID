@@ -1,14 +1,13 @@
 'use client';
 
 import { MANDARIN_WORK_NAMESPACE } from '@/lib/mandarin-work-course';
+import { currentMandarinLearningScope } from '@/lib/mandarin-learning-storage-scope';
 
 export type MandarinWorkProfile = { completedDays: number[]; currentDay: number; completedItems: string[]; favorites: string[] };
 const eventName = 'mandarin-work-profile-updated';
-const identityPointer = 'indobrain_learning_profile_scope';
 
 function key() {
-  const identity = typeof window === 'undefined' ? 'guest' : window.localStorage.getItem(identityPointer) || 'guest';
-  return `${MANDARIN_WORK_NAMESPACE}:profile:${identity}`;
+  return `${MANDARIN_WORK_NAMESPACE}:profile:${currentMandarinLearningScope()}`;
 }
 
 export function emptyMandarinWorkProfile(): MandarinWorkProfile { return { completedDays: [], currentDay: 1, completedItems: [], favorites: [] }; }

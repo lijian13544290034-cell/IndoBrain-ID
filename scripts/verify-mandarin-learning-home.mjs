@@ -31,8 +31,10 @@ for (const marker of ['Beranda', 'Kursus', 'AI Coach', 'Favorit', 'Ulasan', 'dis
 assert.match(navigation, /grid-cols-5/, 'Mobile navigation must keep five equal-width items');
 assert.match(layout, /safe-area-inset-bottom/, 'Content must reserve space for the mobile safe area and fixed navigation');
 
-assert.match(courseProfile, /MANDARIN_WORK_NAMESPACE}:profile:\$\{identity\}/, 'Existing course progress key must remain account-scoped');
+assert.match(courseProfile, /MANDARIN_WORK_NAMESPACE}:profile:\$\{currentMandarinLearningScope\(\)\}/, 'Existing course progress key must use the verified ID_TO_ZH account scope');
 assert.match(personalizationProfile, /indobrain:mandarin-coach-personalization:v1/, 'Existing personalization key must remain unchanged');
+assert.match(layout, /getCurrentAccountUser\(\)/, 'Mandarin local state must be scoped from the verified server session');
+assert.match(layout, /MandarinLearningScopeBoundary/, 'Mandarin local consumers must wait for the verified scope');
 assert.match(home, /readMandarinWorkProfile/, 'Home progress must read the existing course profile');
 assert.match(home, /readPersonalizationState/, 'Home profile state must read the existing personalization store');
 assert.match(personalization, /displayMode === 'profile'/, 'Existing profile editor must provide the profile-only view');

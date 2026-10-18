@@ -2,48 +2,69 @@
 
 import { AI_COACH_COURSE_ID, createCoachProfile, emptyCoachProfile, type CoachProfile } from '@/lib/mandarin-ai-coach';
 import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
+import { currentMandarinLearningScope, readScopedMandarinJson, scopedMandarinStorageKey, writeScopedMandarinJson } from '@/lib/mandarin-learning-storage-scope';
 
 const LEGACY_STORAGE_KEY = 'indobrain:mandarin-ai-coach-day1:v1';
 const EVENT_NAME = 'indobrain:mandarin-ai-coach-profile';
-const storageKey = (lesson?: MandarinCoachCurriculumLesson) => lesson ? `indobrain:mandarin-ai-coach:${lesson.id}:v1` : LEGACY_STORAGE_KEY;
+const storageBaseKey = (lesson?: MandarinCoachCurriculumLesson) => lesson ? `indobrain:mandarin-ai-coach:${lesson.id}:v1` : LEGACY_STORAGE_KEY;
+
+type StoredProfile = Omit<Partial<CoachProfile>, 'version' | 'conversation' | 'learning'> & {
+  version?: 1 | 2 | 3 | 4;
+  conversation?: CoachProfile['conversation'];
+  learning?: CoachProfile['learning'];
+};
+
+function restoreCoachProfile(parsed: StoredProfile | null, lesson?: MandarinCoachCurriculumLesson) {
+  const fresh = lesson ? createCoachProfile(lesson) : emptyCoachProfile();
+  const correctLesson = lesson
+    ? parsed?.lessonId === lesson.id || (!parsed?.lessonId && lesson.day === 1 && parsed?.course === AI_COACH_COURSE_ID)
+    : parsed?.course === AI_COACH_COURSE_ID;
+  if (!(parsed?.version === 1 || parsed?.version === 2 || parsed?.version === 3 || parsed?.version === 4) || !correctLesson || !Array.isArray(parsed.expressions)) return null;
+  const allowedIds = new Set(fresh.expressions.map((item) => item.expression_id));
+  const storedExpressions = parsed.expressions.filter((item) => allowedIds.has(item.expression_id));
+  return {
+    ...fresh,
+    ...(parsed as Omit<CoachProfile, 'version' | 'conversation' | 'learning' | 'expressions'>),
+    version: 4,
+    course: fresh.course,
+    lessonId: fresh.lessonId,
+    currentDay: fresh.currentDay,
+    expressions: fresh.expressions.map((item) => {
+      const stored = storedExpressions.find((entry) => entry.expression_id === item.expression_id);
+      return stored ? { ...item, ...stored, saved_for_review: stored.saved_for_review || false, review_count: stored.review_count || 0 } : item;
+    }),
+    conversation: parsed.conversation || { mode: 'GUIDED_TRAINING', summary: '', recentTurns: [], questions: [] },
+    learning: parsed.learning || { userLevel: 'BEGINNER', preferredExplanationLanguage: 'INDONESIAN', userInitiated: [] },
+  } as CoachProfile;
+}
+
+/** Read an existing scoped profile without creating or changing local data. */
+export function readCoachProfileSnapshot(lesson: MandarinCoachCurriculumLesson, scope = currentMandarinLearningScope()) {
+  const parsed = readScopedMandarinJson(storageBaseKey(lesson), scope) as StoredProfile | null;
+  return restoreCoachProfile(parsed, lesson);
+}
+
+/** Read only profiles which already exist; useful for future favorites/review aggregation. */
+export function readCoachProfileSnapshots(lessons: MandarinCoachCurriculumLesson[], scope = currentMandarinLearningScope()) {
+  return lessons.flatMap((lesson) => {
+    const profile = readCoachProfileSnapshot(lesson, scope);
+    return profile ? [{ lesson, profile }] : [];
+  });
+}
 
 export function readCoachProfile(lesson?: MandarinCoachCurriculumLesson): CoachProfile {
   const fresh = lesson ? createCoachProfile(lesson) : emptyCoachProfile();
   if (typeof window === 'undefined') return fresh;
-  try {
-    type StoredProfile = Omit<Partial<CoachProfile>, 'version' | 'conversation' | 'learning'> & { version?: 1 | 2 | 3 | 4; conversation?: CoachProfile['conversation']; learning?: CoachProfile['learning'] };
-    const key = storageKey(lesson);
-    const legacy = lesson?.day === 1 ? localStorage.getItem(LEGACY_STORAGE_KEY) : null;
-    const parsed = JSON.parse(localStorage.getItem(key) || legacy || 'null') as StoredProfile | null;
-    const correctLesson = lesson ? parsed?.lessonId === lesson.id || (!parsed?.lessonId && lesson.day === 1 && parsed?.course === AI_COACH_COURSE_ID) : parsed?.course === AI_COACH_COURSE_ID;
-    if ((parsed?.version === 1 || parsed?.version === 2 || parsed?.version === 3 || parsed?.version === 4) && correctLesson && Array.isArray(parsed.expressions)) {
-      const allowedIds = new Set(fresh.expressions.map((item) => item.expression_id));
-      const storedExpressions = parsed.expressions.filter((item) => allowedIds.has(item.expression_id));
-      return {
-        ...fresh,
-        ...(parsed as Omit<CoachProfile, 'version' | 'conversation' | 'learning' | 'expressions'>),
-        version: 4,
-        course: fresh.course,
-        lessonId: fresh.lessonId,
-        currentDay: fresh.currentDay,
-        expressions: fresh.expressions.map((item) => {
-          const stored = storedExpressions.find((entry) => entry.expression_id === item.expression_id);
-          return stored ? { ...item, ...stored, saved_for_review: stored.saved_for_review || false, review_count: stored.review_count || 0 } : item;
-        }),
-        conversation: parsed.conversation || { mode: 'GUIDED_TRAINING', summary: '', recentTurns: [], questions: [] },
-        learning: parsed.learning || { userLevel: 'BEGINNER', preferredExplanationLanguage: 'INDONESIAN', userInitiated: [] },
-      } as CoachProfile;
-    }
-  } catch {
-    // A malformed local draft is replaced with a clean isolated profile.
-  }
-  localStorage.setItem(storageKey(lesson), JSON.stringify(fresh));
-  return fresh;
+  const restored = lesson
+    ? readCoachProfileSnapshot(lesson)
+    : restoreCoachProfile(readScopedMandarinJson(storageBaseKey()) as StoredProfile | null);
+  return restored ?? fresh;
 }
 
 export function saveCoachProfile(profile: CoachProfile) {
   const next = { ...profile, updatedAt: new Date().toISOString() };
-  const key = `indobrain:mandarin-ai-coach:${profile.lessonId}:v1`;
+  const baseKey = `indobrain:mandarin-ai-coach:${profile.lessonId}:v1`;
+  const key = scopedMandarinStorageKey(baseKey);
   let persisted = next;
   try {
     const previous = JSON.parse(localStorage.getItem(key) || 'null') as Partial<CoachProfile> | null;
@@ -55,7 +76,7 @@ export function saveCoachProfile(profile: CoachProfile) {
   } catch {
     // A malformed local draft is safely replaced by the current lesson state.
   }
-  localStorage.setItem(key, JSON.stringify(persisted));
+  writeScopedMandarinJson(baseKey, persisted);
   window.dispatchEvent(new Event(EVENT_NAME));
   return next;
 }
@@ -67,7 +88,7 @@ export function subscribeCoachProfile(listener: () => void) {
 
 export function resetCoachProfile(lesson?: MandarinCoachCurriculumLesson) {
   const fresh = lesson ? createCoachProfile(lesson) : emptyCoachProfile();
-  localStorage.setItem(storageKey(lesson), JSON.stringify(fresh));
+  writeScopedMandarinJson(storageBaseKey(lesson), fresh);
   window.dispatchEvent(new Event(EVENT_NAME));
   return fresh;
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { clearLearningProfileScope } from '@/lib/learning-profile';
+import { clearMandarinLearningScope } from '@/lib/mandarin-learning-storage-scope';
 
 export default function AccountLogoutActions() {
   const [pending, setPending] = useState(false);
@@ -16,6 +17,7 @@ export default function AccountLogoutActions() {
       window.localStorage.removeItem('indobrain_session_id');
       window.sessionStorage.removeItem('indobrain_session_id');
       clearLearningProfileScope();
+      clearMandarinLearningScope();
       // A document navigation discards any cached client-side account state before login.
       window.location.replace('/login');
     }
