@@ -35,6 +35,7 @@
     "verify:mandarin-learning-home": "node scripts/verify-mandarin-learning-home.mjs",
     "verify:mandarin-local-account-isolation": "node --experimental-strip-types scripts/verify-mandarin-local-account-isolation.mjs",
     "verify:mandarin-favorites": "node --experimental-strip-types scripts/verify-mandarin-favorites.mjs",
+    "verify:mandarin-review": "node --experimental-strip-types scripts/verify-mandarin-review.mjs",
     "verify:mandarin-coach-curriculum": "node scripts/verify-mandarin-coach-curriculum.mjs",
     "verify:tts:static": "node scripts/verify-tts-quality-gate.mjs",
     "verify:tts:real": "node scripts/tts-smoke-test.mjs",

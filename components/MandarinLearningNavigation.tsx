@@ -8,10 +8,7 @@ const availableItems = [
   { href: '/learn-chinese/course', label: 'Kursus', icon: '书' },
   { href: '/learn-chinese/ai-coach', label: 'AI Coach', icon: '✦' },
   { href: '/learn-chinese/favorites', label: 'Favorit', icon: '☆' },
-];
-
-const upcomingItems = [
-  { label: 'Ulasan', icon: '↻' },
+  { href: '/learn-chinese/review', label: 'Ulasan', icon: '↻' },
 ];
 
 export default function MandarinLearningNavigation() {
@@ -24,7 +21,6 @@ export default function MandarinLearningNavigation() {
           : pathname === item.href || pathname?.startsWith(`${item.href}/`);
         return <Link key={item.href} href={item.href} aria-current={active ? 'page' : undefined} className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[10px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-primary)] focus-visible:ring-offset-1 sm:text-xs ${active ? 'bg-[var(--ib-primary-soft)] text-[var(--ib-primary)]' : 'text-[var(--ib-nav-inactive)] hover:bg-[var(--ib-primary-soft)] hover:text-[var(--ib-primary)]'}`}><span className="text-lg leading-none" aria-hidden>{item.icon}</span><span className="max-w-full truncate">{item.label}</span></Link>;
       })}
-      {upcomingItems.map((item) => <button key={item.label} type="button" disabled aria-disabled="true" title={`${item.label} · segera hadir`} className="flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[10px] font-semibold text-[var(--ib-text-muted)] opacity-65 sm:text-xs"><span className="text-lg leading-none" aria-hidden>{item.icon}</span><span className="max-w-full truncate">{item.label}</span><span className="sr-only">Segera hadir</span></button>)}
     </div>
   </nav>;
 }

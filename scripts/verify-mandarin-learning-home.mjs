@@ -22,10 +22,10 @@ assert.match(profilePage, /MandarinCoachPersonalization/, 'Career profile must r
 assert.match(profilePage, /displayMode="profile"/, 'Career profile route must not duplicate the full AI Coach picker');
 assert.match(layout, /MandarinLearningNavigation/, 'Mandarin navigation must cover the learning subtree');
 
-for (const marker of ['Belajar Mandarin untuk Kerja', 'Lanjutkan Hari', '/learn-chinese/course', '/learn-chinese/ai-coach', '/learn-chinese/profile', 'Segera hadir']) {
+for (const marker of ['Belajar Mandarin untuk Kerja', 'Lanjutkan Hari', '/learn-chinese/course', '/learn-chinese/ai-coach', '/learn-chinese/profile', '/learn-chinese/favorites', '/learn-chinese/review']) {
   assert.ok(home.includes(marker), `Unified home is missing: ${marker}`);
 }
-for (const marker of ['Beranda', 'Kursus', 'AI Coach', 'Favorit', 'Ulasan', 'disabled', 'aria-disabled="true"']) {
+for (const marker of ['Beranda', 'Kursus', 'AI Coach', 'Favorit', 'Ulasan', '/learn-chinese/favorites', '/learn-chinese/review']) {
   assert.ok(navigation.includes(marker), `Navigation is missing: ${marker}`);
 }
 assert.match(navigation, /grid-cols-5/, 'Mobile navigation must keep five equal-width items');
@@ -46,4 +46,4 @@ assert.match(rootLayout, /SuperAdminWorkbenchReturnLink/, 'Super Admin return co
 assert.match(superAdminReturn, /pathname\?\.startsWith\('\/learn-chinese'\)/, 'Super Admin return control must remain available across Mandarin learning routes');
 assert.doesNotMatch(navigation, /中国人学印尼语|\/life|\/about#favorites/, 'Mandarin navigation must not reuse or modify the Chinese-to-Indonesian navigation');
 
-console.log('MANDARIN LEARNING HOME: PASS (unified home, preserved stores, real course/coach/profile routes, explicit future states)');
+console.log('MANDARIN LEARNING HOME: PASS (unified home, preserved stores, and real course/coach/profile/favorites/review routes)');
