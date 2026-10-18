@@ -16,6 +16,10 @@ export function accountSessionCookieName() {
   return 'indobrain_account_session';
 }
 
+export function isInitialStudentPasswordConfigured() {
+  return Boolean(process.env.INITIAL_STUDENT_PASSWORD);
+}
+
 /** Never expose this value to a client, response body, audit entry, or log. */
 export function initialStudentPassword() {
   const value = process.env.INITIAL_STUDENT_PASSWORD;

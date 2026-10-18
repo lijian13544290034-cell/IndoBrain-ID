@@ -4,7 +4,7 @@ import AdminDashboard from '@/components/AdminDashboard';
 import AccountLogoutActions from '@/components/AccountLogoutActions';
 import { getCurrentAccountUser, requireSuperAdmin } from '@/lib/account/auth';
 import { ADMIN_DIRECTION_LABELS, parseAdminDirection } from '@/lib/account/admin-direction';
-import { initialStudentPassword } from '@/lib/account/config';
+import { initialStudentPassword, isInitialStudentPasswordConfigured } from '@/lib/account/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +19,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   }
   const direction = parseAdminDirection((await searchParams).direction);
   if (!direction) redirect('/admin/workbench');
-  const initialPassword = initialStudentPassword();
+  const initialPassword = isInitialStudentPasswordConfigured() ? initialStudentPassword() : null;
   const directionLabel = ADMIN_DIRECTION_LABELS[direction];
   return <main className="mx-auto min-h-screen w-full max-w-6xl px-5 py-10 sm:px-8">
     <header className="flex flex-wrap items-start justify-between gap-4">

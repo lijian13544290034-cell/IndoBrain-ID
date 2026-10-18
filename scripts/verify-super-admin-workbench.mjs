@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolvePostLoginDestination } from '../lib/account/post-login-destination.ts';
+import { isInitialStudentPasswordConfigured, initialStudentPassword } from '../lib/account/config.ts';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const superAdmin = { isSuperAdmin: true, learningDirection: 'ZH_TO_ID', mustChangePassword: false };
@@ -54,5 +55,23 @@ assert.match(repository, /user_id=in\.\(\$\{userIds\.map\(encode\)\.join\(','\)\
 const passwordPage = read('app/change-initial-password/page.tsx');
 assert.match(passwordPage, /isSuperAdmin \? '\/admin\/workbench'/);
 assert.match(passwordPage, /if \(!user\.must_change_password\) redirect\(destination\)/);
+
+const previousInitialPassword = process.env.INITIAL_STUDENT_PASSWORD;
+delete process.env.INITIAL_STUDENT_PASSWORD;
+assert.equal(isInitialStudentPasswordConfigured(), false);
+assert.throws(() => initialStudentPassword(), /INITIAL_STUDENT_PASSWORD_NOT_CONFIGURED/);
+process.env.INITIAL_STUDENT_PASSWORD = 'test-only-configured-value';
+assert.equal(isInitialStudentPasswordConfigured(), true);
+if (previousInitialPassword === undefined) delete process.env.INITIAL_STUDENT_PASSWORD;
+else process.env.INITIAL_STUDENT_PASSWORD = previousInitialPassword;
+
+const adminRuntimePage = read('app/admin/page.tsx');
+assert.match(adminRuntimePage, /isInitialStudentPasswordConfigured\(\) \? initialStudentPassword\(\) : null/);
+const returnLink = read('components/SuperAdminWorkbenchReturnLink.tsx');
+assert.match(returnLink, /new Set\(\['\/', '\/learn-chinese'\]\)/);
+assert.match(returnLink, /fetch\('\/api\/auth\/super-admin-status'/);
+assert.match(returnLink, /href="\/admin\/workbench"/);
+assert.match(read('app/api/auth/super-admin-status/route.ts'), /requireSuperAdmin\(\)/);
+assert.match(read('app/layout.tsx'), /<SuperAdminWorkbenchReturnLink \/>/);
 
 console.log('SUPER ADMIN WORKBENCH VERIFIED');
