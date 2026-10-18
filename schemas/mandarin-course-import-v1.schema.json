@@ -8,7 +8,7 @@
   "properties": {
     "version": { "const": 1 },
     "direction": { "const": "ID_TO_ZH" },
-    "contentType": { "enum": ["PUBLIC_HIGH_FREQUENCY", "CAREER_SCENARIO"] },
+    "contentType": { "enum": ["PUBLIC_HIGH_FREQUENCY", "PRACTICAL_SENTENCE", "CAREER_SCENARIO"] },
     "reviewStatus": { "const": "HUMAN_APPROVED" },
     "reviewReference": { "type": "string", "minLength": 1 },
     "course": {
@@ -50,6 +50,57 @@
           "ttsText": { "type": "string", "minLength": 1 },
           "difficulty": { "enum": [1, 2, 3] },
           "tags": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+        }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["occupations", "roles", "dialogueTurns", "commonQuestionExpressionIds", "variableExercises"],
+      "properties": {
+        "occupations": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "titleZh", "titleId"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "titleZh": { "type": "string", "minLength": 1 },
+              "titleId": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "dialogueTurns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "roleId", "expressionId"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "roleId": { "type": "string", "minLength": 1 },
+              "expressionId": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "commonQuestionExpressionIds": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "variableExercises": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "variableLabelId", "templateExpressionId", "optionExpressionIds"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "variableLabelId": { "type": "string", "minLength": 1 },
+              "templateExpressionId": { "type": "string", "minLength": 1 },
+              "optionExpressionIds": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+            }
+          }
         }
       }
     }
