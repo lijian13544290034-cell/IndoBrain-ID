@@ -1,4 +1,4 @@
-export type MandarinSupplementalContentType = 'PUBLIC_HIGH_FREQUENCY' | 'CAREER_SCENARIO';
+export type MandarinSupplementalContentType = 'PUBLIC_HIGH_FREQUENCY' | 'PRACTICAL_SENTENCE' | 'CAREER_SCENARIO';
 export type MandarinSupplementalAccessTier = 'FREE' | 'LEVEL_2';
 
 export type MandarinSupplementalExpressionV1 = {
@@ -9,6 +9,27 @@ export type MandarinSupplementalExpressionV1 = {
   ttsText: string;
   difficulty: 1 | 2 | 3;
   tags: string[];
+};
+
+export type MandarinSupplementalScenarioV1 = {
+  occupations: string[];
+  roles: Array<{
+    id: string;
+    titleZh: string;
+    titleId: string;
+  }>;
+  dialogueTurns: Array<{
+    id: string;
+    roleId: string;
+    expressionId: string;
+  }>;
+  commonQuestionExpressionIds: string[];
+  variableExercises: Array<{
+    id: string;
+    variableLabelId: string;
+    templateExpressionId: string;
+    optionExpressionIds: string[];
+  }>;
 };
 
 export type MandarinSupplementalCoursePackageV1 = {
@@ -32,4 +53,5 @@ export type MandarinSupplementalCoursePackageV1 = {
     };
   };
   expressions: MandarinSupplementalExpressionV1[];
+  scenario?: MandarinSupplementalScenarioV1;
 };
