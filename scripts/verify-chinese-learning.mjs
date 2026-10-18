@@ -142,6 +142,7 @@ if (lesson.akuBisa.visualToHanzi.options.find((item) => item.correct)?.hanzi !==
 if (lesson.akuBisa.soundToMeaning.expressionId !== 'two-apples') failures.push('Aku Bisa sound → meaning test must use two-apples');
 
 const page = read('app/learn-chinese/page.tsx');
+const coursePage = read('app/learn-chinese/course/page.tsx');
 const component = read('components/ChineseLearningExperience.tsx');
 const button = read('components/ChineseSpeechButton.tsx');
 const route = read('app/api/chinese-tts/route.ts');
@@ -150,7 +151,8 @@ const indonesianRoute = read('app/api/tts/route.ts');
 const indonesianProvider = read('lib/tts-provider.ts');
 const applicationFrame = read('components/ApplicationFrame.tsx');
 
-if (!page.includes('MandarinWorkExperience')) failures.push('/learn-chinese route is not wired to MandarinWorkExperience');
+if (!page.includes('MandarinLearningHome')) failures.push('/learn-chinese route is not wired to the unified Mandarin learning home');
+if (!coursePage.includes('MandarinWorkExperience')) failures.push('/learn-chinese/course is not wired to MandarinWorkExperience');
 if (page.includes('searchParams') || page.includes('groupId')) failures.push('/learn-chinese must not keep old group-query demo flow');
 if (!component.includes("'use client'")) failures.push('Chinese golden template must be an interactive client lesson');
 for (const state of ['EntryState', 'PahamState', 'DengarState', 'LihatState', 'UcapkanState', 'TemukanState', 'PakaiState', 'AkuBisaState', 'CompletionState']) {

@@ -68,7 +68,7 @@ else process.env.INITIAL_STUDENT_PASSWORD = previousInitialPassword;
 const adminRuntimePage = read('app/admin/page.tsx');
 assert.match(adminRuntimePage, /isInitialStudentPasswordConfigured\(\) \? initialStudentPassword\(\) : null/);
 const returnLink = read('components/SuperAdminWorkbenchReturnLink.tsx');
-assert.match(returnLink, /new Set\(\['\/', '\/learn-chinese'\]\)/);
+assert.match(returnLink, /pathname === '\/' \|\| pathname\?\.startsWith\('\/learn-chinese'\)/);
 assert.match(returnLink, /fetch\('\/api\/auth\/super-admin-status'/);
 assert.match(returnLink, /href="\/admin\/workbench"/);
 assert.match(read('app/api/auth/super-admin-status/route.ts'), /requireSuperAdmin\(\)/);

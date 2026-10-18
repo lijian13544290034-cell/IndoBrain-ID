@@ -33,7 +33,13 @@ const goals: Array<{ value: CareerGoalId; label: string }> = [
   { value: 'CUSTOM', label: 'Tujuan kerja lainnya' },
 ];
 
-export default function MandarinCoachPersonalization({ curriculum, onStart }: { curriculum: MandarinCoachCurriculumPayload; onStart: (lessonId: string, expressionIds: string[]) => void }) {
+type MandarinCoachPersonalizationProps = {
+  curriculum: MandarinCoachCurriculumPayload;
+  onStart?: (lessonId: string, expressionIds: string[]) => void;
+  displayMode?: 'full' | 'profile';
+};
+
+export default function MandarinCoachPersonalization({ curriculum, onStart, displayMode = 'full' }: MandarinCoachPersonalizationProps) {
   const [state, setState] = useState<PersonalizationStateV1 | null>(null);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<LearnerProfileV1>(() => createDefaultLearnerProfile());
@@ -91,6 +97,15 @@ export default function MandarinCoachPersonalization({ curriculum, onStart }: { 
     <div className="mt-5 flex flex-col gap-3 sm:flex-row"><button type="button" onClick={() => save(false)} className="min-h-12 flex-1 rounded-full bg-[var(--ib-primary-strong)] px-5 font-bold text-white">Buat rencana 7 hari</button><button type="button" onClick={() => save(true)} className="min-h-12 rounded-full border border-[var(--ib-border-soft)] px-5 font-bold text-[var(--ib-primary)]">Lewati · pakai jalur standar</button></div>
   </section>;
 
+  if (displayMode === 'profile') return <section className="mt-6 rounded-3xl border border-[var(--ib-border-soft)] bg-[var(--ib-primary-soft)] p-5" aria-labelledby="learner-profile-summary-title">
+    <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Profil belajar</p><h2 id="learner-profile-summary-title" className="mt-2 text-xl font-bold text-[var(--ib-primary-strong)]">{state.profile.skipped ? 'Jalur belajar standar' : state.profile.occupationLabel || 'Profil pekerjaan'}</h2></div><button type="button" onClick={() => setEditing(true)} className="min-h-10 rounded-full border border-[var(--ib-border-soft)] bg-white px-4 text-sm font-bold text-[var(--ib-primary)]">Lihat / ubah profil</button></div>
+    <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="rounded-2xl bg-white p-4"><dt className="text-xs font-bold text-[var(--ib-text-muted)]">Tujuan belajar</dt><dd className="mt-1 text-sm font-semibold text-[var(--ib-text-primary)]">{state.plan?.goalLabel || 'Komunikasi Mandarin dasar'}</dd></div>
+      <div className="rounded-2xl bg-white p-4"><dt className="text-xs font-bold text-[var(--ib-text-muted)]">Target harian</dt><dd className="mt-1 text-sm font-semibold text-[var(--ib-text-primary)]">{state.profile.dailyMinutes} menit latihan</dd></div>
+    </dl>
+    <p className="mt-4 text-xs leading-5 text-[var(--ib-text-muted)]">Profil dan rencana tersimpan hanya di browser ini. Mengubah profil tidak menghapus progres belajar yang sudah ada.</p>
+  </section>;
+
   const action = selectNextBestAction(state);
   return <section className="mt-6 rounded-3xl border border-[var(--ib-border-soft)] bg-[var(--ib-primary-soft)] p-5" aria-labelledby="personal-plan-title">
     <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Rencana pribadi · 7 hari</p><h2 id="personal-plan-title" className="mt-2 text-xl font-bold text-[var(--ib-primary-strong)]">{state.plan?.goalLabel || 'Jalur belajar standar'}</h2></div><button type="button" onClick={() => setEditing(true)} className="min-h-10 rounded-full border border-[var(--ib-border-soft)] bg-white px-4 text-sm font-bold text-[var(--ib-primary)]">Ubah profil</button></div>
@@ -98,7 +113,7 @@ export default function MandarinCoachPersonalization({ curriculum, onStart }: { 
     <div className="mt-4 grid gap-3 sm:grid-cols-2">{state.plan?.items.map((item) => {
       const lesson = resolvePersonalizedLesson(curriculum, item);
       if (!lesson) return null;
-      return <button key={item.dayIndex} type="button" onClick={() => onStart(item.lessonId, item.expressionIds)} className="min-w-0 rounded-2xl border border-[var(--ib-border-soft)] bg-white p-4 text-left transition hover:border-[var(--ib-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-primary)] focus-visible:ring-offset-2"><span className="text-xs font-bold text-[var(--ib-primary)]">Hari rencana {item.dayIndex} · target {item.durationMinutes} menit</span><span className="mt-1 block font-bold text-[var(--ib-primary-strong)]">{mandarinNavigationTitleId(lesson)}</span><span lang="zh-CN" className="mt-1 block text-xs text-[var(--ib-text-muted)]">{mandarinNavigationTitleZh(lesson)}</span><span className="mt-2 block text-xs leading-5 text-[var(--ib-text-secondary)]">{mandarinNavigationMeta(lesson, lesson.expressions.length)} · {item.reason}</span></button>;
+      return <button key={item.dayIndex} type="button" onClick={() => onStart?.(item.lessonId, item.expressionIds)} className="min-w-0 rounded-2xl border border-[var(--ib-border-soft)] bg-white p-4 text-left transition hover:border-[var(--ib-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-primary)] focus-visible:ring-offset-2"><span className="text-xs font-bold text-[var(--ib-primary)]">Hari rencana {item.dayIndex} · target {item.durationMinutes} menit</span><span className="mt-1 block font-bold text-[var(--ib-primary-strong)]">{mandarinNavigationTitleId(lesson)}</span><span lang="zh-CN" className="mt-1 block text-xs text-[var(--ib-text-muted)]">{mandarinNavigationTitleZh(lesson)}</span><span className="mt-2 block text-xs leading-5 text-[var(--ib-text-secondary)]">{mandarinNavigationMeta(lesson, lesson.expressions.length)} · {item.reason}</span></button>;
     })}</div>
     {state.plan?.contentGaps.length ? <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><strong>Materi belum tersedia:</strong> {state.plan.contentGaps.join(' ')}</div> : null}
     <p className="mt-4 text-xs leading-5 text-[var(--ib-text-muted)]">Kamu tetap bisa memilih dan belajar Day 1–60 dalam urutan asli di bawah.</p>

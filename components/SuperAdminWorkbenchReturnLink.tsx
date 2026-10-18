@@ -4,12 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-const learnerLandingPaths = new Set(['/', '/learn-chinese']);
-
 export default function SuperAdminWorkbenchReturnLink() {
   const pathname = usePathname();
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-  const shouldCheck = learnerLandingPaths.has(pathname ?? '');
+  const shouldCheck = pathname === '/' || pathname?.startsWith('/learn-chinese') === true;
 
   useEffect(() => {
     if (!shouldCheck) return;
