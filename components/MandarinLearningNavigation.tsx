@@ -7,10 +7,10 @@ const availableItems = [
   { href: '/learn-chinese', label: 'Beranda', icon: '⌂' },
   { href: '/learn-chinese/course', label: 'Kursus', icon: '书' },
   { href: '/learn-chinese/ai-coach', label: 'AI Coach', icon: '✦' },
+  { href: '/learn-chinese/favorites', label: 'Favorit', icon: '☆' },
 ];
 
 const upcomingItems = [
-  { label: 'Favorit', icon: '☆' },
   { label: 'Ulasan', icon: '↻' },
 ];
 
