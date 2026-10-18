@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import type { AccountUser, AdminStats, LearningDirection, LoginHistoryEntry, MembershipLevel } from '@/lib/account/types';
 import BulkStudentImport from './BulkStudentImport';
 import PasswordVisibilityField from './PasswordVisibilityField';
@@ -39,7 +39,7 @@ type CreatedAccountResult = {
   initialPassword: string;
 };
 
-export default function AdminDashboard({ initialPassword }: { initialPassword: string }) {
+export default function AdminDashboard({ initialPassword, direction }: { initialPassword: string; direction: LearningDirection }) {
   const [stats, setStats] = useState(emptyStats);
   const [users, setUsers] = useState<AccountUser[]>([]);
   const [history, setHistory] = useState<LoginHistoryEntry[]>([]);
@@ -52,19 +52,20 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
   const [resultPasswordVisible, setResultPasswordVisible] = useState(false);
   const [copyMessage, setCopyMessage] = useState('');
 
-  async function load(search = query) {
+  const load = useCallback(async (search = '') => {
+    const scope = `direction=${direction}`;
     const [statsResponse, usersResponse, historyResponse] = await Promise.all([
-      fetch('/api/admin/stats'),
-      fetch(`/api/admin/users?query=${encodeURIComponent(search)}`),
-      fetch('/api/admin/login-history'),
+      fetch(`/api/admin/stats?${scope}`),
+      fetch(`/api/admin/users?${scope}&query=${encodeURIComponent(search)}`),
+      fetch(`/api/admin/login-history?${scope}`),
     ]);
     if (statsResponse.ok) setStats(await statsResponse.json() as AdminStats);
     if (usersResponse.ok) setUsers((await usersResponse.json() as { users: AccountUser[] }).users);
     if (historyResponse.ok) setHistory((await historyResponse.json() as { history: LoginHistoryEntry[] }).history.slice(0, 10));
     if (!statsResponse.ok || !usersResponse.ok) setNotice('需要以超级管理员身份登录，并确认测试数据库已连接。');
-  }
+  }, [direction]);
 
-  useEffect(() => { void load(''); }, []);
+  useEffect(() => { void load(''); }, [load]);
 
   async function createUser(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -79,7 +80,7 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
     setCopyMessage('');
     setResultPasswordVisible(false);
     try {
-      const response = await fetch('/api/admin/users', {
+      const response = await fetch(`/api/admin/users?direction=${direction}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(form)),
       });
       const data = await response.json() as { error?: string; user?: AccountUser };
@@ -87,7 +88,7 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
         let message = data.error ?? '创建失败，请重试。';
         if (submittedPhone) {
           try {
-            const existingResponse = await fetch(`/api/admin/users?query=${encodeURIComponent(submittedPhone)}`);
+            const existingResponse = await fetch(`/api/admin/users?direction=${direction}&query=${encodeURIComponent(submittedPhone)}`);
             const existingData = await existingResponse.json() as { users?: AccountUser[] };
             if (existingResponse.ok && existingData.users?.some((user) => user.phone === submittedPhone)) message = '手机号已存在。';
           } catch {
@@ -98,7 +99,7 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
         return;
       }
 
-      const verificationResponse = await fetch(`/api/admin/users?query=${encodeURIComponent(data.user.phone)}`);
+      const verificationResponse = await fetch(`/api/admin/users?direction=${direction}&query=${encodeURIComponent(data.user.phone)}`);
       const verificationData = await verificationResponse.json() as { error?: string; users?: AccountUser[] };
       const verifiedUser = verificationData.users?.find((user) => user.id === data.user?.id && user.phone === data.user.phone);
       if (!verificationResponse.ok || !verifiedUser) {
@@ -155,13 +156,11 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
     if (phone === null || !phone.trim()) return;
     const membership = prompt('会员等级：BASIC、PRO、VIP、ENTERPRISE 或 SVIP', user.membership_code);
     if (membership === null || !membership.trim()) return;
-    const learningDirection = prompt('学习方向：ZH_TO_ID 或 ID_TO_ZH', user.learning_direction);
-    if (learningDirection === null || !learningDirection.trim()) return;
     const expiresAt = prompt('到期时间（ISO 格式；留空代表长期有效）', user.expires_at ?? '');
     if (expiresAt === null) return;
     const response = await fetch(`/api/admin/users/${user.id}`, {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'edit', name, phone, membership, learningDirection, expiresAt }),
+      body: JSON.stringify({ action: 'edit', name, phone, membership, learningDirection: direction, expiresAt }),
     });
     const data = await response.json() as { error?: string };
     setNotice(data.error ?? (response.ok ? '账号资料已更新。' : '无法更新账号资料。'));
@@ -186,9 +185,9 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
   ];
 
   return <div className="space-y-8">
-    <MandarinCoachAnalytics />
+    {direction === 'ID_TO_ZH' && <MandarinCoachAnalytics />}
     <section className="flex flex-col gap-4 rounded-2xl border border-stone-200 bg-stone-50 p-5 sm:flex-row sm:items-center sm:justify-between">
-      <div><h2 className="text-lg font-semibold"><Label indonesian="Kelola Akun" chinese="账号管理" /></h2><p className="mt-1 text-sm text-gray-500">仅 SUPER_ADMIN 可以创建和管理测试账号。</p></div>
+      <div><h2 className="text-lg font-semibold"><Label indonesian="Kelola Akun" chinese="账号管理" /></h2><p className="mt-1 text-sm text-gray-500">当前仅显示并创建“{directions[direction]}”账号；服务端会校验方向范围。</p></div>
       <button onClick={() => { setShowCreateForm((visible) => !visible); setCreatedAccount(null); setCreateError(''); }} className="rounded-xl bg-stone-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-stone-700"><Label indonesian={showCreateForm ? 'Tutup Formulir' : 'Buat Akun'} chinese={showCreateForm ? '关闭表单' : '创建账号'} /></button>
     </section>
 
@@ -200,7 +199,7 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
         <label className="grid gap-1 text-sm font-medium">手机号（国际格式）<input required name="phone" inputMode="tel" placeholder="+628123456789" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal" /></label>
         <PasswordVisibilityField label="初始密码" name="password" defaultValue={initialPassword} required minLength={10} autoComplete="new-password" helperText="至少 10 位，含字母和数字。仅 SUPER_ADMIN 可查看。" />
         <label className="grid gap-1 text-sm font-medium">会员等级<select required name="membership" defaultValue="BASIC" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal">{plans.map((plan) => <option key={plan} value={plan}>{planLabels[plan]}</option>)}</select></label>
-        <label className="grid gap-1 text-sm font-medium">学习方向<select required name="learningDirection" defaultValue="ZH_TO_ID" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal"><option value="ZH_TO_ID">中文 → 印尼语</option><option value="ID_TO_ZH">印尼语 → 中文</option></select></label>
+        <label className="grid gap-1 text-sm font-medium">学习方向<input type="hidden" name="learningDirection" value={direction} /><span className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 font-normal text-gray-700">{directions[direction]}</span></label>
         <label className="grid gap-1 text-sm font-medium">开通日期<input value={new Date().toISOString().slice(0, 10)} disabled className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 font-normal text-gray-500" /><span className="text-xs font-normal text-gray-400">账号创建时自动记录。</span></label>
         <label className="grid gap-1 text-sm font-medium">到期日期<input name="expiresAt" type="datetime-local" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal" /><span className="text-xs font-normal text-gray-400">留空代表长期有效。</span></label>
         <label className="grid gap-1 text-sm font-medium">账号状态<select name="accountStatus" defaultValue="ACTIVE" className="rounded-xl border border-stone-300 px-3 py-2.5 font-normal"><option value="ACTIVE">active（正常）</option><option value="SUSPENDED">suspended（停用）</option></select></label>
@@ -222,7 +221,7 @@ export default function AdminDashboard({ initialPassword }: { initialPassword: s
       </article>}
     </section>}
 
-    <BulkStudentImport initialPassword={initialPassword} />
+    <BulkStudentImport initialPassword={initialPassword} direction={direction} />
 
     <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{cards.map(([indonesian, chinese, value]) => <article key={indonesian} className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm"><p className="text-xs text-gray-500"><Label indonesian={indonesian} chinese={chinese} /></p><p className="mt-2 text-2xl font-semibold">{value}</p></article>)}</section>
     <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{plans.map((plan) => <article key={plan} className="rounded-2xl border border-stone-200 bg-stone-50 p-4"><p className="text-xs text-gray-500">{planLabels[plan]}</p><p className="mt-2 text-xl font-semibold">{stats.membershipDistribution[plan]}</p></article>)}</section>

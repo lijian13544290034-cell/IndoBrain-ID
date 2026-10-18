@@ -57,8 +57,10 @@ async function count(path: string) {
   return Number(contentRange?.split('/')[1] ?? 0);
 }
 
-async function dailyActivityTotal(eventType: 'LEARNING_SECONDS' | 'EXPERIENCE_COMPLETED' | 'FAVORITE_ADDED', since: string) {
-  const response = await request(`account_activity_events?event_type=eq.${eventType}&occurred_at=gte.${encode(since)}&select=quantity`);
+async function dailyActivityTotal(eventType: 'LEARNING_SECONDS' | 'EXPERIENCE_COMPLETED' | 'FAVORITE_ADDED', since: string, userIds?: string[]) {
+  if (userIds && userIds.length === 0) return 0;
+  const userFilter = userIds ? `&user_id=in.(${userIds.map(encode).join(',')})` : '';
+  const response = await request(`account_activity_events?event_type=eq.${eventType}&occurred_at=gte.${encode(since)}${userFilter}&select=quantity`);
   const rows = (await response.json()) as Array<{ quantity: number }>;
   return rows.reduce((total, row) => total + row.quantity, 0);
 }
@@ -137,12 +139,13 @@ export async function updateUser(userId: string, values: Row, updatedBy?: string
   return rows[0] ?? null;
 }
 
-export async function listUsers(query = '', includeDeleted = false) {
+export async function listUsers(query = '', includeDeleted = false, learningDirection?: LearningDirection) {
   const filter = query
     ? `&or=(phone.ilike.*${encode(query)}*,public_id.ilike.*${encode(query)}*)`
     : '';
   const deleted = includeDeleted ? '' : '&deleted_at=is.null';
-  const response = await request(`users?select=*&order=created_at.desc&limit=100${deleted}${filter}`);
+  const direction = learningDirection ? `&learning_direction=eq.${learningDirection}` : '';
+  const response = await request(`users?select=*&order=created_at.desc&limit=100${deleted}${direction}${filter}`);
   return (await response.json()) as AccountUser[];
 }
 
@@ -318,8 +321,16 @@ export async function closeLoginHistory(sessionId: string) {
   await request(`login_history?id=eq.${encode(row.id)}`, { method: 'PATCH', body: JSON.stringify({ logout_at: logoutAt, session_duration_seconds: seconds }) });
 }
 
-export async function listLoginHistory(userId?: string) {
-  const filter = userId ? `&user_id=eq.${encode(userId)}` : '';
+export async function listLoginHistory(userId?: string, learningDirection?: LearningDirection) {
+  let filter = userId ? `&user_id=eq.${encode(userId)}` : '';
+  if (learningDirection) {
+    const userIds = (await listUsers('', false, learningDirection)).map((user) => user.id);
+    if (userId && !userIds.includes(userId)) return [];
+    if (!userId) {
+      if (!userIds.length) return [];
+      filter = `&user_id=in.(${userIds.map(encode).join(',')})`;
+    }
+  }
   const response = await request(`login_history?select=*&order=login_at.desc&limit=100${filter}`);
   return (await response.json()) as LoginHistoryEntry[];
 }
@@ -337,7 +348,7 @@ export async function audit(actorUserId: string, action: string, targetUserId?: 
   });
 }
 
-export async function getAdminStats(): Promise<AdminStats> {
+export async function getAdminStats(learningDirection?: LearningDirection): Promise<AdminStats> {
   const blank: AdminStats = {
     totalUsers: 0, onlineUsers: 0, activeUsersToday: 0, activeUsersSevenDays: 0, newUsers: 0,
     membershipDistribution: { BASIC: 0, PRO: 0, VIP: 0, ENTERPRISE: 0, SVIP: 0 },
@@ -348,31 +359,33 @@ export async function getAdminStats(): Promise<AdminStats> {
   const now = Date.now();
   const today = new Date().toISOString().slice(0, 10);
   const startOfToday = new Date(`${today}T00:00:00.000Z`).toISOString();
-  const expiresWithin30Days = new Date(now + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const expiresWithin30Days = now + 30 * 24 * 60 * 60 * 1000;
   const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
-  const [users, onlineUserIds, expiringWithin30Days, expiredMembers, loginsToday, loginsThisWeek, learningSeconds, completedExperiencesToday, favoritesToday, sceneContributionsToday, pendingReviews] = await Promise.all([
-    listUsers(),
+  const users = await listUsers('', false, learningDirection);
+  const userIds = users.map((user) => user.id);
+  const userFilter = learningDirection
+    ? userIds.length ? `&user_id=in.(${userIds.map(encode).join(',')})` : null
+    : '';
+  const [onlineUserIds, loginsToday, loginsThisWeek, learningSeconds, completedExperiencesToday, favoritesToday, sceneContributionsToday, pendingReviews] = await Promise.all([
     getOnlineUserIds(),
-    count(`users?expires_at=gte.${encode(new Date(now).toISOString())}&expires_at=lte.${encode(expiresWithin30Days)}&select=id`),
-    count(`users?expires_at=lt.${encode(new Date(now).toISOString())}&deleted_at=is.null&select=id`),
-    count(`login_history?login_status=eq.SUCCESS&login_at=gte.${encode(startOfToday)}&select=id`),
-    count(`login_history?login_status=eq.SUCCESS&login_at=gte.${encode(new Date(sevenDaysAgo).toISOString())}&select=id`),
-    dailyActivityTotal('LEARNING_SECONDS', startOfToday),
-    dailyActivityTotal('EXPERIENCE_COMPLETED', startOfToday),
-    dailyActivityTotal('FAVORITE_ADDED', startOfToday),
-    count(`account_scene_contributions?created_at=gte.${encode(startOfToday)}&select=id`),
-    count('account_scene_contributions?review_status=eq.PENDING&select=id'),
+    userFilter === null ? 0 : count(`login_history?login_status=eq.SUCCESS&login_at=gte.${encode(startOfToday)}${userFilter}&select=id`),
+    userFilter === null ? 0 : count(`login_history?login_status=eq.SUCCESS&login_at=gte.${encode(new Date(sevenDaysAgo).toISOString())}${userFilter}&select=id`),
+    dailyActivityTotal('LEARNING_SECONDS', startOfToday, learningDirection ? userIds : undefined),
+    dailyActivityTotal('EXPERIENCE_COMPLETED', startOfToday, learningDirection ? userIds : undefined),
+    dailyActivityTotal('FAVORITE_ADDED', startOfToday, learningDirection ? userIds : undefined),
+    userFilter === null ? 0 : count(`account_scene_contributions?created_at=gte.${encode(startOfToday)}${userFilter}&select=id`),
+    userFilter === null ? 0 : count(`account_scene_contributions?review_status=eq.PENDING${userFilter}&select=id`),
   ]);
   for (const user of users) blank.membershipDistribution[user.membership_code] += 1;
   return {
     ...blank,
     totalUsers: users.length,
-    onlineUsers: onlineUserIds.size,
+    onlineUsers: users.filter((user) => onlineUserIds.has(user.id)).length,
     activeUsersToday: users.filter((user) => user.last_login_at?.slice(0, 10) === today).length,
     activeUsersSevenDays: users.filter((user) => user.last_login_at && new Date(user.last_login_at).getTime() >= sevenDaysAgo).length,
     newUsers: users.filter((user) => user.created_at.slice(0, 10) === today).length,
-    expiringWithin30Days,
-    expiredMembers,
+    expiringWithin30Days: users.filter((user) => user.expires_at && new Date(user.expires_at).getTime() >= now && new Date(user.expires_at).getTime() <= expiresWithin30Days).length,
+    expiredMembers: users.filter((user) => user.expires_at && new Date(user.expires_at).getTime() < now).length,
     loginsToday,
     loginsThisWeek,
     learningTimeToday: Math.floor(learningSeconds / 60),

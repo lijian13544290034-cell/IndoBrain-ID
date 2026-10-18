@@ -12,8 +12,8 @@ const learner = { isSuperAdmin: false, learningDirection: 'ZH_TO_ID', mustChange
 // Super Admin returns to the Indonesian learner route that initiated login.
 assert.equal(resolvePostLoginDestination(superAdmin, '/micro-scenes?module=factory&scene=N01'), '/micro-scenes?module=factory&scene=N01');
 assert.equal(resolvePostLoginDestination(superAdmin, '/'), '/');
-// Direct admin login keeps the established admin default and explicit admin destinations.
-assert.equal(resolvePostLoginDestination(superAdmin), '/admin');
+// Direct Super Admin login now enters the unified workbench; explicit safe destinations remain supported.
+assert.equal(resolvePostLoginDestination(superAdmin), '/admin/workbench');
 assert.equal(resolvePostLoginDestination(superAdmin, '/admin'), '/admin');
 // A regular learner cannot use `next` to enter Admin.
 assert.equal(resolvePostLoginDestination(learner, '/admin'), '/');

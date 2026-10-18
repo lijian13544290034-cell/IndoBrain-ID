@@ -39,7 +39,8 @@
     "admin:unbind": "node scripts/admin-unbind.mjs",
     "verify:indobrain": "node scripts/verify-indobrain.mjs",
     "verify:account-isolation": "node scripts/verify-account-isolation.mjs",
-    "verify:super-admin-learner-access": "node scripts/verify-super-admin-learner-access.mjs"
+    "verify:super-admin-learner-access": "node scripts/verify-super-admin-learner-access.mjs",
+    "verify:super-admin-workbench": "node scripts/verify-super-admin-workbench.mjs"
   },
   "dependencies": {
     "@ai-sdk/gateway": "^4.0.103",

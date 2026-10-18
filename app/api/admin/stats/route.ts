@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 import { requireSuperAdmin } from '@/lib/account/auth';
 import { getAdminStats } from '@/lib/account/repository';
+import { parseAdminDirection } from '@/lib/account/admin-direction';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     await requireSuperAdmin();
-    return NextResponse.json(await getAdminStats());
+    const rawDirection = new URL(request.url).searchParams.get('direction');
+    const direction = parseAdminDirection(rawDirection);
+    if (rawDirection && !direction) return NextResponse.json({ error: 'Choose a valid learning direction.' }, { status: 400 });
+    return NextResponse.json(await getAdminStats(direction ?? undefined));
   } catch {
     return NextResponse.json({ error: 'Administrator access is required.' }, { status: 401 });
   }

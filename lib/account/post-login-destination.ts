@@ -30,7 +30,7 @@ export function safePostLoginDestination(value?: string | null) {
 export function resolvePostLoginDestination(user: PostLoginUser, requestedDestination?: string | null) {
   if (user.mustChangePassword) return '/change-initial-password';
 
-  const fallback = user.isSuperAdmin ? '/admin' : defaultLearnerDestination(user.learningDirection);
+  const fallback = user.isSuperAdmin ? '/admin/workbench' : defaultLearnerDestination(user.learningDirection);
   const destination = safePostLoginDestination(requestedDestination);
   if (!destination) return fallback;
 

@@ -4,16 +4,22 @@ import { initialStudentPassword } from '@/lib/account/config';
 import { MAX_IMPORT_ROWS, normalizeStudentImportRows, type StudentImportIssue } from '@/lib/account/bulk-import';
 import { hashPassword, validatePassword } from '@/lib/account/password';
 import { audit, completeStudentImportBatch, createStudentImportBatch, createUser, findUserByPhone } from '@/lib/account/repository';
+import { parseAdminDirection } from '@/lib/account/admin-direction';
+import type { LearningDirection } from '@/lib/account/types';
 
 export const runtime = 'nodejs';
 
 type ImportBody = { action?: 'preflight' | 'execute'; rows?: unknown; sourceFileName?: string };
 
-async function preflight(rows: unknown) {
+async function preflight(rows: unknown, direction?: LearningDirection) {
   const parsed = normalizeStudentImportRows(rows);
   const issues: StudentImportIssue[] = [...parsed.issues];
   const ready = [] as typeof parsed.rows;
   for (const row of parsed.rows) {
+    if (direction && row.learningDirection !== direction) {
+      issues.push({ rowNumber: row.rowNumber, name: row.name, phone: row.phone, reason: '学习方向与当前管理视图不一致。', code: 'INVALID_DIRECTION' });
+      continue;
+    }
     if (await findUserByPhone(row.phone)) {
       issues.push({ rowNumber: row.rowNumber, name: row.name, phone: row.phone, reason: '账号已存在，将跳过。', code: 'EXISTING_ACCOUNT' });
     } else ready.push(row);
@@ -24,10 +30,13 @@ async function preflight(rows: unknown) {
 export async function POST(request: Request) {
   try {
     const admin = await requireSuperAdmin();
+    const rawDirection = new URL(request.url).searchParams.get('direction');
+    const direction = parseAdminDirection(rawDirection);
+    if (rawDirection && !direction) return NextResponse.json({ error: 'Choose a valid learning direction.' }, { status: 400 });
     const body = (await request.json()) as ImportBody;
     if (!Array.isArray(body.rows)) return NextResponse.json({ error: 'Import rows are required.' }, { status: 400 });
     if (body.rows.length > MAX_IMPORT_ROWS) return NextResponse.json({ error: `A batch may contain at most ${MAX_IMPORT_ROWS} rows.` }, { status: 400 });
-    const review = await preflight(body.rows);
+    const review = await preflight(body.rows, direction ?? undefined);
     const summary = { totalRows: review.totalRows, validRows: review.rows.length, invalidRows: review.issues.filter((issue) => issue.code !== 'EXISTING_ACCOUNT').length, existingRows: review.issues.filter((issue) => issue.code === 'EXISTING_ACCOUNT').length, issues: review.issues };
     if (body.action !== 'execute') return NextResponse.json(summary);
 
