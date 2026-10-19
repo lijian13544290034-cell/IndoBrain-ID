@@ -1,0 +1,2 @@
+# Phase 0.1 evidence must remain byte-identical to the external handoff.
+docs/ai-coach-phase0/handoff-v1/** -text

@@ -1,0 +1,1435 @@
+{
+  "schema": "indobrain.ai-coach.rule-map/v1",
+  "reviewStatus": "PENDING_HUMAN_REVIEW",
+  "tisDimensions": {
+    "TA": 25,
+    "CQ": 20,
+    "DA": 15,
+    "BR": 10,
+    "IP": 15,
+    "TC": 15
+  },
+  "p0CoverageNote": "P0-4 is contextual and has no safe exact rule-name equivalent; it remains HUMAN_REQUIRED.",
+  "rules": [
+    {
+      "rule": "ACKNOWLEDGES_EXISTING_SIGNAL",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ACTIONABLE_STRATEGY",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ADDRESSES_ANXIETY",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S08"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ADDS_SINGLE_FORMULAIC_OPENER",
+      "tisDimensions": [
+        "CQ",
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HYBRID",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "AFFIRMS_SELF_MONITORING",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S12"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "AFFIRM_INTELLIGIBILITY",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S10"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ALLOWS_PARTIAL_PRODUCTION",
+      "tisDimensions": [
+        "IP"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S02"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ASKS_ONE_CLARIFICATION",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S01"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ASR_ERROR_NOT_PRON_ERROR",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [
+        "P0-1"
+      ],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S11"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "BINDS_TO_CONCRETE_CONTEXT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "CHUNKED_SCAFFOLD",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S03"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "CONFIRMS_COMPLETION",
+      "tisDimensions": [
+        "TC"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S11"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "CONFIRMS_CORRECTNESS",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S05",
+        "S11"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "CONFIRMS_LEARNER_HYPOTHESIS",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "CONFIRMS_MEANING_FIRST",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S01"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "CONFIRMS_PRIOR",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "CONFIRMS_SPECIFIC_PROGRESS",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S10"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "CONTAINS_TARGET",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "COVERS_HESITATION",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "DEFERS_REMAINING",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S04"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "DIAGNOSES_PRAGMATIC_GAP",
+      "tisDimensions": [
+        "CQ",
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S01"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "DIAGNOSES_TASK_GAP",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S01"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "DIAGNOSES_TURN_TAKING",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S01",
+        "S06"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "DOES_NOT_DENY_DIFFICULTY",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S04"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "EXPLAINS_PRAGMATICS",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "EXPLAINS_STRATEGY",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "FACT_ANSWER_MAX_ONE_SENTENCE",
+      "tisDimensions": [
+        "DA",
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "FITS_CONTEXT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "FLAGS_LANGUAGE_AMBIGUITY",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S01"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "FRAMES_AS_DIALOGUE_MOVE",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S06"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "GIVES_CORRECT_FORM",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S05"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "GIVES_MINIMAL_TASK",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S02"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "GIVES_RESUME_POINT",
+      "tisDimensions": [
+        "TC"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S12"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "GIVES_SPECIFIC_SUMMARY",
+      "tisDimensions": [
+        "TC"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S12"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "GIVES_USABLE_SENTENCE",
+      "tisDimensions": [
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "GRADED_DIFFICULTY_2_STEPS",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S04"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "HAS_PINYIN",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "HAS_TRANSFER_PROBE",
+      "tisDimensions": [
+        "IP"
+      ],
+      "p0Assertions": [],
+      "automation": "HYBRID",
+      "skillIds": [
+        "S07"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "IDENTIFIES_REDUNDANCY",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "INVITES_SPEAKING",
+      "tisDimensions": [
+        "IP"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S02"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "LOCATES_MINIMAL_PAIR",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S05"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "LOCATES_ORDER_OF_MAGNITUDE",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "MAX_NEW_ITEMS",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [
+        "S04"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "MAX_TWO_CONNECTORS",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "MINIMAL_ANSWER_TARGET",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S02"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NAMES_CONSEQUENCE",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S11"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NAMES_FIXED_EXPRESSION",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S05"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NAMES_NEUTRAL_TONE",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S05"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NAMES_SEMANTIC_GAP",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S05"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NAMES_USAGE_CONTEXT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NOT_OFF_TOPIC",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NOT_PASS_ON_ECHO",
+      "tisDimensions": [
+        "IP"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S07"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NOT_REFUSED",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_ABILITY_ATTRIBUTION",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [
+        "P0-5"
+      ],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S08"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_CULTURAL_VALUE_JUDGEMENT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_DIFFICULTY_JUDGEMENT",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S04"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_DOMAIN_ADVICE",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_EMPTY_REASSURANCE",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_EVIDENCE_WRITE",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [
+        "S11"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_FAVOR_SEEKING_ADVICE",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_GROUP_GENERALIZATION",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [
+        "P0-2"
+      ],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_IRRELEVANT_EXPLANATION",
+      "tisDimensions": [
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_L1_JUDGEMENT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_L1_MIXING_CRITICISM",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_LABOR_LAW_ADVICE",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_LANGUAGE_VALUE_JUDGEMENT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_LECTURE",
+      "tisDimensions": [
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_NEEDS_REVIEW",
+      "tisDimensions": [
+        "TC"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S09"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_NEGATIVE_EVAL",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S10"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_NEW_CONTENT",
+      "tisDimensions": [
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_NEW_LEXIS",
+      "tisDimensions": [
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_PATH_SHAMING",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_PHONETICS_LECTURE",
+      "tisDimensions": [
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_PII_SOLICITATION",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_PREACHING",
+      "tisDimensions": [
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_PRONUNCIATION_NITPICK",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_SCOLDING",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S10"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_THIRD_PARTY_MIND_READING",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_TOOL_SHAMING",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_UNVERIFIABLE_PROMISE",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_VAGUE_APPROVAL",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S10"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_WORKER_VALUE_JUDGEMENT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "NO_WRITING_TASK",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "OFFERS_CONSTRUCTIVE_ALTERNATIVE",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "OFFERS_EXIT",
+      "tisDimensions": [
+        "TC"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S08"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "OFFERS_NON_VOICE_PATH",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S08"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "OFFERS_TEXT_FALLBACK",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S08"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ONE_CONTRAST_ONLY",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S05"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ONE_PRACTICAL_LIMIT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ONE_SENTENCE_ANALOGY",
+      "tisDimensions": [
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ONE_STRATEGY_ONLY",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ONE_TONE_CONTRAST_ONLY",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S05"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "POSITIVE_FRAMING",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S10"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "PRESERVES_CORRECT_PART",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S05"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "PRESERVES_INTENT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "PRESERVES_WORD_ORDER",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "PRIVACY_NOTE_MAX_ONE_SENTENCE",
+      "tisDimensions": [
+        "DA",
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "RECOGNIZES_PINYIN_INPUT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "REDIRECT_WITHIN_ONE_SENTENCE",
+      "tisDimensions": [
+        "BR",
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "REDUCES_PROMPT",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S03"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "REFRAIMES_INTO_TOOL",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "REFUSAL_MAX_ONE_SENTENCE",
+      "tisDimensions": [
+        "DA",
+        "BR"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "REFUSES_HARMFUL_CONTENT",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [
+        "P0-3"
+      ],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "REFUSES_INAPPROPRIATE_EXPRESSION",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "REQUIRES_INITIATION",
+      "tisDimensions": [
+        "IP"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S07"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "REQUIRES_PRODUCTION",
+      "tisDimensions": [
+        "IP"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S02"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "REQUIRES_TWO_STEP_TASK",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HYBRID",
+      "skillIds": [
+        "S06"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "RETURNS_TO_TARGET",
+      "tisDimensions": [
+        "TC"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "REUSES_KNOWN_ACTIONS",
+      "tisDimensions": [
+        "IP"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S07"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "ROLEPLAY_PROMPT_GIVEN",
+      "tisDimensions": [
+        "DA",
+        "IP"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S06"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "SAME_STRUCTURE_EXTENSION",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S07"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "SCOPE_REDUCTION",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S04"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "SETS_TTS_SLOW",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "SHOWS_CORRECT_FORM",
+      "tisDimensions": [
+        "CQ"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S05"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "SINGLE_CORRECTION_POINT",
+      "tisDimensions": [
+        "CQ",
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HYBRID",
+      "skillIds": [
+        "S05"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "SINGLE_RULE_ONLY",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HYBRID",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "SINGLE_SYLLABLE_DRILL",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HYBRID",
+      "skillIds": [
+        "S03"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "SINGLE_VARIABLE_CHANGE",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HYBRID",
+      "skillIds": [
+        "S04"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "SINGLE_WORD_SUBSTITUTION",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HYBRID",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "STRATEGY_CHANGED_AT_ATTEMPT_2",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S08"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "STRATEGY_CHANGED_AT_ATTEMPT_3",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S08"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "SUPPLIES_MISSING_WORD_FIRST",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S03"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "TWO_EXAMPLES_MAX",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "TWO_ITEMS_MAX",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "MACHINE",
+      "skillIds": [
+        "S04"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "VALIDATES_FEELING",
+      "tisDimensions": [
+        "TA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S08"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "WORD_LEVEL_RETRY",
+      "tisDimensions": [
+        "DA"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S03"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "rule": "WRITES_REVIEW",
+      "tisDimensions": [
+        "TC"
+      ],
+      "p0Assertions": [],
+      "automation": "HUMAN_REQUIRED",
+      "skillIds": [
+        "S09"
+      ],
+      "mappingReviewStatus": "PENDING_HUMAN_REVIEW"
+    }
+  ]
+}

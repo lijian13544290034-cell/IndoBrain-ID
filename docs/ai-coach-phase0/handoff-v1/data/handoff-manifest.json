@@ -1,0 +1,217 @@
+{
+  "schema": "indobrain.phase0.handoff/v1",
+  "generatedAt": "2026-10-19T03:47:47.521Z",
+  "handoffRoot": "C:/Users/lijia/Documents/Codex/ai-coach-phase0-handoff-v1",
+  "originPolicy": "Byte-identical copies. No file was edited, renamed or re-generated. Every SHA-256 below was computed at handoff time and re-verified against the original file.",
+  "hashPolicy": {
+    "sha256": "raw bytes as stored on disk",
+    "sha256LfCanonical": "text with CRLF normalized to LF, then hashed — this is the convention Codex uses in scripts/verify-ai-coach-phase0-artifacts.mjs",
+    "note": "On this handoff both values are equal for every text file (the originals contain no CRLF), so either convention yields the same digest."
+  },
+  "declaredSourceCoverage": {
+    "provider": [
+      "WORKBUDDY_A",
+      "WORKBUDDY_B"
+    ],
+    "declaredGroups": 8,
+    "foundGroups": 8,
+    "missingGroups": [],
+    "note": "All eight artifact groups enumerated in docs/ai-coach-phase0/SOURCE_INVENTORY_V1.md were located on this machine and copied byte-identically. Codex previously recorded them as MISSING because they live outside the repository and outside every project worktree. Artifact-level gaps remain and are listed below.",
+    "fileLevelMISSING": [
+      {
+        "sourceId": "WBA-SKILLS-S01-S12",
+        "gap": "Authoritative S01–S12 ID → name mapping is embedded in prose headings (### S02 · Micro Speaking …), not in a machine-readable manifest. No JSON/YAML/CSV skill manifest exists in any WorkBuddy A artifact.",
+        "consequence": "Skill IDs S02/S03/S04/S05/S07/S08 remain opaque for normalization until a manifest is authored from this document."
+      },
+      {
+        "sourceId": "WBB-TIS-RUBRIC",
+        "gap": "TIS v1.0 is complete as a HUMAN rubric: 6 dimensions (25/20/15/10/15/15), 0–4 anchors per dimension, PASS ≥ 80 with no P0 violation, 70–79 requires human re-review, < 70 FAIL, any P0 hard assertion = BLOCKER. What is absent is the machine bridge: no mapping from assertion rule names to dimension codes, and no mapping from assertions[].weight (integer 1) to dimension weights.",
+        "consequence": "Human scoring can proceed today. Automated S4 judging needs the two mapping tables, not new prose."
+      },
+      {
+        "sourceId": "WBB-100-CASES",
+        "gap": "Assertions are rule names with optional pattern/value and an integer weight of 1. There is no per-case aggregation rule, no threshold, and no indication which of the 127 rule names map to the 5 TIS P0 hard assertions.",
+        "consequence": "Corpus cannot be executed even if every rule name were implemented — PASS/FAIL would still be undefined."
+      }
+    ]
+  },
+  "duplicateGroups": [],
+  "files": [
+    {
+      "path": "received/original/CODEX/PHASE1_CONTRACT_SPEC_V1.md",
+      "bytes": 4555,
+      "sha256": "7e7c060f98ad0115e83cc74499039df84e606aa30c74c001873f79b934ce618f",
+      "sha256LfCanonical": "7e7c060f98ad0115e83cc74499039df84e606aa30c74c001873f79b934ce618f",
+      "crlfPresent": false,
+      "provider": "CODEX",
+      "sourceId": "CODEX-PHASE1-CONTRACT-SPEC",
+      "artifactType": "PHASE0_DOC",
+      "role": "PHASE0_SUPPORT"
+    },
+    {
+      "path": "received/original/CODEX/source-manifest.v1.json",
+      "bytes": 2648,
+      "sha256": "39865c4b6c2a1f97ff873bc8a6d4f6dbbba01908fcc07e291df683d0d456b6bc",
+      "sha256LfCanonical": "39865c4b6c2a1f97ff873bc8a6d4f6dbbba01908fcc07e291df683d0d456b6bc",
+      "crlfPresent": false,
+      "provider": "CODEX",
+      "sourceId": "CODEX-SOURCE-MANIFEST",
+      "artifactType": "PHASE0_DOC",
+      "role": "PHASE0_SUPPORT"
+    },
+    {
+      "path": "received/original/CODEX/SOURCE_INVENTORY_V1.md",
+      "bytes": 3523,
+      "sha256": "6d09123029e86930e018f5865c6c80d3e53d7f3f60c00507b074a630948f607a",
+      "sha256LfCanonical": "6d09123029e86930e018f5865c6c80d3e53d7f3f60c00507b074a630948f607a",
+      "crlfPresent": false,
+      "provider": "CODEX",
+      "sourceId": "CODEX-SOURCE-INVENTORY",
+      "artifactType": "PHASE0_DOC",
+      "role": "PHASE0_SUPPORT"
+    },
+    {
+      "path": "received/original/CODEX/TEST_CASE_NORMALIZATION_V1.md",
+      "bytes": 2795,
+      "sha256": "8a2e2837345f110a7466243c9b512f8283e78a94eeca722f5d81d26d152ebda1",
+      "sha256LfCanonical": "8a2e2837345f110a7466243c9b512f8283e78a94eeca722f5d81d26d152ebda1",
+      "crlfPresent": false,
+      "provider": "CODEX",
+      "sourceId": "CODEX-NORMALIZATION-SPEC",
+      "artifactType": "PHASE0_DOC",
+      "role": "PHASE0_SUPPORT"
+    },
+    {
+      "path": "received/original/WA/1-IndoBrain-AI-Teaching-Skills-V1.md",
+      "bytes": 72259,
+      "sha256": "524bec4c17d3d5e6b65d59579ef9ee0f1d09456e03406cbc59702eb7d93b0fa5",
+      "sha256LfCanonical": "524bec4c17d3d5e6b65d59579ef9ee0f1d09456e03406cbc59702eb7d93b0fa5",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_A",
+      "sourceId": "WBA-SKILLS-S01-S12",
+      "artifactType": "SKILL_MANIFEST",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WA/2-教学证据与参考文献表.md",
+      "bytes": 33686,
+      "sha256": "a94b1ee474b843e0176d9f1705faeac6b5e332f55817e950d74eb6d1daca0f10",
+      "sha256LfCanonical": "a94b1ee474b843e0176d9f1705faeac6b5e332f55817e950d74eb6d1daca0f10",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_A",
+      "sourceId": "WBA-EVIDENCE-TABLE",
+      "artifactType": "EVIDENCE_TABLE",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WA/3-双向教学示例库.md",
+      "bytes": 18163,
+      "sha256": "5487e54fca1618e467e3a2ee26537b495839618518af33ebb31cb238c70d5abf",
+      "sha256LfCanonical": "5487e54fca1618e467e3a2ee26537b495839618518af33ebb31cb238c70d5abf",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_A",
+      "sourceId": "WBA-BIDIRECTIONAL-EXAMPLES",
+      "artifactType": "EXAMPLE_LIBRARY",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WA/建立索引.md",
+      "bytes": 1780,
+      "sha256": "906442a3081e3617e5096a03af796c8035ef9b93b786b66afcc2e01e0c55118a",
+      "sha256LfCanonical": "906442a3081e3617e5096a03af796c8035ef9b93b786b66afcc2e01e0c55118a",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_A",
+      "sourceId": "WBA-INDEX",
+      "artifactType": "INDEX",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WB/ai-coach-teaching-eval-v1.zip",
+      "bytes": 450560,
+      "sha256": "f0af3bd28fb2c7a429269559f0663c4d1f862e671e3133e654fb754956d12619",
+      "sha256LfCanonical": "f0af3bd28fb2c7a429269559f0663c4d1f862e671e3133e654fb754956d12619",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_B",
+      "sourceId": "WBB-BUNDLE",
+      "artifactType": "BUNDLE",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WB/AI-Coach-教学质量评分标准.md",
+      "bytes": 26461,
+      "sha256": "1abd87893a475f55242915d2254112d42a658fa369f815e009dd40e9b915699c",
+      "sha256LfCanonical": "1abd87893a475f55242915d2254112d42a658fa369f815e009dd40e9b915699c",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_B",
+      "sourceId": "WBB-TIS-RUBRIC",
+      "artifactType": "HUMAN_RUBRIC",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WB/build-cases.mjs",
+      "bytes": 121546,
+      "sha256": "29b8774261e7d6e3b20d2199b38487bbbdaf6c59b4b9a9d90505982c1b3ad86c",
+      "sha256LfCanonical": "29b8774261e7d6e3b20d2199b38487bbbdaf6c59b4b9a9d90505982c1b3ad86c",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_B",
+      "sourceId": "WBB-BUILD-SCRIPT",
+      "artifactType": "GENERATOR",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WB/data/ai-coach-cases-100.json",
+      "bytes": 200457,
+      "sha256": "4e909e473d0f6ad6df8a14852fa0e49a707f1fbdf78ae65394ceb2d9a9eb0a2e",
+      "sha256LfCanonical": "4e909e473d0f6ad6df8a14852fa0e49a707f1fbdf78ae65394ceb2d9a9eb0a2e",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_B",
+      "sourceId": "WBB-100-CASES",
+      "artifactType": "TEST_CASE_CORPUS",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WB/Quick-Speak-五分钟体验设计.md",
+      "bytes": 35269,
+      "sha256": "d00e7858438c9b47222dbd734786f78382bef45968eed79ab7b392c64c5a05fd",
+      "sha256LfCanonical": "d00e7858438c9b47222dbd734786f78382bef45968eed79ab7b392c64c5a05fd",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_B",
+      "sourceId": "WBB-QUICK-SPEAK",
+      "artifactType": "INTERACTION_SPEC",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WB/verify-targets.mjs",
+      "bytes": 4045,
+      "sha256": "dbe56b90562f4f5dac83d64228fb230907fb691adc59644e98aa75c203a2da3e",
+      "sha256LfCanonical": "dbe56b90562f4f5dac83d64228fb230907fb691adc59644e98aa75c203a2da3e",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_B",
+      "sourceId": "WBB-VERIFY-SCRIPT",
+      "artifactType": "VERIFIER",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WB/真实用户测试计划-与基线对比.md",
+      "bytes": 28471,
+      "sha256": "3cbb898a9dde89e3dc5cda340fb251daebccf60537e3a9d421987ec9aac0293d",
+      "sha256LfCanonical": "3cbb898a9dde89e3dc5cda340fb251daebccf60537e3a9d421987ec9aac0293d",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_B",
+      "sourceId": "WBB-REAL-USER-PROTOCOL",
+      "artifactType": "TEST_PROTOCOL",
+      "role": "DECLARED_SOURCE"
+    },
+    {
+      "path": "received/original/WB/移动端交互规范-375-390-430.md",
+      "bytes": 24052,
+      "sha256": "829b94d38cea532dbbed2c5f7e1d0d6fc0581b2848239f9d5a27aab597c1bd58",
+      "sha256LfCanonical": "829b94d38cea532dbbed2c5f7e1d0d6fc0581b2848239f9d5a27aab597c1bd58",
+      "crlfPresent": false,
+      "provider": "WORKBUDDY_B",
+      "sourceId": "WBB-MOBILE-SPEC",
+      "artifactType": "MOBILE_SPEC",
+      "role": "DECLARED_SOURCE"
+    }
+  ]
+}

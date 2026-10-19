@@ -1,0 +1,101 @@
+{
+  "manifestVersion": 1,
+  "baselineCommit": "244eb83a689b0309eff5b7ac0732361c903c419c",
+  "hashAlgorithm": "SHA-256",
+  "textHashCanonicalization": "CRLF_TO_LF",
+  "integrationStatus": "INCOMPLETE",
+  "sources": [
+    {
+      "sourceId": "CODEX-INTEGRATION-PLAN-V1",
+      "provider": "CODEX",
+      "artifactType": "INTEGRATION_PLAN",
+      "status": "PRESENT",
+      "version": "1",
+      "path": "docs/AI_COACH_MVP_INTEGRATION_PLAN_V1.md",
+      "sha256": "2cbb4018b9d92a77cfe2e073ff5e52695d2c1caa34c4d3ac5ae6e2ab33aafa26"
+    },
+    {
+      "sourceId": "CODEX-RUNTIME-AUDIT-EVIDENCE-V1",
+      "provider": "CODEX",
+      "artifactType": "CODE_SNAPSHOT",
+      "status": "PRESENT",
+      "version": "244eb83a689b0309eff5b7ac0732361c903c419c",
+      "path": null,
+      "sha256": null,
+      "note": "Composite evidence set is enumerated in SOURCE_INVENTORY_V1.md."
+    },
+    {
+      "sourceId": "WBA-SKILLS-S01-S12",
+      "provider": "WORKBUDDY_A",
+      "artifactType": "SKILL_MANIFEST",
+      "status": "MISSING",
+      "version": null,
+      "path": null,
+      "sha256": null
+    },
+    {
+      "sourceId": "WBA-EVIDENCE-TABLE",
+      "provider": "WORKBUDDY_A",
+      "artifactType": "EVIDENCE_TABLE",
+      "status": "MISSING",
+      "version": null,
+      "path": null,
+      "sha256": null
+    },
+    {
+      "sourceId": "WBA-BIDIRECTIONAL-EXAMPLES",
+      "provider": "WORKBUDDY_A",
+      "artifactType": "EXAMPLE_LIBRARY",
+      "status": "MISSING",
+      "version": null,
+      "path": null,
+      "sha256": null
+    },
+    {
+      "sourceId": "WBB-100-CASES",
+      "provider": "WORKBUDDY_B",
+      "artifactType": "TEST_CASE_CORPUS",
+      "status": "MISSING",
+      "version": null,
+      "path": null,
+      "sha256": null,
+      "expectedRecordCount": 100
+    },
+    {
+      "sourceId": "WBB-TIS-RUBRIC",
+      "provider": "WORKBUDDY_B",
+      "artifactType": "HUMAN_RUBRIC",
+      "status": "MISSING",
+      "version": null,
+      "path": null,
+      "sha256": null
+    },
+    {
+      "sourceId": "WBB-QUICK-SPEAK",
+      "provider": "WORKBUDDY_B",
+      "artifactType": "INTERACTION_SPEC",
+      "status": "MISSING",
+      "version": null,
+      "path": null,
+      "sha256": null
+    },
+    {
+      "sourceId": "WBB-MOBILE-SPEC",
+      "provider": "WORKBUDDY_B",
+      "artifactType": "MOBILE_SPEC",
+      "status": "MISSING",
+      "version": null,
+      "path": null,
+      "sha256": null
+    },
+    {
+      "sourceId": "WBB-REAL-USER-PROTOCOL",
+      "provider": "WORKBUDDY_B",
+      "artifactType": "TEST_PROTOCOL",
+      "status": "MISSING",
+      "version": null,
+      "path": null,
+      "sha256": null
+    }
+  ]
+}

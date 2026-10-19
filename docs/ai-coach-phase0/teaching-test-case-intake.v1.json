@@ -1,22 +1,33 @@
 {
-  "intakeVersion": 1,
+  "intakeVersion": 2,
   "sourceId": "WBB-100-CASES",
   "expectedCount": 100,
-  "importedCount": 0,
-  "normalizationStatus": "BLOCKED_SOURCE",
+  "importedCount": 100,
+  "preservedOriginalIds": 100,
+  "normalizationStatus": "NORMALIZED_PENDING_HUMAN_REVIEW",
   "classificationCounts": {
-    "TEACHING_STRATEGY": 0,
-    "COURSE_CONTENT": 0,
-    "VOICE_RELIABILITY": 0
+    "TEACHING_STRATEGY": 65,
+    "VOICE_RELIABILITY": 19,
+    "COURSE_CONTENT": 16
   },
   "evaluationCounts": {
-    "MACHINE": 0,
-    "HUMAN": 0,
-    "BOTH": 0
+    "BOTH": 68,
+    "HUMAN": 32
   },
-  "cases": [],
+  "courseValidationCounts": {
+    "CONFLICT_TARGET_NOT_EXACT": 19,
+    "TECHNICAL_REFERENCE_ONLY": 38,
+    "DIRECTION_MISMATCH": 27,
+    "EXACT_IN_REFERENCED_DAY": 15,
+    "CONFLICT_REFERENCE_SOURCE_DAY": 1
+  },
+  "humanReviewCounts": {
+    "PENDING": 100
+  },
+  "casesFile": "docs/ai-coach-phase0/teaching-test-cases.normalized.v1.json",
   "blockers": [
-    "The original WorkBuddy B 100-case corpus is not present.",
-    "Original case IDs, wording, references and expected results must not be invented."
+    "127 assertion-rule mappings require human approval before they become an executable judge.",
+    "P0-4 remains contextual HUMAN_REQUIRED.",
+    "47 course-reference conflicts require content-owner review."
   ]
 }

@@ -1,108 +1,52 @@
 # AI Coach Phase 1 — Minimum Contract Specification
 
-Phase 1 is not approved for implementation. This document defines the smallest proposed change set and gates.
+Phase 1 is not approved or implemented. This document records the smallest proposed compatibility work.
 
 ## 1. `/api/chat` compatibility
 
-Proven baseline behavior:
+Proven current mismatch:
 
-- Producer: `{ configured, message, database }`
-- Consumer: reads `data.assistant_message`
+- Producer returns `{ configured, message, database }`.
+- `ChatWorkspace` reads `data.assistant_message`.
 
 Proposal:
 
-1. Define `ChatApiResponseV1` with canonical success field `message`.
-2. Server continues returning `message`.
-3. Client uses `message`; for one compatibility release it may read `message ?? assistant_message`.
-4. Log/telemetry counts legacy-field consumption without logging message contents.
-5. Remove the compatibility read only after no supported response uses the legacy field.
+1. Define a shared `ChatApiResponseV1` contract.
+2. Use `assistant_message` as the canonical semantic field.
+3. For one compatibility window, the server returns both `assistant_message` and deprecated alias `message` with identical content.
+4. Consumers read `assistant_message ?? message` during the window.
+5. Empty/malformed success bodies become a visible localized retry error, never an empty turn.
+6. Remove `message` only after all supported consumers and fixtures are migrated.
 
-Required tests:
-
-- A 200 response renders a non-empty assistant message.
-- Canonical and legacy compatibility fixtures both render during the compatibility window.
-- Empty/malformed success responses fail visibly rather than adding an empty turn.
-- 400/401/403/429/500/network failures show localized retry guidance.
+Required tests cover canonical, compatibility alias, malformed 200, 400/401/403/429/500 and network failure.
 
 ## 2. Mastery compatibility
 
-No automatic data migration is proposed in Phase 1.
-
-- Keep existing `mastery_level` fields readable and writable only through the legacy adapter required by current UI.
-- Treat legacy levels as historical practice/review hints, never authoritative proof of `independent` or `mastered`.
-- New normalized status: `not_started | practiced | independent | mastered`.
-- One guided repetition, one recognition answer, one STT transcript or course completion can produce at most `practiced`.
-- `independent` requires a valid unaided recall/listening/application/transfer success.
-- `mastered` requires repeated independent evidence across occasions, including delayed and varied transfer evidence.
-- The five dimensions remain the evidence detail model; overall status is derived by a versioned policy.
-- Existing local records are not deleted, claimed by another account or rewritten on read.
+- Public progression: `practiced | independent | mastered` (plus not-started state where needed).
+- Existing numeric `mastery_level` remains readable through a versioned legacy adapter and is never rewritten on read.
+- Legacy completion is historical practice evidence, not proof of independence/mastery.
+- Guided repetition, recognition, course completion or one STT transcript can produce at most `practiced`.
+- `independent` requires valid unaided evidence; `mastered` requires repeated delayed/varied independent evidence.
+- Existing five dimensions remain evidence detail; overall status is derived by a versioned policy.
 
 ## 3. `NO_EVIDENCE`
 
-The following are technical outcomes, not learner failures:
+Microphone denial, invalid/empty audio, empty STT, timeout, provider error, rate limit, malformed model output after bounded repair, and TTS failure are technical outcomes. They emit `NO_EVIDENCE`, do not change learning counters, and do not trigger harsher correction. STT provides intelligibility-related evidence only, never phoneme or tone accuracy.
 
-- microphone denied or unavailable
-- unsupported/empty/too-large audio
-- empty STT transcript
-- network timeout/failure
-- provider error or rate-limit response
-- malformed structured model output after bounded repair
-- TTS generation/playback failure
+## 4. Minimum Phase 1 scope
 
-They must:
+- Shared response, direction, evidence and mastery contracts.
+- One Skill registry/orchestrator for approved S02/S03/S04/S05/S07/S08 policies; no per-Skill model call.
+- Compatibility adapters in `/api/chat`, `ChatWorkspace`, current Mandarin coach routes/components and review/mastery readers.
+- Contract, direction, NO_EVIDENCE, legacy compatibility and transition tests.
 
-- emit `NO_EVIDENCE`
-- leave success/failure/mastery counters unchanged
-- not trigger harsher pedagogical correction
-- present a localized retry, text alternative or skip action
-- remain observable as reliability metrics separate from learning metrics
+## 5. Go gates
 
-STT can support intelligibility evidence only. It cannot assert phoneme or tone accuracy. Acoustic claims require a separately validated acoustic assessor.
+1. Human approval of S01–S12 mapping and the 127 rule mappings.
+2. An approved assertion aggregation/pass contract.
+3. Resolution of content-reference conflicts used by course assertions.
+4. One STT success cannot become independent/mastered.
+5. Technical failure cannot alter mastery.
+6. Level 2 and C1/C2 server authorization remain unchanged.
 
-## 4. Minimum Phase 1 file list
-
-New contract-only modules:
-
-- `lib/teaching-engine/contracts.ts`
-- `lib/teaching-engine/direction-policy.ts`
-- `lib/teaching-engine/evidence-policy.ts`
-- `lib/teaching-engine/mastery-policy.ts`
-- `lib/teaching-engine/response-schema.ts`
-
-Minimal adapters:
-
-- `app/api/chat/route.ts`
-- `components/ChatWorkspace.tsx`
-- `lib/mandarin-ai-coach.ts`
-- `lib/mandarin-coach-personalization.ts`
-- `lib/mandarin-coach-review.ts`
-- `lib/server/mandarin-ai-coach.ts`
-- `app/api/mandarin-coach/conversation/route.ts`
-- `components/MandarinAiCoachExperience.tsx`
-
-Test preparation:
-
-- shared response contract tests
-- direction matrix tests
-- evidence/mastery transition tests
-- legacy compatibility tests
-- technical-failure tests
-
-## 5. Acceptance gates
-
-1. ZH_TO_ID and ID_TO_ZH direction matrices pass without shared progress/content keys.
-2. `/api/chat` renders the canonical field end to end and handles legacy fixtures temporarily.
-3. A single STT PASS never produces `independent` or `mastered`.
-4. Technical failures emit `NO_EVIDENCE` and do not alter learning counters.
-5. Guided imitation, recognition and course completion cannot produce mastered.
-6. Level 2 and C1/C2 content authorization remains server-side and unchanged.
-7. Existing automated suites remain green.
-8. Real audio and TIS results remain `NOT VERIFIED` until human/device evaluation occurs.
-
-## 6. Risks
-
-- Legacy UI may still display numeric mastery; an adapter must avoid contradictory labels during transition.
-- Compatibility aliases can become permanent unless removal criteria are explicit.
-- Per-process limits are not distributed and must not be represented as a global quota guarantee.
-- Missing WorkBuddy source semantics can invalidate provisional Skill mapping.
-- Real microphone/STT/TTS behavior cannot be certified by static fixtures.
+Until these gates are approved, Phase 1 remains **NO-GO**.

@@ -1,101 +1,104 @@
 {
-  "manifestVersion": 1,
-  "baselineCommit": "244eb83a689b0309eff5b7ac0732361c903c419c",
+  "manifestVersion": 2,
+  "baselineCommit": "af52eae64390f331fef4ab8ac432b0d268fee4a3",
   "hashAlgorithm": "SHA-256",
-  "textHashCanonicalization": "CRLF_TO_LF",
-  "integrationStatus": "INCOMPLETE",
+  "hashScope": "raw bytes as stored; all 16 values independently rechecked against handoff-v1/data/handoff-manifest.json",
+  "integrationStatus": "SOURCES_RECEIVED_NORMALIZATION_PENDING_HUMAN_REVIEW",
+  "originalFileCount": 16,
+  "originalFilesManifest": "docs/ai-coach-phase0/handoff-v1/data/handoff-manifest.json",
+  "originalFilesManifestSha256": "b26a8be26e5a7933e0f455764c688963781ac19fe994f5a7ffd8790e57fe99b0",
   "sources": [
     {
-      "sourceId": "CODEX-INTEGRATION-PLAN-V1",
+      "sourceId": "CODEX-PHASE0-DOCUMENTS",
       "provider": "CODEX",
-      "artifactType": "INTEGRATION_PLAN",
-      "status": "PRESENT",
+      "artifactType": "PHASE0_SUPPORT",
+      "status": { "received": true, "parsed": true, "reviewed": true },
       "version": "1",
-      "path": "docs/AI_COACH_MVP_INTEGRATION_PLAN_V1.md",
-      "sha256": "2cbb4018b9d92a77cfe2e073ff5e52695d2c1caa34c4d3ac5ae6e2ab33aafa26"
-    },
-    {
-      "sourceId": "CODEX-RUNTIME-AUDIT-EVIDENCE-V1",
-      "provider": "CODEX",
-      "artifactType": "CODE_SNAPSHOT",
-      "status": "PRESENT",
-      "version": "244eb83a689b0309eff5b7ac0732361c903c419c",
-      "path": null,
-      "sha256": null,
-      "note": "Composite evidence set is enumerated in SOURCE_INVENTORY_V1.md."
+      "path": "docs/ai-coach-phase0/handoff-v1/received/original/CODEX",
+      "fileCount": 4,
+      "provenance": "See originalFilesManifest for per-file SHA-256."
     },
     {
       "sourceId": "WBA-SKILLS-S01-S12",
       "provider": "WORKBUDDY_A",
-      "artifactType": "SKILL_MANIFEST",
-      "status": "MISSING",
-      "version": null,
-      "path": null,
-      "sha256": null
+      "artifactType": "SKILL_MANIFEST_PROSE",
+      "status": { "received": true, "parsed": true, "reviewed": false },
+      "version": "V1",
+      "path": "docs/ai-coach-phase0/handoff-v1/received/original/WA/1-IndoBrain-AI-Teaching-Skills-V1.md",
+      "sha256": "524bec4c17d3d5e6b65d59579ef9ee0f1d09456e03406cbc59702eb7d93b0fa5",
+      "derivative": "docs/ai-coach-phase0/skills-mapping.v1.json"
     },
     {
       "sourceId": "WBA-EVIDENCE-TABLE",
       "provider": "WORKBUDDY_A",
       "artifactType": "EVIDENCE_TABLE",
-      "status": "MISSING",
-      "version": null,
-      "path": null,
-      "sha256": null
+      "status": { "received": true, "parsed": true, "reviewed": false },
+      "version": "V1",
+      "path": "docs/ai-coach-phase0/handoff-v1/received/original/WA/2-教学证据与参考文献表.md",
+      "sha256": "a94b1ee474b843e0176d9f1705faeac6b5e332f55817e950d74eb6d1daca0f10"
     },
     {
       "sourceId": "WBA-BIDIRECTIONAL-EXAMPLES",
       "provider": "WORKBUDDY_A",
       "artifactType": "EXAMPLE_LIBRARY",
-      "status": "MISSING",
-      "version": null,
-      "path": null,
-      "sha256": null
+      "status": { "received": true, "parsed": true, "reviewed": false },
+      "version": "V1",
+      "path": "docs/ai-coach-phase0/handoff-v1/received/original/WA/3-双向教学示例库.md",
+      "sha256": "5487e54fca1618e467e3a2ee26537b495839618518af33ebb31cb238c70d5abf"
     },
     {
       "sourceId": "WBB-100-CASES",
       "provider": "WORKBUDDY_B",
       "artifactType": "TEST_CASE_CORPUS",
-      "status": "MISSING",
-      "version": null,
-      "path": null,
-      "sha256": null,
-      "expectedRecordCount": 100
+      "status": { "received": true, "parsed": true, "reviewed": false },
+      "version": "1.0.0",
+      "path": "docs/ai-coach-phase0/handoff-v1/received/original/WB/data/ai-coach-cases-100.json",
+      "sha256": "4e909e473d0f6ad6df8a14852fa0e49a707f1fbdf78ae65394ceb2d9a9eb0a2e",
+      "recordCount": 100,
+      "derivative": "docs/ai-coach-phase0/teaching-test-cases.normalized.v1.json"
     },
     {
       "sourceId": "WBB-TIS-RUBRIC",
       "provider": "WORKBUDDY_B",
       "artifactType": "HUMAN_RUBRIC",
-      "status": "MISSING",
-      "version": null,
-      "path": null,
-      "sha256": null
+      "status": { "received": true, "parsed": true, "reviewed": false },
+      "version": "1.0",
+      "path": "docs/ai-coach-phase0/handoff-v1/received/original/WB/AI-Coach-教学质量评分标准.md",
+      "sha256": "1abd87893a475f55242915d2254112d42a658fa369f815e009dd40e9b915699c",
+      "derivative": "docs/ai-coach-phase0/rule-tis-skill-map.v1.json"
     },
     {
       "sourceId": "WBB-QUICK-SPEAK",
       "provider": "WORKBUDDY_B",
       "artifactType": "INTERACTION_SPEC",
-      "status": "MISSING",
-      "version": null,
-      "path": null,
-      "sha256": null
+      "status": { "received": true, "parsed": true, "reviewed": false },
+      "version": "V1",
+      "path": "docs/ai-coach-phase0/handoff-v1/received/original/WB/Quick-Speak-五分钟体验设计.md",
+      "sha256": "d00e7858438c9b47222dbd734786f78382bef45968eed79ab7b392c64c5a05fd"
     },
     {
       "sourceId": "WBB-MOBILE-SPEC",
       "provider": "WORKBUDDY_B",
       "artifactType": "MOBILE_SPEC",
-      "status": "MISSING",
-      "version": null,
-      "path": null,
-      "sha256": null
+      "status": { "received": true, "parsed": true, "reviewed": false },
+      "version": "V1",
+      "path": "docs/ai-coach-phase0/handoff-v1/received/original/WB/移动端交互规范-375-390-430.md",
+      "sha256": "829b94d38cea532dbbed2c5f7e1d0d6fc0581b2848239f9d5a27aab597c1bd58"
     },
     {
       "sourceId": "WBB-REAL-USER-PROTOCOL",
       "provider": "WORKBUDDY_B",
       "artifactType": "TEST_PROTOCOL",
-      "status": "MISSING",
-      "version": null,
-      "path": null,
-      "sha256": null
+      "status": { "received": true, "parsed": true, "reviewed": false },
+      "version": "V1",
+      "path": "docs/ai-coach-phase0/handoff-v1/received/original/WB/真实用户测试计划-与基线对比.md",
+      "sha256": "3cbb898a9dde89e3dc5cda340fb251daebccf60537e3a9d421987ec9aac0293d"
     }
+  ],
+  "reviewBlockers": [
+    "S01-S12 were extracted from prose and require human confirmation.",
+    "All 127 assertion-rule mappings remain pending human approval.",
+    "Course-reference conflicts require content-owner review.",
+    "P0-4 has no safe purely mechanical assertion equivalent."
   ]
 }

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://indobrain.app/schemas/teaching-test-case.v2.json",
+  "title": "IndoBrain Normalized Teaching Test Case V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["caseId", "source", "sourceVersion", "sourceLocator", "category", "classificationReviewStatus", "direction", "evaluationMode", "skillIds", "unmappedRuleNames", "skillMappingStatus", "preconditions", "input", "expected", "targetContent", "references", "originalMetadata", "normalizationStatus", "humanReviewStatus"],
+  "properties": {
+    "caseId": { "type": "string", "minLength": 1 },
+    "source": { "const": "WORKBUDDY_B" },
+    "sourceVersion": { "type": "string", "minLength": 1 },
+    "sourceLocator": { "type": "string", "minLength": 1 },
+    "category": { "enum": ["TEACHING_STRATEGY", "COURSE_CONTENT", "VOICE_RELIABILITY"] },
+    "classificationBasis": { "type": "string" },
+    "classificationReviewStatus": { "const": "PENDING_HUMAN_REVIEW" },
+    "direction": { "enum": ["ZH_TO_ID", "ID_TO_ZH"] },
+    "evaluationMode": { "enum": ["MACHINE", "HUMAN", "BOTH"] },
+    "skillIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^S(0[1-9]|1[0-2])$" } },
+    "unmappedRuleNames": { "type": "array", "items": { "type": "string" } },
+    "skillMappingStatus": { "enum": ["PROVISIONAL_HUMAN_REVIEW_REQUIRED", "PENDING_NO_SAFE_SKILL_ASSOCIATION"] },
+    "preconditions": { "type": "array", "minItems": 3, "items": { "type": "string" } },
+    "input": { "type": "object", "required": ["mode", "learnerText", "scenario"], "properties": { "mode": { "enum": ["TEXT", "VOICE"] }, "learnerText": { "type": "string" }, "scenario": { "type": "string" } } },
+    "expected": { "type": "object", "required": ["teacherAction", "forbiddenTeacherAction", "successCriteria", "assertions", "requiresHumanEvaluation"], "properties": { "teacherAction": { "type": "string" }, "forbiddenTeacherAction": { "type": "string" }, "successCriteria": { "type": "string" }, "assertions": { "type": "array", "minItems": 1 }, "requiresHumanEvaluation": { "type": "boolean" } } },
+    "targetContent": { "type": "object" },
+    "references": { "type": "object", "required": ["original", "courseValidation"] },
+    "originalMetadata": { "type": "object" },
+    "normalizationStatus": { "enum": ["MECHANICALLY_NORMALIZED", "PENDING_HUMAN_REVIEW", "CONFLICT"] },
+    "humanReviewStatus": { "enum": ["PENDING", "APPROVED", "REJECTED", "NEEDS_CHANGES"] }
+  }
+}
