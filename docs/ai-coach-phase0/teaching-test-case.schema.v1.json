@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://indobrain.app/schemas/teaching-test-case.v1.json",
+  "title": "IndoBrain Teaching Test Case V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "caseId",
+    "source",
+    "sourceVersion",
+    "sourceLocator",
+    "category",
+    "direction",
+    "evaluationMode",
+    "skillIds",
+    "preconditions",
+    "input",
+    "expected",
+    "references",
+    "normalizationStatus"
+  ],
+  "properties": {
+    "caseId": { "type": "string", "minLength": 1 },
+    "source": { "enum": ["WORKBUDDY_A", "WORKBUDDY_B", "CODEX"] },
+    "sourceVersion": { "type": "string", "minLength": 1 },
+    "sourceLocator": { "type": "string", "minLength": 1 },
+    "category": { "enum": ["TEACHING_STRATEGY", "COURSE_CONTENT", "VOICE_RELIABILITY"] },
+    "direction": { "enum": ["ZH_TO_ID", "ID_TO_ZH"] },
+    "evaluationMode": { "enum": ["MACHINE", "HUMAN", "BOTH"] },
+    "skillIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^S[0-9]{2}$" }
+    },
+    "preconditions": { "type": "array", "items": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "learnerText"],
+      "properties": {
+        "mode": { "enum": ["TEXT", "VOICE", "UI_ACTION"] },
+        "learnerText": { "type": ["string", "null"] },
+        "audioFixture": { "type": ["string", "null"] }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["machineAssertions", "humanCriteria"],
+      "properties": {
+        "machineAssertions": { "type": "array", "items": { "type": "string" } },
+        "humanCriteria": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["courseIds", "expressionIds", "apiContracts"],
+      "properties": {
+        "courseIds": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "expressionIds": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "apiContracts": { "type": "array", "uniqueItems": true, "items": { "type": "string" } }
+      }
+    },
+    "normalizationStatus": { "enum": ["READY", "BLOCKED_SOURCE", "BLOCKED_REFERENCE", "CONFLICT"] },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "intakeVersion": 1,
+  "sourceId": "WBB-100-CASES",
+  "expectedCount": 100,
+  "importedCount": 0,
+  "normalizationStatus": "BLOCKED_SOURCE",
+  "classificationCounts": {
+    "TEACHING_STRATEGY": 0,
+    "COURSE_CONTENT": 0,
+    "VOICE_RELIABILITY": 0
+  },
+  "evaluationCounts": {
+    "MACHINE": 0,
+    "HUMAN": 0,
+    "BOTH": 0
+  },
+  "cases": [],
+  "blockers": [
+    "The original WorkBuddy B 100-case corpus is not present.",
+    "Original case IDs, wording, references and expected results must not be invented."
+  ]
+}
