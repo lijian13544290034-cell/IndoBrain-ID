@@ -2,6 +2,7 @@
   "manifestVersion": 1,
   "baselineCommit": "244eb83a689b0309eff5b7ac0732361c903c419c",
   "hashAlgorithm": "SHA-256",
+  "textHashCanonicalization": "CRLF_TO_LF",
   "integrationStatus": "INCOMPLETE",
   "sources": [
     {

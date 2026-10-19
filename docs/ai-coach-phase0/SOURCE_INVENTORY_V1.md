@@ -4,7 +4,7 @@
 
 - Baseline: `244eb83a689b0309eff5b7ac0732361c903c419c`
 - Inventory date: 2026-10-19
-- Hash algorithm: SHA-256
+- Hash algorithm: SHA-256 over canonical LF text for repository-authored text artifacts
 - Three-party source integration: **INCOMPLETE**
 - Reason: WorkBuddy A/B original artifacts are not present in the repository or adjacent project worktrees.
 
