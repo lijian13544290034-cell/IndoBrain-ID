@@ -1,0 +1,402 @@
+{
+  "schema": "indobrain.teaching-skill/v1",
+  "skillId": "S03",
+  "skillName": {
+    "en": "Scaffolding",
+    "zh": "支架"
+  },
+  "version": "1.0.0",
+  "status": "PROPOSED_FOR_INTEGRATION",
+  "reviewStatus": "AUDITED_AND_CORRECTED",
+  "source": {
+    "sourceId": "WBA-SKILLS-S01-S12",
+    "sha256": "524bec4c17d3d5e6b65d59579ef9ee0f1d09456e03406cbc59702eb7d93b0fa5",
+    "locator": "lines 217-316",
+    "sourceType": "PROSE_SPEC"
+  },
+  "objective": "When the learner is stuck, supply the smallest help that lets them produce the utterance themselves. Help is selected by diagnosis, not by a fixed ladder, and it is withdrawn as soon as it works.",
+  "evidence": [
+    {
+      "claim": "Six scaffolding functions: recruitment, reducing degrees of freedom, direction maintenance, marking critical features, frustration control, demonstration.",
+      "strength": "LIMITED",
+      "citation": "Wood, Bruner & Ross 1976 — descriptive, 30 children aged 3-5, one adult, no control group, not adult L2. Source of the concept, not evidence that scaffolding works."
+    },
+    {
+      "claim": "Learning is possible within the zone of proximal development with assistance.",
+      "strength": "STRONG_THEORY",
+      "citation": "Vygotsky"
+    },
+    {
+      "claim": "A five-step, only-upward hint ladder is the correct implementation.",
+      "strength": "PRODUCT_HYPOTHESIS",
+      "citation": "none — original text asserts it without evidence"
+    },
+    {
+      "claim": "Generic study techniques transfer poorly; support must be bound to the specific task content.",
+      "strength": "STRONG_GUIDELINE",
+      "citation": "EEF metacognition guidance"
+    }
+  ],
+  "corrections": [
+    {
+      "correctionId": "C-S03-1",
+      "from": "五档提示梯度（L0→L1→L2→L3→L4），只能逐档上升，不可跳档",
+      "to": "改为按卡住信号选择提示类型，不是固定五步。允许跳档、允许降档、允许一步给全句。约束从'步数'改为'每轮一条提示、每次提示只针对一个缺失成分、连续两条提示后必须换策略'。",
+      "reason": "固定梯度有两个实测问题：(1) 听觉型学习者读到挖空骨架反而更乱；(2) 用户明确说'直接告诉我'时还按 L1→L2→L3 走完，是把教学流程凌驾于学习者请求之上。原文自己在边界案例里也承认'用户在 L2 突然说对了'是正常的，这已经否定了必须逐档上升。",
+      "executableAs": "RULE-S03-01..RULE-S03-06"
+    },
+    {
+      "correctionId": "C-S03-2",
+      "from": "L4 之后不得在同一轮再次要求用户独立说",
+      "to": "保留，但补充'给全句'可以由学习者主动触发（明确要求答案），且不因此判定支架失败；该轮记 scaffolded_full_model，后续必须安排一次延迟重试。",
+      "reason": "把'用户要答案'等同于'支架失败'会污名化一个正当的求助行为。",
+      "executableAs": "RULE-S03-04"
+    },
+    {
+      "correctionId": "C-S03-3",
+      "from": "用户独立成功后立即回撤两档，下次同类场景从 L0 起",
+      "to": "改为回撤到'最小有效提示类型'记录（minEffectiveHint），下次同类目标直接尝试不提示；若再次卡住，回到上次有效的那个提示类型，而不是从最弱重新走。",
+      "reason": "'回撤两档'是档位制的产物，改成记录最小有效提示后，既保留撤除原则，又不会让学习者重复踩同一个坑。",
+      "executableAs": "RULE-S03-05"
+    }
+  ],
+  "stateContract": {
+    "turn.stuckSignal": "silence | incomplete | explicit_help | l1_substitution | failed_retry | none",
+    "turn.missingElement": "STRING — the specific token/chunk the learner failed to produce",
+    "turn.hintType": "NONE | FIRST_TOKEN | SKELETON_BLANK | BINARY_CHOICE | FULL_MODEL | CONTRAST_HINT | OBJECT_CUE | AUDIO_ONLY",
+    "turn.hintTypesUsedThisTurn": "string[]",
+    "turn.consecutiveHints": "integer",
+    "turn.lastHintOutcome": "WORKED | FAILED | NOT_ATTEMPTED",
+    "turn.hintText": "string",
+    "turn.hintCharCount": "integer",
+    "learner.needsRomanization": "boolean",
+    "learner.prefersAudio": "boolean",
+    "session.minEffectiveHint[targetId]": "hintType"
+  },
+  "hintSelection": {
+    "note": "Diagnosis first, then one hint. No fixed order. Types are a menu, not a ladder.",
+    "matrix": [
+      {
+        "signal": "silence",
+        "learnerProfile": "prefersAudio=true",
+        "hintType": "AUDIO_ONLY",
+        "rationale": "Text scaffolding adds a decoding task on top of a production task."
+      },
+      {
+        "signal": "silence",
+        "learnerProfile": "default",
+        "hintType": "FIRST_TOKEN",
+        "rationale": "One anchor word is the smallest prompt that starts retrieval."
+      },
+      {
+        "signal": "incomplete",
+        "hintType": "SKELETON_BLANK",
+        "rationale": "The learner already has the frame; only the gap needs marking."
+      },
+      {
+        "signal": "explicit_help",
+        "hintType": "FULL_MODEL",
+        "rationale": "An explicit request is a legitimate request. Honour it and move on."
+      },
+      {
+        "signal": "l1_substitution",
+        "hintType": "BINARY_CHOICE",
+        "rationale": "Recognition is easier than recall; two options restore movement without a lecture."
+      },
+      {
+        "signal": "failed_retry",
+        "hintType": "CONTRAST_HINT",
+        "rationale": "Two failures on the same span usually mean a confusable pair, not insufficient effort."
+      },
+      {
+        "signal": "incomplete",
+        "learnerProfile": "needsRomanization=true and target has tones",
+        "hintType": "OBJECT_CUE",
+        "rationale": "When romanization would overload, cue meaning instead of form."
+      }
+    ]
+  },
+  "policies": [
+    {
+      "ruleId": "RULE-S03-01",
+      "stage": "PLAN",
+      "when": "a hint is about to be emitted",
+      "then": "Emit exactly one hint type per turn.",
+      "assertion": {
+        "path": "turn.hintTypesUsedThisTurn",
+        "op": "length_lte",
+        "value": 1
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.hintTypesUsedThisTurn",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S03-02",
+      "stage": "PLAN",
+      "when": "a hint is emitted",
+      "then": "The hint addresses the diagnosed missing element only; it does not restate the whole sentence unless hintType=FULL_MODEL.",
+      "assertion": {
+        "path": "turn.hintType",
+        "op": "in",
+        "value": [
+          "FIRST_TOKEN",
+          "SKELETON_BLANK",
+          "BINARY_CHOICE",
+          "FULL_MODEL",
+          "CONTRAST_HINT",
+          "OBJECT_CUE",
+          "AUDIO_ONLY"
+        ]
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.hintType",
+        "op": "not_eq",
+        "value": "NONE"
+      }
+    },
+    {
+      "ruleId": "RULE-S03-03",
+      "stage": "PLAN",
+      "when": "always",
+      "then": "Hint length: Chinese <= 25 characters, Indonesian <= 15 words. Over the limit is a violation, not a style issue.",
+      "assertion": {
+        "path": "turn.hintCharCount",
+        "op": "lte",
+        "value": 40
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.hintType",
+        "op": "not_eq",
+        "value": "NONE"
+      }
+    },
+    {
+      "ruleId": "RULE-S03-04",
+      "stage": "PLAN",
+      "when": "learner asks for the answer explicitly",
+      "then": "Give FULL_MODEL immediately. Mark the turn scaffolded_full_model. Do not label it a scaffold failure. Schedule one delayed re-attempt.",
+      "assertion": {
+        "path": "turn.hintType",
+        "op": "eq",
+        "value": "FULL_MODEL"
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.learner.explicitAnswerRequest",
+        "op": "eq",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S03-05",
+      "stage": "AFTER_SUCCESS",
+      "when": "the learner produces the target after a hint",
+      "then": "Record turn.minEffectiveHint = turn.hintType for this target. Next encounter with the same target starts at NONE; if stuck again, jump straight to the recorded hint type rather than restarting at the weakest one.",
+      "assertion": {
+        "path": "turn.minEffectiveHint",
+        "op": "exists",
+        "value": true
+      },
+      "severity": "P2",
+      "guard": {
+        "path": "turn.minEffectiveHint",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S03-06",
+      "stage": "ESCALATION",
+      "when": "turn.consecutiveHints >= 2 and lastHintOutcome == FAILED",
+      "then": "Stop hinting. Change strategy: reduce difficulty (S04), change modality, or recover (S08). Do not emit a third consecutive hint.",
+      "assertion": {
+        "path": "turn.consecutiveHints",
+        "op": "lte",
+        "value": 2
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.consecutiveHints",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S03-07",
+      "stage": "OUTPUT",
+      "when": "always",
+      "then": "The hint adds no new lexical or grammatical content.",
+      "assertion": {
+        "path": "turn.newInfoPoints",
+        "op": "lte",
+        "value": 1
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.hintType",
+        "op": "not_eq",
+        "value": "NONE"
+      }
+    },
+    {
+      "ruleId": "RULE-S03-08",
+      "stage": "WITHDRAW",
+      "when": "the same target is met again in a later turn",
+      "then": "Start without a hint. Scaffolding that never shrinks is a defect.",
+      "assertion": {
+        "path": "turn.hintType",
+        "op": "eq",
+        "value": "NONE"
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.repeatOfEarlierTarget",
+        "op": "eq",
+        "value": true
+      }
+    }
+  ],
+  "outputContract": {
+    "turnType": "scaffold",
+    "required": [
+      "skill",
+      "stuckSignal",
+      "missingElement",
+      "hintType",
+      "rationale",
+      "prompt",
+      "waitMs",
+      "escalationAllowed",
+      "masteryEligible"
+    ],
+    "masteryEligible": {
+      "rule": "false whenever hintType != NONE"
+    },
+    "languagePolicy": {
+      "ZH_TO_ID": {
+        "explanation": "zh",
+        "target": "id",
+        "feedback": "zh",
+        "romanization": "none"
+      },
+      "ID_TO_ZH": {
+        "explanation": "id",
+        "target": "zh",
+        "feedback": "id",
+        "romanization": "pinyin"
+      }
+    }
+  },
+  "acceptanceChecks": [
+    {
+      "checkId": "AC-S03-1",
+      "kind": "STATIC",
+      "expr": "output.hintTypesUsedThisTurn.length <= 1",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S03-2",
+      "kind": "STATIC",
+      "expr": "output.prompt.length <= 40 for zh, word_count <= 15 for id",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S03-3",
+      "kind": "RUNTIME",
+      "expr": "consecutiveHints <= 2 or strategyChanged==true",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S03-4",
+      "kind": "RUNTIME",
+      "expr": "hintType==FULL_MODEL implies masteryEligible==false",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S03-5",
+      "kind": "RUNTIME",
+      "expr": "nextTurnForSameTarget.hintType == NONE when lastOutcome==WORKED",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S03-6",
+      "kind": "HUMAN",
+      "expr": "a native reader would consider the hint unambiguous and non-condescending",
+      "severity": "P2"
+    }
+  ],
+  "forbidden": [
+    {
+      "id": "F-S03-1",
+      "pattern": "同一轮两条以上提示",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S03-2",
+      "pattern": "提示里夹带新语法知识",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S03-3",
+      "pattern": "无信息量催促（再想想 / coba lagi saja）",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S03-4",
+      "pattern": "把 scaffolded_success 记作 mastered",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S03-5",
+      "pattern": "支架不撤除（同目标下次仍从同一档起）",
+      "severity": "P2"
+    },
+    {
+      "id": "F-S03-6",
+      "pattern": "用户明确要答案时仍按固定梯度逐档走",
+      "severity": "P0",
+      "note": "added by this audit"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "FM-S03-1",
+      "signal": "learner reaches FULL_MODEL every time on the same target",
+      "response": "The target is above level, not under-scaffolded. S04 down-shift; do not add hints."
+    },
+    {
+      "id": "FM-S03-2",
+      "signal": "hint worked but learner cannot repeat it next turn",
+      "response": "Mark the hint as not internalised. It counts as scaffolding, never as learning."
+    },
+    {
+      "id": "FM-S03-3",
+      "signal": "learner misreads the hint direction",
+      "response": "Record scaffold_ambiguous, queue the hint text for human review, switch modality."
+    }
+  ],
+  "examples": {
+    "ZH_TO_ID": {
+      "target": "Bisa kurang?",
+      "explanation": "能便宜点吗？",
+      "hintPath": "silence → FIRST_TOKEN(「开头是 Bisa……」) → still stuck → BINARY_CHOICE(「Bisa kurang 还是 Kurang bisa?」)",
+      "notThis": "Do not walk Bisa → Bisa ___ → 二选一 → 全句 as a compulsory four-step ladder."
+    },
+    "ID_TO_ZH": {
+      "target": "这个多少钱？",
+      "pinyin": "zhège duōshao qián",
+      "hintPath": "silence → FIRST_TOKEN(「开头两个字是 这个……」) → incomplete → SKELETON_BLANK(「这个 ___ 钱？」)",
+      "notThis": "If the learner says 直接告诉我吧, give 全句 immediately and mark scaffolded."
+    }
+  },
+  "openQuestions": [
+    "Does hint type matter more than hint timing? Untested.",
+    "Is FIRST_TOKEN actually the weakest prompt for tonal languages, or does it leak too much?"
+  ]
+}

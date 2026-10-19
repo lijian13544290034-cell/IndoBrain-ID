@@ -1,0 +1,445 @@
+{
+  "schema": "indobrain.teaching-skill/v1",
+  "skillId": "S02",
+  "skillName": {
+    "en": "Micro Speaking",
+    "zh": "微口语输出"
+  },
+  "version": "1.0.0",
+  "status": "PROPOSED_FOR_INTEGRATION",
+  "reviewStatus": "AUDITED_AND_CORRECTED",
+  "source": {
+    "sourceId": "WBA-SKILLS-S01-S12",
+    "path": "WorkBuddy/2026-10-18-21-29-22/IndoBrain-Teaching-Skills-V1/1-IndoBrain-AI-Teaching-Skills-V1.md",
+    "sha256": "524bec4c17d3d5e6b65d59579ef9ee0f1d09456e03406cbc59702eb7d93b0fa5",
+    "locator": "lines 127-213",
+    "sourceType": "PROSE_SPEC",
+    "trustLevel": "AUTHORED_PEDAGOGY_NOT_RUNTIME_POLICY"
+  },
+  "objective": "One turn produces one utterance the learner can use with a real person today. The utterance is produced by the learner, not imitated from a model answer delivered beforehand.",
+  "evidence": [
+    {
+      "claim": "Comprehensible output forces learners to notice the gap between what they want to say and what they can say.",
+      "strength": "STRONG_MECHANISM",
+      "citation": "Swain 1985/1995"
+    },
+    {
+      "claim": "Declarative knowledge becomes procedural only through meaningful repeated use.",
+      "strength": "STRONG_THEORY",
+      "citation": "DeKeyser 2007"
+    },
+    {
+      "claim": "One sentence per turn is the optimal grain size.",
+      "strength": "PRODUCT_HYPOTHESIS",
+      "citation": "none — must be A/B tested"
+    },
+    {
+      "claim": "Elicited production outperforms structured input for the targeted form.",
+      "strength": "LIMITED",
+      "citation": "Erlam 2003, N=70, single grammar point"
+    }
+  ],
+  "corrections": [
+    {
+      "correctionId": "C-S02-1",
+      "from": "触发条件：每一轮教练对话的核心输出动作。无例外。",
+      "to": "Micro Speaking 是默认核心动作，但不是无例外。当本轮处于情绪修复、纯答疑、或学习者明确只要文字稿时，本轮不产出新口语目标，改由 S08 或纯信息轮处理。",
+      "reason": "把'每轮都产出'写成硬约束会导致在挫败状态下继续逼输出，与 S08 直接冲突，也会把'用户问一个词怎么念'这类正当请求判成违规。",
+      "executableAs": "RULE-S02-00"
+    },
+    {
+      "correctionId": "C-S02-2",
+      "from": "单轮 30 秒内产出",
+      "to": "30 秒为目标值，不作为失败判据。等待上限 12 秒、单轮上限 60 秒；超时记为 SLOW_NOT_FAIL，不扣证据分。",
+      "reason": "原文把 30 秒读成硬门槛时，会把'想了 35 秒但说对了'判为失败，这与'产出质量优先于速度'相反。",
+      "executableAs": "RULE-S02-06"
+    },
+    {
+      "correctionId": "C-S02-3",
+      "from": "输出不是跟读（定义级要求）",
+      "to": "改为证据级判定：产出自成（producedIndependently=true）且本轮此前未完整给出答案，才计独立成功；跟读计 IMITATED，不进入掌握证据。",
+      "reason": "原文把'不是跟读'写成动作要求，无法机器判定；改成对产出来源打标后可验证。",
+      "executableAs": "RULE-S02-07"
+    }
+  ],
+  "stateContract": {
+    "turn.direction": "ZH_TO_ID | ID_TO_ZH",
+    "turn.newInfoPoints": "integer — count of never-seen target-language items introduced this turn",
+    "turn.targetSurface": "string — the target-language sentence",
+    "turn.audioPlayCount": "integer — full-sentence model playbacks before the first learner attempt",
+    "turn.givenFullAnswerBeforeAttempt": "boolean",
+    "turn.coach.text": "string",
+    "turn.coach.grammarTerms": "string[] — matched against the banned term list",
+    "turn.coach.invitesSpeaking": "boolean",
+    "turn.learner.attempted": "boolean",
+    "turn.learner.producedIndependently": "boolean",
+    "turn.learner.transcript": "string",
+    "turn.learner.sttConfidence": "number 0..1",
+    "turn.learner.tokenRecall": "number 0..1 — share of target content words present in transcript",
+    "turn.learner.elapsedMs": "integer",
+    "turn.affect.state": "neutral | frustrated | confident",
+    "turn.mode": "TEACH | PRACTICE | ANSWER_ONLY | AFFECT_REPAIR"
+  },
+  "triggers": [
+    {
+      "triggerId": "T-S02-1",
+      "when": "turn.mode == TEACH or turn.mode == PRACTICE",
+      "priority": 1
+    },
+    {
+      "triggerId": "T-S02-2",
+      "when": "turn.affect.state == frustrated",
+      "action": "DEFER_TO_S08",
+      "priority": 0
+    },
+    {
+      "triggerId": "T-S02-3",
+      "when": "turn.mode == ANSWER_ONLY",
+      "action": "SUPPRESS_MICRO_SPEAKING",
+      "priority": 0
+    }
+  ],
+  "policies": [
+    {
+      "ruleId": "RULE-S02-00",
+      "stage": "PRECONDITION",
+      "when": "turn.mode in [AFFECT_REPAIR, ANSWER_ONLY]",
+      "then": "Do not create a new speaking target this turn; route to S08 or answer directly.",
+      "assertion": {
+        "path": "turn.coach.invitesSpeaking",
+        "op": "eq",
+        "value": false
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.mode",
+        "op": "in",
+        "value": [
+          "AFFECT_REPAIR",
+          "ANSWER_ONLY"
+        ]
+      }
+    },
+    {
+      "ruleId": "RULE-S02-01",
+      "stage": "PLAN",
+      "when": "always",
+      "then": "Introduce exactly one new information point.",
+      "assertion": {
+        "path": "turn.newInfoPoints",
+        "op": "lte",
+        "value": 1
+      },
+      "severity": "P0"
+    },
+    {
+      "ruleId": "RULE-S02-02",
+      "stage": "PLAN",
+      "when": "always",
+      "then": "Coaching text carries no grammar terminology. Chunks enter as usable wholes; terminology waits for S07 variation.",
+      "bannedTerms": {
+        "zh": [
+          "量词",
+          "助词",
+          "谓语",
+          "宾语",
+          "时态",
+          "句式",
+          "语法"
+        ],
+        "id": [
+          "imbuhan",
+          "prefiks",
+          "sufiks",
+          "klausa",
+          "predikat",
+          "tata bahasa"
+        ]
+      },
+      "assertion": {
+        "path": "turn.coach.grammarTerms",
+        "op": "length_eq",
+        "value": 0
+      },
+      "severity": "P1"
+    },
+    {
+      "ruleId": "RULE-S02-03",
+      "stage": "PLAN",
+      "when": "always",
+      "then": "Every micro-speaking turn ends with an invitation to produce, not a request to repeat.",
+      "assertion": {
+        "path": "turn.coach.invitesSpeaking",
+        "op": "eq",
+        "value": true
+      },
+      "severity": "P0"
+    },
+    {
+      "ruleId": "RULE-S02-04",
+      "stage": "PLAN",
+      "when": "turn needs mastery-eligible evidence",
+      "then": "Do not deliver the complete target before the first attempt. At most one model playback.",
+      "assertion": {
+        "path": "turn.audioPlayCount",
+        "op": "lte",
+        "value": 1
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.audioPlayCount",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S02-05",
+      "stage": "WAIT",
+      "when": "learner has not yet attempted",
+      "then": "Hold silence up to 12s; emit the first hint at 4s only if the learner signals being stuck (S03 owns that decision).",
+      "assertion": {
+        "path": "turn.learner.elapsedMs",
+        "op": "lte",
+        "value": 60000
+      },
+      "severity": "P2",
+      "guard": {
+        "path": "turn.learner.elapsedMs",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S02-06",
+      "stage": "JUDGE",
+      "when": "always",
+      "then": "Slow is not wrong. Elapsed time above 30s never converts a correct production into a failure.",
+      "assertion": {
+        "path": "turn.learner.elapsedMs",
+        "op": "lte",
+        "value": 60000
+      },
+      "severity": "P2",
+      "guard": {
+        "path": "turn.learner.elapsedMs",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S02-07",
+      "stage": "JUDGE",
+      "when": "always",
+      "then": "Independent success requires producedIndependently=true AND givenFullAnswerBeforeAttempt=false AND tokenRecall>=0.7 AND at least one content word of the target present.",
+      "assertion": {
+        "path": "turn.learner.producedIndependently",
+        "op": "eq",
+        "value": true
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.outcome",
+        "op": "eq",
+        "value": "INDEPENDENT_SUCCESS"
+      }
+    },
+    {
+      "ruleId": "RULE-S02-08",
+      "stage": "JUDGE",
+      "when": "sttConfidence < 0.75",
+      "then": "Do not score. Ask for one repetition; never evaluate pronunciation from the transcript.",
+      "assertion": {
+        "path": "turn.learner.sttConfidence",
+        "op": "gte_for_scoring",
+        "value": 0.75
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.learner.sttConfidence",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S02-09",
+      "stage": "OUTPUT",
+      "when": "always",
+      "then": "Partial production is PARTIAL, not FAIL. The learner keeps the turn.",
+      "assertion": {
+        "path": "turn.outcome",
+        "op": "in",
+        "value": [
+          "INDEPENDENT_SUCCESS",
+          "PARTIAL",
+          "SCAFFOLDED_SUCCESS",
+          "NOT_YET",
+          "IMITATED",
+          "NO_EVIDENCE"
+        ]
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.outcome",
+        "op": "exists",
+        "value": true
+      }
+    }
+  ],
+  "outputContract": {
+    "turnType": "micro_speaking",
+    "required": [
+      "skill",
+      "turnType",
+      "scene",
+      "targetExpression",
+      "newInfoPoints",
+      "instruction",
+      "expectedUserAct",
+      "maxWaitMs",
+      "silenceHintMs",
+      "fallbackSkill",
+      "languagePolicy"
+    ],
+    "languagePolicy": {
+      "ZH_TO_ID": {
+        "explanation": "zh",
+        "target": "id",
+        "feedback": "zh",
+        "romanization": "none"
+      },
+      "ID_TO_ZH": {
+        "explanation": "id",
+        "target": "zh",
+        "feedback": "id",
+        "romanization": "pinyin"
+      }
+    },
+    "outcomeEnum": [
+      "INDEPENDENT_SUCCESS",
+      "SCAFFOLDED_SUCCESS",
+      "PARTIAL",
+      "IMITATED",
+      "NOT_YET",
+      "NO_EVIDENCE"
+    ]
+  },
+  "acceptanceChecks": [
+    {
+      "checkId": "AC-S02-1",
+      "kind": "STATIC",
+      "expr": "output.newInfoPoints <= 1",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S02-2",
+      "kind": "STATIC",
+      "expr": "no grammar term from bannedTerms appears in output.instruction",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S02-3",
+      "kind": "STATIC",
+      "expr": "output.languagePolicy.explanation == (direction=='ZH_TO_ID' ? 'zh' : 'id')",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S02-4",
+      "kind": "RUNTIME",
+      "expr": "outcome==INDEPENDENT_SUCCESS implies (producedIndependently && !givenFullAnswerBeforeAttempt && tokenRecall>=0.7)",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S02-5",
+      "kind": "RUNTIME",
+      "expr": "sttConfidence<0.75 implies outcome==NO_EVIDENCE",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S02-6",
+      "kind": "RUNTIME",
+      "expr": "outcome==IMITATED never contributes to mastery evidence",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S02-7",
+      "kind": "HUMAN",
+      "expr": "the sentence is one a real person would accept in that scene without repair",
+      "severity": "P1"
+    }
+  ],
+  "forbidden": [
+    {
+      "id": "F-S02-1",
+      "pattern": "两件以上新表达同一轮",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S02-2",
+      "pattern": "先讲语法再让用户说",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S02-3",
+      "pattern": "用户未开口先示范三遍",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S02-4",
+      "pattern": "把 STT 识别成功写成发音正确",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S02-5",
+      "pattern": "跟读后记 mastered",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S02-6",
+      "pattern": "表扬人（你真棒/聪明/hebat/pintar）",
+      "severity": "P1",
+      "note": "self-level praise is the weakest feedback layer per Hattie & Timperley 2007"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "FM-S02-1",
+      "signal": "silence beyond 12s",
+      "response": "Hand control to S03 with stuckSignal=silence. Do not repeat the instruction verbatim."
+    },
+    {
+      "id": "FM-S02-2",
+      "signal": "learner answers in L1",
+      "response": "Treat as NOT_READY. Drop one difficulty dimension via S04 and offer a listen-and-choose turn."
+    },
+    {
+      "id": "FM-S02-3",
+      "signal": "learner speaks fluently but wrong",
+      "response": "Fluency is not accuracy. Route to S05 with one focus span."
+    },
+    {
+      "id": "FM-S02-4",
+      "signal": "learner asks for the answer",
+      "response": "Give it, mark scaffolded_full_model, exclude from mastery evidence, schedule a re-attempt in a later turn."
+    }
+  ],
+  "examples": {
+    "ZH_TO_ID": {
+      "scene": "雅加达便利店，店员问你要买什么",
+      "target": "Minta air botol satu.",
+      "gloss": "要一瓶水。",
+      "explanation": "店员问你要买什么。对他说：要一瓶水。",
+      "note": "Do not force a literal rendering of 我要买一瓶水 (Saya mau beli air botol satu); minta + numeral-final is the natural spoken form."
+    },
+    "ID_TO_ZH": {
+      "scene": "雅加达奶茶店，店员问你要喝什么",
+      "target": "我要一杯奶茶。",
+      "pinyin": "wǒ yào yì bēi nǎi chá",
+      "explanation": "店员问你喝什么。对他说：我要一杯奶茶。",
+      "note": "The whole chunk enters as one unit; 杯 is not explained as a measure word here."
+    }
+  },
+  "openQuestions": [
+    "Is 30s the right soft target for A0, or should it be 45s for the first three sessions?",
+    "Does one playback before the attempt measurably reduce independent production? Needs A/B."
+  ]
+}

@@ -1,0 +1,395 @@
+{
+  "schema": "indobrain.teaching-skill/v1",
+  "skillId": "S04",
+  "skillName": {
+    "en": "Adaptive Difficulty",
+    "zh": "自适应难度"
+  },
+  "version": "1.0.0",
+  "status": "PROPOSED_FOR_INTEGRATION",
+  "reviewStatus": "AUDITED_AND_CORRECTED",
+  "source": {
+    "sourceId": "WBA-SKILLS-S01-S12",
+    "sha256": "524bec4c17d3d5e6b65d59579ef9ee0f1d09456e03406cbc59702eb7d93b0fa5",
+    "locator": "lines 320-411",
+    "sourceType": "PROSE_SPEC"
+  },
+  "objective": "Keep difficulty inside the band where the learner can succeed with effort. Change one dimension at a time, only after a unit of evidence, and never announce the change.",
+  "evidence": [
+    {
+      "claim": "Practice must rest on already-acquired prerequisites or it is wasted or harmful.",
+      "strength": "STRONG_THEORY",
+      "citation": "DeKeyser 2007"
+    },
+    {
+      "claim": "Difficulty should sit slightly above current level.",
+      "strength": "LIMITED_WEAK_VERSION",
+      "citation": "Krashen i+1 — only the weak claim is used; the strong input hypothesis is contested"
+    },
+    {
+      "claim": "Appropriate challenge develops self-regulation.",
+      "strength": "STRONG_GUIDELINE",
+      "citation": "EEF metacognition recommendation 4"
+    },
+    {
+      "claim": "One new information point per turn is the correct threshold.",
+      "strength": "PRODUCT_HYPOTHESIS",
+      "citation": "none — needs A/B"
+    }
+  ],
+  "corrections": [
+    {
+      "correctionId": "C-S04-1",
+      "from": "难度是一个全局等级",
+      "to": "难度按 (direction, scenario) 分别维护。同一学习者在点餐场景的等级不能用来推断问路场景。",
+      "reason": "原文边界案例已承认'点餐流利、问路全崩'，但规则仍写成单一 current_difficulty。改为按场景分片状态后，两者才自洽。",
+      "executableAs": "RULE-S04-00"
+    },
+    {
+      "correctionId": "C-S04-2",
+      "from": "abandonment=true 必须在 1 个单元内触发 down",
+      "to": "保留，但补充'down 之后至少 2 个单元内不得 up'，避免震荡调节。",
+      "reason": "原文缺回升抑制，会出现降档→立刻升档→再崩的循环。",
+      "executableAs": "RULE-S04-05"
+    },
+    {
+      "correctionId": "C-S04-3",
+      "from": "升级需连续 2 个单元 independent_success_rate ≥ 0.8",
+      "to": "保留阈值，但明确'hold 是默认决策'，且计数只在同一场景分片内累加。",
+      "reason": "跨场景累加会让一次顺利的点餐把问路难度也推上去。",
+      "executableAs": "RULE-S04-02"
+    }
+  ],
+  "stateContract": {
+    "unit.scenarioKey": "string — e.g. ZH_TO_ID:convenience_store",
+    "unit.independentSuccessRate": "number 0..1",
+    "unit.scaffoldedSuccessRate": "number 0..1",
+    "unit.avgHintUse": "number 0..1 — share of turns needing any hint",
+    "unit.abandonment": "boolean",
+    "unit.errorTypes": "string[]",
+    "unit.timeToFirstTokenMs": "integer",
+    "difficulty.dimensions.tokenCount": "integer",
+    "difficulty.dimensions.noveltyRatio": "number",
+    "difficulty.dimensions.sentenceLength": "SIMPLE | COMPOUND | COMPLEX",
+    "difficulty.dimensions.defaultHintType": "hintType",
+    "difficulty.lastChangeUnit": "integer",
+    "difficulty.lastChangeDirection": "UP | DOWN | HOLD"
+  },
+  "policies": [
+    {
+      "ruleId": "RULE-S04-00",
+      "stage": "STATE",
+      "when": "reading or writing difficulty",
+      "then": "Difficulty state is keyed by (direction, scenarioKey). No global learner level is consulted.",
+      "assertion": {
+        "path": "unit.scenarioKey",
+        "op": "exists",
+        "value": true
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "unit.scenarioKey",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S04-01",
+      "stage": "DECIDE",
+      "when": "always",
+      "then": "Change at most one dimension per decision.",
+      "assertion": {
+        "path": "difficulty.changedDimensions",
+        "op": "length_lte",
+        "value": 1
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "difficulty.changedDimensions",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S04-02",
+      "stage": "DECIDE",
+      "when": "independentSuccessRate >= 0.8 and avgHintUse <= 0.3 for 2 consecutive units in the same scenario",
+      "then": "UP by one dimension.",
+      "assertion": {
+        "path": "difficulty.decision",
+        "op": "in",
+        "value": [
+          "HOLD",
+          "UP",
+          "DOWN"
+        ]
+      },
+      "severity": "P2",
+      "guard": {
+        "op": "all",
+        "value": [
+          {
+            "path": "unit.independentSuccessRate",
+            "op": "gte",
+            "value": 0.8
+          },
+          {
+            "path": "unit.avgHintUse",
+            "op": "lte",
+            "value": 0.3
+          }
+        ]
+      }
+    },
+    {
+      "ruleId": "RULE-S04-03",
+      "stage": "DECIDE",
+      "when": "independentSuccessRate < 0.4 or avgHintUse >= 0.7 in any single unit",
+      "then": "DOWN by one dimension.",
+      "assertion": {
+        "path": "difficulty.decision",
+        "op": "eq",
+        "value": "DOWN"
+      },
+      "severity": "P1",
+      "guard": {
+        "op": "any",
+        "value": [
+          {
+            "path": "unit.independentSuccessRate",
+            "op": "lt",
+            "value": 0.4
+          },
+          {
+            "path": "unit.avgHintUse",
+            "op": "gte",
+            "value": 0.7
+          }
+        ]
+      }
+    },
+    {
+      "ruleId": "RULE-S04-04",
+      "stage": "DECIDE",
+      "when": "no rule fires",
+      "then": "HOLD. Holding is the most common correct decision.",
+      "assertion": {
+        "path": "difficulty.decision",
+        "op": "in",
+        "value": [
+          "HOLD",
+          "UP",
+          "DOWN"
+        ]
+      },
+      "severity": "P2",
+      "guard": {
+        "op": "all",
+        "value": [
+          {
+            "path": "unit.independentSuccessRate",
+            "op": "gte",
+            "value": 0.4
+          },
+          {
+            "path": "unit.independentSuccessRate",
+            "op": "lte",
+            "value": 0.8
+          },
+          {
+            "path": "unit.avgHintUse",
+            "op": "lt",
+            "value": 0.7
+          }
+        ]
+      }
+    },
+    {
+      "ruleId": "RULE-S04-05",
+      "stage": "DECIDE",
+      "when": "difficulty.lastChangeDirection == DOWN",
+      "then": "No UP within the next 2 units.",
+      "assertion": {
+        "path": "difficulty.unitsSinceDown",
+        "op": "gte_for_up",
+        "value": 2
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "difficulty.unitsSinceDown",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S04-06",
+      "stage": "OUTPUT",
+      "when": "always",
+      "then": "No user-visible message about difficulty. Silent adjustment.",
+      "assertion": {
+        "path": "output.userVisibleMessage",
+        "op": "eq",
+        "value": null
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "output.userVisibleMessage",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S04-07",
+      "stage": "GUARD",
+      "when": "level is A0 or A1",
+      "then": "No subordinate clause markers.",
+      "bannedMarkers": {
+        "zh": [
+          "因为",
+          "虽然",
+          "如果",
+          "的时候"
+        ],
+        "id": [
+          "karena",
+          "walaupun",
+          "kalau",
+          "yang"
+        ]
+      },
+      "assertion": {
+        "path": "output.target.sentenceLength",
+        "op": "in",
+        "value": [
+          "SIMPLE",
+          "COMPOUND"
+        ]
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "output.target.sentenceLength",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S04-08",
+      "stage": "GUARD",
+      "when": "always",
+      "then": "Novelty is one new item per turn, independent of which dimension is being raised.",
+      "assertion": {
+        "path": "turn.newInfoPoints",
+        "op": "lte",
+        "value": 1
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.newInfoPoints",
+        "op": "exists",
+        "value": true
+      }
+    }
+  ],
+  "outputContract": {
+    "turnType": "difficulty_decision",
+    "required": [
+      "skill",
+      "decision",
+      "changedDimension",
+      "nextUnit",
+      "evidence",
+      "userVisibleMessage"
+    ],
+    "userVisibleMessage": "must be null unless the learner explicitly asks whether it got harder",
+    "languagePolicy": {
+      "ZH_TO_ID": {
+        "explanation": "zh",
+        "target": "id",
+        "feedback": "zh",
+        "romanization": "none"
+      },
+      "ID_TO_ZH": {
+        "explanation": "id",
+        "target": "zh",
+        "feedback": "id",
+        "romanization": "pinyin"
+      }
+    }
+  },
+  "acceptanceChecks": [
+    {
+      "checkId": "AC-S04-1",
+      "kind": "STATIC",
+      "expr": "output.changedDimension == null or count(changedDimension) == 1",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S04-2",
+      "kind": "STATIC",
+      "expr": "output.userVisibleMessage == null",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S04-3",
+      "kind": "RUNTIME",
+      "expr": "decision==UP implies 2 consecutive units in same scenario with independentSuccessRate>=0.8",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S04-4",
+      "kind": "RUNTIME",
+      "expr": "unitsSinceDown >= 2 before any UP",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S04-5",
+      "kind": "RUNTIME",
+      "expr": "novelty per turn <= 1 regardless of dimension",
+      "severity": "P0"
+    }
+  ],
+  "forbidden": [
+    {
+      "id": "F-S04-1",
+      "pattern": "一次调节多个维度",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S04-2",
+      "pattern": "向用户宣告难度变化",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S04-3",
+      "pattern": "把课时进度当作难度依据",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S04-4",
+      "pattern": "A0/A1 引入从句、被动、敬语体系",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S04-5",
+      "pattern": "跨场景累加成功率后调节难度",
+      "severity": "P0",
+      "note": "added by this audit"
+    }
+  ],
+  "examples": {
+    "ZH_TO_ID": {
+      "current": "Minta air botol satu",
+      "afterTwoStableUnits": "Minta air botol satu, yang dingin",
+      "not": "Minta air botol satu yang dingin tanpa gula ya mas — four new points at once"
+    },
+    "ID_TO_ZH": {
+      "current": "我要一杯奶茶",
+      "afterTwoStableUnits": "我要一杯奶茶，不要糖",
+      "not": "我想要一杯不加糖的冰奶茶 — length, vocabulary and clause all change together"
+    }
+  },
+  "openQuestions": [
+    "Is avgHintUse a better difficulty signal than success rate alone? Untested.",
+    "Should the 2-unit hold apply after an UP as well?"
+  ]
+}

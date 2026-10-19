@@ -1,0 +1,486 @@
+{
+  "schema": "indobrain.teaching-skill/v1",
+  "skillId": "S07",
+  "skillName": {
+    "en": "Independent Recall",
+    "zh": "独立提取"
+  },
+  "version": "1.0.0",
+  "status": "PROPOSED_FOR_INTEGRATION",
+  "reviewStatus": "AUDITED_AND_CORRECTED",
+  "source": {
+    "sourceId": "WBA-SKILLS-S01-S12",
+    "sha256": "524bec4c17d3d5e6b65d59579ef9ee0f1d09456e03406cbc59702eb7d93b0fa5",
+    "locator": "lines 523-615",
+    "sourceType": "PROSE_SPEC"
+  },
+  "objective": "Establish whether the learner can retrieve an expression without support and use it under a changed condition. Independent recall is necessary evidence for mastery, not sufficient on its own.",
+  "evidence": [
+    {
+      "claim": "Retrieval practice produces better long-term retention than restudying.",
+      "strength": "STRONG",
+      "citation": "Roediger & Karpicke 2006a; Karpicke & Roediger 2008, Science 319:966-968"
+    },
+    {
+      "claim": "Testing effect with feedback reaches g about 0.73; without feedback about 0.50.",
+      "strength": "STRONG",
+      "citation": "Rowland 2014 meta-analysis"
+    },
+    {
+      "claim": "Testing effect g about 0.61 across 188 experiments.",
+      "strength": "STRONG",
+      "citation": "Adesope et al. 2017"
+    },
+    {
+      "claim": "Variation questions are necessary to detect formulaic chunking.",
+      "strength": "PRODUCT_HYPOTHESIS",
+      "citation": "based on formulaic-sequence observation; no direct AI-coach evidence"
+    },
+    {
+      "claim": "Independent recall is the sole criterion of mastery.",
+      "strength": "REJECTED",
+      "citation": "Original text asserts this. It conflicts with the five-dimension evidence model and with the retention literature, which distinguishes acquisition from retention."
+    }
+  ],
+  "corrections": [
+    {
+      "correctionId": "C-S07-1",
+      "from": "这是'掌握'的唯一判定口径",
+      "to": "独立提取是掌握的必要证据，不是唯一口径。mastered 需同时满足：E1 独立冷提取 + (E2 单变量变式 或 E3 场景迁移) + E4 延迟保持；且证据集中不得含模仿或 STT 识别。",
+      "reason": "单一时间点的独立产出无法区分'记住了'与'刚在短时记忆里'。原文自己的边界案例承认'间隔不足 10 分钟就做 R1，通过无意义'，却又把 R1 写成唯一口径，自相矛盾。保留'唯一'会让一次性表演被记为长期掌握。",
+      "executableAs": "RULE-S07-01..RULE-S07-05"
+    },
+    {
+      "correctionId": "C-S07-2",
+      "from": "R1 与 R2 都通过才算 mastered",
+      "to": "改为证据门槛：E1 + (E2|E3) + E4。仅 E1+E2 记为 FLEXIBLE（可用但不稳定），不记 mastered。",
+      "reason": "R1+R2 都在同一次会话内时可全部落在短时记忆窗口，仍不足以称掌握。",
+      "executableAs": "RULE-S07-02"
+    },
+    {
+      "correctionId": "C-S07-3",
+      "from": "间隔必须 ≥10 分钟（AC-S07-3）",
+      "to": "10 分钟为'可计入保持证据'的下限；低于下限仍可测，但结果只能记 PRACTICE，不得进入 E4。跨会话 ≥24 小时才是 E4 的完整证据。",
+      "reason": "把 10 分钟写成硬拦截会让首次课内复习无法进行；写成'不计证据'既保留测量，又不污染掌握判定。",
+      "executableAs": "RULE-S07-04"
+    },
+    {
+      "correctionId": "C-S07-4",
+      "from": "变式只换名词（假变式，应为句法结构或语用功能的变化）",
+      "to": "明确单变量轴枚举：QUANTITY | POLARITY | TIME | LOCATION | INTERLOCUTOR | REGISTER | MODALITY。每次变式只动一轴；同一轴重复 3 次以上视为刷题。",
+      "reason": "原文只给了'不许换名词'的反例，没有给出可判定的轴列表，无法机器校验。",
+      "executableAs": "RULE-S07-06"
+    }
+  ],
+  "masteryModel": {
+    "note": "Mastery is a state derived from accumulated evidence, not from a single turn outcome.",
+    "evidenceTypes": [
+      {
+        "id": "E1",
+        "name": "INDEPENDENT_COLD_PRODUCTION",
+        "definition": "Target produced with no hint and no full model before the attempt.",
+        "countsTowardMastery": true
+      },
+      {
+        "id": "E2",
+        "name": "VARIATION_SINGLE_VARIABLE",
+        "definition": "Same structure produced under exactly one changed variable.",
+        "countsTowardMastery": true
+      },
+      {
+        "id": "E3",
+        "name": "TRANSFER_NEW_SCENARIO",
+        "definition": "Structure reused in a different scene with a different interlocutor.",
+        "countsTowardMastery": true
+      },
+      {
+        "id": "E4",
+        "name": "DELAYED_RETENTION",
+        "definition": "E1 reproduced after >= 10 minutes (partial) or across sessions >= 24h (full).",
+        "countsTowardMastery": true
+      },
+      {
+        "id": "E5",
+        "name": "SCAFFOLDED_SUCCESS",
+        "definition": "Produced only after a hint or full model.",
+        "countsTowardMastery": false,
+        "note": "progress evidence only"
+      },
+      {
+        "id": "E6",
+        "name": "IMITATION",
+        "definition": "Repetition of a model delivered immediately before.",
+        "countsTowardMastery": false,
+        "note": "never evidence of retrieval"
+      },
+      {
+        "id": "E7",
+        "name": "STT_RECOGNITION",
+        "definition": "Speech-to-text returned a plausible transcript.",
+        "countsTowardMastery": false,
+        "note": "recognition is not production and is not pronunciation assessment"
+      }
+    ],
+    "stateLadder": [
+      {
+        "state": "UNSEEN",
+        "requires": "no exposure"
+      },
+      {
+        "state": "INTRODUCED",
+        "requires": "E5 or E6 present, no E1"
+      },
+      {
+        "state": "PRACTICED",
+        "requires": "E5 present and at least one attempt"
+      },
+      {
+        "state": "INDEPENDENT_ONCE",
+        "requires": "E1 once, no E2/E3/E4"
+      },
+      {
+        "state": "FLEXIBLE",
+        "requires": "E1 and (E2 or E3), no E4"
+      },
+      {
+        "state": "RETAINED",
+        "requires": "E1 and (E2 or E3) and E4"
+      },
+      {
+        "state": "DECAYED",
+        "requires": "previously RETAINED and E1 now fails"
+      }
+    ],
+    "masteredDefinition": "state == RETAINED",
+    "hardGuards": [
+      "A single STT success can never produce mastered.",
+      "Hearing the target, or recognising its meaning, can never produce mastered.",
+      "A turn in which the full answer was given before the attempt can never produce E1.",
+      "A technical failure (ASR error, network, model error) produces NO evidence and never a penalty."
+    ]
+  },
+  "masteryLevelCompatibility": {
+    "problem": "The current runtime raises mastery_level by 2 on any STT pass and by 1 on a correct comprehension item, with no down-path. One successful repetition therefore crosses the review threshold (mastery_level < 2) permanently.",
+    "proposedMapping": [
+      {
+        "masteryLevel": 0,
+        "state": "UNSEEN"
+      },
+      {
+        "masteryLevel": 1,
+        "state": "INTRODUCED"
+      },
+      {
+        "masteryLevel": 2,
+        "state": "PRACTICED"
+      },
+      {
+        "masteryLevel": 3,
+        "state": "INDEPENDENT_ONCE or FLEXIBLE"
+      },
+      {
+        "masteryLevel": 4,
+        "state": "RETAINED"
+      }
+    ],
+    "deltaRules": [
+      "Maximum +1 per turn.",
+      "STT pass alone: +0. It may create E1 only if producedIndependently and no full model preceded it; E1 alone reaches level 3, never 4.",
+      "Comprehension correct: +0 toward mastery. It is a comprehension signal, not a production signal.",
+      "Technical failure: +0, and no decrement.",
+      "Skip: +0. Skipping is not evidence of anything.",
+      "Decay: -1 when a previously RETAINED item fails E1 on a later session."
+    ],
+    "blockingNote": "This mapping cannot be implemented without changing runtime behaviour. It is recorded here as a requirement, not applied to any code by this deliverable."
+  },
+  "stateContract": {
+    "turn.recall.stage": "R1 | R2 | R3",
+    "turn.recall.promptLeaksTarget": "boolean",
+    "turn.recall.withheldInformation": "string[]",
+    "turn.recall.variationAxis": "QUANTITY | POLARITY | TIME | LOCATION | INTERLOCUTOR | REGISTER | MODALITY | NONE",
+    "turn.recall.evidenceProduced": "E1..E7 | NONE",
+    "turn.recall.msSinceLastExposure": "integer",
+    "turn.recall.modelDeliveredBefore": "boolean",
+    "item.evidenceSet": "E[] with timestamps",
+    "item.state": "UNSEEN | INTRODUCED | PRACTICED | INDEPENDENT_ONCE | FLEXIBLE | RETAINED | DECAYED"
+  },
+  "policies": [
+    {
+      "ruleId": "RULE-S07-01",
+      "stage": "PLAN",
+      "when": "stage is R1",
+      "then": "The prompt must not contain the target surface or any contiguous 2-token fragment of it.",
+      "assertion": {
+        "path": "turn.recall.promptLeaksTarget",
+        "op": "eq",
+        "value": false
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.recall.promptLeaksTarget",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S07-02",
+      "stage": "JUDGE",
+      "when": "computing mastery state",
+      "then": "mastered requires E1 AND (E2 OR E3) AND E4.",
+      "assertion": {
+        "path": "item.state",
+        "op": "eq_for_mastered",
+        "value": "RETAINED"
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "item.state",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S07-03",
+      "stage": "JUDGE",
+      "when": "the only evidence is E7 or E6",
+      "then": "Evidence set is unchanged. State cannot rise.",
+      "assertion": {
+        "path": "turn.recall.evidenceProduced",
+        "op": "not_in",
+        "value": [
+          "E6",
+          "E7"
+        ]
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.recall.evidenceProduced",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S07-04",
+      "stage": "JUDGE",
+      "when": "msSinceLastExposure < 600000",
+      "then": "Outcome may be recorded as PRACTICE only; it cannot satisfy E4.",
+      "assertion": {
+        "path": "turn.recall.msSinceLastExposure",
+        "op": "gte_for_retention",
+        "value": 600000
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.recall.msSinceLastExposure",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S07-05",
+      "stage": "JUDGE",
+      "when": "masteryLevel would increase",
+      "then": "Increase by at most 1 per turn.",
+      "assertion": {
+        "path": "item.masteryDelta",
+        "op": "lte",
+        "value": 1
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "item.masteryDelta",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S07-06",
+      "stage": "PLAN",
+      "when": "stage is R2",
+      "then": "Exactly one variation axis changes.",
+      "assertion": {
+        "path": "turn.recall.variationAxis",
+        "op": "in",
+        "value": [
+          "QUANTITY",
+          "POLARITY",
+          "TIME",
+          "LOCATION",
+          "INTERLOCUTOR",
+          "REGISTER",
+          "MODALITY"
+        ]
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.recall.stage",
+        "op": "eq",
+        "value": "R2"
+      }
+    },
+    {
+      "ruleId": "RULE-S07-07",
+      "stage": "PLAN",
+      "when": "learner stalls during R1",
+      "then": "Do not reveal the answer. Route to S03; any production after a hint is E5.",
+      "assertion": {
+        "path": "turn.recall.modelDeliveredBefore",
+        "op": "eq",
+        "value": false
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.recall.modelDeliveredBefore",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S07-08",
+      "stage": "PLAN",
+      "when": "target cannot be varied (fixed courtesy formula)",
+      "then": "Do not run R2. Use R3 transfer only; mastery can still be reached via E1 + E3 + E4.",
+      "assertion": {
+        "path": "turn.recall.stage",
+        "op": "in",
+        "value": [
+          "R1",
+          "R2",
+          "R3"
+        ]
+      },
+      "severity": "P2",
+      "guard": {
+        "path": "turn.recall.stage",
+        "op": "exists",
+        "value": true
+      }
+    }
+  ],
+  "outputContract": {
+    "turnType": "independent_recall",
+    "required": [
+      "skill",
+      "recallStage",
+      "prompt",
+      "withheldInformation",
+      "variationAxis",
+      "evidenceProduced",
+      "masteryEligible"
+    ],
+    "withheldInformation": {
+      "mustInclude": "target_surface"
+    },
+    "languagePolicy": {
+      "ZH_TO_ID": {
+        "explanation": "zh",
+        "target": "id",
+        "feedback": "zh",
+        "romanization": "none"
+      },
+      "ID_TO_ZH": {
+        "explanation": "id",
+        "target": "zh",
+        "feedback": "id",
+        "romanization": "pinyin"
+      }
+    }
+  },
+  "acceptanceChecks": [
+    {
+      "checkId": "AC-S07-1",
+      "kind": "STATIC",
+      "expr": "prompt does not contain target surface or any 2-token contiguous fragment",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S07-2",
+      "kind": "RUNTIME",
+      "expr": "mastered implies E1 && (E2||E3) && E4",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S07-3",
+      "kind": "RUNTIME",
+      "expr": "E7 or E6 alone never changes state",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S07-4",
+      "kind": "RUNTIME",
+      "expr": "masteryDelta <= 1 per turn",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S07-5",
+      "kind": "STATIC",
+      "expr": "variationAxis is a single enum value",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S07-6",
+      "kind": "HUMAN",
+      "expr": "the R1 prompt describes a situation, not the sentence",
+      "severity": "P1"
+    }
+  ],
+  "forbidden": [
+    {
+      "id": "F-S07-1",
+      "pattern": "prompt 里泄露目标句",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S07-2",
+      "pattern": "用户一停顿就给答案",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S07-3",
+      "pattern": "只做 R1 就判 mastered",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S07-4",
+      "pattern": "把跟读/复述记作 R1 通过",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S07-5",
+      "pattern": "同一天同一场景重复 R1 三次以上",
+      "severity": "P2"
+    },
+    {
+      "id": "F-S07-6",
+      "pattern": "把'听过/看懂了释义'当成会说",
+      "severity": "P0",
+      "note": "added by this audit"
+    },
+    {
+      "id": "F-S07-7",
+      "pattern": "用一次 STT 成功直接跨级提升掌握度",
+      "severity": "P0",
+      "note": "added by this audit"
+    }
+  ],
+  "examples": {
+    "ZH_TO_ID": {
+      "learned": "Minta air botol satu",
+      "R1": "又进那家店了，买瓶水，怎么说？",
+      "R2": "这次要两瓶。",
+      "R3": "在药店，要一盒药。",
+      "variationAxes": "R2 uses QUANTITY; R3 uses LOCATION + OBJECT"
+    },
+    "ID_TO_ZH": {
+      "learned": "我要一杯奶茶",
+      "R1": "你在奶茶店，想喝奶茶，怎么说？",
+      "R2": "这次要两杯。",
+      "R3": "在咖啡店，要一杯咖啡。",
+      "variationAxes": "R2 uses QUANTITY; R3 uses LOCATION + OBJECT"
+    }
+  },
+  "openQuestions": [
+    "Should E3 transfer be required for very short courtesy formulas, where the only variation is interlocutor?",
+    "Is 24h the right retention window, or should it be 48h to reduce same-day rehearsal effects?"
+  ]
+}

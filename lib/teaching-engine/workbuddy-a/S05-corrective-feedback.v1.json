@@ -1,0 +1,451 @@
+{
+  "schema": "indobrain.teaching-skill/v1",
+  "skillId": "S05",
+  "skillName": {
+    "en": "Corrective Feedback",
+    "zh": "纠错反馈"
+  },
+  "version": "1.0.0",
+  "status": "PROPOSED_FOR_INTEGRATION",
+  "reviewStatus": "AUDITED_AND_CORRECTED",
+  "source": {
+    "sourceId": "WBA-SKILLS-S01-S12",
+    "sha256": "524bec4c17d3d5e6b65d59579ef9ee0f1d09456e03406cbc59702eb7d93b0fa5",
+    "locator": "lines 414-519",
+    "sourceType": "PROSE_SPEC"
+  },
+  "objective": "Make the learner notice one error and try once more, without damaging willingness to speak. The correction type is chosen from the error, the level and the learner's state — not from a fixed preference order.",
+  "evidence": [
+    {
+      "claim": "Corrective feedback has a medium overall effect that persists over time; implicit feedback retains better; laboratory effects exceed classroom effects.",
+      "strength": "STRONG",
+      "citation": "Li 2010, Language Learning 60(2) 309-365, 33 studies"
+    },
+    {
+      "claim": "Prompts are more beneficial than recasts, especially for beginners.",
+      "strength": "LIMITED",
+      "citation": "Lyster & Saito 2010, 15 classroom studies"
+    },
+    {
+      "claim": "Low-proficiency learners benefit more from prompts; high-proficiency learners show no difference between prompts and recasts.",
+      "strength": "LIMITED",
+      "citation": "Ammar & Spada 2006; Li 2009"
+    },
+    {
+      "claim": "Feedback aimed at the self rather than the task is the weakest layer and can reduce performance.",
+      "strength": "STRONG",
+      "citation": "Hattie & Timperley 2007; Kluger & DeNisi 1996 (about 2 in 5 feedback interventions lowered performance)"
+    },
+    {
+      "claim": "Novices accept positive feedback better, experts negative feedback better.",
+      "strength": "LIMITED",
+      "citation": "Finkelstein & Fishbach 2012 — consumer behaviour, transfer to L2 is a hypothesis"
+    },
+    {
+      "claim": "Formative assessment effects vary with implementation fidelity (about 0.20 vs 0.4-0.7).",
+      "strength": "LIMITED",
+      "citation": "Kingston & Nash 2011"
+    }
+  ],
+  "corrections": [
+    {
+      "correctionId": "C-S05-1",
+      "from": "默认策略（A0/A1）：prompt > recast > explicit，元语言纠错 A0/A1 默认禁用",
+      "to": "改为按错误类型、可注意性、水平、情绪四维选型。提示（elicitation）仍是常见首选，但不是默认；当学习者无法听出差异、错误未被注意、或已明确询问规则时，允许直接 recast 或明示，A1 以上允许一句元语言对比。",
+      "reason": "固定顺序在三类情形下会把学习者困在无效循环里：(1) 音素对立听不出（如 n/l、平翘舌），提示十次也不会自己改对；(2) 学习者坚信自己说对了，提示不提供任何信息；(3) 成人 A2 明确问'为什么这样说'时拒绝解释是家长式做法，且违背成人学习动机研究。",
+      "executableAs": "RULE-S05-01..RULE-S05-06"
+    },
+    {
+      "correctionId": "C-S05-2",
+      "from": "纠错的目标是'改一次'，不是'讲明白为什么'",
+      "to": "保留为默认目标，但补充例外：当同一错误在第 2 次纠正后仍复现，'讲明白'不再是禁忌，而是必需的对比说明（≤1 句，只讲对立项）。",
+      "reason": "原文边界案例已说'同一错误纠了 2 次还在，说明该知识点未就绪'，那么第二次之后不给对比信息，等于让学习者盲试第三次。",
+      "executableAs": "RULE-S05-07"
+    },
+    {
+      "correctionId": "C-S05-3",
+      "from": "纠错语气：语用偏差要更轻",
+      "to": "升级为规则：语用偏差不得标为'错'，只能标为'更自然'；语法错误才可用'错了/不对'。两者的话术模板分离。",
+      "reason": "'Saya mau beli air botol' 不是错，只是不地道。若按语法错误处理，会教出'我说的不对'的过度自我监控，抑制输出。",
+      "executableAs": "RULE-S05-05"
+    }
+  ],
+  "stateContract": {
+    "turn.error.type": "PHONOLOGICAL | LEXICAL | WORD_ORDER | OMISSION | PRAGMATIC | NONE",
+    "turn.error.blocking": "boolean — does it prevent the listener from understanding",
+    "turn.error.noticedByLearner": "boolean",
+    "turn.error.isMinimalPair": "boolean",
+    "turn.learner.level": "A0 | A1 | A2",
+    "turn.learner.sttConfidence": "number 0..1",
+    "turn.affect.state": "neutral | frustrated | confident",
+    "turn.cf.type": "ELICITATION | RECAST | EXPLICIT | METALINGUISTIC_CONTRAST | NONE",
+    "turn.cf.focusSpans": "string[] — at most one",
+    "turn.cf.attemptsOnSameError": "integer",
+    "session.errorCounts[type]": "integer"
+  },
+  "correctionMatrix": {
+    "note": "Rows are evaluated top-down. The first matching row decides the type. This replaces a fixed prompt>recast>explicit order.",
+    "rows": [
+      {
+        "id": "M1",
+        "when": "affect.state == frustrated",
+        "cfType": "NONE",
+        "action": "Defer correction. Route to S08. Correct nothing this turn.",
+        "rationale": "Correcting in a frustration trough converts a language problem into an identity problem."
+      },
+      {
+        "id": "M2",
+        "when": "sttConfidence < 0.75",
+        "cfType": "NONE",
+        "action": "Ask for one repetition. Do not treat the transcript as the learner's utterance.",
+        "rationale": "A wrong correction based on a wrong transcript destroys trust faster than any other failure."
+      },
+      {
+        "id": "M3",
+        "when": "error.type == PRAGMATIC",
+        "cfType": "RECAST",
+        "action": "Model the natural form, frame as 'more natural', never as 'wrong'.",
+        "rationale": "Grammaticality is intact; only naturalness differs."
+      },
+      {
+        "id": "M4",
+        "when": "error.type == PHONOLOGICAL and error.isMinimalPair and level in [A1, A2]",
+        "cfType": "METALINGUISTIC_CONTRAST",
+        "action": "One sentence contrasting the two sounds, then immediate retry.",
+        "rationale": "If the learner cannot perceive the contrast, elicitation cannot work. Refusing to explain guarantees failure."
+      },
+      {
+        "id": "M5",
+        "when": "error.noticedByLearner == false and error.blocking == true",
+        "cfType": "EXPLICIT",
+        "action": "Point at the span and give the correct form once.",
+        "rationale": "An unnoticed blocking error needs information, not a question."
+      },
+      {
+        "id": "M6",
+        "when": "error.type in [LEXICAL, WORD_ORDER, OMISSION] and level in [A0, A1]",
+        "cfType": "ELICITATION",
+        "action": "Indicate the location only; the learner supplies the form.",
+        "rationale": "Supported by Lyster & Saito 2010 and Ammar & Spada 2006 for lower proficiency."
+      },
+      {
+        "id": "M7",
+        "when": "error.type in [LEXICAL, WORD_ORDER, OMISSION] and level == A2",
+        "cfType": "RECAST",
+        "action": "Recast once, then ask for a retry. Switch to EXPLICIT if it recurs.",
+        "rationale": "At higher proficiency prompts and recasts perform similarly; recast costs less time."
+      },
+      {
+        "id": "M8",
+        "when": "default",
+        "cfType": "RECAST",
+        "action": "Model the corrected sentence without changing the topic."
+      }
+    ]
+  },
+  "policies": [
+    {
+      "ruleId": "RULE-S05-01",
+      "stage": "SELECT",
+      "when": "a correction is emitted",
+      "then": "The chosen cfType must equal the cfType of the first matching matrix row.",
+      "assertion": {
+        "path": "turn.cf.type",
+        "op": "in",
+        "value": [
+          "ELICITATION",
+          "RECAST",
+          "EXPLICIT",
+          "METALINGUISTIC_CONTRAST"
+        ]
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.cf.type",
+        "op": "not_eq",
+        "value": "NONE"
+      }
+    },
+    {
+      "ruleId": "RULE-S05-02",
+      "stage": "SELECT",
+      "when": "always",
+      "then": "One focus span per correction.",
+      "assertion": {
+        "path": "turn.cf.focusSpans",
+        "op": "length_eq",
+        "value": 1
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.cf.type",
+        "op": "not_eq",
+        "value": "NONE"
+      }
+    },
+    {
+      "ruleId": "RULE-S05-03",
+      "stage": "SELECT",
+      "when": "affect.state == frustrated",
+      "then": "cfType = NONE this turn.",
+      "assertion": {
+        "path": "turn.cf.type",
+        "op": "eq",
+        "value": "NONE"
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.affect.state",
+        "op": "eq",
+        "value": "frustrated"
+      }
+    },
+    {
+      "ruleId": "RULE-S05-04",
+      "stage": "SELECT",
+      "when": "always",
+      "then": "No self-level praise or blame in the feedback text.",
+      "bannedTerms": {
+        "zh": [
+          "真棒",
+          "聪明",
+          "厉害",
+          "天才",
+          "太笨"
+        ],
+        "id": [
+          "hebat",
+          "pintar",
+          "jenius",
+          "bodoh"
+        ]
+      },
+      "assertion": {
+        "path": "turn.cf.selfLevelTerms",
+        "op": "length_eq",
+        "value": 0
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.cf.selfLevelTerms",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S05-05",
+      "stage": "SELECT",
+      "when": "error.type == PRAGMATIC",
+      "then": "The message frames the change as naturalness, never as an error.",
+      "assertion": {
+        "path": "turn.cf.framing",
+        "op": "eq",
+        "value": "MORE_NATURAL"
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.error.type",
+        "op": "eq",
+        "value": "PRAGMATIC"
+      }
+    },
+    {
+      "ruleId": "RULE-S05-06",
+      "stage": "SELECT",
+      "when": "error.type == PHONOLOGICAL and sttConfidence < 0.75",
+      "then": "No pronunciation claim is made. Only 'I did not catch that, once more'.",
+      "assertion": {
+        "path": "turn.cf.pronunciationClaim",
+        "op": "eq",
+        "value": null
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.error.type",
+        "op": "eq",
+        "value": "PHONOLOGICAL"
+      }
+    },
+    {
+      "ruleId": "RULE-S05-07",
+      "stage": "ESCALATE",
+      "when": "turn.cf.attemptsOnSameError >= 2",
+      "then": "Escalate to METALINGUISTIC_CONTRAST for one sentence, or drop the target (S04 down). Do not repeat the same cfType a third time.",
+      "assertion": {
+        "path": "turn.cf.attemptsOnSameError",
+        "op": "lte",
+        "value": 2
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "turn.cf.attemptsOnSameError",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S05-08",
+      "stage": "AFTER",
+      "when": "the learner corrects the form",
+      "then": "Acknowledge task completion in one short clause and continue. No added explanation, no praise of the person.",
+      "assertion": {
+        "path": "turn.postCorrectionExplanation",
+        "op": "length_eq",
+        "value": 0
+      },
+      "severity": "P2",
+      "guard": {
+        "path": "turn.postCorrectionExplanation",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S05-09",
+      "stage": "GUARD",
+      "when": "always",
+      "then": "Total corrections per session for one error type <= 2.",
+      "assertion": {
+        "path": "session.errorCounts",
+        "op": "max_value",
+        "value": 2
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "session.errorCounts",
+        "op": "exists",
+        "value": true
+      }
+    }
+  ],
+  "outputContract": {
+    "turnType": "corrective_feedback",
+    "required": [
+      "skill",
+      "cfType",
+      "intentConfirmed",
+      "focusSpan",
+      "message",
+      "retryRequired",
+      "maxRetry",
+      "pronunciationClaim",
+      "framing"
+    ],
+    "maxRetry": {
+      "value": 1,
+      "note": "one retry per correction; a second failure escalates rather than repeats"
+    },
+    "languagePolicy": {
+      "ZH_TO_ID": {
+        "explanation": "zh",
+        "target": "id",
+        "feedback": "zh",
+        "romanization": "none"
+      },
+      "ID_TO_ZH": {
+        "explanation": "id",
+        "target": "zh",
+        "feedback": "id",
+        "romanization": "pinyin"
+      }
+    }
+  },
+  "acceptanceChecks": [
+    {
+      "checkId": "AC-S05-1",
+      "kind": "STATIC",
+      "expr": "focusSpans.length == 1",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S05-2",
+      "kind": "STATIC",
+      "expr": "message contains no bannedSelfLevelTerm",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S05-3",
+      "kind": "RUNTIME",
+      "expr": "cfType == matrixRow(affect, sttConfidence, errorType, level, noticed, blocking)",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S05-4",
+      "kind": "RUNTIME",
+      "expr": "pronunciationClaim == null always",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S05-5",
+      "kind": "RUNTIME",
+      "expr": "attemptsOnSameError <= 2 and no third identical cfType",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S05-6",
+      "kind": "HUMAN",
+      "expr": "an adult learner would not feel talked down to",
+      "severity": "P1"
+    }
+  ],
+  "forbidden": [
+    {
+      "id": "F-S05-1",
+      "pattern": "表扬人",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S05-2",
+      "pattern": "一次纠多个错误",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S05-3",
+      "pattern": "对 STT 结果做发音评价",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S05-4",
+      "pattern": "纠错后问'懂了吗'",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S05-5",
+      "pattern": "情绪低谷期纠错",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S05-6",
+      "pattern": "把语用偏差说成语法错误",
+      "severity": "P0",
+      "note": "added by this audit"
+    },
+    {
+      "id": "F-S05-7",
+      "pattern": "同一错误第 3 次仍用同一提示方式",
+      "severity": "P0",
+      "note": "added by this audit"
+    }
+  ],
+  "examples": {
+    "ZH_TO_ID": {
+      "learner": "Saya mau beli air botol satu.",
+      "errorType": "PRAGMATIC",
+      "cfType": "RECAST",
+      "message_zh": "能听懂。印尼人一般说短一点——Minta air botol satu，你说一次？",
+      "notThis": "不要说'这样说错了，印尼语数词要后置'——这不是语法错误。"
+    },
+    "ID_TO_ZH": {
+      "learner": "我要一杯茶奶",
+      "errorType": "WORD_ORDER",
+      "level": "A0",
+      "cfType": "ELICITATION",
+      "message_zh": "意思我懂了，你要奶茶。最后两个字调过来，再说一次？",
+      "notThis": "不要说'量词杯用在名词前，奶茶是词不能拆'——术语加多点纠正。"
+    }
+  },
+  "openQuestions": [
+    "Is METALINGUISTIC_CONTRAST for minimal pairs effective in text-only mode, without audio?",
+    "Do Indonesian learners of Mandarin respond to elicitation the same way as the L2 English samples in the literature?"
+  ]
+}

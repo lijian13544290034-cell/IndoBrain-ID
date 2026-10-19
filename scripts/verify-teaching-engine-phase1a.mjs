@@ -101,7 +101,9 @@ try {
   const chatRoute = fs.readFileSync(path.join(root, 'app/api/chat/route.ts'), 'utf8');
   const chatWorkspace = fs.readFileSync(path.join(root, 'components/ChatWorkspace.tsx'), 'utf8');
   assert(chatRoute.includes('message: assistantMessage'));
+  assert(chatRoute.includes('assistant_message: assistantMessage'));
   assert(chatWorkspace.includes('data.assistant_message'));
+  assert(chatWorkspace.includes('data.message'));
 
   console.log('TEACHING ENGINE PHASE 1A: PASS');
   console.log('CORE_SKILLS: S02,S03,S04,S05,S07,S08');
@@ -109,7 +111,7 @@ try {
   console.log('NO_EVIDENCE: PASS');
   console.log('MASTERY_COMPATIBILITY: PASS');
   console.log('COURSE_ASSERTION_GATE: PASS');
-  console.log('API_CHAT_CONTRACT_AUDIT: MISMATCH_CONFIRMED, NOT_MODIFIED');
+  console.log('API_CHAT_CONTRACT: COMPATIBILITY_FIXED (assistant_message + legacy message)');
 } finally {
   fs.rmSync(temporary, { recursive: true, force: true });
 }

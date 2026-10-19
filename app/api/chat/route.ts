@@ -23,12 +23,16 @@ export async function POST(request: Request) {
   const scope = await resolveRequestAccountScope(clientSessionId);
   if (!scope) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
   const status = aiProviderStatus();
-  if (!status.configured) return NextResponse.json({ configured: false, message: 'AI Provider Not Configured. 请在 .env.local 设置 AI_PROVIDER 和对应的 API Key。' }, { status: 503 });
+  if (!status.configured) {
+    const assistantMessage = 'AI Provider Not Configured. 请在 .env.local 设置 AI_PROVIDER 和对应的 API Key。';
+    return NextResponse.json({ configured: false, message: assistantMessage, assistant_message: assistantMessage }, { status: 503 });
+  }
   try {
     const assistantMessage = await generateAiReply(prompts[roleType], messages);
     const database = await saveToSupabase('conversations', { session_id: scope.sessionId, role_type: roleType, user_message: userMessage.slice(0, 2000), assistant_message: assistantMessage.slice(0, 4000) });
-    return NextResponse.json({ configured: true, message: assistantMessage, database });
+    return NextResponse.json({ configured: true, message: assistantMessage, assistant_message: assistantMessage, database });
   } catch {
-    return NextResponse.json({ configured: true, message: 'AI service is temporarily unavailable. 请稍后再试。' }, { status: 503 });
+    const assistantMessage = 'AI service is temporarily unavailable. 请稍后再试。';
+    return NextResponse.json({ configured: true, message: assistantMessage, assistant_message: assistantMessage }, { status: 503 });
   }
 }

@@ -7,6 +7,7 @@ import { anonymizeLearningQuestion, answerCoachConversation, transcribeMandarin 
 import { getMandarinLevel2Access } from '@/lib/server/mandarin-work-level2-access';
 import { getMandarinCoachLesson } from '@/lib/server/mandarin-coach-curriculum';
 import { resolveRequestAccountScope } from '@/lib/server/request-account-scope';
+import { runTeachingEngineShadow } from '@/lib/server/teaching-engine-shadow';
 
 export const runtime = 'nodejs';
 
@@ -112,13 +113,57 @@ export async function POST(request: Request) {
       if (!allowedAudioTypes.has(audioType) || audio.size < 128 || audio.size > 5_000_000) return Response.json({ error: 'Rekaman audio tidak valid.' }, { status: 400 });
       transcription = await transcribeMandarin(new Uint8Array(await audio.arrayBuffer()), scopedSessionId);
       message = transcription.transcript;
-      if (!message) return Response.json({ error: 'Suara belum terdengar jelas. Silakan rekam lagi.' }, { status: 422 });
+      if (!message) {
+        const teachingEngine = runTeachingEngineShadow({
+          requestId: randomUUID(),
+          direction: 'ID_TO_ZH',
+          turnKind: 'TECH_FAILURE',
+          evidence: { kind: 'NONE', prompted: false, written: false, reviewQueued: false },
+          strategyHistory: [],
+          teachingAction: 'TECHNICAL_RETRY_OR_TEXT_FALLBACK',
+          technicalFailure: 'EMPTY_STT',
+          sources: {
+            turnKind: 'TRANSPORT_OR_PROVIDER_FAILURE',
+            evidenceKind: 'TECHNICAL_FAILURE',
+            strategyHistory: 'UNAVAILABLE_LEGACY_RECENT_TURNS',
+          },
+          courseAuthorization: { authorized: true, lessonId: courseLesson.id, source: courseLesson.source },
+          ruleContext: { turn: { direction: 'ID_TO_ZH', mode: 'PRACTICE' } },
+        });
+        return Response.json({
+          error: 'Suara belum terdengar jelas. Silakan rekam lagi.',
+          ...(teachingEngine ? { teachingEngine } : {}),
+        }, { status: 422 });
+      }
     }
     if (!message || message.length > 500) return Response.json({ error: 'Tulis atau ucapkan pertanyaan singkat.' }, { status: 400 });
 
     const result = await answerCoachConversation({ message, sessionId: scopedSessionId, context: securedContext });
     const questionId = randomUUID();
     const timestamp = new Date().toISOString();
+    const teachingEngine = runTeachingEngineShadow({
+      requestId: questionId,
+      direction: 'ID_TO_ZH',
+      turnKind: 'TEACHING',
+      evidence: { kind: 'NONE', prompted: false, written: false, reviewQueued: false },
+      strategyHistory: [],
+      teachingAction: result.answer.teachingStrategy || 'UNSPECIFIED',
+      technicalFailure: null,
+      sources: {
+        turnKind: 'MANDARIN_COACH_SUCCESS_RESPONSE',
+        evidenceKind: 'NO_ASSESSMENT_IN_CONVERSATION_ROUTE',
+        strategyHistory: 'UNAVAILABLE_LEGACY_RECENT_TURNS',
+      },
+      courseAuthorization: { authorized: true, lessonId: courseLesson.id, source: courseLesson.source },
+      ruleContext: {
+        turn: {
+          direction: 'ID_TO_ZH',
+          mode: securedContext.conversationMode === 'GUIDED_TRAINING' ? 'TEACH' : 'ANSWER_ONLY',
+          targetSurface: result.answer.chinese || result.answer.targetChinese || '',
+          coach: { text: result.answer.answer },
+        },
+      },
+    });
     const sessionKey = createHash('sha256').update(scopedSessionId).digest('hex').slice(0, 16);
     const inputMode = audio instanceof File ? 'VOICE' as const : 'TEXT' as const;
     const capabilityIds = getCoachCapabilityIds(result.classification.intents, result.classification.skillIds, result.classification.intent === 'OFF_TOPIC');
@@ -205,6 +250,7 @@ export async function POST(request: Request) {
         estimated_ai_cost: estimatedCost,
         response_latency_ms: responseLatencyMs,
       },
+      ...(teachingEngine ? { teachingEngine } : {}),
       timestamp,
     });
   } catch (error) {

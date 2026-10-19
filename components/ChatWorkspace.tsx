@@ -21,7 +21,9 @@ export default function ChatWorkspace({ profile }: { profile: ChatProfile }) {
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: getSessionId(), role_type: profile.roleType, messages: history.map((message) => ({ role: message.role, content: message.text })) }) });
       const data = await response.json();
       if (!response.ok) { setStatus(data.message || data.error || 'AI 尚未配置'); return; }
-      setMessages((current) => [...current, { id: `assistant-${Date.now()}`, role: 'assistant', text: data.assistant_message }]);
+      const assistantMessage = typeof data.assistant_message === 'string' ? data.assistant_message : data.message;
+      if (typeof assistantMessage !== 'string' || !assistantMessage.trim()) { setStatus('AI 返回了无效内容，请重试。'); return; }
+      setMessages((current) => [...current, { id: `assistant-${Date.now()}`, role: 'assistant', text: assistantMessage }]);
     } catch { setStatus('网络连接失败，请稍后重试。'); } finally { setLoading(false); }
   }
   async function copyMessage(message: Message) { await navigator.clipboard.writeText(message.text); setStatus('已复制'); }

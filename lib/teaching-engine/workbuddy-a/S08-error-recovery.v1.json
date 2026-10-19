@@ -1,0 +1,373 @@
+{
+  "schema": "indobrain.teaching-skill/v1",
+  "skillId": "S08",
+  "skillName": {
+    "en": "Error Recovery",
+    "zh": "错误恢复 / 挫败恢复"
+  },
+  "version": "1.0.0",
+  "status": "PROPOSED_FOR_INTEGRATION",
+  "reviewStatus": "AUDITED_AND_CORRECTED",
+  "source": {
+    "sourceId": "WBA-SKILLS-S01-S12",
+    "sha256": "524bec4c17d3d5e6b65d59579ef9ee0f1d09456e03406cbc59702eb7d93b0fa5",
+    "locator": "lines 618-704",
+    "sourceType": "PROSE_SPEC"
+  },
+  "objective": "Turn 'I cannot learn this' into 'this step was not ready yet', and get one real success within two turns so the learner can continue.",
+  "evidence": [
+    {
+      "claim": "Mastery experience is the strongest source of self-efficacy.",
+      "strength": "STRONG_THEORY",
+      "citation": "Bandura 1977/1986"
+    },
+    {
+      "claim": "Foreign-language anxiety and self-efficacy correlate at about r = -0.70 across 37 studies / 26,589 students.",
+      "strength": "STRONG_CORRELATIONAL",
+      "citation": "Current Psychology 2022 meta-analysis — correlation, not causation"
+    },
+    {
+      "claim": "Attributing failure to strategy or difficulty rather than ability sustains motivation.",
+      "strength": "LIMITED",
+      "citation": "attribution research; specific to this product untested"
+    },
+    {
+      "claim": "Stepping down several levels produces a reliable success.",
+      "strength": "PRODUCT_HYPOTHESIS",
+      "citation": "inferred from Bandura; step size untested"
+    }
+  ],
+  "corrections": [
+    {
+      "correctionId": "C-S08-1",
+      "from": "四步复位法：1 承认难度 → 2 归因外化 → 3 制造成功 → 4 换路径重来（固定顺序）",
+      "to": "改为三个必需成分，顺序可自由组合：A 难度归因（指向任务，不指向人）；B 立即成功（取自 known_good 集合，必须真实产出）；C 路径改变（拆分/缩短/换同功能表达）。允许把 B 与 C 合并为一步，也允许先给路径再给成功。",
+      "reason": "固定四步在用户明确说'别安慰我，你就告诉我怎么说'时会显得敷衍：用户要的是路径，系统却先走承认难度、再走归因。成分保留、顺序放开，既不丢教学要点，也不违背用户请求。",
+      "executableAs": "RULE-S08-02"
+    },
+    {
+      "correctionId": "C-S08-2",
+      "from": "触发条件含'连续 3 轮 scaffold_level ≥ 3'",
+      "to": "改为'连续 3 轮使用高成本提示（FULL_MODEL 或连续 2 条提示）且未产出'，并新增假阳性护栏：单纯沉默、打字慢、网络等待不计入挫败。",
+      "reason": "档位制被本次审计取消，触发条件必须同步改写；否则规则指向一个不存在的字段。",
+      "executableAs": "RULE-S08-01"
+    },
+    {
+      "correctionId": "C-S08-3",
+      "from": "恢复目标必须 ∈ known_easy_items（历史 mastered=true 项）",
+      "to": "改为 ∈ known_good 集合，定义为'本会话内已独立成功过'或'历史 RETAINED'。空集合时，允许用一次纯模仿成功作为 B 成分，但该轮不产生任何掌握证据。",
+      "reason": "首次课的新用户 known_easy_items 为空，原规则会让 S08 无法执行，等于在最需要恢复的场景失效。",
+      "executableAs": "RULE-S08-05"
+    }
+  ],
+  "stateContract": {
+    "session.consecutiveFailures": "integer",
+    "session.highCostHintStreak": "integer",
+    "session.lengthMin": "integer",
+    "turn.affect.frustrationMarkers": "string[] — matched against the marker list",
+    "turn.affect.silenceStreak": "integer",
+    "turn.affect.typedSlowly": "boolean",
+    "recovery.componentsUsed": "A | B | C",
+    "recovery.targetSource": "KNOWN_GOOD_SESSION | KNOWN_GOOD_HISTORY | IMITATION_FALLBACK",
+    "recovery.pathChange": "SPLIT | SHORTEN | ALTERNATIVE_FUNCTION | MODALITY_SWITCH",
+    "session.knownGood[]": "expressionId"
+  },
+  "triggers": [
+    {
+      "id": "T-S08-1",
+      "when": "session.consecutiveFailures >= 3",
+      "priority": 1
+    },
+    {
+      "id": "T-S08-2",
+      "when": "turn.affect.frustrationMarkers.length > 0",
+      "priority": 1
+    },
+    {
+      "id": "T-S08-3",
+      "when": "session.highCostHintStreak >= 3",
+      "priority": 2
+    },
+    {
+      "id": "T-S08-4",
+      "when": "turn.affect.silenceStreak >= 3 and turn.affect.typedSlowly == false and there is no network or ASR failure",
+      "priority": 3
+    },
+    {
+      "id": "T-S08-5",
+      "when": "session.lengthMin > 25",
+      "priority": 0,
+      "action": "REST_SUGGESTION"
+    }
+  ],
+  "policies": [
+    {
+      "ruleId": "RULE-S08-01",
+      "stage": "TRIGGER",
+      "when": "evaluating a trigger",
+      "then": "Silence alone, slow typing or a pending network call never counts as frustration. At least two independent signals or one explicit frustration marker is required.",
+      "assertion": {
+        "path": "turn.affect.signalCount",
+        "op": "gte",
+        "value": 1
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.affect.signalCount",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S08-02",
+      "stage": "PLAN",
+      "when": "recovery turn is composed",
+      "then": "The turn must contain A (task-level difficulty attribution), B (an immediately achievable production) and C (a changed path). Order is free; B and C may be merged.",
+      "assertion": {
+        "path": "recovery.componentsUsed",
+        "op": "contains_all",
+        "value": [
+          "A",
+          "B",
+          "C"
+        ]
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "recovery.componentsUsed",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S08-03",
+      "stage": "PLAN",
+      "when": "always",
+      "then": "No new vocabulary, no grammar explanation, no correction during recovery.",
+      "assertion": {
+        "path": "turn.newInfoPoints",
+        "op": "eq",
+        "value": 0
+      },
+      "severity": "P0",
+      "guard": {
+        "path": "recovery",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S08-04",
+      "stage": "PLAN",
+      "when": "affect.state is frustrated",
+      "then": "The message attributes difficulty to the task, never to the learner. No ability words.",
+      "bannedTerms": {
+        "zh": [
+          "别灰心",
+          "你可以的",
+          "加油",
+          "很简单",
+          "太笨",
+          "你不适合"
+        ],
+        "id": [
+          "jangan menyerah",
+          "kamu pasti bisa",
+          "semangat",
+          "gampang",
+          "bodoh"
+        ]
+      },
+      "assertion": {
+        "path": "turn.message.abilityWords",
+        "op": "length_eq",
+        "value": 0
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "turn.message.abilityWords",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S08-05",
+      "stage": "PLAN",
+      "when": "choosing the B component target",
+      "then": "Target must come from known_good. If empty, use IMITATION_FALLBACK and mark the turn as producing no evidence.",
+      "assertion": {
+        "path": "recovery.targetSource",
+        "op": "in",
+        "value": [
+          "KNOWN_GOOD_SESSION",
+          "KNOWN_GOOD_HISTORY",
+          "IMITATION_FALLBACK"
+        ]
+      },
+      "severity": "P1",
+      "guard": {
+        "path": "recovery.targetSource",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S08-06",
+      "stage": "JUDGE",
+      "when": "after the recovery turn",
+      "then": "Recovery succeeds when the learner produces any target within 2 turns and no frustration marker reappears.",
+      "assertion": {
+        "path": "recovery.success",
+        "op": "eq",
+        "value": true
+      },
+      "severity": "P2",
+      "guard": {
+        "path": "recovery.success",
+        "op": "exists",
+        "value": true
+      }
+    },
+    {
+      "ruleId": "RULE-S08-07",
+      "stage": "EXIT",
+      "when": "4 turns pass with no production after recovery",
+      "then": "Offer to end the session. Do not keep retrying.",
+      "assertion": {
+        "path": "recovery.turnsSinceTrigger",
+        "op": "lte_for_continue",
+        "value": 4
+      },
+      "severity": "P2",
+      "guard": {
+        "path": "recovery.turnsSinceTrigger",
+        "op": "exists",
+        "value": true
+      }
+    }
+  ],
+  "outputContract": {
+    "turnType": "error_recovery",
+    "required": [
+      "skill",
+      "trigger",
+      "componentsUsed",
+      "message",
+      "target",
+      "targetSource",
+      "pathChange",
+      "forbiddenInTurn",
+      "nextTargetAfterSuccess"
+    ],
+    "forbiddenInTurn": {
+      "value": [
+        "new_vocabulary",
+        "grammar_explanation",
+        "correction"
+      ]
+    },
+    "languagePolicy": {
+      "ZH_TO_ID": {
+        "explanation": "zh",
+        "target": "id",
+        "feedback": "zh",
+        "romanization": "none"
+      },
+      "ID_TO_ZH": {
+        "explanation": "id",
+        "target": "zh",
+        "feedback": "id",
+        "romanization": "pinyin"
+      }
+    }
+  },
+  "acceptanceChecks": [
+    {
+      "checkId": "AC-S08-1",
+      "kind": "STATIC",
+      "expr": "componentsUsed contains A,B,C",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S08-2",
+      "kind": "STATIC",
+      "expr": "message contains no banned encouragement or ability word",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S08-3",
+      "kind": "RUNTIME",
+      "expr": "newInfoPoints == 0 during recovery",
+      "severity": "P0"
+    },
+    {
+      "checkId": "AC-S08-4",
+      "kind": "RUNTIME",
+      "expr": "targetSource in known_good or IMITATION_FALLBACK",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S08-5",
+      "kind": "RUNTIME",
+      "expr": "consecutiveFailures >= 3 implies recovery triggered",
+      "severity": "P1"
+    },
+    {
+      "checkId": "AC-S08-6",
+      "kind": "HUMAN",
+      "expr": "the message does not sound like consolation and does not blame the learner",
+      "severity": "P1"
+    }
+  ],
+  "forbidden": [
+    {
+      "id": "F-S08-1",
+      "pattern": "空洞鼓励（别灰心/你可以的/加油）",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S08-2",
+      "pattern": "说'这个很简单啊'",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S08-3",
+      "pattern": "恢复轮里继续纠错",
+      "severity": "P0"
+    },
+    {
+      "id": "F-S08-4",
+      "pattern": "无限重试原目标",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S08-5",
+      "pattern": "用降难度作为惩罚语气",
+      "severity": "P1"
+    },
+    {
+      "id": "F-S08-6",
+      "pattern": "把打字慢或网络等待判定为挫败",
+      "severity": "P0",
+      "note": "added by this audit"
+    }
+  ],
+  "examples": {
+    "ZH_TO_ID": {
+      "situation": "三次说不清 Bisa kurang?",
+      "message_zh": "这句确实别扭，ng 的音不好发。先说你熟的——Terima kasih。",
+      "then": "好。刚才那句拆开：先说 Bisa。",
+      "note": "A（难度归因）→ B（Terima kasih）→ C（拆分为 Bisa）"
+    },
+    "ID_TO_ZH": {
+      "situation": "三次说不清 这个多少钱",
+      "message_zh": "这句是有点绕，三个字都是新音。先来个你熟的——谢谢。",
+      "then": "对。现在把刚才那句拆一半：先说 这个。",
+      "note": "Do not say 别灰心 or 这个很简单."
+    }
+  },
+  "openQuestions": [
+    "What is the minimum viable known_good set size for the B component to feel real?",
+    "Does a rest suggestion at 25 minutes help retention or simply end sessions early?"
+  ]
+}
