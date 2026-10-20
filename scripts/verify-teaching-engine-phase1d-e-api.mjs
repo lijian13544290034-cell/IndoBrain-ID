@@ -65,6 +65,34 @@ async function main() {
   assert.equal(levelTwo.body.code, 'LEVEL2_ACCESS_REQUIRED');
   assert.equal('activeTeaching' in levelTwo.body, false);
 
+  const guardSession = `coach-phase1de-guard-${Date.now()}`;
+  const guardStart = await request({ sessionId: guardSession, message: 'Mulai.', start: true });
+  assert.equal(guardStart.status, 200);
+  const guarded = await request({ sessionId: guardSession, message: 'Bagaimana cuaca Jakarta besok?', token: guardStart.body.activeTeachingToken });
+  assert.equal(guarded.status, 200);
+  assert.equal(guarded.body.activeTeaching.stage, guardStart.body.activeTeaching.stage);
+  assert.equal(guarded.body.teachingTurnTelemetry.evidence.kind, 'NONE');
+  assert.equal(guarded.body.teachingTurnTelemetry.next.recordsLearnerFailure, false);
+  assert.equal(guarded.body.usage.model_calls, 0);
+  assert.match(guarded.body.answer, /(?:fokus|hanya) membantu kamu belajar Mandarin/i);
+
+  const clarified = await request({ sessionId: guardSession, message: 'Bagaimana?', token: guarded.body.activeTeachingToken });
+  assert.equal(clarified.status, 200);
+  assert.equal(clarified.body.activeTeaching.stage, guarded.body.activeTeaching.stage);
+  assert.equal(clarified.body.teachingTurnTelemetry.evidence.kind, 'NONE');
+  assert.equal(clarified.body.teachingTurnTelemetry.next.recordsLearnerFailure, false);
+  assert.equal(clarified.body.usage.model_calls, 0);
+
+  const ordinaryGuard = await request({
+    sessionId: `coach-phase1de-ordinary-guard-${Date.now()}`,
+    message: 'Tolong buatkan aplikasi cuaca lengkap.',
+    lesson: 'mandarin-work-level-1-day-1',
+  });
+  assert.equal(ordinaryGuard.status, 200);
+  assert.equal(ordinaryGuard.body.usage.model_calls, 0);
+  assert.equal(ordinaryGuard.body.intent, 'OFF_TOPIC');
+  assert.match(ordinaryGuard.body.answer, /(?:fokus|hanya) membantu kamu belajar Mandarin/i);
+
   console.log(JSON.stringify({
     suite: 'PHASE_1D_E_REAL_HTTP',
     mainFlow: { verdict: 'PASS', stages },
@@ -74,6 +102,9 @@ async function main() {
     crossSessionReuse: { verdict: 'PASS', status: crossSession.status },
     forgedStage: { verdict: 'PASS', resultingStage: forged.body.activeTeaching.stage },
     levelTwoFailClosed: { verdict: 'PASS', status: levelTwo.status },
+    activeIntentGuard: { verdict: 'PASS', stageUnchanged: guarded.body.activeTeaching.stage, modelCalls: guarded.body.usage.model_calls },
+    activeClarification: { verdict: 'PASS', stageUnchanged: clarified.body.activeTeaching.stage, modelCalls: clarified.body.usage.model_calls },
+    ordinaryIntentGuard: { verdict: 'PASS', modelCalls: ordinaryGuard.body.usage.model_calls },
   }, null, 2));
 }
 
