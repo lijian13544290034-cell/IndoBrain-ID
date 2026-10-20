@@ -7,7 +7,8 @@ import { anonymizeLearningQuestion, answerCoachConversation, transcribeMandarin 
 import { getMandarinLevel2Access } from '@/lib/server/mandarin-work-level2-access';
 import { getMandarinCoachLesson } from '@/lib/server/mandarin-coach-curriculum';
 import { resolveRequestAccountScope } from '@/lib/server/request-account-scope';
-import { runTeachingEngineShadow } from '@/lib/server/teaching-engine-shadow';
+import { buildActiveTechnicalFailure, runActiveTeachingTurn } from '@/lib/server/teaching-engine-active';
+import { runTeachingEngineShadow, teachingEngineActiveEnabled } from '@/lib/server/teaching-engine-shadow';
 
 export const runtime = 'nodejs';
 
@@ -76,6 +77,8 @@ function safeContext(value: FormDataEntryValue | null) {
       recentTurns: recentTurns.slice(-6),
       sessionStartedAt: typeof parsed.sessionStartedAt === 'string' ? parsed.sessionStartedAt : '',
       messageCount: typeof parsed.messageCount === 'number' ? Math.max(0, Math.min(200, parsed.messageCount)) : recentTurns.length,
+      activeTeaching: parsed.activeTeaching && typeof parsed.activeTeaching === 'object' ? parsed.activeTeaching : null,
+      activeTeachingStart: parsed.activeTeachingStart === true,
     };
   } catch {
     return null;
@@ -114,6 +117,10 @@ export async function POST(request: Request) {
       transcription = await transcribeMandarin(new Uint8Array(await audio.arrayBuffer()), scopedSessionId);
       message = transcription.transcript;
       if (!message) {
+        const activeFailure = teachingEngineActiveEnabled() && courseLesson.id === 'mandarin-work-level-1-day-27' ? buildActiveTechnicalFailure({
+          requestId: randomUUID(), lessonId: courseLesson.id, message: '', modality: 'VOICE',
+          state: context.activeTeaching, reason: 'EMPTY_STT',
+        }) : null;
         const teachingEngine = runTeachingEngineShadow({
           requestId: randomUUID(),
           direction: 'ID_TO_ZH',
@@ -132,16 +139,42 @@ export async function POST(request: Request) {
         });
         return Response.json({
           error: 'Suara belum terdengar jelas. Silakan rekam lagi.',
+          ...(activeFailure ? { activeTeaching: activeFailure.session, teachingTurnTelemetry: activeFailure.telemetry, teachingEngine: activeFailure.engine } : {}),
           ...(teachingEngine ? { teachingEngine } : {}),
         }, { status: 422 });
       }
     }
     if (!message || message.length > 500) return Response.json({ error: 'Tulis atau ucapkan pertanyaan singkat.' }, { status: 400 });
 
-    const result = await answerCoachConversation({ message, sessionId: scopedSessionId, context: securedContext });
     const questionId = randomUUID();
+    let activeTeaching: ReturnType<typeof runActiveTeachingTurn> = null;
+    if (teachingEngineActiveEnabled() && courseLesson.id === 'mandarin-work-level-1-day-27') {
+      try {
+        activeTeaching = runActiveTeachingTurn({
+          requestId: questionId, lessonId: courseLesson.id, message,
+          modality: audio instanceof File ? 'VOICE' : 'TEXT', startRequested: securedContext.activeTeachingStart,
+          state: securedContext.activeTeaching,
+        });
+      } catch (activeError) {
+        console.warn('[mandarin-coach-active-safe-fallback]', {
+          name: activeError instanceof Error ? activeError.name : 'UnknownError',
+        });
+      }
+    }
+    const activeHasChinese = /[\u3400-\u9fff]/.test(message);
+    const activeHasLatin = /[a-z]/i.test(message);
+    const result = activeTeaching ? {
+      classification: {
+        detectedLanguage: activeHasChinese && activeHasLatin ? 'MIXED' as const : activeHasChinese ? 'CHINESE' as const : 'INDONESIAN' as const,
+        intent: 'CONVERSATION' as const, intents: ['CONVERSATION' as const, 'WORKPLACE' as const],
+        skillIds: ['CONVERSATION' as const, 'WORKPLACE' as const], normalizedInput: message,
+        answerCategory: 'ACTIVE_TEACHING_LOOP', targetChinese: '我明天上班',
+      },
+      answer: activeTeaching.response,
+      usage: { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'rules/teaching-engine-active-v1', structured_retries: 0, safe_fallbacks: 0, retry_token_input: 0, retry_token_output: 0, retry_estimated_cost: 0 },
+    } : await answerCoachConversation({ message, sessionId: scopedSessionId, context: securedContext });
     const timestamp = new Date().toISOString();
-    const teachingEngine = runTeachingEngineShadow({
+    const teachingEngine = activeTeaching?.engine ?? runTeachingEngineShadow({
       requestId: questionId,
       direction: 'ID_TO_ZH',
       turnKind: 'TEACHING',
@@ -193,7 +226,7 @@ export async function POST(request: Request) {
       skill_gap: result.answer.skillGap,
       timestamp,
     });
-    await saveCoachInteraction({
+    if (!activeTeaching) await saveCoachInteraction({
       sessionId: scopedSessionId,
       userId: scope.user?.id || null,
       inputMode,
@@ -223,7 +256,7 @@ export async function POST(request: Request) {
       sessionDurationSeconds,
       offTopic: result.classification.intent === 'OFF_TOPIC',
     });
-    if (securedContext.messageCount === 0) {
+    if (!activeTeaching && securedContext.messageCount === 0) {
       await saveCoachTelemetryEvent({
         sessionId: scopedSessionId,
         userId: scope.user?.id || null,
@@ -251,6 +284,7 @@ export async function POST(request: Request) {
         response_latency_ms: responseLatencyMs,
       },
       ...(teachingEngine ? { teachingEngine } : {}),
+      ...(activeTeaching ? { activeTeaching: activeTeaching.session, teachingTurnTelemetry: activeTeaching.telemetry } : {}),
       timestamp,
     });
   } catch (error) {
