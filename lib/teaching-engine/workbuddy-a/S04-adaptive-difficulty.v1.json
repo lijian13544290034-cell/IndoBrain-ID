@@ -73,7 +73,8 @@
     "difficulty.dimensions.sentenceLength": "SIMPLE | COMPOUND | COMPLEX",
     "difficulty.dimensions.defaultHintType": "hintType",
     "difficulty.lastChangeUnit": "integer",
-    "difficulty.lastChangeDirection": "UP | DOWN | HOLD"
+    "difficulty.lastChangeDirection": "UP | DOWN | HOLD",
+    "output.difficultyAdjustmentDisclosed": "boolean — true only when the internal difficulty/level adjustment is explicitly exposed"
   },
   "policies": [
     {
@@ -227,13 +228,13 @@
       "when": "always",
       "then": "No user-visible message about difficulty. Silent adjustment.",
       "assertion": {
-        "path": "output.userVisibleMessage",
+        "path": "output.difficultyAdjustmentDisclosed",
         "op": "eq",
-        "value": null
+        "value": false
       },
       "severity": "P1",
       "guard": {
-        "path": "output.userVisibleMessage",
+        "path": "output.difficultyAdjustmentDisclosed",
         "op": "exists",
         "value": true
       }

@@ -68,7 +68,9 @@
     "turn.consecutiveHints": "integer",
     "turn.lastHintOutcome": "WORKED | FAILED | NOT_ATTEMPTED",
     "turn.hintText": "string",
-    "turn.hintCharCount": "integer",
+    "turn.hintCharCount": "integer — legacy alias for Chinese hint characters",
+    "turn.hintChineseCharCount": "integer",
+    "turn.hintIndonesianWordCount": "integer",
     "learner.needsRomanization": "boolean",
     "learner.prefersAudio": "boolean",
     "session.minEffectiveHint[targetId]": "hintType"
@@ -165,9 +167,19 @@
       "when": "always",
       "then": "Hint length: Chinese <= 25 characters, Indonesian <= 15 words. Over the limit is a violation, not a style issue.",
       "assertion": {
-        "path": "turn.hintCharCount",
-        "op": "lte",
-        "value": 40
+        "op": "all",
+        "value": [
+          {
+            "path": "turn.hintChineseCharCount",
+            "op": "lte",
+            "value": 25
+          },
+          {
+            "path": "turn.hintIndonesianWordCount",
+            "op": "lte",
+            "value": 15
+          }
+        ]
       },
       "severity": "P1",
       "guard": {

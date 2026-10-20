@@ -36,6 +36,7 @@ type ConversationResponse = {
   timestamp: string;
   usage: { token_input: number; token_output: number; model_calls: number; estimated_ai_cost: number; model_used: string; stt_seconds: number; stt_model: string | null; response_latency_ms: number };
   activeTeaching?: ActiveTeachingSession;
+  activeTeachingToken?: string;
 };
 
 function telemetry(profile: CoachProfile, event: CoachEventName, data: Record<string, unknown> = {}) {
@@ -62,12 +63,13 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
   const [lastFailedRequest, setLastFailedRequest] = useState<{ message?: string; audio?: Blob } | null>(null);
   const [activeAvailable, setActiveAvailable] = useState(false);
   const [activeTeaching, setActiveTeaching] = useState<ActiveTeachingSession | null>(null);
+  const [activeTeachingToken, setActiveTeachingToken] = useState<string | null>(null);
   const [activeTurns, setActiveTurns] = useState<CoachConversationTurn[]>([]);
   const profileRef = useRef(profile);
   const historyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { profileRef.current = profile; }, [profile]);
-  useEffect(() => { setActiveTeaching(null); setActiveTurns([]); }, [lesson.id]);
+  useEffect(() => { setActiveTeaching(null); setActiveTeachingToken(null); setActiveTurns([]); }, [lesson.id]);
   useEffect(() => {
     let cancelled = false;
     void fetch('/api/mandarin-coach/status', { cache: 'no-store' })
@@ -146,7 +148,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
         recentTurns: profile.conversation.recentTurns.slice(-6).map(({ role, text }) => ({ role, text })),
         sessionStartedAt: profile.startedAt,
         messageCount: profile.conversation.questions.length,
-        activeTeaching,
+        activeTeachingToken,
         activeTeachingStart: activeStart,
       }));
       const controller = new AbortController();
@@ -160,6 +162,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
       const result = await parseCoachConversationResponse<ConversationResponse>(response);
       if (result.activeTeaching) {
         setActiveTeaching(result.activeTeaching);
+        setActiveTeachingToken(result.activeTeachingToken ?? null);
         const now = result.timestamp;
         const userText = cleanMessage || result.transcript || '';
         const activeUserTurn: CoachConversationTurn = { id: `${result.questionId}-user`, role: 'user', text: userText, intent: result.intent, createdAt: now };
@@ -222,6 +225,10 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
       if (audio && result.speechSegments.length) void playCoachSegments(result.speechSegments, result.ttsRate, next);
     } catch (caught) {
       const failure = normalizeCoachConversationError(caught);
+      if (failure.code === 'ACTIVE_SESSION_INVALID') {
+        setActiveTeaching(null);
+        setActiveTeachingToken(null);
+      }
       setError(failure.message);
       setLastFailedRequest({ message: cleanMessage || undefined, audio });
     } finally {
@@ -251,7 +258,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
       {(activeTeaching ? activeTurns : profile.conversation.recentTurns).length === 0 ? <div className="rounded-2xl bg-white p-3 text-sm leading-6 text-[var(--ib-text-secondary)]"><p className="font-semibold text-[var(--ib-primary-strong)]">Contoh pertanyaan:</p><p>“Kenapa 谢谢 dibaca xiè xie?”</p><p>“Kalau di tempat kerja bilang apa?”</p><p>“Saya tidak mengerti. Bisa lebih pelan?”</p></div> : null}
       {(activeTeaching ? activeTurns : profile.conversation.recentTurns).map((turn) => <div key={turn.id} className={`rounded-2xl p-3 ${turn.role === 'user' ? 'ml-7 bg-[var(--ib-primary)] text-white' : 'mr-7 bg-white text-[var(--ib-text-primary)]'}`}><p className="whitespace-pre-wrap text-sm leading-6">{turn.text}</p>{turn.chinese ? <div className="mt-3 rounded-xl bg-[var(--ib-primary-soft)] p-3 text-[var(--ib-text-primary)]"><p className="text-2xl font-bold text-[var(--ib-primary-strong)]">{turn.chinese}</p>{turn.pinyin ? <p className="mt-1 font-semibold text-[var(--ib-primary)]">{turn.pinyin}</p> : null}{turn.indonesian ? <p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}<button type="button" onClick={() => playCoachChinese(turn.chinese!, turn.ttsRate)} className="mt-2 text-sm font-bold text-[var(--ib-primary)]">🔊 Mandarin</button></div> : turn.indonesian ? <p className="mt-2 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}{turn.role === 'assistant' && turn.speechSegments?.length ? <div className="mt-3 flex flex-wrap gap-2"><button type="button" onClick={() => playCoachSegments(turn.speechSegments!, 'normal')} className="min-h-10 rounded-full border border-[var(--ib-border-soft)] px-3 text-xs font-bold text-[var(--ib-primary)]">🔊 Dengarkan jawaban</button><button type="button" onClick={() => playCoachSegments(turn.speechSegments!, 'slow')} className="min-h-10 rounded-full border border-[var(--ib-border-soft)] px-3 text-xs font-bold text-[var(--ib-primary)]">🐢 Pelan</button></div> : null}</div>)}
     </div>
-    {activeAvailable && lesson.id === 'mandarin-work-level-1-day-27' ? <div className="mt-3 rounded-2xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-950"><p className="font-bold">Latihan aktif: 我明天上班</p><p className="mt-1 text-xs">Sesi sementara, tidak disimpan sebagai nilai penguasaan.</p><button type="button" disabled={busy} onClick={() => { setActiveTeaching(null); setActiveTurns([]); void send('Mulai latihan aktif.', undefined, true); }} className="mt-2 min-h-10 rounded-full bg-[var(--ib-primary-strong)] px-4 font-bold text-white disabled:opacity-50">{activeTeaching ? 'Mulai ulang latihan' : 'Mulai latihan aktif'}</button>{activeTeaching ? <p className="mt-2 text-xs font-semibold">Tahap: {activeTeaching.stage} · Status: {activeTeaching.masteryStatus}</p> : null}</div> : null}
+    {activeAvailable && lesson.id === 'mandarin-work-level-1-day-27' ? <div className="mt-3 rounded-2xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-950"><p className="font-bold">Latihan aktif: 我明天上班</p><p className="mt-1 text-xs">Sesi sementara, tidak disimpan sebagai nilai penguasaan.</p><button type="button" disabled={busy} onClick={() => { setActiveTeaching(null); setActiveTeachingToken(null); setActiveTurns([]); void send('Mulai latihan aktif.', undefined, true); }} className="mt-2 min-h-10 rounded-full bg-[var(--ib-primary-strong)] px-4 font-bold text-white disabled:opacity-50">{activeTeaching ? 'Mulai ulang latihan' : 'Mulai latihan aktif'}</button>{activeTeaching ? <p className="mt-2 text-xs font-semibold">Tahap: {activeTeaching.stage} · Status: {activeTeaching.masteryStatus}</p> : null}</div> : null}
     {pendingResolution ? <div className="mt-3 flex items-center gap-2 text-xs text-[var(--ib-text-secondary)]"><span>Jawaban ini membantu?</span><button type="button" onClick={() => resolveAnswer(true)} className="rounded-full border border-[var(--ib-border-soft)] px-3 py-2 font-semibold text-[var(--ib-primary)]">Ya</button><button type="button" onClick={() => resolveAnswer(false)} className="rounded-full border border-[var(--ib-border-soft)] px-3 py-2 font-semibold text-[var(--ib-primary)]">Belum</button></div> : null}
     <label className="mt-4 block text-xs font-bold text-[var(--ib-text-secondary)]" htmlFor="coach-question">Ketik pertanyaan atau jawabanmu</label>
     <textarea id="coach-question" value={input} onChange={(event) => setInput(event.target.value)} maxLength={500} rows={3} placeholder="Contoh: Apa artinya? / 这个怎么发音？" className="mt-2 w-full resize-none rounded-2xl border border-[var(--ib-border-soft)] bg-white p-3 text-sm outline-none focus:border-[var(--ib-primary)]" />

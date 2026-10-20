@@ -4,6 +4,7 @@ export type CoachConversationFailureCode =
   | 'RATE_LIMITED'
   | 'SERVER_ERROR'
   | 'INVALID_RESPONSE'
+  | 'ACTIVE_SESSION_INVALID'
   | 'NETWORK_ERROR'
   | 'TIMEOUT'
   | 'REQUEST_ERROR';
@@ -55,6 +56,7 @@ export async function parseCoachConversationResponse<T>(response: Response): Pro
     if (response.status === 401) throw new CoachConversationRequestError('Silakan masuk ke akun IndoBrain, lalu kirim pertanyaanmu lagi.', 'AUTH_REQUIRED', 401);
     if (response.status === 403) throw new CoachConversationRequestError('Materi ini memerlukan akses yang sesuai. Pilih materi Hari 1–30 atau masuk dengan akun yang memiliki akses.', 'ACCESS_DENIED', 403);
     if (response.status === 429) throw new CoachConversationRequestError('Batas percakapan hari ini sudah tercapai. Silakan lanjutkan besok.', 'RATE_LIMITED', 429);
+    if (response.status === 409) throw new CoachConversationRequestError('Sesi latihan aktif sudah berakhir atau tidak valid. Mulai ulang latihan untuk melanjutkan.', 'ACTIVE_SESSION_INVALID', 409);
     if (response.status >= 500) throw new CoachConversationRequestError('AI Coach sedang mengalami gangguan. Silakan coba lagi sebentar.', 'SERVER_ERROR', response.status);
     throw new CoachConversationRequestError(serverMessage || 'Pertanyaan belum dapat dikirim. Periksa isinya lalu coba lagi.', 'REQUEST_ERROR', response.status);
   }

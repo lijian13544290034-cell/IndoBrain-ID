@@ -195,6 +195,7 @@
   },
   "stateContract": {
     "turn.recall.stage": "R1 | R2 | R3",
+    "turn.recall.stalled": "boolean — learner is currently stalled during the active recall attempt",
     "turn.recall.promptLeaksTarget": "boolean",
     "turn.recall.withheldInformation": "string[]",
     "turn.recall.variationAxis": "QUANTITY | POLARITY | TIME | LOCATION | INTERLOCUTOR | REGISTER | MODALITY | NONE",
@@ -217,9 +218,9 @@
       },
       "severity": "P0",
       "guard": {
-        "path": "turn.recall.promptLeaksTarget",
-        "op": "exists",
-        "value": true
+        "path": "turn.recall.stage",
+        "op": "eq",
+        "value": "R1"
       }
     },
     {
@@ -330,9 +331,19 @@
       },
       "severity": "P0",
       "guard": {
-        "path": "turn.recall.modelDeliveredBefore",
-        "op": "exists",
-        "value": true
+        "op": "all",
+        "value": [
+          {
+            "path": "turn.recall.stage",
+            "op": "eq",
+            "value": "R1"
+          },
+          {
+            "path": "turn.recall.stalled",
+            "op": "eq",
+            "value": true
+          }
+        ]
       }
     },
     {

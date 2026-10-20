@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { orchestrateTeachingTurn } from '@/lib/teaching-engine/orchestrator';
 import type { PromptLevel, TeachingStage, TechnicalFailureReason } from '@/lib/teaching-engine/contracts';
 import { assertTeachingTelemetryInvariant, type ActiveOutcome, type ActiveTeachingSession, type HintType, type TeachingTurnTelemetry } from '@/lib/teaching-engine/telemetry-contracts';
@@ -10,8 +11,33 @@ type ActiveInput = {
   message: string;
   modality: 'VOICE' | 'TEXT';
   startRequested: boolean;
-  state: unknown;
+  sessionKey: string;
+  sessionToken: string | null;
 };
+
+type ActiveSessionEntry = {
+  version: 1;
+  sessionKeyHash: string;
+  lessonId: string;
+  state: ActiveTeachingSession;
+  nonce: string;
+  issuedAt: number;
+  expiresAt: number;
+};
+
+const ACTIVE_SESSION_TTL_MS = 30 * 60 * 1000;
+const ACTIVE_SESSION_LIMIT = 1_000;
+const consumedNonces = new Map<string, number>();
+const localDevelopmentSecret = randomBytes(32).toString('hex');
+
+export class ActiveTeachingStateError extends Error {
+  readonly code = 'ACTIVE_TEACHING_STATE_INVALID';
+
+  constructor() {
+    super('Active teaching state is missing, expired, replayed, or belongs to another session.');
+    this.name = 'ActiveTeachingStateError';
+  }
+}
 
 const objective = {
   surface: '我明天上班' as const,
@@ -29,20 +55,95 @@ const emptyState = (): ActiveTeachingSession => ({
   consecutiveSuccesses: 0, hints: 0, prerequisitesVerified: false, masteryStatus: 'NOT_STARTED',
 });
 
-function sanitizeState(value: unknown): ActiveTeachingSession | null {
+function signingSecret() {
+  const configured = process.env.PREVIEW_QA_SESSION_SECRET
+    || process.env.SUPABASE_SERVICE_ROLE_KEY
+    || process.env.SUPABASE_SECRET_KEY;
+  if (configured) return createHash('sha256').update(`indobrain-active-teaching-v1:${configured}`).digest();
+  if (process.env.VERCEL_ENV === 'preview' || process.env.VERCEL_ENV === 'production') throw new ActiveTeachingStateError();
+  return createHash('sha256').update(`indobrain-active-teaching-v1:${localDevelopmentSecret}`).digest();
+}
+
+function removeExpiredNonces(now = Date.now()) {
+  for (const [nonce, expiresAt] of consumedNonces) {
+    if (expiresAt <= now) consumedNonces.delete(nonce);
+  }
+  while (consumedNonces.size >= ACTIVE_SESSION_LIMIT) {
+    const oldest = consumedNonces.keys().next().value;
+    if (typeof oldest !== 'string') break;
+    consumedNonces.delete(oldest);
+  }
+}
+
+function sessionKeyHash(sessionKey: string) {
+  return createHash('sha256').update(sessionKey).digest('base64url');
+}
+
+function parseTrustedState(value: unknown): ActiveTeachingSession | null {
   if (!value || typeof value !== 'object') return null;
-  const v = value as Partial<ActiveTeachingSession>;
+  const state = value as Partial<ActiveTeachingSession>;
   const stages: TeachingStage[] = ['DIAGNOSE', 'MODEL', 'SPEAK', 'EVALUATE', 'HINT', 'RETRY', 'ADVANCE', 'TRANSFER_TEST', 'COMPLETE'];
   const prompts: PromptLevel[] = ['NONE', 'TASK_ONLY', 'SEMANTIC_CUE', 'FIRST_WORD', 'FULL_MODEL'];
-  if (v.schema !== 'indobrain.active-teaching-session/v1' || v.objectiveId !== 'temporary:wo-mingtian-shangban' || !v.stage || !stages.includes(v.stage) || !v.promptLevel || !prompts.includes(v.promptLevel)) return null;
-  return {
-    schema: v.schema, objectiveId: v.objectiveId, stage: v.stage, promptLevel: v.promptLevel,
-    attempts: Math.max(0, Math.min(20, Number(v.attempts) || 0)),
-    consecutiveErrors: Math.max(0, Math.min(10, Number(v.consecutiveErrors) || 0)),
-    consecutiveSuccesses: Math.max(0, Math.min(10, Number(v.consecutiveSuccesses) || 0)),
-    hints: Math.max(0, Math.min(4, Number(v.hints) || 0)), prerequisitesVerified: v.prerequisitesVerified === true,
-    masteryStatus: v.masteryStatus === 'INDEPENDENT' ? 'INDEPENDENT' : v.masteryStatus === 'PRACTICED' ? 'PRACTICED' : 'NOT_STARTED',
+  if (state.schema !== 'indobrain.active-teaching-session/v1'
+    || state.objectiveId !== 'temporary:wo-mingtian-shangban'
+    || !state.stage || !stages.includes(state.stage)
+    || !state.promptLevel || !prompts.includes(state.promptLevel)
+    || !Number.isInteger(state.attempts) || !Number.isInteger(state.consecutiveErrors)
+    || !Number.isInteger(state.consecutiveSuccesses) || !Number.isInteger(state.hints)
+    || state.attempts! < 0 || state.attempts! > 20
+    || state.consecutiveErrors! < 0 || state.consecutiveErrors! > 10
+    || state.consecutiveSuccesses! < 0 || state.consecutiveSuccesses! > 10
+    || state.hints! < 0 || state.hints! > 4
+    || typeof state.prerequisitesVerified !== 'boolean'
+    || !['NOT_STARTED', 'PRACTICED', 'INDEPENDENT'].includes(String(state.masteryStatus))) return null;
+  return state as ActiveTeachingSession;
+}
+
+function requireTrustedState(input: ActiveInput, consume = true) {
+  removeExpiredNonces();
+  if (!input.sessionToken) throw new ActiveTeachingStateError();
+  const [encodedPayload, encodedSignature, ...extra] = input.sessionToken.split('.');
+  if (!encodedPayload || !encodedSignature || extra.length) throw new ActiveTeachingStateError();
+  const expected = createHmac('sha256', signingSecret()).update(encodedPayload).digest();
+  let supplied: Buffer;
+  try {
+    supplied = Buffer.from(encodedSignature, 'base64url');
+  } catch {
+    throw new ActiveTeachingStateError();
+  }
+  if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) throw new ActiveTeachingStateError();
+  let payload: ActiveSessionEntry;
+  try {
+    payload = JSON.parse(Buffer.from(encodedPayload, 'base64url').toString('utf8')) as ActiveSessionEntry;
+  } catch {
+    throw new ActiveTeachingStateError();
+  }
+  const now = Date.now();
+  const state = parseTrustedState(payload.state);
+  if (payload.version !== 1 || payload.sessionKeyHash !== sessionKeyHash(input.sessionKey)
+    || payload.lessonId !== input.lessonId || !state
+    || !Number.isFinite(payload.issuedAt) || payload.issuedAt > now + 30_000
+    || !Number.isFinite(payload.expiresAt) || payload.expiresAt <= now
+    || typeof payload.nonce !== 'string' || (consume && consumedNonces.has(payload.nonce))) throw new ActiveTeachingStateError();
+  if (consume) consumedNonces.set(payload.nonce, payload.expiresAt);
+  return state;
+}
+
+function commitTrustedState(input: ActiveInput, state: ActiveTeachingSession) {
+  removeExpiredNonces();
+  const issuedAt = Date.now();
+  const payload: ActiveSessionEntry = {
+    version: 1,
+    sessionKeyHash: sessionKeyHash(input.sessionKey),
+    lessonId: input.lessonId,
+    state,
+    nonce: randomUUID(),
+    issuedAt,
+    expiresAt: issuedAt + ACTIVE_SESSION_TTL_MS,
   };
+  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = createHmac('sha256', signingSecret()).update(encodedPayload).digest('base64url');
+  return `${encodedPayload}.${signature}`;
 }
 
 const normalize = (text: string) => text.replace(/[\s，。！？,.!?]/g, '').toLowerCase();
@@ -99,20 +200,39 @@ function telemetry(input: ActiveInput, state: ActiveTeachingSession, next: Activ
 
 function result(input: ActiveInput, state: ActiveTeachingSession, next: ActiveTeachingSession, response: ReturnType<typeof answer>, config: Parameters<typeof telemetry>[3]) {
   const turn = telemetry(input, state, next, config);
+  const recallStage = state.stage === 'TRANSFER_TEST' ? 'R3' : state.stage === 'SPEAK' && state.promptLevel === 'NONE' ? 'R1' : undefined;
+  const responseSurface = `${response.answer} ${response.chinese}`;
+  const promptLeaksTarget = responseSurface.includes(objective.surface)
+    || responseSurface.includes('我明天')
+    || responseSurface.includes('明天上班');
+  const recallStalled = recallStage === 'R1' && (turn.evidence.outcome === 'PARTIAL' || turn.evidence.outcome === 'NOT_YET');
+  const hintChineseCharCount = Array.from(responseSurface.matchAll(/[\u3400-\u9fff]/g)).length;
+  const hintIndonesianWordCount = response.answer
+    .replace(/[\u3400-\u9fff]/g, ' ')
+    .match(/[A-Za-zÀ-ɏ]+(?:[-'][A-Za-zÀ-ɏ]+)*/g)?.length ?? 0;
+  const difficultyAdjustmentDisclosed = /\b(?:difficulty|level)\b|tingkat\s+kesulitan|(?:naik|turun)(?:kan)?\s+level/i.test(response.answer);
   const ruleContext = {
     unit: { scenarioKey: 'temporary-work-arrival-report' },
     turn: {
       direction: 'ID_TO_ZH', mode: 'TEACH', turnKind: turn.technical.failed ? 'TECH_FAILURE' : 'TEACHING',
       outcome: turn.evidence.outcome, newInfoPoints: 0, hintType: turn.teaching.hintType,
       hintTypesUsedThisTurn: turn.teaching.hintType === 'NONE' ? [] : [turn.teaching.hintType],
-      hintCharCount: turn.teaching.hintType === 'NONE' ? 0 : response.answer.length,
+      hintCharCount: turn.teaching.hintType === 'NONE' ? 0 : hintChineseCharCount,
+      hintChineseCharCount: turn.teaching.hintType === 'NONE' ? 0 : hintChineseCharCount,
+      hintIndonesianWordCount: turn.teaching.hintType === 'NONE' ? 0 : hintIndonesianWordCount,
       learner: { producedIndependently: turn.evidence.kind === 'INDEPENDENT_PRODUCTION', scoringAttempted: false },
       cf: { type: turn.teaching.correctionType, focusSpans: turn.teaching.correctionType === 'NONE' ? [] : ['目标表达'] },
-      recall: { promptLeaksTarget: next.promptLevel === 'FULL_MODEL', modelDeliveredBefore: state.promptLevel === 'FULL_MODEL', variationAxis: state.stage === 'TRANSFER_TEST' ? 'TIME' : undefined },
+      recall: {
+        stage: recallStage,
+        stalled: recallStalled,
+        promptLeaksTarget,
+        modelDeliveredBefore: recallStalled && promptLeaksTarget,
+        variationAxis: state.stage === 'TRANSFER_TEST' ? 'TIME' : undefined,
+      },
       coach: { text: response.answer },
     },
     difficulty: { decision: turn.next.difficulty, changedDimensions: turn.next.difficulty === 'HOLD' ? [] : ['LENGTH'] },
-    output: { userVisibleMessage: response.answer, target: { sentenceLength: 'SIMPLE' } },
+    output: { userVisibleMessage: response.answer, difficultyAdjustmentDisclosed, target: { sentenceLength: 'SIMPLE' } },
     item: { masteryDelta: turn.evidence.kind === 'INDEPENDENT_PRODUCTION' ? 1 : 0 },
   };
   const engine = orchestrateTeachingTurn({
@@ -125,9 +245,7 @@ function result(input: ActiveInput, state: ActiveTeachingSession, next: ActiveTe
   return { response, session: next, telemetry: turn, engine: { ...engine, mode: 'ACTIVE' as const, status: 'ACTIVE_CONTROL' as const, action: turn.teaching.action } };
 }
 
-export function runActiveTeachingTurn(input: ActiveInput) {
-  const current = input.startRequested ? emptyState() : sanitizeState(input.state);
-  if (!current) return null;
+function advanceActiveTeachingTurn(input: ActiveInput, current: ActiveTeachingSession) {
   if (input.startRequested) {
     const next = { ...current, stage: 'DIAGNOSE' as const };
     return result(input, current, next, answer('Sebelum mulai, tulis arti tiga kata ini: 我 · 明天 · 上班. Jawab singkat dalam Bahasa Indonesia.', '', '', '', 'DIAGNOSE_PREREQUISITES'), { path: ['DIAGNOSE'], action: 'DIAGNOSE_PREREQUISITES' });
@@ -191,8 +309,15 @@ export function runActiveTeachingTurn(input: ActiveInput) {
   return result(input, current, next, answer(copy, errors >= 2 ? objective.surface : '', errors >= 2 ? objective.pinyin : '', errors >= 2 ? objective.meaningId : '', errors >= 2 ? 'REDUCE_ONE_VARIABLE' : 'CORRECT_ONE_POINT'), { path: [current.stage, 'EVALUATE', 'HINT', 'RETRY'], action: errors >= 2 ? 'REDUCE_ONE_VARIABLE' : 'CORRECT_ONE_POINT', outcome: 'NOT_YET', kind: 'PROMPTED_ATTEMPT', source: 'MEANING_TASK', hint: errors >= 2 ? 'SKELETON_BLANK' : 'CONTRAST_HINT', correction: 'EXPLICIT', recordsFailure: true });
 }
 
+export function runActiveTeachingTurn(input: ActiveInput) {
+  const current = input.startRequested ? emptyState() : requireTrustedState(input);
+  const turn = advanceActiveTeachingTurn(input, current);
+  const sessionToken = commitTrustedState(input, turn.session);
+  return { ...turn, sessionToken };
+}
+
 export function buildActiveTechnicalFailure(input: Omit<ActiveInput, 'startRequested'> & { reason: TechnicalFailureReason }) {
-  const current = sanitizeState(input.state);
-  if (!current) return null;
-  return result({ ...input, startRequested: false }, current, current, answer('Terjadi gangguan teknis. Coba lagi atau gunakan teks; hasil belajarmu tidak berubah.', '', '', '', 'TECHNICAL_RETRY_OR_TEXT_FALLBACK'), { path: [current.stage], action: 'TECHNICAL_RETRY_OR_TEXT_FALLBACK', technical: input.reason });
+  const current = requireTrustedState({ ...input, startRequested: false }, false);
+  const turn = result({ ...input, startRequested: false }, current, current, answer('Terjadi gangguan teknis. Coba lagi atau gunakan teks; hasil belajarmu tidak berubah.', '', '', '', 'TECHNICAL_RETRY_OR_TEXT_FALLBACK'), { path: [current.stage], action: 'TECHNICAL_RETRY_OR_TEXT_FALLBACK', technical: input.reason });
+  return { ...turn, sessionToken: input.sessionToken };
 }

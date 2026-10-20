@@ -7,7 +7,7 @@ import { anonymizeLearningQuestion, answerCoachConversation, transcribeMandarin 
 import { getMandarinLevel2Access } from '@/lib/server/mandarin-work-level2-access';
 import { getMandarinCoachLesson } from '@/lib/server/mandarin-coach-curriculum';
 import { resolveRequestAccountScope } from '@/lib/server/request-account-scope';
-import { buildActiveTechnicalFailure, runActiveTeachingTurn } from '@/lib/server/teaching-engine-active';
+import { ActiveTeachingStateError, buildActiveTechnicalFailure, runActiveTeachingTurn } from '@/lib/server/teaching-engine-active';
 import { runTeachingEngineShadow, teachingEngineActiveEnabled } from '@/lib/server/teaching-engine-shadow';
 
 export const runtime = 'nodejs';
@@ -77,7 +77,9 @@ function safeContext(value: FormDataEntryValue | null) {
       recentTurns: recentTurns.slice(-6),
       sessionStartedAt: typeof parsed.sessionStartedAt === 'string' ? parsed.sessionStartedAt : '',
       messageCount: typeof parsed.messageCount === 'number' ? Math.max(0, Math.min(200, parsed.messageCount)) : recentTurns.length,
-      activeTeaching: parsed.activeTeaching && typeof parsed.activeTeaching === 'object' ? parsed.activeTeaching : null,
+      activeTeachingToken: typeof parsed.activeTeachingToken === 'string' && parsed.activeTeachingToken.length <= 2_000
+        ? parsed.activeTeachingToken
+        : null,
       activeTeachingStart: parsed.activeTeachingStart === true,
     };
   } catch {
@@ -117,10 +119,18 @@ export async function POST(request: Request) {
       transcription = await transcribeMandarin(new Uint8Array(await audio.arrayBuffer()), scopedSessionId);
       message = transcription.transcript;
       if (!message) {
-        const activeFailure = teachingEngineActiveEnabled() && courseLesson.id === 'mandarin-work-level-1-day-27' ? buildActiveTechnicalFailure({
-          requestId: randomUUID(), lessonId: courseLesson.id, message: '', modality: 'VOICE',
-          state: context.activeTeaching, reason: 'EMPTY_STT',
-        }) : null;
+        let activeFailure: ReturnType<typeof buildActiveTechnicalFailure> | null = null;
+        try {
+          activeFailure = teachingEngineActiveEnabled() && courseLesson.id === 'mandarin-work-level-1-day-27' ? buildActiveTechnicalFailure({
+            requestId: randomUUID(), lessonId: courseLesson.id, message: '', modality: 'VOICE',
+            sessionKey: scopedSessionId, sessionToken: context.activeTeachingToken, reason: 'EMPTY_STT',
+          }) : null;
+        } catch (activeError) {
+          if (activeError instanceof ActiveTeachingStateError) {
+            return Response.json({ error: 'Sesi latihan aktif sudah tidak berlaku. Mulai ulang latihan untuk melanjutkan.', code: activeError.code }, { status: 409 });
+          }
+          throw activeError;
+        }
         const teachingEngine = runTeachingEngineShadow({
           requestId: randomUUID(),
           direction: 'ID_TO_ZH',
@@ -139,7 +149,7 @@ export async function POST(request: Request) {
         });
         return Response.json({
           error: 'Suara belum terdengar jelas. Silakan rekam lagi.',
-          ...(activeFailure ? { activeTeaching: activeFailure.session, teachingTurnTelemetry: activeFailure.telemetry, teachingEngine: activeFailure.engine } : {}),
+          ...(activeFailure ? { activeTeaching: activeFailure.session, activeTeachingToken: activeFailure.sessionToken, teachingTurnTelemetry: activeFailure.telemetry, teachingEngine: activeFailure.engine } : {}),
           ...(teachingEngine ? { teachingEngine } : {}),
         }, { status: 422 });
       }
@@ -147,15 +157,18 @@ export async function POST(request: Request) {
     if (!message || message.length > 500) return Response.json({ error: 'Tulis atau ucapkan pertanyaan singkat.' }, { status: 400 });
 
     const questionId = randomUUID();
-    let activeTeaching: ReturnType<typeof runActiveTeachingTurn> = null;
+    let activeTeaching: ReturnType<typeof runActiveTeachingTurn> | null = null;
     if (teachingEngineActiveEnabled() && courseLesson.id === 'mandarin-work-level-1-day-27') {
       try {
         activeTeaching = runActiveTeachingTurn({
           requestId: questionId, lessonId: courseLesson.id, message,
           modality: audio instanceof File ? 'VOICE' : 'TEXT', startRequested: securedContext.activeTeachingStart,
-          state: securedContext.activeTeaching,
+          sessionKey: scopedSessionId, sessionToken: securedContext.activeTeachingToken,
         });
       } catch (activeError) {
+        if (activeError instanceof ActiveTeachingStateError) {
+          return Response.json({ error: 'Sesi latihan aktif sudah tidak berlaku. Mulai ulang latihan untuk melanjutkan.', code: activeError.code }, { status: 409 });
+        }
         console.warn('[mandarin-coach-active-safe-fallback]', {
           name: activeError instanceof Error ? activeError.name : 'UnknownError',
         });
@@ -284,7 +297,7 @@ export async function POST(request: Request) {
         response_latency_ms: responseLatencyMs,
       },
       ...(teachingEngine ? { teachingEngine } : {}),
-      ...(activeTeaching ? { activeTeaching: activeTeaching.session, teachingTurnTelemetry: activeTeaching.telemetry } : {}),
+      ...(activeTeaching ? { activeTeaching: activeTeaching.session, activeTeachingToken: activeTeaching.sessionToken, teachingTurnTelemetry: activeTeaching.telemetry } : {}),
       timestamp,
     });
   } catch (error) {
