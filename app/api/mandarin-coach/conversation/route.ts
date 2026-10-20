@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { isExpressionId, type CoachSkill, type ExpressionId, type UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import { getCoachCapabilityIds } from '@/lib/mandarin-coach-skills';
 import { buildCoachSpeechSegments } from '@/lib/mandarin-coach-speech';
+import { collectTeachingContextStrings, evaluateTeachingIntent, teachingIntentGuardReply } from '@/lib/teaching-intent-guard';
 import { saveCoachInteraction, saveCoachTelemetryEvent } from '@/lib/server/mandarin-coach-analytics';
 import { anonymizeLearningQuestion, answerCoachConversation, transcribeMandarin } from '@/lib/server/mandarin-ai-coach';
 import { getMandarinLevel2Access } from '@/lib/server/mandarin-work-level2-access';
@@ -27,6 +28,30 @@ function allowConversation(sessionId: string) {
   if (current.count >= dailyConversationLimit) return false;
   current.count += 1;
   return true;
+}
+
+function detectedLanguage(message: string) {
+  const hasChinese = /[\u3400-\u9fff]/.test(message);
+  const hasLatin = /[a-z]/i.test(message);
+  return hasChinese && hasLatin ? 'MIXED' as const : hasChinese ? 'CHINESE' as const : 'INDONESIAN' as const;
+}
+
+function guardedConversationResult(message: string, verdict: 'OFF_TOPIC' | 'AMBIGUOUS') {
+  const reply = teachingIntentGuardReply('ID_TO_ZH', verdict);
+  const intent = verdict === 'OFF_TOPIC' ? 'OFF_TOPIC' as const : 'CONVERSATION' as const;
+  return {
+    classification: {
+      detectedLanguage: detectedLanguage(message), intent, intents: [intent],
+      skillIds: verdict === 'OFF_TOPIC' ? [] : ['CONVERSATION' as const], targetChinese: '', normalizedInput: message,
+      modelTier: 'FAST' as const, answerCategory: verdict === 'OFF_TOPIC' ? 'OFF_TOPIC' as const : 'STUDY_SUPPORT' as const,
+    },
+    answer: {
+      answer: reply.answer, chinese: '', pinyin: '', indonesian: reply.answer, followUp: reply.followUp, summary: '',
+      ttsRate: 'normal' as const, teachingStrategy: reply.teachingStrategy, rememberTarget: false,
+      targetChinese: '', targetPinyin: '', targetMeaning: '', skillGap: false, skillGapReason: '',
+    },
+    usage: { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'rules/teaching-intent-guard-v1', structured_retries: 0, safe_fallbacks: 0, retry_token_input: 0, retry_token_output: 0, retry_estimated_cost: 0 },
+  };
 }
 
 function safeContext(value: FormDataEntryValue | null) {
@@ -147,13 +172,20 @@ export async function POST(request: Request) {
     if (!message || message.length > 500) return Response.json({ error: 'Tulis atau ucapkan pertanyaan singkat.' }, { status: 400 });
 
     const questionId = randomUUID();
+    const activeEligible = teachingEngineActiveEnabled() && courseLesson.id === 'mandarin-work-level-1-day-27';
+    const teachingIntent = evaluateTeachingIntent({
+      direction: 'ID_TO_ZH', message,
+      currentCourseText: collectTeachingContextStrings(courseLesson),
+      recentTurns: securedContext.recentTurns,
+      activeTeaching: activeEligible && securedContext.activeTeaching != null,
+    });
     let activeTeaching: ReturnType<typeof runActiveTeachingTurn> = null;
-    if (teachingEngineActiveEnabled() && courseLesson.id === 'mandarin-work-level-1-day-27') {
+    if (activeEligible) {
       try {
         activeTeaching = runActiveTeachingTurn({
           requestId: questionId, lessonId: courseLesson.id, message,
           modality: audio instanceof File ? 'VOICE' : 'TEXT', startRequested: securedContext.activeTeachingStart,
-          state: securedContext.activeTeaching,
+          state: securedContext.activeTeaching, recentTurns: securedContext.recentTurns,
         });
       } catch (activeError) {
         console.warn('[mandarin-coach-active-safe-fallback]', {
@@ -161,23 +193,24 @@ export async function POST(request: Request) {
         });
       }
     }
-    const activeHasChinese = /[\u3400-\u9fff]/.test(message);
-    const activeHasLatin = /[a-z]/i.test(message);
     const result = activeTeaching ? {
       classification: {
-        detectedLanguage: activeHasChinese && activeHasLatin ? 'MIXED' as const : activeHasChinese ? 'CHINESE' as const : 'INDONESIAN' as const,
-        intent: 'CONVERSATION' as const, intents: ['CONVERSATION' as const, 'WORKPLACE' as const],
-        skillIds: ['CONVERSATION' as const, 'WORKPLACE' as const], normalizedInput: message,
-        answerCategory: 'ACTIVE_TEACHING_LOOP', targetChinese: '我明天上班',
+        detectedLanguage: detectedLanguage(message),
+        intent: activeTeaching.teachingIntent === 'OFF_TOPIC' ? 'OFF_TOPIC' as const : 'CONVERSATION' as const,
+        intents: activeTeaching.teachingIntent === 'OFF_TOPIC' ? ['OFF_TOPIC' as const] : ['CONVERSATION' as const, 'WORKPLACE' as const],
+        skillIds: activeTeaching.teachingIntent === 'OFF_TOPIC' ? [] : ['CONVERSATION' as const, 'WORKPLACE' as const], normalizedInput: message,
+        answerCategory: activeTeaching.teachingIntent === 'OFF_TOPIC' ? 'OFF_TOPIC' as const : 'ACTIVE_TEACHING_LOOP', targetChinese: activeTeaching.teachingIntent === 'LEARNING_RELATED' ? '我明天上班' : '',
       },
       answer: activeTeaching.response,
       usage: { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'rules/teaching-engine-active-v1', structured_retries: 0, safe_fallbacks: 0, retry_token_input: 0, retry_token_output: 0, retry_estimated_cost: 0 },
-    } : await answerCoachConversation({ message, sessionId: scopedSessionId, context: securedContext });
+    } : teachingIntent.verdict !== 'LEARNING_RELATED'
+      ? guardedConversationResult(message, teachingIntent.verdict)
+      : await answerCoachConversation({ message, sessionId: scopedSessionId, context: securedContext });
     const timestamp = new Date().toISOString();
     const teachingEngine = activeTeaching?.engine ?? runTeachingEngineShadow({
       requestId: questionId,
       direction: 'ID_TO_ZH',
-      turnKind: 'TEACHING',
+      turnKind: result.classification.intent === 'OFF_TOPIC' ? 'OFF_TOPIC_REDIRECT' : 'TEACHING',
       evidence: { kind: 'NONE', prompted: false, written: false, reviewQueued: false },
       strategyHistory: [],
       teachingAction: result.answer.teachingStrategy || 'UNSPECIFIED',

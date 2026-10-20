@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server';
 import { aiProviderStatus, generateAiReply } from '@/lib/ai-provider';
 import { resolveRequestAccountScope } from '@/lib/server/request-account-scope';
 import { saveToSupabase } from '@/lib/supabase-server';
+import { evaluateTeachingIntent, teachingIntentGuardReply } from '@/lib/teaching-intent-guard';
 
 const prompts: Record<string, string> = {
-  driver: 'You help Chinese users communicate with Indonesian drivers. Use natural WhatsApp Indonesian. Solve the immediate problem first. Reply with a short Indonesian message followed by a concise Chinese explanation.',
-  nanny: 'You help Chinese users communicate with Indonesian household helpers (ART). Use natural respectful WhatsApp Indonesian. Solve the immediate problem first. Reply with a short Indonesian message followed by a concise Chinese explanation.',
-  factory: 'You help Chinese factory managers communicate in Indonesian factories. Use real factory vocabulary and concise operational Indonesian. Reply with a short Indonesian message followed by a concise Chinese explanation.',
-  free: 'You are IndoBrain, a practical Indonesia life assistant for Chinese users. Reply in natural Indonesian with a concise Chinese explanation. Prioritize the immediate problem.',
+  driver: 'You teach Chinese users practical Indonesian for communicating with drivers. Use natural WhatsApp Indonesian with a concise Chinese explanation. Stay within language learning; do not complete unrelated general tasks.',
+  nanny: 'You teach Chinese users respectful Indonesian for communicating with household helpers (ART). Use natural Indonesian with a concise Chinese explanation. Stay within language learning; do not complete unrelated general tasks.',
+  factory: 'You teach Chinese factory managers practical Indonesian for factory communication. Use real factory vocabulary with a concise Chinese explanation. Stay within language learning; do not complete unrelated general tasks.',
+  free: 'You are IndoBrain, an Indonesian language coach for Chinese users. Teach natural Indonesian with a concise Chinese explanation. Stay within language learning; do not complete unrelated general tasks.',
 };
 const roleTypes = new Set(Object.keys(prompts));
 
@@ -22,6 +23,21 @@ export async function POST(request: Request) {
   if (!userMessage) return NextResponse.json({ error: 'Invalid chat request' }, { status: 400 });
   const scope = await resolveRequestAccountScope(clientSessionId);
   if (!scope) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  const teachingIntent = evaluateTeachingIntent({
+    direction: 'ZH_TO_ID', message: userMessage, currentCourseText: [prompts[roleType], roleType],
+    recentTurns: messages.slice(0, -1).map((entry) => ({ role: entry.role === 'assistant' ? 'assistant' as const : 'user' as const, text: entry.content })),
+    activeTeaching: false,
+  });
+  if (teachingIntent.verdict !== 'LEARNING_RELATED') {
+    const guarded = teachingIntentGuardReply('ZH_TO_ID', teachingIntent.verdict);
+    return NextResponse.json({
+      configured: aiProviderStatus().configured,
+      message: guarded.answer,
+      assistant_message: guarded.answer,
+      teaching_intent: teachingIntent.verdict,
+      teaching_strategy: guarded.teachingStrategy,
+    });
+  }
   const status = aiProviderStatus();
   if (!status.configured) {
     const assistantMessage = 'AI Provider Not Configured. 请在 .env.local 设置 AI_PROVIDER 和对应的 API Key。';

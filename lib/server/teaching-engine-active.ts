@@ -2,7 +2,9 @@ import 'server-only';
 
 import { orchestrateTeachingTurn } from '@/lib/teaching-engine/orchestrator';
 import type { PromptLevel, TeachingStage, TechnicalFailureReason } from '@/lib/teaching-engine/contracts';
+import type { TeachingTurnKind } from '@/lib/teaching-engine/integration-contracts';
 import { assertTeachingTelemetryInvariant, type ActiveOutcome, type ActiveTeachingSession, type HintType, type TeachingTurnTelemetry } from '@/lib/teaching-engine/telemetry-contracts';
+import { evaluateTeachingIntent, teachingIntentGuardReply } from '@/lib/teaching-intent-guard';
 
 type ActiveInput = {
   requestId: string;
@@ -11,6 +13,7 @@ type ActiveInput = {
   modality: 'VOICE' | 'TEXT';
   startRequested: boolean;
   state: unknown;
+  recentTurns?: Array<{ role: 'user' | 'assistant'; text: string }>;
 };
 
 const objective = {
@@ -49,7 +52,6 @@ const normalize = (text: string) => text.replace(/[\s，。！？,.!?]/g, '').to
 const asksMeaning = (text: string) => /artinya|maksud|apa arti|什么意思|tidak mengerti|nggak ngerti|gak ngerti/i.test(text);
 const asksDemo = (text: string) => /ulang|contoh|dengar|示范|再说|再来|sekali lagi/i.test(text);
 const asksHelp = (text: string) => /tidak tahu|tidak bisa|nggak bisa|gak bisa|susah|不会|不懂/i.test(text);
-const offTopic = (text: string) => /bitcoin|saham|politik|cuaca|game|selebriti|明星|股票|天气|写程序/i.test(text);
 
 function prerequisiteCheck(text: string) {
   const value = normalize(text);
@@ -76,7 +78,7 @@ function answer(text: string, chinese = '', pinyin = '', indonesian = '', strate
 
 function telemetry(input: ActiveInput, state: ActiveTeachingSession, next: ActiveTeachingSession, config: {
   path: TeachingStage[]; outcome?: ActiveOutcome; kind?: TeachingTurnTelemetry['evidence']['kind']; source?: TeachingTurnTelemetry['evidence']['source'];
-  action: string; hint?: HintType; correction?: TeachingTurnTelemetry['teaching']['correctionType']; recordsFailure?: boolean; technical?: TechnicalFailureReason;
+  action: string; hint?: HintType; correction?: TeachingTurnTelemetry['teaching']['correctionType']; recordsFailure?: boolean; technical?: TechnicalFailureReason; turnKind?: TeachingTurnKind; intentVerdict?: 'LEARNING_RELATED' | 'OFF_TOPIC' | 'AMBIGUOUS';
 }): TeachingTurnTelemetry {
   const turn: TeachingTurnTelemetry = {
     schema: 'indobrain.teaching-turn-telemetry/v1', turnId: input.requestId, lessonId: input.lessonId, direction: 'ID_TO_ZH',
@@ -99,10 +101,11 @@ function telemetry(input: ActiveInput, state: ActiveTeachingSession, next: Activ
 
 function result(input: ActiveInput, state: ActiveTeachingSession, next: ActiveTeachingSession, response: ReturnType<typeof answer>, config: Parameters<typeof telemetry>[3]) {
   const turn = telemetry(input, state, next, config);
+  const turnKind = config.turnKind ?? (turn.technical.failed ? 'TECH_FAILURE' : 'TEACHING');
   const ruleContext = {
     unit: { scenarioKey: 'temporary-work-arrival-report' },
     turn: {
-      direction: 'ID_TO_ZH', mode: 'TEACH', turnKind: turn.technical.failed ? 'TECH_FAILURE' : 'TEACHING',
+      direction: 'ID_TO_ZH', mode: 'TEACH', turnKind,
       outcome: turn.evidence.outcome, newInfoPoints: 0, hintType: turn.teaching.hintType,
       hintTypesUsedThisTurn: turn.teaching.hintType === 'NONE' ? [] : [turn.teaching.hintType],
       hintCharCount: turn.teaching.hintType === 'NONE' ? 0 : response.answer.length,
@@ -116,13 +119,13 @@ function result(input: ActiveInput, state: ActiveTeachingSession, next: ActiveTe
     item: { masteryDelta: turn.evidence.kind === 'INDEPENDENT_PRODUCTION' ? 1 : 0 },
   };
   const engine = orchestrateTeachingTurn({
-    requestId: input.requestId, direction: 'ID_TO_ZH', turnKind: turn.technical.failed ? 'TECH_FAILURE' : 'TEACHING',
+    requestId: input.requestId, direction: 'ID_TO_ZH', turnKind,
     evidence: { kind: turn.evidence.kind, prompted: turn.evidence.promptLevel !== 'NONE', written: turn.evidence.written, reviewQueued: false },
     strategyHistory: [], teachingAction: turn.teaching.action, technicalFailure: turn.technical.reason,
     sources: { turnKind: 'CALLER_DECLARED', evidenceKind: turn.technical.failed ? 'TECHNICAL_FAILURE' : turn.evidence.written ? 'MASTERY_POLICY_ACCEPTED_EVIDENCE' : 'NO_ASSESSMENT_IN_CONVERSATION_ROUTE', strategyHistory: 'CALLER_DECLARED' },
     courseAuthorization: { authorized: true, lessonId: input.lessonId, source: 'MANDARIN_WORK_LEVEL_1' }, ruleContext,
   });
-  return { response, session: next, telemetry: turn, engine: { ...engine, mode: 'ACTIVE' as const, status: 'ACTIVE_CONTROL' as const, action: turn.teaching.action } };
+  return { response, session: next, telemetry: turn, teachingIntent: config.intentVerdict ?? 'LEARNING_RELATED' as const, engine: { ...engine, mode: 'ACTIVE' as const, status: 'ACTIVE_CONTROL' as const, action: turn.teaching.action } };
 }
 
 export function runActiveTeachingTurn(input: ActiveInput) {
@@ -132,8 +135,21 @@ export function runActiveTeachingTurn(input: ActiveInput) {
     const next = { ...current, stage: 'DIAGNOSE' as const };
     return result(input, current, next, answer('Sebelum mulai, tulis arti tiga kata ini: 我 · 明天 · 上班. Jawab singkat dalam Bahasa Indonesia.', '', '', '', 'DIAGNOSE_PREREQUISITES'), { path: ['DIAGNOSE'], action: 'DIAGNOSE_PREREQUISITES' });
   }
-  if (offTopic(input.message)) {
-    return result(input, current, current, answer('Maaf, saya fokus membantu kamu belajar Mandarin 😊 Sekarang lanjutkan latihan “我明天上班”.', '', '', '', 'OFF_TOPIC_REDIRECT'), { path: [current.stage], action: 'OFF_TOPIC_REDIRECT' });
+  const intent = evaluateTeachingIntent({
+    direction: 'ID_TO_ZH', message: input.message,
+    currentCourseText: [objective.surface, objective.pinyin, objective.meaningId, '我', '明天', '上班'],
+    recentTurns: input.recentTurns ?? [], activeTeaching: true,
+  });
+  if (intent.verdict !== 'LEARNING_RELATED') {
+    const reply = teachingIntentGuardReply('ID_TO_ZH', intent.verdict);
+    return result(input, current, current, answer(reply.answer, '', '', '', reply.teachingStrategy), {
+      path: [current.stage], action: reply.teachingStrategy,
+      turnKind: intent.verdict === 'OFF_TOPIC' ? 'OFF_TOPIC_REDIRECT' : 'TEACHING',
+      intentVerdict: intent.verdict,
+    });
+  }
+  if (intent.reason === 'CONTEXTUAL_CONTINUATION' && /^(?:bagaimana|gimana|kenapa|mengapa|为什么|这个呢)/i.test(input.message.trim())) {
+    return result(input, current, current, answer('Kita sedang berlatih mengatakan “Besok saya masuk kerja”. Kamu ingin arti, contoh, atau petunjuk pertama?', '', '', '', 'CONTEXTUAL_CLARIFICATION'), { path: [current.stage], action: 'CONTEXTUAL_CLARIFICATION' });
   }
   if (current.stage === 'DIAGNOSE') {
     const verified = prerequisiteCheck(input.message);
