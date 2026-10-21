@@ -95,6 +95,7 @@ const OUTPUT_CONTRACT = [
   '- summary: 1 short sentence about what the student learned/should do next.',
   '- ttsRate: "slow" only when the student asked for slow speech.',
   '- rememberTarget: true when the student initiated or should retain the target; then fill targetChinese/targetPinyin/targetMeaning.',
+  '- wordBreakdown: split `chinese` into natural word units (NOT one character per item, do not split fixed words). 2-6 items; each { chinese: the word, pinyin: tone-marked, indonesian: short plain-language meaning a total beginner understands (no grammar jargon) }. Include particles like 吗/了/的 with a plain note such as "(kata tanya ya/tidak)".',
   '- skillGap: true only when reliable teaching is impossible; explain in skillGapReason instead of inventing facts.',
 ].join(' ');
 

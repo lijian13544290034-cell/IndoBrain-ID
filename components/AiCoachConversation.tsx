@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import AiCoachRecorder from '@/components/AiCoachRecorder';
+import WordBreakdownPanel from '@/components/WordBreakdownPanel';
 import { playBrowserAudioBlob, prepareBrowserAudio } from '@/lib/browser-audio';
 import { normalizeCoachConversationError, parseCoachConversationResponse } from '@/lib/mandarin-coach-conversation-client';
 import { readPersonalizationState } from '@/lib/mandarin-coach-personalization-profile';
@@ -12,8 +13,7 @@ import type { ActiveTeachingSession } from '@/lib/teaching-engine/telemetry-cont
 
 type ConversationResponse = {
   questionId: string;
-  transcript: string | null;
-  detectedLanguage: 'INDONESIAN' | 'CHINESE' | 'MIXED';
+  transcript: string | null;  detectedLanguage: 'INDONESIAN' | 'CHINESE' | 'MIXED';
   intent: CoachIntent;
   intents: CoachIntent[];
   skillIds: CoachBrainSkillId[];
@@ -24,6 +24,7 @@ type ConversationResponse = {
   chinese: string;
   pinyin: string;
   indonesian: string;
+  wordBreakdown?: Array<{ chinese: string; pinyin: string; indonesian: string }>;
   followUp: string;
   summary: string;
   ttsRate: 'normal' | 'slow';
@@ -178,7 +179,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
         const now = result.timestamp;
         const userText = cleanMessage || result.transcript || '';
         const activeUserTurn: CoachConversationTurn = { id: `${result.questionId}-user`, role: 'user', text: userText, intent: result.intent, createdAt: now };
-        const activeAssistantTurn: CoachConversationTurn = { id: `${result.questionId}-assistant`, role: 'assistant', text: result.answer, chinese: result.chinese || undefined, pinyin: result.pinyin || undefined, indonesian: result.indonesian || undefined, speechSegments: result.speechSegments, ttsRate: result.ttsRate, createdAt: now };
+        const activeAssistantTurn: CoachConversationTurn = { id: `${result.questionId}-assistant`, role: 'assistant', text: result.answer, chinese: result.chinese || undefined, pinyin: result.pinyin || undefined, indonesian: result.indonesian || undefined, wordBreakdown: result.wordBreakdown, speechSegments: result.speechSegments, ttsRate: result.ttsRate, createdAt: now };
         setActiveTurns((turns) => [...turns, activeUserTurn, activeAssistantTurn].slice(-14));
         setInput('');
         setPendingResolution(null);
@@ -192,7 +193,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
       const userTurn: CoachConversationTurn = { id: `${result.questionId}-user`, role: 'user', text: userText, intent: result.intent, createdAt: now };
       const assistantTurn: CoachConversationTurn = {
         id: `${result.questionId}-assistant`, role: 'assistant', text: result.answer,
-        chinese: result.chinese || undefined, pinyin: result.pinyin || undefined, indonesian: result.indonesian || undefined,
+        chinese: result.chinese || undefined, pinyin: result.pinyin || undefined, indonesian: result.indonesian || undefined, wordBreakdown: result.wordBreakdown,
         intent: result.intent, intents: result.intents, skillIds: result.skillIds, capabilityIds: result.capabilityIds,
         speechSegments: result.speechSegments, ttsRate: result.ttsRate, createdAt: now,
       };
@@ -269,7 +270,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
     <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-widest text-[var(--ib-primary)]">Coach Conversation</p><h2 className="mt-1 text-xl font-bold text-[var(--ib-primary-strong)]">Tanya AI Coach</h2><p className="mt-1 text-xs text-[var(--ib-text-secondary)]">Tanya dalam Bahasa Indonesia atau 中文.</p></div><button type="button" onClick={() => setConversationOpen(false)} className="min-h-10 shrink-0 rounded-full border border-[var(--ib-border-soft)] px-3 text-sm font-bold text-[var(--ib-primary)]">Kembali Belajar</button></div>
     <div ref={historyRef} className="mt-4 max-h-80 space-y-3 overflow-y-auto rounded-2xl bg-[var(--ib-bg-muted)] p-3" aria-live="polite">
       {(activeTeaching ? activeTurns : profile.conversation.recentTurns).length === 0 ? <div className="rounded-2xl bg-white p-3 text-sm leading-6 text-[var(--ib-text-secondary)]"><p className="font-semibold text-[var(--ib-primary-strong)]">Contoh pertanyaan:</p><p>“Kenapa 谢谢 dibaca xiè xie?”</p><p>“Kalau di tempat kerja bilang apa?”</p><p>“Saya tidak mengerti. Bisa lebih pelan?”</p></div> : null}
-      {(activeTeaching ? activeTurns : profile.conversation.recentTurns).map((turn) => <div key={turn.id} className={`rounded-2xl p-3 ${turn.role === 'user' ? 'ml-7 bg-[var(--ib-primary)] text-white' : 'mr-7 bg-white text-[var(--ib-text-primary)]'}`}><p className="whitespace-pre-wrap text-sm leading-6">{turn.text}</p>{turn.chinese ? <div className="mt-3 rounded-xl bg-[var(--ib-primary-soft)] p-3 text-[var(--ib-text-primary)]"><p className="text-2xl font-bold text-[var(--ib-primary-strong)]">{turn.chinese}</p>{turn.pinyin ? <p className="mt-1 font-semibold text-[var(--ib-primary)]">{turn.pinyin}</p> : null}{turn.indonesian ? <p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}<button type="button" onClick={() => playCoachChinese(turn.chinese!, turn.ttsRate)} className="mt-2 text-sm font-bold text-[var(--ib-primary)]">🔊 Mandarin</button></div> : turn.indonesian ? <p className="mt-2 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}{turn.role === 'assistant' && turn.speechSegments?.length ? <div className="mt-3 flex flex-wrap gap-2"><button type="button" onClick={() => playCoachSegments(turn.speechSegments!, 'normal')} className="min-h-10 rounded-full border border-[var(--ib-border-soft)] px-3 text-xs font-bold text-[var(--ib-primary)]">🔊 Dengarkan jawaban</button><button type="button" onClick={() => playCoachSegments(turn.speechSegments!, 'slow')} className="min-h-10 rounded-full border border-[var(--ib-border-soft)] px-3 text-xs font-bold text-[var(--ib-primary)]">🐢 Pelan</button></div> : null}</div>)}
+      {(activeTeaching ? activeTurns : profile.conversation.recentTurns).map((turn) => <div key={turn.id} className={`rounded-2xl p-3 ${turn.role === 'user' ? 'ml-7 bg-[var(--ib-primary)] text-white' : 'mr-7 bg-white text-[var(--ib-text-primary)]'}`}><p className="whitespace-pre-wrap text-sm leading-6">{turn.text}</p>{turn.chinese ? <div className="mt-3 rounded-xl bg-[var(--ib-primary-soft)] p-3 text-[var(--ib-text-primary)]"><p className="text-2xl font-bold text-[var(--ib-primary-strong)]">{turn.chinese}</p>{turn.pinyin ? <p className="mt-1 font-semibold text-[var(--ib-primary)]">{turn.pinyin}</p> : null}{turn.indonesian ? <p className="mt-1 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}<button type="button" onClick={() => playCoachChinese(turn.chinese!, turn.ttsRate)} className="mt-2 text-sm font-bold text-[var(--ib-primary)]">🔊 Mandarin</button>{turn.wordBreakdown?.length ? <WordBreakdownPanel items={turn.wordBreakdown} /> : null}</div> : turn.indonesian ? <p className="mt-2 text-sm text-[var(--ib-text-secondary)]">{turn.indonesian}</p> : null}{turn.role === 'assistant' && turn.speechSegments?.length ? <div className="mt-3 flex flex-wrap gap-2"><button type="button" onClick={() => playCoachSegments(turn.speechSegments!, 'normal')} className="min-h-10 rounded-full border border-[var(--ib-border-soft)] px-3 text-xs font-bold text-[var(--ib-primary)]">🔊 Dengarkan jawaban</button><button type="button" onClick={() => playCoachSegments(turn.speechSegments!, 'slow')} className="min-h-10 rounded-full border border-[var(--ib-border-soft)] px-3 text-xs font-bold text-[var(--ib-primary)]">🐢 Pelan</button></div> : null}</div>)}
     </div>
     {activeAvailable && lesson.id === 'mandarin-work-level-1-day-27' ? <div className="mt-3 rounded-2xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-950"><p className="font-bold">Latihan aktif: 我明天上班</p><p className="mt-1 text-xs">Sesi sementara, tidak disimpan sebagai nilai penguasaan.</p><button type="button" disabled={busy} onClick={() => { setActiveTeaching(null); setActiveTeachingToken(null); setActiveTurns([]); void send('Mulai latihan aktif.', undefined, true); }} className="mt-2 min-h-10 rounded-full bg-[var(--ib-primary-strong)] px-4 font-bold text-white disabled:opacity-50">{activeTeaching ? 'Mulai ulang latihan' : 'Mulai latihan aktif'}</button>{activeTeaching ? <p className="mt-2 text-xs font-semibold">Tahap: {activeTeaching.stage} · Status: {activeTeaching.masteryStatus}</p> : null}</div> : null}
     {pendingResolution ? <div className="mt-3 flex items-center gap-2 text-xs text-[var(--ib-text-secondary)]"><span>Jawaban ini membantu?</span><button type="button" onClick={() => resolveAnswer(true)} className="rounded-full border border-[var(--ib-border-soft)] px-3 py-2 font-semibold text-[var(--ib-primary)]">Ya</button><button type="button" onClick={() => resolveAnswer(false)} className="rounded-full border border-[var(--ib-border-soft)] px-3 py-2 font-semibold text-[var(--ib-primary)]">Belum</button></div> : null}

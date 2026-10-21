@@ -16,6 +16,12 @@ export type CoachBrainPlan = {
   confidence: number;
 };
 
+export type CoachWordPart = {
+  chinese: string;
+  pinyin: string;
+  indonesian: string;
+};
+
 export type CoachBrainAnswer = {
   answer: string;
   chinese: string;
@@ -29,6 +35,8 @@ export type CoachBrainAnswer = {
   targetChinese: string;
   targetPinyin: string;
   targetMeaning: string;
+  /** 拆词解释（按自然词单位）；无可靠拆词时缺省。 */
+  wordBreakdown?: CoachWordPart[];
   skillGap: boolean;
   skillGapReason: string;
 };

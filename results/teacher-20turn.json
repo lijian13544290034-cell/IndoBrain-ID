@@ -1,36 +1,36 @@
 {
-  "run": "118606",
-  "base": "http://localhost:3341",
-  "sessionId": "coach-skill20-118606",
+  "run": "393770",
+  "base": "http://127.0.0.1:3346",
+  "sessionId": "coach-skill20-393770",
   "simulated": true,
   "notice": "SIMULATED TEST — local run has no AI Gateway credentials; LLM turns degrade to SAFE_PLAIN_TEXT_FALLBACK. This does NOT prove real AI teaching quality. Requires Preview with real model for final validation.",
   "totals": {
     "checks": 26,
     "pass": 26,
     "fail": 0,
-    "deterministicTurns": 18,
-    "llmFallbackTurns": 2
+    "deterministicTurns": 17,
+    "llmFallbackTurns": 3
   },
   "checks": [
     {
       "id": "T1-goal",
       "pass": true,
-      "detail": "intent=STUDY_PLANNING strategy=STUDY_PLANNING_CAREER_PATH"
+      "detail": "intent=STUDY_PLANNING strategy=STUDY_PLANNING_FALLBACK"
     },
     {
       "id": "T1-ask-job",
       "pass": true,
-      "detail": "followUp=Pekerjaanmu nanti apa? Pabrik, gudang, kantor, atau lainnya?"
+      "detail": "followUp=Pekerjaanmu nanti apa? Restoran, gudang, pabrik, kantor, ata"
     },
     {
       "id": "T2-http200",
       "pass": true,
-      "detail": "skillGap=false（本地无凭据时允许降级）"
+      "detail": "skillGap=true（本地无凭据时允许降级）"
     },
     {
       "id": "T3-start-lesson",
       "pass": true,
-      "detail": "chinese=你好"
+      "detail": "chinese=我在工厂工作"
     },
     {
       "id": "T4-correct",
@@ -50,7 +50,7 @@
     {
       "id": "T7-lanjut",
       "pass": true,
-      "detail": "chinese=我叫…（课内下一句，非重复）"
+      "detail": "chinese=机器坏了（课内下一句，非重复）"
     },
     {
       "id": "T8-slow",
@@ -110,7 +110,7 @@
     {
       "id": "T19-lanjut2",
       "pass": true,
-      "detail": "chinese=我是印尼人"
+      "detail": "chinese=今天生产很多"
     },
     {
       "id": "T20-http200",
@@ -148,27 +148,27 @@
       "message": "saya belum bisa Mandarin, saya mau kerja di perusahaan China, bisa ajarin saya?",
       "http": 200,
       "intent": "STUDY_PLANNING",
-      "strategy": "STUDY_PLANNING_CAREER_PATH",
+      "strategy": "STUDY_PLANNING_FALLBACK",
       "skillGap": false,
-      "answer": "Siap, saya buatkan rencananya 🎯 Minggu 1: sapaan & perkenalan diri (你好 / 我叫…). Minggu 2-3: bahasa kerja dasar (pabrik, gudang, kirim barang). Minggu 4: percakapan interview. Syarat kerja di perusahaan Tiongkok umumnya: bisa perkenalan diri, percakapan dasar (setara HSK 2-3), dan istilah kerja bidangmu.",
+      "answer": "Siap, saya bantu. Rencana singkat: Minggu 1 sapaan & perkenalan diri, Minggu 2-3 kalimat kerja sesuai bidangmu, Minggu 4 percakapan interview. Syarat kerja di perusahaan Tiongkok umumnya: bisa perkenalan diri, percakapan dasar (setara HSK 2-3), dan istilah kerja bidangmu.",
       "chinese": "我想去中国公司工作。",
       "pinyin": "wǒ xiǎng qù zhōngguó gōngsī gōngzuò.",
       "indonesian": "Saya mau kerja di perusahaan Tiongkok.",
-      "followUp": "Pekerjaanmu nanti apa? Pabrik, gudang, kantor, atau lainnya?",
+      "followUp": "Pekerjaanmu nanti apa? Restoran, gudang, pabrik, kantor, atau lainnya?",
       "ttsRate": "normal",
       "usageModelCalls": 0
     },
     {
       "message": "saya mau kerja di bagian pabrik, operator mesin",
       "http": 200,
-      "intent": "STUDY_PLANNING",
-      "strategy": "MINI_COURSE_CREATED",
-      "skillGap": false,
-      "answer": "Siap! Saya buatkan Kursus Mandarin 7 Hari · Pabrik / Produksi sesuai pekerjaanmu 🎯\nHari 1: Perkenalan diri — 你好 / 我叫… / 我是印尼人\nHari 2: Sapaan sopan di kantor — 早上好 / 谢谢您 / 不客气\nHari 3: Angka & waktu kerja — 几点？ / 八点 / 加班\nHari 4: Kosakata kerja: Pabrik / Produksi — 工厂 / 机器 / 生产\nHari 5: Kalimat kerja: Pabrik / Produksi — 我在工厂工作 / 机器坏了 / 今天生产很多\nHari 6: Minta bantuan & konfirmasi — 请帮我 / 可以吗？ / 我明白了\nHari 7: Simulasi percakapan kerja — 我是新来的 / 请多关照 / 有问题我问你",
-      "chinese": "",
-      "pinyin": "",
-      "indonesian": "",
-      "followUp": "Mau mulai pelajaran pertama sekarang? Balas \"mulai\".",
+      "intent": "WORKPLACE",
+      "strategy": "MINI_COURSE_START_FALLBACK",
+      "skillGap": true,
+      "answer": "Hari 1 — Kalimat inti: Pabrik / Produksi. Kita mulai dari kalimat yang paling sering kamu pakai di tempat kerja. Ucapkan dulu: 我在工厂工作 (wǒ zài gōng chǎng gōng zuò) = saya kerja di pabrik.",
+      "chinese": "我在工厂工作",
+      "pinyin": "wǒ zài gōng chǎng gōng zuò",
+      "indonesian": "saya kerja di pabrik",
+      "followUp": "Sekarang giliranmu: ucapkan 我在工厂工作, lalu tulis di sini.",
       "ttsRate": "normal",
       "usageModelCalls": 0
     },
@@ -178,11 +178,11 @@
       "intent": "STUDY_PLANNING",
       "strategy": "MINI_COURSE_START",
       "skillGap": false,
-      "answer": "Hari 1 — Perkenalan diri. Kita mulai dari yang paling sering dipakai di tempat kerja. Ucapkan dulu: 你好 (nǐ hǎo) = halo.",
-      "chinese": "你好",
-      "pinyin": "nǐ hǎo",
-      "indonesian": "halo",
-      "followUp": "Sekarang giliranmu: ucapkan 你好, lalu tulis di sini.",
+      "answer": "Hari 1 — Kalimat inti: Pabrik / Produksi. Kita mulai dari kalimat yang paling sering kamu pakai di tempat kerja. Ucapkan dulu: 我在工厂工作 (wǒ zài gōng chǎng gōng zuò) = saya kerja di pabrik.",
+      "chinese": "我在工厂工作",
+      "pinyin": "wǒ zài gōng chǎng gōng zuò",
+      "indonesian": "saya kerja di pabrik",
+      "followUp": "Sekarang giliranmu: ucapkan 我在工厂工作, lalu tulis di sini.",
       "ttsRate": "normal",
       "usageModelCalls": 0
     },
@@ -234,11 +234,11 @@
       "intent": "STUDY_PLANNING",
       "strategy": "MINI_COURSE_NEXT",
       "skillGap": false,
-      "answer": "Lanjut ke ekspresi berikutnya: 我叫… (wǒ jiào…) = nama saya….",
-      "chinese": "我叫…",
-      "pinyin": "wǒ jiào…",
-      "indonesian": "nama saya…",
-      "followUp": "Sekarang giliranmu: ucapkan 我叫…, lalu tulis di sini.",
+      "answer": "Lanjut ke kalimat berikutnya: 机器坏了 (jī qì huài le) = mesinnya rusak.",
+      "chinese": "机器坏了",
+      "pinyin": "jī qì huài le",
+      "indonesian": "mesinnya rusak",
+      "followUp": "Sekarang giliranmu: ucapkan 机器坏了, lalu tulis di sini.",
       "ttsRate": "normal",
       "usageModelCalls": 0
     },
@@ -402,11 +402,11 @@
       "intent": "STUDY_PLANNING",
       "strategy": "MINI_COURSE_NEXT",
       "skillGap": false,
-      "answer": "Lanjut ke ekspresi berikutnya: 我是印尼人 (wǒ shì yìn ní rén) = saya orang Indonesia.",
-      "chinese": "我是印尼人",
-      "pinyin": "wǒ shì yìn ní rén",
-      "indonesian": "saya orang Indonesia",
-      "followUp": "Sekarang giliranmu: ucapkan 我是印尼人, lalu tulis di sini.",
+      "answer": "Lanjut ke kalimat berikutnya: 今天生产很多 (jīn tiān shēng chǎn hěn duō) = hari ini produksi banyak.",
+      "chinese": "今天生产很多",
+      "pinyin": "jīn tiān shēng chǎn hěn duō",
+      "indonesian": "hari ini produksi banyak",
+      "followUp": "Sekarang giliranmu: ucapkan 今天生产很多, lalu tulis di sini.",
       "ttsRate": "normal",
       "usageModelCalls": 0
     },

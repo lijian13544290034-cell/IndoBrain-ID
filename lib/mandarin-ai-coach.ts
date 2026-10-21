@@ -40,6 +40,8 @@ export type CoachConversationTurn = {
   chinese?: string;
   pinyin?: string;
   indonesian?: string;
+  /** 拆词解释（按自然词单位），无可靠拆词时缺省。 */
+  wordBreakdown?: Array<{ chinese: string; pinyin: string; indonesian: string }>;
   intent?: CoachIntent;
   intents?: CoachIntent[];
   skillIds?: CoachBrainSkillId[];

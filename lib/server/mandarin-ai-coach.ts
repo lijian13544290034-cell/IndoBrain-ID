@@ -9,6 +9,7 @@ import {
   buildMiniCourse, detectOccupationKey, flattenMiniCourse, looksLikeAttempt, matchesTarget, miniCourseAnswer, miniCourseOutline,
   occupationKeyFromMemory, occupationLabel, type OccupationKey, type MiniCourseState,
 } from '@/lib/server/mandarin-mini-course';
+import { resolveWordBreakdown } from '@/lib/server/mandarin-word-breakdown';
 
 const FAST_MODEL = process.env.FAST_MODEL || 'google/gemini-2.5-flash-lite';
 const SMART_MODEL = process.env.SMART_MODEL || 'google/gemini-2.5-flash';
@@ -238,8 +239,26 @@ function composeMiniCourseResponse(input: {
   return null;
 }
 
-function blankAnswer(): CoachBrainAnswer {
-  return {
+/**
+ * 挂拆词：模型词表优先（同一次响应带回，零额外调用）→ 预置/确定性分词。
+ * 无可靠拆词时不挂字段，前端隐藏入口。
+ */
+function withWordBreakdown(answer: CoachBrainAnswer): CoachBrainAnswer {
+  const base: CoachBrainAnswer = {
+    ...answer,
+    // 首轮课程回复只填 chinese，不填 targetChinese；统一补一份，拆词与前端高亮都用得到。
+    targetChinese: answer.targetChinese || answer.chinese || '',
+    targetPinyin: answer.targetPinyin || answer.pinyin || '',
+    targetMeaning: answer.targetMeaning || answer.indonesian || '',
+  };
+  if (base.wordBreakdown?.length) return base;
+  const chinese = base.targetChinese || base.chinese;
+  if (!chinese) return base;
+  const breakdown = resolveWordBreakdown({ chinese, modelBreakdown: base.wordBreakdown });
+  return breakdown ? { ...base, wordBreakdown: breakdown } : base;
+}
+
+function blankAnswer(): CoachBrainAnswer {  return {
     answer: '', chinese: '', pinyin: '', indonesian: '', followUp: '', summary: '', ttsRate: 'normal',
     teachingStrategy: 'DIRECT', rememberTarget: false, targetChinese: '', targetPinyin: '', targetMeaning: '',
     skillGap: false, skillGapReason: '',
@@ -324,6 +343,20 @@ const conversationAnswerSchema = jsonSchema<ConversationAnswer>({
     targetChinese: { type: 'string', maxLength: 120 },
     targetPinyin: { type: 'string', maxLength: 180 },
     targetMeaning: { type: 'string', maxLength: 240 },
+    wordBreakdown: {
+      type: 'array',
+      maxItems: 8,
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['chinese', 'pinyin', 'indonesian'],
+        properties: {
+          chinese: { type: 'string', maxLength: 8 },
+          pinyin: { type: 'string', maxLength: 40 },
+          indonesian: { type: 'string', maxLength: 80 },
+        },
+      },
+    },
     skillGap: { type: 'boolean' },
     skillGapReason: { type: 'string', maxLength: 240 },
   },
@@ -415,19 +448,19 @@ function safeTeachingFallback(plan: ReturnType<typeof routeCoachInput>, classifi
   // 3) 其他 → 一句安全提示。
   if (courseState && courseState.cursor === 0) {
     const reply = miniCourseAnswer(courseState, 'START');
-    return {
+    return withWordBreakdown({
       ...blankAnswer(), ...reply,
       teachingStrategy: 'MINI_COURSE_START_FALLBACK',
       rememberTarget: true,
       targetChinese: reply.chinese, targetPinyin: reply.pinyin, targetMeaning: reply.indonesian,
       skillGap: true,
       skillGapReason: 'Teaching model unavailable — using the job course starter sentence.',
-    };
+    });
   }
   const studyPlan = composeStudyPlanFallback(plan);
-  if (studyPlan) return { ...studyPlan, summary: summary.slice(0, 280) };
+  if (studyPlan) return withWordBreakdown({ ...studyPlan, summary: summary.slice(0, 280) });
   const target = classification.targetChinese || plan.targetChinese || '';
-  return {
+  const plainFallback: CoachBrainAnswer = {
     answer: target
       ? 'Mari kita fokus pada satu bagian dulu. Kirim frasa ini lagi jika kamu ingin arti atau cara bacanya.'
       : 'Saya belum bisa menyusun jawaban lengkap. Coba tanyakan satu frasa Mandarin, arti, atau cara bacanya.',
@@ -445,6 +478,8 @@ function safeTeachingFallback(plan: ReturnType<typeof routeCoachInput>, classifi
     skillGap: true,
     skillGapReason: 'Structured teaching response unavailable after one controlled repair attempt.',
   };
+  // 兜底也要能拆词（学生已经在卡片上看到这句），否则「拆词」入口会凭空消失。
+  return withWordBreakdown(plainFallback);
 }
 
 async function callDecisionModel(model: string, input: {
@@ -638,7 +673,7 @@ export async function answerCoachConversation(input: {
     };
     return {
       classification: courseClassification,
-      answer: { ...miniCourse.answer, summary: miniCourse.answer.summary || input.context.recentConversationSummary.slice(0, 280) } satisfies ConversationAnswer,
+      answer: withWordBreakdown({ ...miniCourse.answer, summary: miniCourse.answer.summary || input.context.recentConversationSummary.slice(0, 280) }) satisfies ConversationAnswer,
       usage: classificationUsage,
     };
   }
@@ -646,7 +681,7 @@ export async function answerCoachConversation(input: {
   if (deterministicAnswer) {
     return {
       classification: deterministicClassification,
-      answer: { ...deterministicAnswer, summary: deterministicAnswer.summary || input.context.recentConversationSummary.slice(0, 280) } satisfies ConversationAnswer,
+      answer: withWordBreakdown({ ...deterministicAnswer, summary: deterministicAnswer.summary || input.context.recentConversationSummary.slice(0, 280) }) satisfies ConversationAnswer,
       usage: classificationUsage,
     };
   }
@@ -658,7 +693,7 @@ export async function answerCoachConversation(input: {
     };
     return {
       classification: practiceClassification,
-      answer: { ...practice.answer, summary: practice.answer.summary || input.context.recentConversationSummary.slice(0, 280) } satisfies ConversationAnswer,
+      answer: withWordBreakdown({ ...practice.answer, summary: practice.answer.summary || input.context.recentConversationSummary.slice(0, 280) }) satisfies ConversationAnswer,
       usage: classificationUsage,
     };
   }
@@ -733,7 +768,7 @@ export async function answerCoachConversation(input: {
     const answerResult = await generateConversationAnswer(answerModel, 700);
     return {
       classification,
-      answer: answerResult.output,
+      answer: withWordBreakdown(answerResult.output),
       usage: mergeUsage(classificationUsage, usageFromResult(answerResult, answerModel)),
     };
   } catch (error) {
@@ -750,7 +785,7 @@ export async function answerCoachConversation(input: {
       console.info('[mandarin-coach-structured-retry]', { fromModel: answerModel, repairModel: FAST_MODEL, success: true });
       return {
         classification,
-        answer: repaired.output,
+        answer: withWordBreakdown(repaired.output),
         usage: mergeUsage(answerUsage, repairUsage),
       };
     } catch (repairError) {
