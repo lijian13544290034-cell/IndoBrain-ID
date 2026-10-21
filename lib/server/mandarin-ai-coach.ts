@@ -166,8 +166,8 @@ function composeMiniCourseResponse(input: {
       const flat = flattenMiniCourse(buildMiniCourse(state.key));
       const item = flat[Math.max(0, Math.min(flat.length - 1, state.cursor))];
       if (matchesTarget(message, item)) {
-        const next = { ...state, cursor: Math.min(flat.length - 1, state.cursor + 1) };
-        writeMiniCourse(input.sessionId, next);
+        // 答对只确认，不推游标——否则学生再说 "lanjut" 会再前进一次，跳过一句。
+        writeMiniCourse(input.sessionId, state);
         return {
           answer: {
             ...blankAnswer(),
@@ -178,7 +178,7 @@ function composeMiniCourseResponse(input: {
             teachingStrategy: 'MINI_COURSE_PASS', rememberTarget: true,
             targetChinese: item.chinese, targetPinyin: item.pinyin, targetMeaning: item.indonesian,
           },
-          course: next,
+          course: state,
         };
       }
       const reply = miniCourseAnswer(state, 'CORRECT');

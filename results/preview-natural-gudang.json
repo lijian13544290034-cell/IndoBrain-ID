@@ -1,0 +1,321 @@
+{
+  "run": "131016",
+  "deployment": "https://indobrain-01-prd-prd-v0-1-h4r0c8b3i-lijian1.vercel.app",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    {
+      "name": "B1 首轮直接教数量/库存表达",
+      "pass": true,
+      "detail": "Teach job-specific core sentence · 有多少？"
+    },
+    {
+      "name": "B2 拼音回答被理解",
+      "pass": true,
+      "detail": "PRACTICE · Bagus sekali! Kamu sudah mengucapkan \"Berapa banyak?\" dalam "
+    },
+    {
+      "name": "B5 tidak paham 被重新解释",
+      "pass": true,
+      "detail": "TEACH · Tentu, 货到了吗？ (huò dào le ma?) artinya \"Barangnya sudah sampai?\" Kalima"
+    },
+    {
+      "name": "B7 主动新问题被回应",
+      "pass": true,
+      "detail": "calls=1 · 库存够不够?"
+    },
+    {
+      "name": "B10 无调拼音仍被评估",
+      "pass": true,
+      "detail": "MINI_COURSE_CORRECT · Belum tepat, tapi tidak apa-apa 👍 Yang benar: 放这里 (fàng zhè"
+    }
+  ],
+  "sessions": [
+    {
+      "name": "gudang",
+      "sessionId": "coach-nat-gudang-023374",
+      "turns": [
+        {
+          "turn": 1,
+          "message": "Saya kerja di gudang perusahaan China. Bos saya sering tanya jumlah barang dan stok. Saya belum bisa Mandarin. Tolong ajarin saya.",
+          "latency_ms": 13567,
+          "strategy": "Teach job-specific core sentence",
+          "chinese": "有多少？",
+          "pinyin": "yǒu duō shao?",
+          "indonesian": "Ada berapa banyak?",
+          "answer": "Oke, kamu kerja di gudang perusahaan China dan bos sering tanya jumlah barang. Kita mulai dari kalimat yang paling sering kamu dengar atau pakai, yaitu menanyakan jumlah. Ini dia kalimatnya:",
+          "followUp": "Sekarang coba kamu ucapkan: 'Ada berapa banyak?' dalam bahasa Mandarin.",
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash",
+          "model_calls": 1,
+          "tokens": [
+            2999,
+            365
+          ],
+          "cost": 0.0018122,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "有多少？",
+            "position": "1/21"
+          }
+        },
+        {
+          "turn": 2,
+          "message": "yǒu duō shao?",
+          "latency_ms": 12207,
+          "strategy": "PRACTICE",
+          "chinese": "仓库有多少？",
+          "pinyin": "cāng kù yǒu duō shao?",
+          "indonesian": "Gudang ada berapa banyak?",
+          "answer": "Bagus sekali! Kamu sudah mengucapkan \"Berapa banyak?\" dalam bahasa Mandarin. Sekarang, coba kamu gunakan kalimat ini untuk bertanya kepada bosmu. Misalnya, bos bertanya tentang jumlah barang di gudang, kamu bisa jawab pakai ini. Coba praktikkan, katakan \"Berapa banyak barang di gudang?\"",
+          "followUp": "Sekarang, coba kamu ucapkan \"Gudang ada berapa banyak?\"",
+          "model": "google/gemini-2.5-flash-lite → google/gemini-2.5-flash-lite",
+          "model_calls": 2,
+          "tokens": [
+            3627,
+            364
+          ],
+          "cost": 0.0005082999999999999,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "有多少？",
+            "position": "1/21"
+          }
+        },
+        {
+          "turn": 3,
+          "message": "lanjut",
+          "latency_ms": 9216,
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "库存不够",
+          "pinyin": "kù cún bú gòu",
+          "indonesian": "stoknya tidak cukup",
+          "answer": "Lanjut ke kalimat berikutnya: 库存不够 (kù cún bú gòu) = stoknya tidak cukup.",
+          "followUp": "Sekarang giliranmu: ucapkan 库存不够, lalu tulis di sini.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 1,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "库存不够",
+            "position": "2/21"
+          }
+        },
+        {
+          "turn": 4,
+          "message": "kù cún bú gòu",
+          "latency_ms": 9773,
+          "strategy": "MINI_COURSE_PASS",
+          "chinese": "库存不够",
+          "pinyin": "kù cún bú gòu",
+          "indonesian": "stoknya tidak cukup",
+          "answer": "Bagus sekali! 👏 库存不够 (kù cún bú gòu) = stoknya tidak cukup sudah benar.",
+          "followUp": "Bilang \"lanjut\" kalau mau ekspresi berikutnya.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 2,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "货到了吗？",
+            "position": "3/21"
+          }
+        },
+        {
+          "turn": 5,
+          "message": "artinya apa 货到了吗? masih belum paham",
+          "latency_ms": 11130,
+          "strategy": "TEACH",
+          "chinese": "货到了吗？",
+          "pinyin": "huò dào le ma?",
+          "indonesian": "Barangnya sudah sampai?",
+          "answer": "Tentu, 货到了吗？ (huò dào le ma?) artinya \"Barangnya sudah sampai?\" Kalimat ini sangat berguna di gudang untuk menanyakan status kedatangan barang. Coba kamu ucapkan kalimat ini.",
+          "followUp": "Coba ucapkan: 货到了吗？",
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash-lite",
+          "model_calls": 1,
+          "tokens": [
+            3279,
+            211
+          ],
+          "cost": 0.0004123,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 2,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "货到了吗？",
+            "position": "3/21"
+          }
+        },
+        {
+          "turn": 6,
+          "message": "lanjut",
+          "latency_ms": 9381,
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "今天出货",
+          "pinyin": "jīn tiān chū huò",
+          "indonesian": "hari ini kirim barang",
+          "answer": "Hari 2 — Latihan lanjutan: Gudang / Logistik. Lanjut ke kalimat berikutnya: 今天出货 (jīn tiān chū huò) = hari ini kirim barang.",
+          "followUp": "Sekarang giliranmu: ucapkan 今天出货, lalu tulis di sini.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 3,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 2,
+            "topic": "Latihan lanjutan: Gudang / Logistik",
+            "target": "今天出货",
+            "position": "4/21"
+          }
+        },
+        {
+          "turn": 7,
+          "message": "gimana cara tanya bos: stok cukup atau tidak?",
+          "latency_ms": 13023,
+          "strategy": "address user's direct question, provide sentence, explain new word, ask for practice",
+          "chinese": "库存够不够?",
+          "pinyin": "kù cún gòu bú gòu?",
+          "indonesian": "Stoknya cukup atau tidak?",
+          "answer": "Tentu, untuk menanyakan ke bos apakah stoknya cukup atau tidak, kamu bisa bilang: \"库存够不够?\" Ini adalah cara yang sangat umum untuk bertanya \"cukup atau tidak?\" dalam bahasa Mandarin.",
+          "followUp": "Kata 够 (gòu) artinya 'cukup'. Coba kamu ucapkan kalimat ini.",
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash",
+          "model_calls": 1,
+          "tokens": [
+            3326,
+            537
+          ],
+          "cost": 0.0023403,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 3,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 2,
+            "topic": "Latihan lanjutan: Gudang / Logistik",
+            "target": "今天出货",
+            "position": "4/21"
+          }
+        },
+        {
+          "turn": 8,
+          "message": "jīn tiān chū huò",
+          "latency_ms": 9850,
+          "strategy": "MINI_COURSE_PASS",
+          "chinese": "今天出货",
+          "pinyin": "jīn tiān chū huò",
+          "indonesian": "hari ini kirim barang",
+          "answer": "Bagus sekali! 👏 今天出货 (jīn tiān chū huò) = hari ini kirim barang sudah benar.",
+          "followUp": "Bilang \"lanjut\" kalau mau ekspresi berikutnya.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 4,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 2,
+            "topic": "Latihan lanjutan: Gudang / Logistik",
+            "target": "请点一下",
+            "position": "5/21"
+          }
+        },
+        {
+          "turn": 9,
+          "message": "lanjut",
+          "latency_ms": 9330,
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "放这里",
+          "pinyin": "fàng zhè lǐ",
+          "indonesian": "taruh di sini",
+          "answer": "Lanjut ke kalimat berikutnya: 放这里 (fàng zhè lǐ) = taruh di sini.",
+          "followUp": "Sekarang giliranmu: ucapkan 放这里, lalu tulis di sini.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 5,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 2,
+            "topic": "Latihan lanjutan: Gudang / Logistik",
+            "target": "放这里",
+            "position": "6/21"
+          }
+        },
+        {
+          "turn": 10,
+          "message": "qing dian yi xia",
+          "latency_ms": 10155,
+          "strategy": "MINI_COURSE_CORRECT",
+          "chinese": "放这里",
+          "pinyin": "fàng zhè lǐ",
+          "indonesian": "taruh di sini",
+          "answer": "Belum tepat, tapi tidak apa-apa 👍 Yang benar: 放这里 (fàng zhè lǐ) = taruh di sini. Coba ucapkan sekali lagi, pelan-pelan.",
+          "followUp": "Ulangi: 放这里 · fàng zhè lǐ",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 5,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 2,
+            "topic": "Latihan lanjutan: Gudang / Logistik",
+            "target": "放这里",
+            "position": "6/21"
+          }
+        }
+      ]
+    }
+  ]
+}
