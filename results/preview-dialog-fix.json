@@ -1,0 +1,343 @@
+{
+  "run": "304293",
+  "deployment": "https://indobrain-01-prd-prd-v0-1-81unpk0fn-lijian1.vercel.app",
+  "sessions": [
+    {
+      "name": "book",
+      "sessionId": "coach-dlg-book-304293",
+      "turns": [
+        {
+          "turn": 1,
+          "message": "Saya mau belajar Mandarin untuk kerja di restoran.",
+          "strategy": "Teach first job-specific sentence",
+          "chinese": "欢迎光临",
+          "pinyin": "huān yíng guāng lín",
+          "answer": "Oke, kamu mau belajar Mandarin untuk kerja di restoran. Bagus sekali! Kalimat pertama yang paling sering kamu pakai saat tamu datang adalah 'Selamat datang'.",
+          "followUp": "Coba ucapkan 'Selamat datang' dalam bahasa Mandarin.",
+          "model_calls": 1,
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash",
+          "tokens": [
+            2971,
+            485
+          ],
+          "cost": 0.0021038,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 2,
+          "message": "Boleh buatkan les untuk saya?",
+          "strategy": "TEACH",
+          "chinese": "欢迎光临",
+          "pinyin": "huān yíng guāng lín",
+          "answer": "Tentu, kita sudah mulai lesnya kok! Kamu mau belajar Mandarin untuk kerja di restoran, jadi kita akan fokus ke kalimat-kalimat yang paling sering kamu pakai di sana. Kalimat pertama yang sangat penting adalah 'Selamat da",
+          "followUp": "Coba kamu ucapkan 'Selamat datang' dalam bahasa Mandarin ini: 欢迎光临 (huān yíng guāng lín).",
+          "model_calls": 2,
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash → google/gemini-2.5-flash-lite",
+          "tokens": [
+            6395,
+            920
+          ],
+          "cost": 0.0030627,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 3,
+          "message": "不是，我说的是有没有预订包厢或者桌子。",
+          "strategy": "TEACH",
+          "chinese": "请问您有预订吗？",
+          "pinyin": "qǐng wèn nín yǒu yù dìng ma？",
+          "answer": "Oke, kamu ingin memastikan apakah tamu sudah melakukan reservasi atau belum. Kalimat yang tepat untuk menanyakan hal itu adalah: \"Permisi, apakah Anda sudah membuat reservasi?\"",
+          "followUp": "Coba ucapkan kalimat ini, \"请问您有预订吗？\"",
+          "model_calls": 2,
+          "model": "google/gemini-2.5-flash-lite → google/gemini-2.5-flash-lite",
+          "tokens": [
+            3769,
+            363
+          ],
+          "cost": 0.0005221,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        }
+      ]
+    },
+    {
+      "name": "mix",
+      "sessionId": "coach-dlg-mix-304293",
+      "turns": [
+        {
+          "turn": 1,
+          "message": "Saya kerja di hotel. Saya mau belajar Mandarin untuk melayani tamu.",
+          "strategy": "Teach job-specific sentence, then practice.",
+          "chinese": "欢迎光临",
+          "pinyin": "huān yíng guāng lín",
+          "answer": "Oke, kamu kerja di hotel dan mau bisa melayani tamu China. Bagus sekali! Kita mulai dari kalimat yang paling sering kamu pakai saat tamu datang. Ini dia:",
+          "followUp": "Coba kamu ucapkan: 欢迎光临.",
+          "model_calls": 1,
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash",
+          "tokens": [
+            2981,
+            550
+          ],
+          "cost": 0.0022693,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 2,
+          "message": "Sekarang saya mau fokus belajar cara tanya kamar yang sudah dipesan dulu ya.",
+          "strategy": "Prioritize user request, teach specific job-related sentence.",
+          "chinese": "请问您有预订吗？",
+          "pinyin": "qǐng wèn nín yǒu yù dìng ma?",
+          "answer": "Oke, kamu mau fokus belajar cara tanya reservasi kamar. Bagus! Ini kalimatnya:",
+          "followUp": "Coba ucapkan kalimat ini: 请问您有预订吗？",
+          "model_calls": 1,
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash",
+          "tokens": [
+            3125,
+            393
+          ],
+          "cost": 0.00192,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 3,
+          "message": "kalau tamu bilang dia tidak reservasi, saya harus jawab apa?",
+          "strategy": "TEACH",
+          "chinese": "没关系，我帮您查一下有没有空房。",
+          "pinyin": "Méi guān xi, wǒ bāng nín chá yī xià yǒu méi yǒu kòng fáng.",
+          "answer": "Bagus sekali pertanyaanmu! Kalau tamu bilang tidak ada reservasi, kamu bisa bilang seperti ini untuk menanyakan ketersediaan kamar:",
+          "followUp": "Coba kamu ucapkan kalimat ini",
+          "model_calls": 2,
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash → google/gemini-2.5-flash-lite",
+          "tokens": [
+            6583,
+            952
+          ],
+          "cost": 0.0031175,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 4,
+          "message": "huān yíng guāng lín",
+          "strategy": "MINI_COURSE_PASS",
+          "chinese": "欢迎光临",
+          "pinyin": "huān yíng guāng lín",
+          "answer": "Bagus sekali! 👏 欢迎光临 (huān yíng guāng lín) = selamat datang sudah benar.",
+          "followUp": "Bilang \"lanjut\" kalau mau ekspresi berikutnya.",
+          "model_calls": 0,
+          "model": "mandarin-coach-brain-v0.1",
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 5,
+          "message": "不对，我说的不是欢迎光临，我是问怎么问客人有没有订房间。",
+          "strategy": "TEACH",
+          "chinese": "请问您有预订吗？",
+          "pinyin": "qǐng wèn nín yǒu yù dìng ma?",
+          "answer": "Oke, siap! Kamu benar, 欢迎光临 (huān yíng guāng lín) itu artinya selamat datang. Tapi fokus kita sekarang adalah menanyakan reservasi kamar. Kalau tamu bilang tidak ada reservasi, dan kamu ingin menanyakan ketersediaan kama",
+          "followUp": "Coba ucapkan kalimat ini: 请问您有预订吗？ (qǐng wèn nín yǒu yù dìng ma?)",
+          "model_calls": 3,
+          "model": "google/gemini-2.5-flash-lite → google/gemini-2.5-flash → google/gemini-2.5-flash-lite",
+          "tokens": [
+            7246,
+            1109
+          ],
+          "cost": 0.0032714,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 6,
+          "message": "oke lanjut",
+          "strategy": "TEACH",
+          "chinese": "请问您有预订吗？",
+          "pinyin": "qǐng wèn nín yǒu yù dìng ma?",
+          "answer": "Oke, siap! Kamu benar, 欢迎光临 (huān yíng guāng lín) itu artinya selamat datang. Tapi fokus kita sekarang adalah menanyakan reservasi kamar. Kalau tamu bilang tidak ada reservasi, dan kamu ingin menanyakan ketersediaan kama",
+          "followUp": "Coba ulangi kalimat ini: 请问您有预订吗？ (qǐng wèn nín yǒu yù dìng ma?)",
+          "model_calls": 2,
+          "model": "google/gemini-2.5-flash-lite → google/gemini-2.5-flash-lite",
+          "tokens": [
+            3877,
+            431
+          ],
+          "cost": 0.0005601,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 7,
+          "message": "qǐng zuò",
+          "strategy": "MINI_COURSE_CORRECT",
+          "chinese": "欢迎光临",
+          "pinyin": "huān yíng guāng lín",
+          "answer": "Belum tepat, tapi tidak apa-apa 👍 Yang benar: 欢迎光临 (huān yíng guāng lín) = selamat datang. Coba ucapkan sekali lagi, pelan-pelan.",
+          "followUp": "Ulangi: 欢迎光临 · huān yíng guāng lín",
+          "model_calls": 0,
+          "model": "mandarin-coach-brain-v0.1",
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 8,
+          "message": "gimana bilangnya: mohon tunggu sebentar?",
+          "strategy": "Teach requested phrase, then practice.",
+          "chinese": "请稍等",
+          "pinyin": "qǐng shāo děng",
+          "answer": "Oke, kalau kamu mau bilang \"mohon tunggu sebentar\" ke tamu, kamu bisa pakai kalimat ini. Ini sangat berguna di hotel atau restoran.",
+          "followUp": "Coba kamu ucapkan: 请稍等 (qǐng shāo děng).",
+          "model_calls": 2,
+          "model": "google/gemini-2.5-flash-lite → google/gemini-2.5-flash",
+          "tokens": [
+            4001,
+            502
+          ],
+          "cost": 0.0020805999999999997,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 9,
+          "message": "qǐng shāo děng",
+          "strategy": "MINI_COURSE_CORRECT",
+          "chinese": "欢迎光临",
+          "pinyin": "huān yíng guāng lín",
+          "answer": "Belum tepat, tapi tidak apa-apa 👍 Yang benar: 欢迎光临 (huān yíng guāng lín) = selamat datang. Coba ucapkan sekali lagi, pelan-pelan.",
+          "followUp": "Ulangi: 欢迎光临 · huān yíng guāng lín",
+          "model_calls": 0,
+          "model": "mandarin-coach-brain-v0.1",
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 10,
+          "message": "lanjut",
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "几位？",
+          "pinyin": "jǐ wèi?",
+          "answer": "Lanjut ke kalimat berikutnya: 几位？ (jǐ wèi?) = berapa orang?.",
+          "followUp": "Sekarang giliranmu: ucapkan 几位？, lalu tulis di sini.",
+          "model_calls": 0,
+          "model": "mandarin-coach-brain-v0.1",
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 1,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "几位？",
+            "position": "2/22"
+          }
+        }
+      ]
+    }
+  ]
+}
