@@ -103,6 +103,24 @@ async function main() {
   const t10 = await send('Eh, jadi kamu suka nonton bola? Tim favoritmu siapa?', sidOff);
   check('T10 跑题礼貌拒绝', t10.status === 200 && t10.strategy !== 'DIRECT', t10.strategy);
 
+  // 11. 真实用户实测 bug：学生纠正老师（预订包厢/桌子）绝不能被判成"答错"
+  const sidFix = `coach-mini-fix-${RUN}`;
+  await send('Saya kerja di restoran, sering melayani tamu China.', sidFix);
+  const t11 = await send('不是，我说的是有没有预定包厢或者房间，或者桌子', sidFix);
+  check('T11 学生纠正老师不被判错', t11.status === 200 && t11.strategy !== 'MINI_COURSE_CORRECT' && t11.strategy !== 'MINI_COURSE_PASS', `${t11.strategy} · ${(t11.answer || '').slice(0, 60)}`);
+
+  // 12. 印尼语否定/说明真实意图同样放行
+  const t12 = await send('bukan itu maksud saya, yang saya maksud meja di ruang privat', sidFix);
+  check('T12 印尼语纠正不被判错', t12.status === 200 && t12.strategy !== 'MINI_COURSE_CORRECT', `${t12.strategy} · ${(t12.answer || '').slice(0, 50)}`);
+
+  // 13. 正常跟读仍可判定（回归保护）
+  const sidRec = `coach-mini-rec-${RUN}`;
+  await send('Saya kerja di restoran.', sidRec);
+  const t13 = await send('huān yíng guāng lín', sidRec);
+  check('T13 正常拼音跟读仍判定', t13.status === 200 && (t13.strategy === 'MINI_COURSE_PASS' || t13.strategy === 'MINI_COURSE_CORRECT'), `${t13.strategy} · ${t13.chinese}`);
+  const t13b = await send('欢迎光临', sidRec);
+  check('T13b 汉字跟读仍判定', t13b.status === 200 && t13b.strategy === 'MINI_COURSE_PASS', `${t13b.strategy}`);
+
   const passed = checks.filter((item) => item.pass).length;
   const summary = { run: RUN, base: BASE, sessionId: SID, passed, total: checks.length, checks, turns };
   const fs = await import('node:fs');

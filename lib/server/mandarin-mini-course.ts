@@ -143,6 +143,7 @@ const OCCUPATIONS: Record<Exclude<OccupationKey, 'generic'>, OccupationProfile> 
     ],
     day5: [
       { chinese: '请坐', pinyin: 'qǐng zuò', indonesian: 'silakan duduk' },
+      { chinese: '请问您有预订吗？', pinyin: 'qǐng wèn nín yǒu yù dìng ma?', indonesian: 'permisi, apakah Anda sudah membuat reservasi?' },
       { chinese: '要不要加水？', pinyin: 'yào bu yào jiā shuǐ?', indonesian: 'mau tambah air?' },
       { chinese: '一共多少钱？', pinyin: 'yí gòng duō shao qián?', indonesian: 'totalnya berapa?' },
     ],
@@ -278,11 +279,16 @@ export function looksLikeAttempt(message: string) {
   if (/怎么|什么|为什么|如何|哪|多少|吗|apa|gimana|bagaimana|kenapa|mengapa|artinya|maksudnya|bilang|pakai|terjemah|ulang|pelan|salah|benar|bener|guru|terima kasih|makasih|lanjut|mulai/i.test(text)) return false;
   // 说听不懂 / 想换方向 / 提问：必须交给模型，不能被课程练习判断抢走
   if (/tidak\s+(?:mengerti|ngerti|paham)|nggak\s+(?:mengerti|ngerti|paham)|belum\s+paham|bingung|susah|sulit|ganti|pindah|mau\s+(?:belajar|kerja)|maksud|kok|sih|emang/i.test(text)) return false;
+  // 纠正老师 / 否定 / 说明真实意图：这是自由对话，绝不能判成"答错"
+  if (/不是|不对|不要|没有|别|我说|我问|我说的是|bukan|maksud\s+saya|yang\s+saya\s+maksud|bukan\s+begitu|begini|seperti|yang\s+benar|tadi\s+itu|booking|reservasi|kamar|paket/i.test(text)) return false;
   if (detectOccupationKey(text) !== 'generic') return false;
   const chinese = text.match(/[\u3400-\u9fff]/g) || [];
   const latin = text.match(/[a-z]/gi) || [];
   if (!chinese.length && !latin.length) return false;
+  // 含较多拉丁字母 = 句子（印尼语/英语），不是背诵；拼音跟读最长 16 字母（huān yíng guāng lín）
   if (latin.length > 16) return false;
+  // 纯中文跟读最多 6 字（课程目标上限），更长的是句子
+  if (chinese.length > 7 && !latin.length) return false;
   return true;
 }
 
