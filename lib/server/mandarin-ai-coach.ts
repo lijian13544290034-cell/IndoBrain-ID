@@ -3,11 +3,50 @@ import 'server-only';
 import { NoObjectGeneratedError, NoTranscriptGeneratedError, Output, transcribe, gateway, generateText, jsonSchema } from 'ai';
 import { DAY_ONE_EXPRESSIONS, type CoachBrainSkillId, type CoachDetectedLanguage, type CoachIntent, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, type UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
-import { buildSkillGrounding, composeKnownCoachResponse, planCoachTurn, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
+import { composeKnownCoachResponse, planCoachTurn, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
+import { buildTeacherSkillSystem, emptyStudentSessionMemory, MANDARIN_TEACHER_SKILL_VERSION, type StudentSessionMemory } from '@/lib/server/mandarin-teacher-skill';
 
 const FAST_MODEL = process.env.FAST_MODEL || 'google/gemini-2.5-flash-lite';
 const SMART_MODEL = process.env.SMART_MODEL || 'google/gemini-2.5-flash';
 const STT_MODEL = process.env.STT_MODEL || 'openai/gpt-4o-mini-transcribe';
+
+/** 极简会话学习记忆：当前测试会话内记住目标/职业/水平/当前课/最近错误（TTL 内有效，不落库）。 */
+const sessionMemories = new Map<string, { memory: StudentSessionMemory; expiresAt: number }>();
+const SESSION_MEMORY_TTL_MS = 6 * 60 * 60 * 1000;
+const SESSION_MEMORY_MAX = 1000;
+
+function extractSessionMemoryUpdate(message: string, currentLessonId: string): Partial<StudentSessionMemory> {
+  const update: Partial<StudentSessionMemory> = {};
+  const occupation =
+    /pabrik|factory|produksi|mesin|operator/i.test(message) ? 'pabrik/factory' :
+    /sales|penjualan|jualan|marketing|toko|pelanggan/i.test(message) ? 'sales' :
+    /admin|kantor|office|sekretaris|\bhr\b/i.test(message) ? 'admin/kantor' :
+    /gudang|logistik|ekspedisi|pengiriman|stok/i.test(message) ? 'gudang/logistik' :
+    /konstruksi|bangunan|proyek/i.test(message) ? 'konstruksi' :
+    /restoran|hotel|tamu|cafe|pelayan/i.test(message) ? 'hospitality' : null;
+  if (occupation) update.occupation = occupation;
+  const goalMatch = message.match(/(?:mau|ingin|pengin|bisa)\s+(?:bisa\s+)?(?:kerja|bekerja)\s+di\s+([^.,!?;]{2,60})/i);
+  if (goalMatch) update.goal = `kerja di ${goalMatch[1].trim()}`;
+  if (/belum bisa|pemula|zero|baru mulai|nggak bisa.{0,12}mandarin/i.test(message)) update.level = 'BEGINNER';
+  if (currentLessonId) update.currentLessonId = currentLessonId;
+  return update;
+}
+
+function rememberSession(sessionId: string, update: Partial<StudentSessionMemory>, errorTarget: string | null): StudentSessionMemory {
+  const now = Date.now();
+  if (sessionMemories.size > SESSION_MEMORY_MAX) {
+    for (const [key, value] of sessionMemories) { if (value.expiresAt < now) sessionMemories.delete(key); }
+    if (sessionMemories.size > SESSION_MEMORY_MAX) { const first = sessionMemories.keys().next().value; if (first) sessionMemories.delete(first); }
+  }
+  const existing = sessionMemories.get(sessionId);
+  const memory: StudentSessionMemory = existing && existing.expiresAt > now
+    ? { ...emptyStudentSessionMemory(), ...existing.memory }
+    : emptyStudentSessionMemory();
+  Object.assign(memory, update);
+  if (errorTarget && !memory.recentErrors.includes(errorTarget)) memory.recentErrors = [...memory.recentErrors, errorTarget].slice(-5);
+  sessionMemories.set(sessionId, { memory, expiresAt: now + SESSION_MEMORY_TTL_MS });
+  return memory;
+}
 
 type StructuredDecision = {
   verdict: CoachVerdict;
@@ -75,12 +114,12 @@ const conversationAnswerSchema = jsonSchema<ConversationAnswer>({
   additionalProperties: false,
   required: ['answer', 'chinese', 'pinyin', 'indonesian', 'followUp', 'summary', 'ttsRate', 'teachingStrategy', 'rememberTarget', 'targetChinese', 'targetPinyin', 'targetMeaning', 'skillGap', 'skillGapReason'],
   properties: {
-    answer: { type: 'string', minLength: 1, maxLength: 320 },
+    answer: { type: 'string', minLength: 1, maxLength: 800 },
     chinese: { type: 'string', maxLength: 120 },
-    pinyin: { type: 'string', maxLength: 180 },
-    indonesian: { type: 'string', maxLength: 300 },
-    followUp: { type: 'string', maxLength: 160 },
-    summary: { type: 'string', maxLength: 280 },
+    pinyin: { type: 'string', maxLength: 240 },
+    indonesian: { type: 'string', maxLength: 400 },
+    followUp: { type: 'string', maxLength: 320 },
+    summary: { type: 'string', maxLength: 400 },
     ttsRate: { type: 'string', enum: ['normal', 'slow'] },
     teachingStrategy: { type: 'string', maxLength: 80 },
     rememberTarget: { type: 'boolean' },
@@ -305,6 +344,19 @@ export async function evaluateCoachAttempt(input: {
   }
 }
 
+/** 极简"继续上课"上下文：学生说 lanjut/mulai 时，取当前课的下一句（或第一句）作为确定性续教内容。 */
+function buildContinueContext(message: string, context: { courseLesson: MandarinCoachCurriculumLesson; currentExpression: ExpressionId | null }): { lessonId: string; lessonTitle: string; next: { chinese: string; pinyin: string; indonesian: string } | null } | null {
+  if (!/^(?:lanjut(?:kan)?|continue|next(?:\s+lesson)?|terus(?:kan)?|pelajaran berikutnya|lanjut belajar|mulai(?:\s+(?:pelajaran|belajar|aja|dong))?|ayo\s+mulai)[\s!?.]*$/i.test(message.trim())) return null;
+  const lesson = context.courseLesson;
+  if (!lesson?.expressions?.length) return { lessonId: lesson?.id ?? '', lessonTitle: lesson?.title ?? '', next: null };
+  const index = context.currentExpression ? lesson.expressions.findIndex((item) => item.id === context.currentExpression) : -1;
+  const nextItem = index < 0 ? lesson.expressions[0] : index < lesson.expressions.length - 1 ? lesson.expressions[index + 1] : null;
+  return {
+    lessonId: lesson.id, lessonTitle: lesson.title,
+    next: nextItem ? { chinese: nextItem.chinese, pinyin: nextItem.pinyin, indonesian: nextItem.indonesian } : null,
+  };
+}
+
 export async function answerCoachConversation(input: {
   message: string;
   sessionId: string;
@@ -353,7 +405,13 @@ export async function answerCoachConversation(input: {
   };
   let classification = deterministicClassification;
   let classificationUsage: CallUsage = { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'mandarin-coach-brain-v0.1', structured_retries: 0, safe_fallbacks: 0, retry_token_input: 0, retry_token_output: 0, retry_estimated_cost: 0 };
-  const deterministicAnswer = composeKnownCoachResponse(brainPlan, input.context.userInitiatedMemory);
+  const sessionMemory = rememberSession(
+    input.sessionId,
+    extractSessionMemoryUpdate(input.message, input.context.courseLesson?.id ?? ''),
+    brainPlan.learningIntents.includes('CORRECTION') ? brainPlan.targetChinese : null,
+  );
+  const continueContext = buildContinueContext(input.message, input.context);
+  const deterministicAnswer = composeKnownCoachResponse(brainPlan, input.context.userInitiatedMemory, continueContext);
   if (deterministicAnswer) {
     return {
       classification: deterministicClassification,
@@ -373,30 +431,20 @@ export async function answerCoachConversation(input: {
   }
 
   const answerModel = classification.modelTier === 'SMART' ? SMART_MODEL : FAST_MODEL;
-  const classifiedPlan = { ...brainPlan, learningIntents: classification.intents, skillIds: classification.skillIds, targetChinese: classification.targetChinese || brainPlan.targetChinese };
-  const skillGrounding = classification === deterministicClassification ? teachingPlan.skillGrounding : buildSkillGrounding(classifiedPlan);
-  const answerSystem = [
-      'You are the Coach Decision and Response Composer for IndoBrain Mandarin Coach Brain V0.1.',
-      'The course provides the main path; it is never the boundary of what Mandarin you can teach.',
-      'Use the selected skill grounding below, then expose only one coherent final answer. Never expose router disagreement or an internal module error.',
-      'For BEGINNER, use simple Bahasa Indonesia as the main explanation language even when the input is Chinese. Use Simplified Chinese as the learning target.',
-      'This is a language-teaching product, not a general assistant. Do not complete an unrelated full task disguised as language practice; briefly redirect to Mandarin learning.',
-      'Requests about the learner\'s own Mandarin study are ALWAYS in scope, never unrelated tasks: study plans, course advice, career goals for working with Chinese speakers, and asking what to say to someone in a real situation.',
-      'STUDY_PLANNING: when the learner asks for a study plan or help preparing to work or communicate with Chinese speakers, restate their goal, ask at most ONE clarifying question about their target job (unless already known from learningGoal), then outline a concrete staged plan referencing the approved course lessons, plus basic job requirements such as self-introduction, workplace greetings and common work vocabulary. NEVER reply with only a greeting phrase like 你好.',
-      'COMMUNICATION_REQUEST: when the learner describes a real situation and asks what to say to someone (driver, boss, supplier, colleague, landlord), compose the sentence the LEARNER should say: simplified Chinese with tone-marked pinyin in pinyin, Indonesian meaning in indonesian, and one more natural or softer alternative in followUp. NEVER merely translate the learner\'s own description back as if it were the answer.',
-      'The complete default reply MUST stay within 1-3 short Indonesian sentences. Put a teaching target in chinese, accurate tone-marked pinyin in pinyin, and its Indonesian meaning in indonesian.',
-      'If a useful target was initiated by the learner, set rememberTarget and its three target fields. If reliable teaching is impossible, set skillGap instead of inventing facts.',
-      'If slow speech is requested, set ttsRate=slow. Never claim to slow down without setting it.',
-      'Use standard Mainland Mandarin only. Never suggest zh-TW, zh-HK or Cantonese.',
-      'Treat every lawful occupation and religion neutrally and respectfully. Do not infer religion from a name, nationality, ethnicity or job.',
-      'Allow objective Mandarin learning for medical, sexual-health, trauma-informed mental-health, halal-certification and religious-service terminology when the intent is professional language learning.',
-      'Do not turn medical or mental-health language practice into diagnosis or treatment advice. Avoid requesting real patient, client or third-party identifiers.',
-      'Refuse requests to insult, demean or promote hatred against a religious group. If a job acronym is ambiguous, ask one neutral clarification instead of guessing.',
-      'Never pretend to know personal facts outside supplied structured memory. Return only the structured object.',
-      `Approved course lesson context: ${JSON.stringify(input.context.courseLesson)}.`,
-      `Unified teaching policy: ${JSON.stringify(teachingPlan.policy)}.`,
-      `Selected Skill Layer: ${JSON.stringify({ ...skillGrounding, route: classifiedPlan })}.`,
-    ].join(' ');
+  const answerSystem = buildTeacherSkillSystem({
+    courseLesson: input.context.courseLesson,
+    currentExpression: input.context.currentExpression,
+    currentSkill: input.context.currentSkill,
+    learningGoal: input.context.learningGoal,
+    userLevel: input.context.userLevel,
+    masteryState: input.context.masteryState,
+    recentMistakes: input.context.recentMistakes,
+    reviewQueue: input.context.reviewQueue,
+    userInitiatedMemory: input.context.userInitiatedMemory,
+    recentTurns: input.context.recentTurns,
+    recentConversationSummary: input.context.recentConversationSummary,
+    sessionMemory,
+  });
   const answerPrompt = JSON.stringify({
       classification,
       learnerMessage: input.message.slice(0, 500),
@@ -424,7 +472,7 @@ export async function answerCoachConversation(input: {
   });
   let answerUsage = classificationUsage;
   try {
-    const answerResult = await generateConversationAnswer(answerModel, 480);
+    const answerResult = await generateConversationAnswer(answerModel, 700);
     return {
       classification,
       answer: answerResult.output,
@@ -435,7 +483,7 @@ export async function answerCoachConversation(input: {
     console.warn('[mandarin-coach-structured-answer-failed]', { model: answerModel, ...safeErrorDetails(error) });
     try {
       const malformedCandidate = NoObjectGeneratedError.isInstance(error) ? error.text || '' : '';
-      const repaired = await generateConversationAnswer(FAST_MODEL, 480, malformedCandidate);
+      const repaired = await generateConversationAnswer(FAST_MODEL, 700, malformedCandidate);
       const repairUsage = usageFromResult(repaired, FAST_MODEL);
       repairUsage.structured_retries = 1;
       repairUsage.retry_token_input = repairUsage.token_input;

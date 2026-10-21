@@ -169,9 +169,28 @@ function answer(values: Partial<CoachBrainAnswer> & Pick<CoachBrainAnswer, 'answ
   };
 }
 
-export function composeKnownCoachResponse(plan: CoachBrainPlan, memory: UserInitiatedMemory[]): CoachBrainAnswer | null {
+export type CoachContinueContext = {
+  lessonId: string;
+  lessonTitle: string;
+  next: { chinese: string; pinyin: string; indonesian: string } | null;
+};
+
+export function composeKnownCoachResponse(plan: CoachBrainPlan, memory: UserInitiatedMemory[], continueContext?: CoachContinueContext | null): CoachBrainAnswer | null {
   const message = plan.normalizedInput.toLowerCase();
   if (plan.offTopic) return answer({ answer: 'Maaf, saya fokus membantu kamu belajar Mandarin 😊', indonesian: 'Kalau ada pertanyaan tentang bahasa Mandarin, pekerjaan, percakapan, atau pengucapan, tanya saya ya.', followUp: 'Kembali Belajar', teachingStrategy: 'OFF_TOPIC_FIXED_REPLY' });
+  if (continueContext) {
+    if (continueContext.next) return answer({
+      answer: `Oke, lanjut! Masih di pelajaran "${continueContext.lessonTitle}". Ekspresi berikutnya:`,
+      chinese: continueContext.next.chinese, pinyin: continueContext.next.pinyin, indonesian: continueContext.next.indonesian,
+      followUp: 'Coba ucapkan sekali, nanti saya koreksi.',
+      teachingStrategy: 'CONTINUE_NEXT_EXPRESSION', rememberTarget: true,
+      targetChinese: continueContext.next.chinese, targetPinyin: continueContext.next.pinyin, targetMeaning: continueContext.next.indonesian,
+    });
+    return answer({
+      answer: `Pelajaran "${continueContext.lessonTitle}" sudah selesai! Buka pelajaran berikutnya dari jalur kursus, lalu bilang "lanjut" lagi.`,
+      teachingStrategy: 'CONTINUE_LESSON_DONE',
+    });
+  }
   if (plan.learningIntents.includes('STUDY_PLANNING')) {
     const careerCompany = /(?:\bpt\b|perusahaan|公司).{0,12}(?:china|tiongkok|cina)|中国公司/i.test(plan.normalizedInput);
     if (careerCompany) return answer({

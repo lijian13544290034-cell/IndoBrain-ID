@@ -1,5 +1,6 @@
 import { getChineseTtsProvider } from '@/lib/chinese-tts-provider';
 import { coachConfiguration } from '@/lib/server/mandarin-ai-coach';
+import { MANDARIN_TEACHER_SKILL_VERSION } from '@/lib/server/mandarin-teacher-skill';
 import { teachingEngineRuntimeMode } from '@/lib/server/teaching-engine-shadow';
 
 export const runtime = 'nodejs';
@@ -12,6 +13,7 @@ export async function GET() {
     ai: { configured: ai.gatewayCredentialAvailable, fastModel: ai.fastModel, smartModel: ai.smartModel, sttModel: ai.sttModel },
     tts: { configured: tts.configured, voice: tts.voice, language: 'zh-CN' },
     curriculum: 'day-1',
+    teacherSkill: { version: MANDARIN_TEACHER_SKILL_VERSION },
     teachingEngine: { mode: teachingEngineRuntimeMode() },
   }, { headers: { 'Cache-Control': 'no-store' } });
 }
