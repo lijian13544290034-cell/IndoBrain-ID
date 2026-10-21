@@ -56,6 +56,8 @@ const REVIEW = /review|复习|ulang(?:i)? kata|masih ingat/i;
 const ROLEPLAY = /\brole[ -]?play\b|bermain peran|角色扮演/i;
 const VOCABULARY = /mandarin apa|bahasa mandarin apa|中文怎么说|gimana ngomong|gmana ngomong|gmn ngomong|怎么说/i;
 const GRAMMAR = /grammar|tata bahasa|语法|kenapa.*(?:pakai|用)/i;
+const STUDY_PLANNING = /(?:buat(?:kan)?(?:\s+\S+){0,3}\s*(?:kursus|les|rencana|plan)|rencana\s+belajar|study\s+plan|kursus\s+(?:mandarin|bahasa)|mau\s+(?:bisa\s+)?(?:kerja|bekerja)\s+di|kerja\s+(?:di\s+)?(?:\bpt\b|perusahaan)|perusahaan\s+(?:china|tiongkok|cina)|中国公司|求职|syarat\s+(?:kerja|melamar|lamar)|\b(?:orang|saya|aku)\s+pemulai\b|\bpemula\b|belum\s+(?:pernah|bisa)\s+(?:mandarin|bahasa))/i;
+const COMMUNICATION_REQUEST = /(?:怎么(?:和|跟|对).{0,10}说|应该怎么(?:跟|和|对)|怎么讲|bilang\s+(?:ke|pada|untuk|sama)|ngomong\s+(?:ke|sama|dengan)|cara\s+(?:bilang|ngomong|tanya|nyuruh|suruh|minta)|kasih\s+tahu|nyuruh|suruh\s+(?:dia|diaorang|supir|driver)|gimana\s+(?:cara|kalau)\s+(?:bilang|kata|tanya|nyuruh|suruh)|\bsupir\b|\bsopir\b|\bdriver\b|司机)/i;
 
 const PINYIN_TARGETS: Record<string, string> = {
   xiexie: '谢谢', 'xie xie': '谢谢', 'wo e le': '我饿了', 'ni hao': '你好', feichang: '非常',
@@ -116,12 +118,14 @@ export function routeCoachInput(input: string): CoachBrainPlan {
     if (EXAMPLE.test(normalizedInput)) learningIntents.add('EXAMPLE');
     if (REVIEW.test(normalizedInput)) learningIntents.add('REVIEW');
     if (WORKPLACE.test(normalizedInput)) learningIntents.add('WORKPLACE');
+    if (STUDY_PLANNING.test(normalizedInput) && !VOCABULARY.test(normalizedInput)) learningIntents.add('STUDY_PLANNING');
+    if (COMMUNICATION_REQUEST.test(normalizedInput) && !VOCABULARY.test(normalizedInput) && !MEANING.test(normalizedInput)) learningIntents.add('COMMUNICATION_REQUEST');
     if (VOCABULARY.test(normalizedInput) || /minum/i.test(normalizedInput)) learningIntents.add('VOCABULARY');
     if (GRAMMAR.test(normalizedInput)) learningIntents.add('GRAMMAR');
     if (!learningIntents.size) learningIntents.add('CONVERSATION');
   }
   const intents = [...learningIntents];
-  const modelTier = intents.some((intent) => intent === 'ROLEPLAY' || intent === 'GRAMMAR' || intent === 'WORKPLACE' || intent === 'CORRECTION') ? 'SMART' : 'FAST';
+  const modelTier = intents.some((intent) => intent === 'ROLEPLAY' || intent === 'GRAMMAR' || intent === 'WORKPLACE' || intent === 'CORRECTION' || intent === 'STUDY_PLANNING' || intent === 'COMMUNICATION_REQUEST') ? 'SMART' : 'FAST';
   return {
     normalizedInput, inputLanguage, learningIntents: intents, skillIds: skillIdsFor(intents), targetChinese: extractTarget(normalizedInput),
     modelTier, offTopic, slowSpeech: /pelan|perlahan|lebih lambat|慢一点|慢点/i.test(normalizedInput), confidence: intents[0] === 'CONVERSATION' ? 0.45 : 0.92,
@@ -168,6 +172,46 @@ function answer(values: Partial<CoachBrainAnswer> & Pick<CoachBrainAnswer, 'answ
 export function composeKnownCoachResponse(plan: CoachBrainPlan, memory: UserInitiatedMemory[]): CoachBrainAnswer | null {
   const message = plan.normalizedInput.toLowerCase();
   if (plan.offTopic) return answer({ answer: 'Maaf, saya fokus membantu kamu belajar Mandarin 😊', indonesian: 'Kalau ada pertanyaan tentang bahasa Mandarin, pekerjaan, percakapan, atau pengucapan, tanya saya ya.', followUp: 'Kembali Belajar', teachingStrategy: 'OFF_TOPIC_FIXED_REPLY' });
+  if (plan.learningIntents.includes('STUDY_PLANNING')) {
+    const careerCompany = /(?:\bpt\b|perusahaan|公司).{0,12}(?:china|tiongkok|cina)|中国公司/i.test(plan.normalizedInput);
+    if (careerCompany) return answer({
+      answer: 'Siap, saya buatkan rencananya 🎯 Minggu 1: sapaan & perkenalan diri (你好 / 我叫…). Minggu 2-3: bahasa kerja dasar (pabrik, gudang, kirim barang). Minggu 4: percakapan interview. Syarat kerja di perusahaan Tiongkok umumnya: bisa perkenalan diri, percakapan dasar (setara HSK 2-3), dan istilah kerja bidangmu.',
+      chinese: '我想去中国公司工作。', pinyin: 'wǒ xiǎng qù zhōngguó gōngsī gōngzuò.', indonesian: 'Saya mau kerja di perusahaan Tiongkok.',
+      followUp: 'Pekerjaanmu nanti apa? Pabrik, gudang, kantor, atau lainnya?',
+      teachingStrategy: 'STUDY_PLANNING_CAREER_PATH', rememberTarget: true,
+      targetChinese: '我想去中国公司工作', targetPinyin: 'wǒ xiǎng qù zhōngguó gōngsī gōngzuò', targetMeaning: 'Saya mau kerja di perusahaan Tiongkok',
+    });
+    return answer({
+      answer: 'Siap! Rencana dasar: Minggu 1 sapaan & perkenalan diri, Minggu 2-3 kosakata & kalimat kerja harian, Minggu 4 percakapan singkat. Jalur lengkapnya ada di kursus 30 hari di aplikasi.',
+      chinese: '我想学中文。', pinyin: 'wǒ xiǎng xué zhōngwén.', indonesian: 'Saya mau belajar Mandarin.',
+      followUp: 'Target utamamu apa? Kerja di perusahaan Tiongkok, atau kebutuhan lain?',
+      teachingStrategy: 'STUDY_PLANNING_BASELINE', rememberTarget: true,
+      targetChinese: '我想学中文', targetPinyin: 'wǒ xiǎng xué zhōngwén', targetMeaning: 'Saya mau belajar Mandarin',
+    });
+  }
+  if (plan.learningIntents.includes('COMMUNICATION_REQUEST')) {
+    if (/supir|sopir|driver|司机/i.test(plan.normalizedInput) && /(?:太累|累|capek|cape)/i.test(plan.normalizedInput)) return answer({
+      answer: 'Kalau kamu ingin minta tolong pengantar hari ini, bilang begini:',
+      chinese: '今天我太累了，你来开车吧。', pinyin: 'jīn tiān wǒ tài lèi le, nǐ lái kāi chē ba.', indonesian: 'Hari ini saya terlalu lelah, kamu yang menyetir ya.',
+      followUp: 'Lebih santai: 今天我太累了，你帮我开吧。· Bicara ke sopir tidak perlu kata sopir.',
+      teachingStrategy: 'COMMUNICATION_REQUEST_PRACTICAL', rememberTarget: true,
+      targetChinese: '你来开车吧', targetPinyin: 'nǐ lái kāi chē ba', targetMeaning: 'kamu yang menyetir ya',
+    });
+    if (/supir|sopir|driver|司机|接/i.test(plan.normalizedInput) && /jemput|接/i.test(plan.normalizedInput)) return answer({
+      answer: 'Untuk minta dijemput, bilang:',
+      chinese: '明天早上来接我。', pinyin: 'míng tiān zǎo shang lái jiē wǒ.', indonesian: 'Besok pagi jemput saya.',
+      followUp: 'Tambah waktu: 明天早上八点来接我。 (jam 8).',
+      teachingStrategy: 'COMMUNICATION_REQUEST_PRACTICAL', rememberTarget: true,
+      targetChinese: '来接我', targetPinyin: 'lái jiē wǒ', targetMeaning: 'jemput saya',
+    });
+    if (/supir|sopir|driver|司机/i.test(plan.normalizedInput) && /tunggu|等/i.test(plan.normalizedInput)) return answer({
+      answer: 'Untuk minta sopir menunggu, bilang:',
+      chinese: '请在这里等我。', pinyin: 'qǐng zài zhè lǐ děng wǒ.', indonesian: 'Tolong tunggu saya di sini.',
+      followUp: 'Tambah waktu: 请等我五分钟。 (lima menit).',
+      teachingStrategy: 'COMMUNICATION_REQUEST_PRACTICAL', rememberTarget: true,
+      targetChinese: '请等我', targetPinyin: 'qǐng děng wǒ', targetMeaning: 'tolong tunggu saya',
+    });
+  }
   if (/di mana.*(?:中文怎么说|mandarin)|在哪里.*(?:pakai|gimana|怎么用)/i.test(plan.normalizedInput)) return answer({ answer: '“Di mana?” dalam Mandarin adalah:', chinese: '在哪里？', pinyin: 'zài nǎ lǐ?', indonesian: 'Di mana?', followUp: 'Contoh singkat: 厕所在哪里？ · Toilet di mana? Mau coba ucapkan “在哪里”？', teachingStrategy: 'TRANSLATION_TO_SHORT_PRACTICE', rememberTarget: true, targetChinese: '在哪里', targetPinyin: 'zài nǎ lǐ', targetMeaning: 'di mana' });
   if (/货没有到了/.test(plan.normalizedInput)) return answer({ answer: 'Maksudmu sudah benar 👍 Lebih alami bilang:', chinese: '货还没到。', pinyin: 'huò hái méi dào', indonesian: 'Barangnya masih belum sampai.', followUp: 'Coba ulangi: 货还没到。', teachingStrategy: 'WORKPLACE_MINIMAL_CORRECTION', rememberTarget: true, targetChinese: '货还没到', targetPinyin: 'huò hái méi dào', targetMeaning: 'barangnya masih belum sampai' });
   if (/货到了吗/.test(plan.normalizedInput) && /什么意思|apa artinya|maksudnya|berarti/.test(message)) return answer({ answer: 'Artinya menanyakan apakah barang sudah tiba.', chinese: '货到了吗？', pinyin: 'huò dào le ma?', indonesian: 'Apakah barangnya sudah sampai?', followUp: 'Sekarang saya jadi bos: 货到了吗？ Kamu bisa jawab “到了” atau “还没到”。', teachingStrategy: 'MEANING_TO_WORKPLACE_ROLEPLAY', rememberTarget: true, targetChinese: '货到了吗', targetPinyin: 'huò dào le ma', targetMeaning: 'apakah barangnya sudah sampai' });

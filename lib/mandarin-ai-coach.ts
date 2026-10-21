@@ -12,7 +12,7 @@ export type ExpressionId = string;
 export type CoachSkill = 'TEACH' | 'PRONUNCIATION' | 'COMPREHENSION' | 'ROLEPLAY' | 'MEMORY';
 export type CoachVerdict = 'PASS' | 'RETRY' | 'BREAKDOWN';
 export type CoachConversationMode = 'GUIDED_TRAINING' | 'COACH_CONVERSATION';
-export type CoachBrainSkillId = 'VOCABULARY' | 'PRONUNCIATION' | 'MEANING' | 'CORRECTION' | 'EXAMPLE' | 'CONVERSATION' | 'WORKPLACE' | 'REVIEW';
+export type CoachBrainSkillId = 'VOCABULARY' | 'PRONUNCIATION' | 'MEANING' | 'CORRECTION' | 'EXAMPLE' | 'CONVERSATION' | 'WORKPLACE' | 'REVIEW' | 'STUDY_PLANNING' | 'COMMUNICATION_REQUEST';
 export type CoachCapabilityId =
   | 'LANGUAGE_ROUTER'
   | 'TRANSLATION_EXPLANATION'

@@ -79,6 +79,26 @@ export const MANDARIN_COACH_SKILLS: Record<CoachBrainSkillId, MandarinCoachSkill
     indonesian_learner_notes: ['Explain why an item is being reviewed'], rules: ['Do not replay every previous item', 'Include user-initiated expressions'],
     examples: ['Kemarin kamu belajar 喝. Masih ingat?'], common_errors: ['Reviewing only course items'], fallback_strategy: 'Review the least-mastered recent expression.', output_constraints: sharedConstraints, source: 'INDOBRAIN_COACH_BRAIN_V0.1', research_basis: ['retrieval practice', 'future spaced repetition'], test_cases: ['Review kata yang belum saya kuasai'],
   },
+  STUDY_PLANNING: {
+    skill_id: 'STUDY_PLANNING', version: '0.1.0', intent: ['request a study plan', 'career goal for working with Chinese speakers', 'job-seeking guidance'], applicable_level: ['BEGINNER', 'ELEMENTARY', 'INTERMEDIATE'],
+    teaching_goal: 'Turn the learner\'s goal (job, level, timeline) into a concrete short study plan built from approved course lessons, plus basic job requirements.',
+    teaching_strategy: ['Restate the detected goal in one sentence', 'Ask at most ONE clarifying question (target job/role) when missing', 'Give a staged plan referencing real course days', 'List minimal job requirements (self-introduction, greetings, work vocabulary)'],
+    indonesian_learner_notes: ['Pemula = zero basics; start from greetings and self-introduction', 'Plan answers may be longer than vocabulary answers but stay concrete'],
+    rules: ['Never reply to a study-plan request with only a greeting phrase', 'Always include at least one concrete next lesson or milestone', 'Do not invent course days that do not exist in the approved curriculum', 'Job requirements must stay generic and encouraging, never gatekeeping'],
+    examples: ['mau kerja di PT China → plan: perkenalan diri → bahasa pabrik → interview'],
+    common_errors: ['Answering with a fixed Day-1 phrase like 你好 only', 'Redirecting the learner away instead of planning'],
+    fallback_strategy: 'If the goal is unclear, ask for target occupation and weekly study time in one short question.', output_constraints: sharedConstraints, source: 'INDOBRAIN_COACH_BRAIN_V0.1', research_basis: ['goal-setting', 'career-aware language planning'], test_cases: ['saya orang pemula, mau kerja di PT China, buatkan les', 'buatkan rencana belajar mandarin'],
+  },
+  COMMUNICATION_REQUEST: {
+    skill_id: 'COMMUNICATION_REQUEST', version: '0.1.0', intent: ['what should I say to someone in a real situation', 'request to a third party (driver, boss, supplier, colleague)'], applicable_level: ['BEGINNER', 'ELEMENTARY', 'INTERMEDIATE'],
+    teaching_goal: 'Compose the exact sentence the LEARNER should say to another person, with pinyin, Indonesian meaning and a more natural alternative.',
+    teaching_strategy: ['Identify the communicative goal (request, refusal, instruction)', 'Give the target sentence in simplified Chinese + tone-marked pinyin + Indonesian', 'Add one more natural/softer alternative', 'Note one pragmatics tip when useful'],
+    indonesian_learner_notes: ['Learner describes the situation in Indonesian; the answer is what THEY should say in Mandarin'],
+    rules: ['Never merely translate the learner\'s description back as if it were the answer', 'Always include a natural alternative or register note', 'Chinese → pinyin → Indonesian order is fixed'],
+    examples: ['今天我太累了，你来开车吧 / jīn tiān wǒ tài lèi le, nǐ lái kāi chē ba / Hari ini saya terlalu lelah, kamu yang nyetir ya'],
+    common_errors: ['Translating "saya capek tidak mau nyetir" literally without the request frame', 'Missing the practical alternative'],
+    fallback_strategy: 'If the situation is ambiguous, ask who the listener is and what the learner wants them to do.', output_constraints: sharedConstraints, source: 'INDOBRAIN_COACH_BRAIN_V0.1', research_basis: ['speech-act based instruction', 'pragmatics'], test_cases: ['今天太累了，我不想开车，我应该怎么和司机说？', 'gimana bilang ke supir tunggu sebentar?'],
+  },
 };
 
 export function getCoachSkills(ids: CoachBrainSkillId[]) {

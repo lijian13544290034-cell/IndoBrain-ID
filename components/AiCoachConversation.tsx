@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import AiCoachRecorder from '@/components/AiCoachRecorder';
 import { playBrowserAudioBlob, prepareBrowserAudio } from '@/lib/browser-audio';
 import { normalizeCoachConversationError, parseCoachConversationResponse } from '@/lib/mandarin-coach-conversation-client';
+import { readPersonalizationState } from '@/lib/mandarin-coach-personalization-profile';
 import type { CoachBrainSkillId, CoachCapabilityId, CoachConversationTurn, CoachEventName, CoachIntent, CoachProfile, CoachQuestionMemory, CoachSkill, ExpressionId, UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import type { CoachSpeechSegment } from '@/lib/mandarin-coach-speech';
 import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
@@ -127,6 +128,15 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
     try {
       const recentMistakes = profile.expressions.filter((item) => item.wrong_count > item.correct_count).map((item) => item.expression_id);
       const reviewQueue = profile.expressions.filter((item) => item.mastery_level < 2).map((item) => item.expression_id);
+      const careerProfile = readPersonalizationState().profile;
+      const careerGoalText = careerProfile.onboardingCompleted && !careerProfile.skipped
+        ? [
+            careerProfile.occupationLabel || (careerProfile.occupation !== 'SKIPPED' ? careerProfile.occupation.toLowerCase() : ''),
+            careerProfile.goal === 'CUSTOM' && careerProfile.customGoal ? careerProfile.customGoal : '',
+            careerProfile.customScenario,
+            `level: ${careerProfile.selfReportedLevel}`,
+          ].filter(Boolean).join(' · ')
+        : '';
       const form = new FormData();
       form.set('sessionId', profile.sessionId);
       if (cleanMessage) form.set('message', cleanMessage);
@@ -141,7 +151,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
         masteryState: profile.expressions.map((item) => ({ expressionId: item.expression_id, masteryLevel: item.mastery_level })),
         reviewQueue,
         conversationMode: 'COACH_CONVERSATION',
-        learningGoal: `${lesson.courseTitleId} · ${lesson.title} · ${lesson.scenario}`,
+        learningGoal: [careerGoalText, `${lesson.courseTitleId} · ${lesson.title} · ${lesson.scenario}`].filter(Boolean).join(' || '),
         preferredExplanationLanguage: profile.learning.preferredExplanationLanguage,
         userInitiatedMemory: profile.learning.userInitiated,
         recentConversationSummary: profile.conversation.summary,

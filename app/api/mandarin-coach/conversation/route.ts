@@ -95,7 +95,7 @@ function safeContext(value: FormDataEntryValue | null) {
       masteryState,
       reviewQueue,
       conversationMode: parsed.conversationMode === 'COACH_CONVERSATION' ? 'COACH_CONVERSATION' as const : 'GUIDED_TRAINING' as const,
-      learningGoal: typeof parsed.learningGoal === 'string' ? parsed.learningGoal.slice(0, 160) : 'Mandarin praktis untuk kerja',
+      learningGoal: typeof parsed.learningGoal === 'string' ? parsed.learningGoal.slice(0, 280) : 'Mandarin praktis untuk kerja',
       preferredExplanationLanguage: parsed.preferredExplanationLanguage === 'MIXED' ? 'MIXED' as const : 'INDONESIAN' as const,
       userInitiatedMemory: userInitiatedMemory.slice(-20),
       recentConversationSummary: typeof parsed.recentConversationSummary === 'string' ? parsed.recentConversationSummary.slice(0, 280) : '',

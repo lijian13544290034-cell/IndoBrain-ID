@@ -59,10 +59,10 @@ const classificationSchema = jsonSchema<ConversationClassification>({
   additionalProperties: false,
   required: ['intent', 'intents', 'detectedLanguage', 'skillIds', 'targetChinese', 'normalizedInput', 'modelTier', 'answerCategory'],
   properties: {
-    intent: { type: 'string', enum: ['VOCABULARY', 'PRONUNCIATION', 'MEANING', 'CORRECTION', 'EXAMPLE', 'CONVERSATION', 'WORKPLACE', 'REVIEW', 'ROLEPLAY', 'GRAMMAR', 'OFF_TOPIC'] },
-    intents: { type: 'array', minItems: 1, maxItems: 4, items: { type: 'string', enum: ['VOCABULARY', 'PRONUNCIATION', 'MEANING', 'CORRECTION', 'EXAMPLE', 'CONVERSATION', 'WORKPLACE', 'REVIEW', 'ROLEPLAY', 'GRAMMAR', 'OFF_TOPIC'] } },
+    intent: { type: 'string', enum: ['VOCABULARY', 'PRONUNCIATION', 'MEANING', 'CORRECTION', 'EXAMPLE', 'CONVERSATION', 'WORKPLACE', 'REVIEW', 'ROLEPLAY', 'GRAMMAR', 'OFF_TOPIC', 'STUDY_PLANNING', 'COMMUNICATION_REQUEST'] },
+    intents: { type: 'array', minItems: 1, maxItems: 4, items: { type: 'string', enum: ['VOCABULARY', 'PRONUNCIATION', 'MEANING', 'CORRECTION', 'EXAMPLE', 'CONVERSATION', 'WORKPLACE', 'REVIEW', 'ROLEPLAY', 'GRAMMAR', 'OFF_TOPIC', 'STUDY_PLANNING', 'COMMUNICATION_REQUEST'] } },
     detectedLanguage: { type: 'string', enum: ['INDONESIAN', 'CHINESE', 'MIXED'] },
-    skillIds: { type: 'array', minItems: 1, maxItems: 5, items: { type: 'string', enum: ['VOCABULARY', 'PRONUNCIATION', 'MEANING', 'CORRECTION', 'EXAMPLE', 'CONVERSATION', 'WORKPLACE', 'REVIEW'] } },
+    skillIds: { type: 'array', minItems: 1, maxItems: 5, items: { type: 'string', enum: ['VOCABULARY', 'PRONUNCIATION', 'MEANING', 'CORRECTION', 'EXAMPLE', 'CONVERSATION', 'WORKPLACE', 'REVIEW', 'STUDY_PLANNING', 'COMMUNICATION_REQUEST'] } },
     targetChinese: { type: 'string', maxLength: 80 },
     normalizedInput: { type: 'string', maxLength: 500 },
     modelTier: { type: 'string', enum: ['FAST', 'SMART'] },
@@ -340,7 +340,7 @@ export async function answerCoachConversation(input: {
       'Input language does not determine explanation language. Workplace language and roleplay are in scope.',
       'Language-learning follow-ups such as why, repeat, slower, I do not understand, or I cannot do it remain in scope when the conversation or course supplies the target.',
       'A request to complete an unrelated full task stays OFF_TOPIC even when the learner asks for that task in Chinese or calls it language practice.',
-      'Select one or more of the eight available skill IDs. Use SMART only for nuanced grammar, correction, workplace pragmatics or roleplay.',
+      'Select one or more of the ten available skill IDs (STUDY_PLANNING for study-plan/career-goal requests, COMMUNICATION_REQUEST for what-should-I-say-to-someone requests). Use SMART only for nuanced grammar, correction, workplace pragmatics, roleplay, planning or communication requests.',
       'Never reject an in-scope word merely because it is absent from the current course.',
       'Return only the structured object and preserve a concise normalizedInput.',
     ].join(' '),
@@ -349,7 +349,7 @@ export async function answerCoachConversation(input: {
   const deterministicClassification: ConversationClassification = {
     intent: brainPlan.learningIntents[0], intents: brainPlan.learningIntents, detectedLanguage: brainPlan.inputLanguage,
     skillIds: brainPlan.skillIds, targetChinese: brainPlan.targetChinese || '', normalizedInput: brainPlan.normalizedInput,
-    modelTier: brainPlan.modelTier, answerCategory: brainPlan.offTopic ? 'OFF_TOPIC' : brainPlan.learningIntents.includes('ROLEPLAY') ? 'ROLEPLAY' : brainPlan.skillIds.includes('PRONUNCIATION') ? 'PRONUNCIATION_COACHING' : brainPlan.skillIds.includes('EXAMPLE') || brainPlan.skillIds.includes('VOCABULARY') ? 'EXAMPLE' : 'EXPLANATION',
+    modelTier: brainPlan.modelTier, answerCategory: brainPlan.offTopic ? 'OFF_TOPIC' : brainPlan.learningIntents.includes('STUDY_PLANNING') ? 'STUDY_SUPPORT' : brainPlan.learningIntents.includes('COMMUNICATION_REQUEST') ? 'EXPLANATION' : brainPlan.learningIntents.includes('ROLEPLAY') ? 'ROLEPLAY' : brainPlan.skillIds.includes('PRONUNCIATION') ? 'PRONUNCIATION_COACHING' : brainPlan.skillIds.includes('EXAMPLE') || brainPlan.skillIds.includes('VOCABULARY') ? 'EXAMPLE' : 'EXPLANATION',
   };
   let classification = deterministicClassification;
   let classificationUsage: CallUsage = { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'mandarin-coach-brain-v0.1', structured_retries: 0, safe_fallbacks: 0, retry_token_input: 0, retry_token_output: 0, retry_estimated_cost: 0 };
@@ -381,6 +381,9 @@ export async function answerCoachConversation(input: {
       'Use the selected skill grounding below, then expose only one coherent final answer. Never expose router disagreement or an internal module error.',
       'For BEGINNER, use simple Bahasa Indonesia as the main explanation language even when the input is Chinese. Use Simplified Chinese as the learning target.',
       'This is a language-teaching product, not a general assistant. Do not complete an unrelated full task disguised as language practice; briefly redirect to Mandarin learning.',
+      'Requests about the learner\'s own Mandarin study are ALWAYS in scope, never unrelated tasks: study plans, course advice, career goals for working with Chinese speakers, and asking what to say to someone in a real situation.',
+      'STUDY_PLANNING: when the learner asks for a study plan or help preparing to work or communicate with Chinese speakers, restate their goal, ask at most ONE clarifying question about their target job (unless already known from learningGoal), then outline a concrete staged plan referencing the approved course lessons, plus basic job requirements such as self-introduction, workplace greetings and common work vocabulary. NEVER reply with only a greeting phrase like 你好.',
+      'COMMUNICATION_REQUEST: when the learner describes a real situation and asks what to say to someone (driver, boss, supplier, colleague, landlord), compose the sentence the LEARNER should say: simplified Chinese with tone-marked pinyin in pinyin, Indonesian meaning in indonesian, and one more natural or softer alternative in followUp. NEVER merely translate the learner\'s own description back as if it were the answer.',
       'The complete default reply MUST stay within 1-3 short Indonesian sentences. Put a teaching target in chinese, accurate tone-marked pinyin in pinyin, and its Indonesian meaning in indonesian.',
       'If a useful target was initiated by the learner, set rememberTarget and its three target fields. If reliable teaching is impossible, set skillGap instead of inventing facts.',
       'If slow speech is requested, set ttsRate=slow. Never claim to slow down without setting it.',
