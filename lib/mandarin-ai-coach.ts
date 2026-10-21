@@ -129,6 +129,8 @@ export type CoachProfile = {
     userInitiated: UserInitiatedMemory[];
   };
   completed: boolean;
+  /** 极简职业课程游标：客户端持久化，用于刷新页面/多实例下恢复教学上下文（不含课程内容）。 */
+  miniCourse?: { key: string; cursor: number } | null;
 };
 
 export const COACH_RETRY_POLICY = {

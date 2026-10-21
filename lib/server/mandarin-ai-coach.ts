@@ -5,6 +5,10 @@ import { DAY_ONE_EXPRESSIONS, type CoachBrainSkillId, type CoachDetectedLanguage
 import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
 import { composeKnownCoachResponse, planCoachTurn, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
 import { buildTeacherSkillSystem, emptyStudentSessionMemory, MANDARIN_TEACHER_SKILL_VERSION, type StudentSessionMemory } from '@/lib/server/mandarin-teacher-skill';
+import {
+  buildMiniCourse, detectOccupationKey, flattenMiniCourse, looksLikeAttempt, matchesTarget, miniCourseAnswer, miniCourseOutline,
+  type MiniCourseState,
+} from '@/lib/server/mandarin-mini-course';
 
 const FAST_MODEL = process.env.FAST_MODEL || 'google/gemini-2.5-flash-lite';
 const SMART_MODEL = process.env.SMART_MODEL || 'google/gemini-2.5-flash';
@@ -46,6 +50,166 @@ function rememberSession(sessionId: string, update: Partial<StudentSessionMemory
   if (errorTarget && !memory.recentErrors.includes(errorTarget)) memory.recentErrors = [...memory.recentErrors, errorTarget].slice(-5);
   sessionMemories.set(sessionId, { memory, expiresAt: now + SESSION_MEMORY_TTL_MS });
   return memory;
+}
+
+/** 极简职业课程状态：与对话记忆同生命周期，只存"哪个课程 + 学到第几句"，课程本体由模板确定性生成。 */
+const miniCourses = new Map<string, MiniCourseState>();
+
+function readMiniCourse(sessionId: string): MiniCourseState | null {
+  const state = miniCourses.get(sessionId);
+  if (!state) return null;
+  if (Date.now() - state.updatedAt > SESSION_MEMORY_TTL_MS) { miniCourses.delete(sessionId); return null; }
+  return state;
+}
+
+function writeMiniCourse(sessionId: string, state: MiniCourseState) {
+  if (miniCourses.size > SESSION_MEMORY_MAX) {
+    const oldest = miniCourses.keys().next().value;
+    if (oldest) miniCourses.delete(oldest);
+  }
+  miniCourses.set(sessionId, { ...state, updatedAt: Date.now() });
+}
+
+const COURSE_KEYS = ['admin', 'pabrik', 'gudang', 'sales', 'hospitality', 'generic'] as const;
+
+/** 进程内没有课程状态时，用客户端带回的游标恢复（刷新页面 / 多实例兜底）。 */
+function seedMiniCourse(sessionId: string, seed: { key?: unknown; cursor?: unknown } | null | undefined) {
+  const existing = readMiniCourse(sessionId);
+  if (existing) return existing;
+  if (!seed || typeof seed.key !== 'string' || !COURSE_KEYS.includes(seed.key as (typeof COURSE_KEYS)[number])) return null;
+  if (typeof seed.cursor !== 'number' || !Number.isFinite(seed.cursor)) return null;
+  const state: MiniCourseState = {
+    key: seed.key as MiniCourseState['key'],
+    cursor: Math.max(0, Math.min(200, Math.floor(seed.cursor))),
+    updatedAt: Date.now(),
+  };
+  writeMiniCourse(sessionId, state);
+  return state;
+}
+
+/** 供路由回传给客户端保存的轻量快照（只有游标，不含课程内容）。 */
+export function coachMiniCourseSnapshot(sessionId: string) {
+  const state = readMiniCourse(sessionId);
+  if (!state) return null;
+  const course = buildMiniCourse(state.key);
+  const flat = flattenMiniCourse(course);
+  const item = flat[Math.max(0, Math.min(flat.length - 1, state.cursor))];
+  return {
+    key: state.key, cursor: state.cursor, title: course.title,
+    day: item?.day ?? 1, topic: item?.topic ?? '', target: item?.chinese ?? '',
+    position: `${Math.min(state.cursor + 1, flat.length)}/${flat.length}`,
+  };
+}
+
+const START_COURSE = /^(?:(?:ayo|oke|ok|siap|ya|mau)\s+)?(?:mulai(?:i|kan)?|start)(?:\s+(?:pelajaran|belajar|kursus|kelas|sekarang|aja|dong|dari\s+awal|pertama|pelajaran\s+pertama|lesson\s*1))*[\s!.]*$|^pelajaran\s+pertama[\s!.]*$/i;
+const CONTINUE_COURSE = /^(?:lanjut(?:kan)?|next|terus(?:kan)?|continue|pelajaran\s+berikutnya|next\s+lesson)[\s!?.]*$/i;
+const COURSE_REQUEST = /kursus|rencana\s+belajar|rencana|study\s+plan|buatkan|program\s+belajar|belajar\s+dari\s+nol/i;
+
+/**
+ * 职业课程闭环（确定性，不调模型）：
+ * 要课程但没说职业 → 问职业；说了职业 → 生成 7 天大纲；mulai → 开第一课；lanjut → 下一句；
+ * 学生对着当前目标作答且不匹配 → 指出并让他重试。
+ * 其余消息返回 null，交回原有教师链路（模型）。
+ */
+function composeMiniCourseResponse(input: {
+  sessionId: string;
+  message: string;
+  sessionMemory: StudentSessionMemory;
+  /** LIFECYCLE=建课/开课/继续；PRACTICE=只在没有更强教学分支时判断学生是否答错。 */
+  phase: 'LIFECYCLE' | 'PRACTICE';
+}): { answer: CoachBrainAnswer; course: MiniCourseState } | null {
+  const message = input.message.trim();
+  const state = readMiniCourse(input.sessionId);
+  const asksForCourse = COURSE_REQUEST.test(message);
+  if (asksForCourse) input.sessionMemory.courseRequested = true;
+
+  const occupation = detectOccupationKey(message);
+  const occupationStated = occupation !== 'generic' && /(?:kerja|bekerja|admin|pabrik|gudang|sales|penjualan|restoran|hotel|kantor|magang|posisi|jabatan)/i.test(message);
+
+  // 1) 已有课程：开课 / 继续 / 纠错
+  if (state) {
+    if (input.phase === 'PRACTICE') {
+      if (asksForCourse || !looksLikeAttempt(message)) return null;
+      const flat = flattenMiniCourse(buildMiniCourse(state.key));
+      const item = flat[Math.max(0, Math.min(flat.length - 1, state.cursor))];
+      if (matchesTarget(message, item)) {
+        const next = { ...state, cursor: Math.min(flat.length - 1, state.cursor + 1) };
+        writeMiniCourse(input.sessionId, next);
+        return {
+          answer: {
+            ...blankAnswer(),
+            answer: `Bagus sekali! 👏 ${item.chinese} (${item.pinyin}) = ${item.indonesian} sudah benar.`,
+            chinese: item.chinese, pinyin: item.pinyin, indonesian: item.indonesian,
+            followUp: 'Bilang "lanjut" kalau mau ekspresi berikutnya.',
+            summary: `Benar: ${item.chinese}. Siap lanjut.`,
+            teachingStrategy: 'MINI_COURSE_PASS', rememberTarget: true,
+            targetChinese: item.chinese, targetPinyin: item.pinyin, targetMeaning: item.indonesian,
+          },
+          course: next,
+        };
+      }
+      const reply = miniCourseAnswer(state, 'CORRECT');
+      return { answer: { ...blankAnswer(), ...reply, teachingStrategy: 'MINI_COURSE_CORRECT', rememberTarget: true, targetChinese: reply.chinese, targetPinyin: reply.pinyin, targetMeaning: reply.indonesian }, course: state };
+    }
+    const flat = flattenMiniCourse(buildMiniCourse(state.key));
+    if (START_COURSE.test(message)) {
+      const next = { ...state, cursor: 0 };
+      writeMiniCourse(input.sessionId, next);
+      const reply = miniCourseAnswer(next, 'START');
+      return { answer: { ...blankAnswer(), ...reply, teachingStrategy: 'MINI_COURSE_START', rememberTarget: true, targetChinese: reply.chinese, targetPinyin: reply.pinyin, targetMeaning: reply.indonesian }, course: next };
+    }
+    if (CONTINUE_COURSE.test(message)) {
+      if (state.cursor >= flat.length - 1) {
+        const done = { ...state, cursor: flat.length };
+        writeMiniCourse(input.sessionId, done);
+        return {
+          answer: {
+            ...blankAnswer(),
+            answer: 'Kursus 7 hari sudah selesai! 🎉 Kamu sudah berlatih perkenalan, kosakata kerja, minta bantuan, dan simulasi percakapan. Mau ulang dari hari 1? Bilang "mulai".',
+            followUp: 'Kalau mau, kita bisa latihan percakapan kerja lagi dari awal.',
+            teachingStrategy: 'MINI_COURSE_DONE',
+          },
+          course: done,
+        };
+      }
+      const next = { ...state, cursor: state.cursor + 1 };
+      writeMiniCourse(input.sessionId, next);
+      const reply = miniCourseAnswer(next, 'NEXT');
+      return { answer: { ...blankAnswer(), ...reply, teachingStrategy: 'MINI_COURSE_NEXT', rememberTarget: true, targetChinese: reply.chinese, targetPinyin: reply.pinyin, targetMeaning: reply.indonesian }, course: next };
+    }
+    if (!asksForCourse && looksLikeAttempt(message)) {
+      return null; // 练习判断统一放到 PRACTICE 阶段，避免抢掉真正的教学问答
+    }
+    return null;
+  }
+
+  // 2) 还没有课程：说了职业 + 之前要过课程 → 直接生成 7 天课程
+  if (input.phase === 'PRACTICE') return null;
+  if (occupationStated && (input.sessionMemory.courseRequested || input.sessionMemory.goal)) {
+    const course = buildMiniCourse(occupation);
+    const next: MiniCourseState = { key: occupation, cursor: 0, updatedAt: Date.now() };
+    writeMiniCourse(input.sessionId, next);
+    input.sessionMemory.occupation = occupation;
+    return {
+      answer: {
+        ...blankAnswer(),
+        answer: miniCourseOutline(course),
+        followUp: 'Mau mulai pelajaran pertama sekarang? Balas "mulai".',
+        summary: `Kursus 7 hari untuk ${course.label} sudah dibuat.`,
+        teachingStrategy: 'MINI_COURSE_CREATED',
+      },
+      course: next,
+    };
+  }
+  return null;
+}
+
+function blankAnswer(): CoachBrainAnswer {
+  return {
+    answer: '', chinese: '', pinyin: '', indonesian: '', followUp: '', summary: '', ttsRate: 'normal',
+    teachingStrategy: 'DIRECT', rememberTarget: false, targetChinese: '', targetPinyin: '', targetMeaning: '',
+    skillGap: false, skillGapReason: '',
+  };
 }
 
 type StructuredDecision = {
@@ -375,8 +539,10 @@ export async function answerCoachConversation(input: {
     userInitiatedMemory: UserInitiatedMemory[];
     recentConversationSummary: string;
     recentTurns: Array<{ role: 'user' | 'assistant'; text: string }>;
+    miniCourse?: { key: string; cursor: number } | null;
   };
 }) {
+  seedMiniCourse(input.sessionId, input.context.miniCourse);
   const teachingPlan = planCoachTurn(input.message);
   const brainPlan = teachingPlan.route;
   const generateClassification = (model: string, maxOutputTokens: number) => generateText({
@@ -411,11 +577,35 @@ export async function answerCoachConversation(input: {
     brainPlan.learningIntents.includes('CORRECTION') ? brainPlan.targetChinese : null,
   );
   const continueContext = buildContinueContext(input.message, input.context);
+  const miniCourse = composeMiniCourseResponse({ sessionId: input.sessionId, message: input.message, sessionMemory, phase: 'LIFECYCLE' });
+  if (miniCourse) {
+    const courseClassification: ConversationClassification = {
+      ...deterministicClassification,
+      intent: 'STUDY_PLANNING', intents: ['STUDY_PLANNING', 'WORKPLACE'], skillIds: ['STUDY_PLANNING'], answerCategory: 'STUDY_SUPPORT',
+    };
+    return {
+      classification: courseClassification,
+      answer: { ...miniCourse.answer, summary: miniCourse.answer.summary || input.context.recentConversationSummary.slice(0, 280) } satisfies ConversationAnswer,
+      usage: classificationUsage,
+    };
+  }
   const deterministicAnswer = composeKnownCoachResponse(brainPlan, input.context.userInitiatedMemory, continueContext);
   if (deterministicAnswer) {
     return {
       classification: deterministicClassification,
       answer: { ...deterministicAnswer, summary: deterministicAnswer.summary || input.context.recentConversationSummary.slice(0, 280) } satisfies ConversationAnswer,
+      usage: classificationUsage,
+    };
+  }
+  const practice = composeMiniCourseResponse({ sessionId: input.sessionId, message: input.message, sessionMemory, phase: 'PRACTICE' });
+  if (practice) {
+    const practiceClassification: ConversationClassification = {
+      ...deterministicClassification,
+      intents: [...deterministicClassification.intents, 'CORRECTION'], skillIds: ['CORRECTION'], answerCategory: 'PRONUNCIATION_COACHING',
+    };
+    return {
+      classification: practiceClassification,
+      answer: { ...practice.answer, summary: practice.answer.summary || input.context.recentConversationSummary.slice(0, 280) } satisfies ConversationAnswer,
       usage: classificationUsage,
     };
   }
@@ -431,6 +621,19 @@ export async function answerCoachConversation(input: {
   }
 
   const answerModel = classification.modelTier === 'SMART' ? SMART_MODEL : FAST_MODEL;
+  const activeCourse = readMiniCourse(input.sessionId);
+  const courseFocus = (() => {
+    if (!activeCourse) return null;
+    const course = buildMiniCourse(activeCourse.key);
+    const flat = flattenMiniCourse(course);
+    const item = flat[Math.max(0, Math.min(flat.length - 1, activeCourse.cursor))];
+    if (!item) return null;
+    return {
+      title: course.title, day: item.day, topic: item.topic,
+      target: item.chinese, pinyin: item.pinyin, meaning: item.indonesian,
+      position: `${Math.min(activeCourse.cursor + 1, flat.length)}/${flat.length}`,
+    };
+  })();
   const answerSystem = buildTeacherSkillSystem({
     courseLesson: input.context.courseLesson,
     currentExpression: input.context.currentExpression,
@@ -444,6 +647,7 @@ export async function answerCoachConversation(input: {
     recentTurns: input.context.recentTurns,
     recentConversationSummary: input.context.recentConversationSummary,
     sessionMemory,
+    courseFocus,
   });
   const answerPrompt = JSON.stringify({
       classification,

@@ -86,11 +86,11 @@ const t = (n) => turns[n - 1];
 check('T1-goal', t(1).intent === 'STUDY_PLANNING' && /Minggu|rencana/i.test(t(1).answer) && !/^Tentu, saya bisa/i.test(t(1).answer), `intent=${t(1).intent} strategy=${t(1).strategy}`);
 check('T1-ask-job', /[?？]/.test(t(1).followUp), `followUp=${t(1).followUp.slice(0, 60)}`);
 check('T2-http200', t(2).http === 200, `skillGap=${t(2).skillGap}（本地无凭据时允许降级）`);
-check('T3-start-lesson', t(3).strategy === 'CONTINUE_NEXT_EXPRESSION' && t(3).chinese === '你好', `chinese=${t(3).chinese}`);
+check('T3-start-lesson', ['CONTINUE_NEXT_EXPRESSION','MINI_COURSE_START'].includes(t(3).strategy) && t(3).chinese === '你好', `chinese=${t(3).chinese}`);
 check('T4-correct', t(4).chinese === '我饿了' && /wǒ è le/i.test(t(4).pinyin), `chinese=${t(4).chinese}`);
 check('T5-correct-meaning', t(5).chinese === '谢谢' && /terima kasih/i.test(t(5).indonesian), `indonesian=${t(5).indonesian.slice(0, 40)}`);
 check('T6-pronounce', /xiè xie/i.test(t(6).pinyin), `pinyin=${t(6).pinyin}`);
-check('T7-lanjut', t(7).strategy === 'CONTINUE_NEXT_EXPRESSION' && t(7).chinese && t(7).chinese !== t(3).chinese, `chinese=${t(7).chinese}（课内下一句，非重复）`);
+check('T7-lanjut', ['CONTINUE_NEXT_EXPRESSION','MINI_COURSE_NEXT'].includes(t(7).strategy) && t(7).chinese && t(7).chinese !== t(3).chinese, `chinese=${t(7).chinese}（课内下一句，非重复）`);
 check('T8-slow', t(8).ttsRate === 'slow' && /nǐ hǎo/i.test(t(8).pinyin), `ttsRate=${t(8).ttsRate}`);
 check('T9-sopir', t(9).strategy === 'COMMUNICATION_REQUEST_PRACTICAL' && /你来开车吧/.test(t(9).chinese) && /menyetir|nyetir/i.test(t(9).indonesian), `chinese=${t(9).chinese}`);
 check('T9-natural-alt', /Lebih santai|自然|santai/i.test(t(9).followUp), `followUp=${t(9).followUp.slice(0, 60)}`);
@@ -102,7 +102,7 @@ check('T15-workplace', t(15).chinese === '谢谢，不辛苦。', `chinese=${t(1
 check('T16-offtopic', t(16).intent === 'OFF_TOPIC', `intent=${t(16).intent}`);
 check('T17-boss', /老板，明天发货/.test(t(17).chinese), `chinese=${t(17).chinese}`);
 check('T18-vocab', t(18).chinese === '我饿了', `chinese=${t(18).chinese}`);
-check('T19-lanjut2', t(19).strategy === 'CONTINUE_NEXT_EXPRESSION' && t(19).chinese && t(19).chinese !== t(7).chinese && t(19).chinese !== t(3).chinese, `chinese=${t(19).chinese}`);
+check('T19-lanjut2', ['CONTINUE_NEXT_EXPRESSION','MINI_COURSE_NEXT'].includes(t(19).strategy) && t(19).chinese && t(19).chinese !== t(7).chinese && t(19).chinese !== t(3).chinese, `chinese=${t(19).chinese}`);
 check('T20-http200', t(20).http === 200, `skillGap=${t(20).skillGap}（本地无凭据时允许降级）`);
 // 全局
 check('G-http', turns.every((x) => x.http === 200), 'all 200');

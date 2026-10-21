@@ -4,7 +4,7 @@ import { getCoachCapabilityIds } from '@/lib/mandarin-coach-skills';
 import { buildCoachSpeechSegments } from '@/lib/mandarin-coach-speech';
 import { collectTeachingContextStrings, evaluateTeachingIntent, teachingIntentGuardReply } from '@/lib/teaching-intent-guard';
 import { saveCoachInteraction, saveCoachTelemetryEvent } from '@/lib/server/mandarin-coach-analytics';
-import { anonymizeLearningQuestion, answerCoachConversation, transcribeMandarin } from '@/lib/server/mandarin-ai-coach';
+import { anonymizeLearningQuestion, answerCoachConversation, coachMiniCourseSnapshot, transcribeMandarin } from '@/lib/server/mandarin-ai-coach';
 import { getMandarinLevel2Access } from '@/lib/server/mandarin-work-level2-access';
 import { getMandarinCoachLesson } from '@/lib/server/mandarin-coach-curriculum';
 import { resolveRequestAccountScope } from '@/lib/server/request-account-scope';
@@ -106,6 +106,11 @@ function safeContext(value: FormDataEntryValue | null) {
         ? parsed.activeTeachingToken
         : null,
       activeTeachingStart: parsed.activeTeachingStart === true,
+      miniCourse: parsed.miniCourse && typeof parsed.miniCourse === 'object'
+        && typeof (parsed.miniCourse as Record<string, unknown>).key === 'string'
+        && typeof (parsed.miniCourse as Record<string, unknown>).cursor === 'number'
+        ? { key: String((parsed.miniCourse as Record<string, unknown>).key).slice(0, 20), cursor: Math.max(0, Math.min(200, Math.floor((parsed.miniCourse as { cursor: number }).cursor))) }
+        : null,
     };
   } catch {
     return null;
@@ -322,6 +327,7 @@ export async function POST(request: Request) {
       speechSegments,
       normalizedInput: result.classification.normalizedInput,
       answerCategory: result.classification.answerCategory,
+      miniCourse: coachMiniCourseSnapshot(scopedSessionId),
       ...result.answer,
       usage: {
         ...result.usage,

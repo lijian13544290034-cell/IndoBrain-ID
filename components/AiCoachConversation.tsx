@@ -38,6 +38,7 @@ type ConversationResponse = {
   usage: { token_input: number; token_output: number; model_calls: number; estimated_ai_cost: number; model_used: string; stt_seconds: number; stt_model: string | null; response_latency_ms: number };
   activeTeaching?: ActiveTeachingSession;
   activeTeachingToken?: string;
+  miniCourse?: { key: string; cursor: number; title: string; day: number; topic: string; target: string; position: string } | null;
 };
 
 function telemetry(profile: CoachProfile, event: CoachEventName, data: Record<string, unknown> = {}) {
@@ -160,6 +161,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
         messageCount: profile.conversation.questions.length,
         activeTeachingToken,
         activeTeachingStart: activeStart,
+        miniCourse: profile.miniCourse ?? null,
       }));
       const controller = new AbortController();
       const timeout = window.setTimeout(() => controller.abort(), 45_000);
@@ -211,6 +213,7 @@ export default function AiCoachConversation({ profile, lesson, currentExpression
       }
       const next: CoachProfile = {
         ...currentProfile,
+        miniCourse: result.miniCourse ? { key: result.miniCourse.key, cursor: result.miniCourse.cursor } : currentProfile.miniCourse ?? null,
         usage: {
           token_input: currentProfile.usage.token_input + result.usage.token_input,
           token_output: currentProfile.usage.token_output + result.usage.token_output,

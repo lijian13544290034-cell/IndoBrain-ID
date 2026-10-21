@@ -17,10 +17,12 @@ export type StudentSessionMemory = {
   level: string | null;
   currentLessonId: string | null;
   recentErrors: string[];
+  /** 学生本轮/近期明确要过课程（用于职业确定后自动开课）。 */
+  courseRequested?: boolean;
 };
 
 export function emptyStudentSessionMemory(): StudentSessionMemory {
-  return { goal: null, occupation: null, level: null, currentLessonId: null, recentErrors: [] };
+  return { goal: null, occupation: null, level: null, currentLessonId: null, recentErrors: [], courseRequested: false };
 }
 
 const ROLE = [
@@ -94,6 +96,8 @@ export function buildTeacherSkillSystem(args: {
   recentTurns: Array<{ role: 'user' | 'assistant'; text: string }>;
   recentConversationSummary: string;
   sessionMemory: StudentSessionMemory;
+  /** 当前职业课程里的练习焦点（由程序确定性维护，不是模型记忆）。 */
+  courseFocus?: { title: string; day: number; topic: string; target: string; pinyin: string; meaning: string; position: string } | null;
 }): string {
   const lessonSummary = {
     lessonId: args.courseLesson.id,
@@ -114,6 +118,9 @@ export function buildTeacherSkillSystem(args: {
     `Mastery sample: ${JSON.stringify(args.masteryState.slice(0, 10))}.`,
     `Student-initiated expressions: ${JSON.stringify(args.userInitiatedMemory.slice(-6).map((item) => ({ expression: item.expression, meaning: item.meaning_id, mastery: item.mastery_level })))}.`,
     `Conversation so far — summary: ${args.recentConversationSummary.slice(0, 280)}; last turns: ${JSON.stringify(args.recentTurns.slice(-6))}.`,
+    args.courseFocus
+      ? `Active career course: ${args.courseFocus.title} — day ${args.courseFocus.day} (${args.courseFocus.topic}). Current practice target: ${args.courseFocus.target} (${args.courseFocus.pinyin}) = ${args.courseFocus.meaning}; position ${args.courseFocus.position}. If the learner's message is an attempt at this target, evaluate it and correct the smallest useful issue, then invite one retry. Do not switch course or restart from 你好 unless the learner asks.`
+      : 'Active career course: none yet. If the learner states a job or wants a course, respond with a short plan and keep teaching.',
     `Current course lesson (reference material, use when relevant): ${JSON.stringify(lessonSummary)}.`,
   ].join('\n');
 }

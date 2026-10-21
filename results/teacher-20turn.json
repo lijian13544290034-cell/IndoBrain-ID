@@ -1,0 +1,428 @@
+{
+  "run": "118606",
+  "base": "http://localhost:3341",
+  "sessionId": "coach-skill20-118606",
+  "simulated": true,
+  "notice": "SIMULATED TEST — local run has no AI Gateway credentials; LLM turns degrade to SAFE_PLAIN_TEXT_FALLBACK. This does NOT prove real AI teaching quality. Requires Preview with real model for final validation.",
+  "totals": {
+    "checks": 26,
+    "pass": 26,
+    "fail": 0,
+    "deterministicTurns": 18,
+    "llmFallbackTurns": 2
+  },
+  "checks": [
+    {
+      "id": "T1-goal",
+      "pass": true,
+      "detail": "intent=STUDY_PLANNING strategy=STUDY_PLANNING_CAREER_PATH"
+    },
+    {
+      "id": "T1-ask-job",
+      "pass": true,
+      "detail": "followUp=Pekerjaanmu nanti apa? Pabrik, gudang, kantor, atau lainnya?"
+    },
+    {
+      "id": "T2-http200",
+      "pass": true,
+      "detail": "skillGap=false（本地无凭据时允许降级）"
+    },
+    {
+      "id": "T3-start-lesson",
+      "pass": true,
+      "detail": "chinese=你好"
+    },
+    {
+      "id": "T4-correct",
+      "pass": true,
+      "detail": "chinese=我饿了"
+    },
+    {
+      "id": "T5-correct-meaning",
+      "pass": true,
+      "detail": "indonesian=terima kasih"
+    },
+    {
+      "id": "T6-pronounce",
+      "pass": true,
+      "detail": "pinyin=xiè xie"
+    },
+    {
+      "id": "T7-lanjut",
+      "pass": true,
+      "detail": "chinese=我叫…（课内下一句，非重复）"
+    },
+    {
+      "id": "T8-slow",
+      "pass": true,
+      "detail": "ttsRate=slow"
+    },
+    {
+      "id": "T9-sopir",
+      "pass": true,
+      "detail": "chinese=今天我太累了，你来开车吧。"
+    },
+    {
+      "id": "T9-natural-alt",
+      "pass": true,
+      "detail": "followUp=Lebih santai: 今天我太累了，你帮我开吧。· Bicara ke sopir tidak perlu kat"
+    },
+    {
+      "id": "T10-sopir-wait",
+      "pass": true,
+      "detail": "chinese=请在这里等我。"
+    },
+    {
+      "id": "T12-vocab",
+      "pass": true,
+      "detail": "chinese=喝"
+    },
+    {
+      "id": "T13-review",
+      "pass": true,
+      "detail": "answer=Kamu pernah belajar 喝. Masih ingat artinya?"
+    },
+    {
+      "id": "T14-offtopic",
+      "pass": true,
+      "detail": "intent=OFF_TOPIC"
+    },
+    {
+      "id": "T15-workplace",
+      "pass": true,
+      "detail": "chinese=谢谢，不辛苦。"
+    },
+    {
+      "id": "T16-offtopic",
+      "pass": true,
+      "detail": "intent=OFF_TOPIC"
+    },
+    {
+      "id": "T17-boss",
+      "pass": true,
+      "detail": "chinese=老板，明天发货，可以吗？"
+    },
+    {
+      "id": "T18-vocab",
+      "pass": true,
+      "detail": "chinese=我饿了"
+    },
+    {
+      "id": "T19-lanjut2",
+      "pass": true,
+      "detail": "chinese=我是印尼人"
+    },
+    {
+      "id": "T20-http200",
+      "pass": true,
+      "detail": "skillGap=true（本地无凭据时允许降级）"
+    },
+    {
+      "id": "G-http",
+      "pass": true,
+      "detail": "all 200"
+    },
+    {
+      "id": "G-no-repeat",
+      "pass": true,
+      "detail": "no identical answers for different teaching targets"
+    },
+    {
+      "id": "G-no-bare-greeting",
+      "pass": true,
+      "detail": "no bare greeting replies"
+    },
+    {
+      "id": "G-goal-kept",
+      "pass": true,
+      "detail": "goal stated t1 and never lost (no re-greeting)"
+    },
+    {
+      "id": "G-all-200-turns",
+      "pass": true,
+      "detail": "turns=20"
+    }
+  ],
+  "turns": [
+    {
+      "message": "saya belum bisa Mandarin, saya mau kerja di perusahaan China, bisa ajarin saya?",
+      "http": 200,
+      "intent": "STUDY_PLANNING",
+      "strategy": "STUDY_PLANNING_CAREER_PATH",
+      "skillGap": false,
+      "answer": "Siap, saya buatkan rencananya 🎯 Minggu 1: sapaan & perkenalan diri (你好 / 我叫…). Minggu 2-3: bahasa kerja dasar (pabrik, gudang, kirim barang). Minggu 4: percakapan interview. Syarat kerja di perusahaan Tiongkok umumnya: bisa perkenalan diri, percakapan dasar (setara HSK 2-3), dan istilah kerja bidangmu.",
+      "chinese": "我想去中国公司工作。",
+      "pinyin": "wǒ xiǎng qù zhōngguó gōngsī gōngzuò.",
+      "indonesian": "Saya mau kerja di perusahaan Tiongkok.",
+      "followUp": "Pekerjaanmu nanti apa? Pabrik, gudang, kantor, atau lainnya?",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "saya mau kerja di bagian pabrik, operator mesin",
+      "http": 200,
+      "intent": "STUDY_PLANNING",
+      "strategy": "MINI_COURSE_CREATED",
+      "skillGap": false,
+      "answer": "Siap! Saya buatkan Kursus Mandarin 7 Hari · Pabrik / Produksi sesuai pekerjaanmu 🎯\nHari 1: Perkenalan diri — 你好 / 我叫… / 我是印尼人\nHari 2: Sapaan sopan di kantor — 早上好 / 谢谢您 / 不客气\nHari 3: Angka & waktu kerja — 几点？ / 八点 / 加班\nHari 4: Kosakata kerja: Pabrik / Produksi — 工厂 / 机器 / 生产\nHari 5: Kalimat kerja: Pabrik / Produksi — 我在工厂工作 / 机器坏了 / 今天生产很多\nHari 6: Minta bantuan & konfirmasi — 请帮我 / 可以吗？ / 我明白了\nHari 7: Simulasi percakapan kerja — 我是新来的 / 请多关照 / 有问题我问你",
+      "chinese": "",
+      "pinyin": "",
+      "indonesian": "",
+      "followUp": "Mau mulai pelajaran pertama sekarang? Balas \"mulai\".",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "mulai aja",
+      "http": 200,
+      "intent": "STUDY_PLANNING",
+      "strategy": "MINI_COURSE_START",
+      "skillGap": false,
+      "answer": "Hari 1 — Perkenalan diri. Kita mulai dari yang paling sering dipakai di tempat kerja. Ucapkan dulu: 你好 (nǐ hǎo) = halo.",
+      "chinese": "你好",
+      "pinyin": "nǐ hǎo",
+      "indonesian": "halo",
+      "followUp": "Sekarang giliranmu: ucapkan 你好, lalu tulis di sini.",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "wo e le bener ga?",
+      "http": 200,
+      "intent": "CORRECTION",
+      "strategy": "CORRECTION_MODEL_TARGET",
+      "skillGap": false,
+      "answer": "Ya, maksudmu sudah benar. Bentuk dengan nada yang tepat:",
+      "chinese": "我饿了",
+      "pinyin": "wǒ è le",
+      "indonesian": "Saya lapar.",
+      "followUp": "Coba ucapkan perlahan: wǒ · è · le.",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "xie xie artinya sampai jumpa, bener ga?",
+      "http": 200,
+      "intent": "CORRECTION",
+      "strategy": "PRONUNCIATION_NEUTRAL_TONE",
+      "skillGap": false,
+      "answer": "Artinya “terima kasih”. Suku kata kedua ringan (nada netral).",
+      "chinese": "谢谢",
+      "pinyin": "xiè xie",
+      "indonesian": "terima kasih",
+      "followUp": "Dengarkan lalu coba: xiè · xie.",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "谢谢怎么读？",
+      "http": 200,
+      "intent": "PRONUNCIATION",
+      "strategy": "PRONUNCIATION_NEUTRAL_TONE",
+      "skillGap": false,
+      "answer": "Artinya “terima kasih”. Suku kata kedua ringan (nada netral).",
+      "chinese": "谢谢",
+      "pinyin": "xiè xie",
+      "indonesian": "terima kasih",
+      "followUp": "Dengarkan lalu coba: xiè · xie.",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "lanjut",
+      "http": 200,
+      "intent": "STUDY_PLANNING",
+      "strategy": "MINI_COURSE_NEXT",
+      "skillGap": false,
+      "answer": "Lanjut ke ekspresi berikutnya: 我叫… (wǒ jiào…) = nama saya….",
+      "chinese": "我叫…",
+      "pinyin": "wǒ jiào…",
+      "indonesian": "nama saya…",
+      "followUp": "Sekarang giliranmu: ucapkan 我叫…, lalu tulis di sini.",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "你好怎么读？ pelan",
+      "http": 200,
+      "intent": "PRONUNCIATION",
+      "strategy": "THIRD_TONE_SANDHI",
+      "skillGap": false,
+      "answer": "Pinyinnya nǐ hǎo. Dalam ucapan alami, nada ketiga pertama berubah sehingga terdengar seperti ní hǎo.",
+      "chinese": "你好",
+      "pinyin": "nǐ hǎo → ní hǎo",
+      "indonesian": "halo",
+      "followUp": "Dengarkan frasa utuh, lalu coba sekali.",
+      "ttsRate": "slow",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "Saya capek, bagaimana bilang ke sopir supaya dia yang nyetir?",
+      "http": 200,
+      "intent": "COMMUNICATION_REQUEST",
+      "strategy": "COMMUNICATION_REQUEST_PRACTICAL",
+      "skillGap": false,
+      "answer": "Kalau kamu ingin minta tolong pengantar hari ini, bilang begini:",
+      "chinese": "今天我太累了，你来开车吧。",
+      "pinyin": "jīn tiān wǒ tài lèi le, nǐ lái kāi chē ba.",
+      "indonesian": "Hari ini saya terlalu lelah, kamu yang menyetir ya.",
+      "followUp": "Lebih santai: 今天我太累了，你帮我开吧。· Bicara ke sopir tidak perlu kata sopir.",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "gimana bilang ke supir tunggu sebentar?",
+      "http": 200,
+      "intent": "COMMUNICATION_REQUEST",
+      "strategy": "COMMUNICATION_REQUEST_PRACTICAL",
+      "skillGap": false,
+      "answer": "Untuk minta sopir menunggu, bilang:",
+      "chinese": "请在这里等我。",
+      "pinyin": "qǐng zài zhè lǐ děng wǒ.",
+      "indonesian": "Tolong tunggu saya di sini.",
+      "followUp": "Tambah waktu: 请等我五分钟。 (lima menit).",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "kenapa pakai 吧?",
+      "http": 200,
+      "intent": "GRAMMAR",
+      "strategy": "SAFE_PLAIN_TEXT_FALLBACK",
+      "skillGap": true,
+      "answer": "Mari kita fokus pada satu bagian dulu. Kirim frasa ini lagi jika kamu ingin arti atau cara bacanya.",
+      "chinese": "吧",
+      "pinyin": "",
+      "indonesian": "",
+      "followUp": "Apa yang ingin kamu pelajari dari “吧”?",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "minum bahasa mandarin apa?",
+      "http": 200,
+      "intent": "VOCABULARY",
+      "strategy": "VOCABULARY_ONE_EXAMPLE",
+      "skillGap": false,
+      "answer": "Dalam Mandarin, “minum” adalah:",
+      "chinese": "喝",
+      "pinyin": "hē",
+      "indonesian": "minum",
+      "followUp": "Contoh: 喝水 · hē shuǐ · minum air. Mau coba ucapkan “喝”?",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "ulangi kata yang tadi",
+      "http": 200,
+      "intent": "REVIEW",
+      "strategy": "EXPLAINABLE_MEMORY_REVIEW",
+      "skillGap": false,
+      "answer": "Kamu pernah belajar 喝. Masih ingat artinya?",
+      "chinese": "喝",
+      "pinyin": "hē",
+      "indonesian": "minum",
+      "followUp": "Coba jawab tanpa melihat.",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "saham bitcoin besok naik?",
+      "http": 200,
+      "intent": "OFF_TOPIC",
+      "strategy": "TEACHING_INTENT_REFUSAL",
+      "skillGap": false,
+      "answer": "Maaf, saya hanya membantu kamu belajar Mandarin. Kamu bisa bertanya tentang arti, pengucapan, tata bahasa, atau percakapan kerja.",
+      "chinese": "",
+      "pinyin": "",
+      "indonesian": "Maaf, saya hanya membantu kamu belajar Mandarin. Kamu bisa bertanya tentang arti, pengucapan, tata bahasa, atau percakapan kerja.",
+      "followUp": "Kembali belajar Mandarin",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "kalau bos bilang 辛苦了 saya jawab apa?",
+      "http": 200,
+      "intent": "WORKPLACE",
+      "strategy": "WORKPLACE_PRAGMATICS",
+      "skillGap": false,
+      "answer": "Di tempat kerja, 辛苦了 berarti bos menghargai usaha kamu. Jawaban paling sederhana:",
+      "chinese": "谢谢，不辛苦。",
+      "pinyin": "xiè xie, bù xīn kǔ",
+      "indonesian": "Terima kasih, tidak apa-apa.",
+      "followUp": "Kalau mau lebih singkat, jawab: 谢谢。",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "cuaca besok gimana?",
+      "http": 200,
+      "intent": "OFF_TOPIC",
+      "strategy": "TEACHING_INTENT_REFUSAL",
+      "skillGap": false,
+      "answer": "Maaf, saya hanya membantu kamu belajar Mandarin. Kamu bisa bertanya tentang arti, pengucapan, tata bahasa, atau percakapan kerja.",
+      "chinese": "",
+      "pinyin": "",
+      "indonesian": "Maaf, saya hanya membantu kamu belajar Mandarin. Kamu bisa bertanya tentang arti, pengucapan, tata bahasa, atau percakapan kerja.",
+      "followUp": "Kembali belajar Mandarin",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "老板，明天发货怎么说？",
+      "http": 200,
+      "intent": "WORKPLACE",
+      "strategy": "WORKPLACE_SENTENCE_COMPLETION",
+      "skillGap": false,
+      "answer": "Kalau kamu ingin bertanya sopan kepada bos, bisa bilang:",
+      "chinese": "老板，明天发货，可以吗？",
+      "pinyin": "lǎo bǎn, míng tiān fā huò, kě yǐ ma?",
+      "indonesian": "Bos, kirim barang besok, boleh?",
+      "followUp": "Kamu boleh mengganti 发货 sesuai pekerjaanmu.",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "wo e le",
+      "http": 200,
+      "intent": "CONVERSATION",
+      "strategy": "MEANING_DIRECT",
+      "skillGap": false,
+      "answer": "Artinya “Saya lapar”. Bacanya:",
+      "chinese": "我饿了",
+      "pinyin": "wǒ è le",
+      "indonesian": "Saya lapar.",
+      "followUp": "Coba ucapkan perlahan: wǒ · è · le.",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "lanjut",
+      "http": 200,
+      "intent": "STUDY_PLANNING",
+      "strategy": "MINI_COURSE_NEXT",
+      "skillGap": false,
+      "answer": "Lanjut ke ekspresi berikutnya: 我是印尼人 (wǒ shì yìn ní rén) = saya orang Indonesia.",
+      "chinese": "我是印尼人",
+      "pinyin": "wǒ shì yìn ní rén",
+      "indonesian": "saya orang Indonesia",
+      "followUp": "Sekarang giliranmu: ucapkan 我是印尼人, lalu tulis di sini.",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    },
+    {
+      "message": "terima kasih guru!",
+      "http": 200,
+      "intent": "CONVERSATION",
+      "strategy": "SAFE_PLAIN_TEXT_FALLBACK",
+      "skillGap": true,
+      "answer": "Saya belum bisa menyusun jawaban lengkap. Coba tanyakan satu frasa Mandarin, arti, atau cara bacanya.",
+      "chinese": "",
+      "pinyin": "",
+      "indonesian": "",
+      "followUp": "Frasa Mandarin mana yang ingin kamu pelajari?",
+      "ttsRate": "normal",
+      "usageModelCalls": 0
+    }
+  ]
+}

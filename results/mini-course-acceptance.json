@@ -1,0 +1,313 @@
+{
+  "run": "111361",
+  "base": "http://localhost:3341",
+  "sessionId": "coach-mini-111361",
+  "passed": 10,
+  "total": 10,
+  "checks": [
+    {
+      "name": "T1 理解目标并询问岗位",
+      "pass": true,
+      "detail": "Pekerjaanmu nanti apa? Pabrik, gudang, kantor, atau lainnya?"
+    },
+    {
+      "name": "T2 生成 7 天职业课程",
+      "pass": true,
+      "detail": "7 天 · n/a"
+    },
+    {
+      "name": "T2 课程含 admin 岗位内容",
+      "pass": true,
+      "detail": "Hari 2: Sapaan sopan di kantor — 早上好 / 谢谢您 / 不客气 | Hari 3: Angka & waktu kerja — 几点？ / 八点 / 加班"
+    },
+    {
+      "name": "T3 开始第一课",
+      "pass": true,
+      "detail": "你好 · nǐ hǎo"
+    },
+    {
+      "name": "T4 答错被纠正（zai jian）",
+      "pass": true,
+      "detail": "Belum tepat, tapi tidak apa-apa 👍 Yang benar: 你好 (nǐ hǎo) = halo. Coba ucapkan sekali lagi, pelan-pelan."
+    },
+    {
+      "name": "T5 lanjut 进入下一句",
+      "pass": true,
+      "detail": "我叫… · wǒ jiào…"
+    },
+    {
+      "name": "T6 刷新后课程上下文恢复",
+      "pass": true,
+      "detail": "我是印尼人 · wǒ shì yìn ní rén"
+    },
+    {
+      "name": "T7 答对确认并推进",
+      "pass": true,
+      "detail": "Bagus sekali! 👏 我是印尼人 (wǒ shì yìn ní rén) = saya orang Indonesia sudah benar."
+    },
+    {
+      "name": "T7b 无进程记忆时按游标恢复",
+      "pass": true,
+      "detail": "早上好 · zǎo shang hǎo"
+    },
+    {
+      "name": "T8 sopir 场景仍可用",
+      "pass": true,
+      "detail": "今天我太累了，你来开车吧。 · Kalau kamu ingin minta tolong pengantar "
+    }
+  ],
+  "turns": [
+    {
+      "turn": 1,
+      "message": "Saya pemula, mau kerja di perusahaan China. Bisa buatkan kursus Mandarin?",
+      "status": 200,
+      "latency_ms": 795,
+      "answer": "Siap, saya buatkan rencananya 🎯 Minggu 1: sapaan & perkenalan diri (你好 / 我叫…). Minggu 2-3: bahasa kerja dasar (pabrik, gudang, kirim barang). Minggu 4: percakapan interview. Syarat kerja di perusahaan Tiongkok umumnya: bisa perkenalan diri, percakapan dasar (setara HSK 2-3), dan istilah kerja bidangmu.",
+      "chinese": "我想去中国公司工作。",
+      "pinyin": "wǒ xiǎng qù zhōngguó gōngsī gōngzuò.",
+      "indonesian": "Saya mau kerja di perusahaan Tiongkok.",
+      "followUp": "Pekerjaanmu nanti apa? Pabrik, gudang, kantor, atau lainnya?",
+      "strategy": "STUDY_PLANNING_CAREER_PATH",
+      "intent": "STUDY_PLANNING",
+      "usage": {
+        "token_input": 0,
+        "token_output": 0,
+        "model_calls": 0,
+        "estimated_ai_cost": 0,
+        "model_used": "mandarin-coach-brain-v0.1",
+        "structured_retries": 0,
+        "safe_fallbacks": 0,
+        "retry_token_input": 0,
+        "retry_token_output": 0,
+        "retry_estimated_cost": 0,
+        "stt_seconds": 0,
+        "stt_model": null,
+        "response_latency_ms": 17
+      }
+    },
+    {
+      "turn": 2,
+      "message": "Saya mau kerja sebagai admin.",
+      "status": 200,
+      "latency_ms": 19,
+      "answer": "Siap! Saya buatkan Kursus Mandarin 7 Hari · Admin / Kantor sesuai pekerjaanmu 🎯\nHari 1: Perkenalan diri — 你好 / 我叫… / 我是印尼人\nHari 2: Sapaan sopan di kantor — 早上好 / 谢谢您 / 不客气\nHari 3: Angka & waktu kerja — 几点？ / 八点 / 加班\nHari 4: Kosakata kerja: Admin / Kantor — 文件 / 会议 / 报告\nHari 5: Kalimat kerja: Admin / Kantor — 我整理文件 / 会议几点开始？ / 报告做好了\nHari 6: Minta bantuan & konfirmasi — 请帮我 / 可以吗？ / 我明白了\nHari 7: Simulasi percakapan kerja — 我是新来的 / 请多关照 / 有问题我问你",
+      "chinese": "",
+      "pinyin": "",
+      "indonesian": "",
+      "followUp": "Mau mulai pelajaran pertama sekarang? Balas \"mulai\".",
+      "strategy": "MINI_COURSE_CREATED",
+      "intent": "STUDY_PLANNING",
+      "usage": {
+        "token_input": 0,
+        "token_output": 0,
+        "model_calls": 0,
+        "estimated_ai_cost": 0,
+        "model_used": "mandarin-coach-brain-v0.1",
+        "structured_retries": 0,
+        "safe_fallbacks": 0,
+        "retry_token_input": 0,
+        "retry_token_output": 0,
+        "retry_estimated_cost": 0,
+        "stt_seconds": 0,
+        "stt_model": null,
+        "response_latency_ms": 5
+      }
+    },
+    {
+      "turn": 3,
+      "message": "Mulai pelajaran pertama.",
+      "status": 200,
+      "latency_ms": 36,
+      "answer": "Hari 1 — Perkenalan diri. Kita mulai dari yang paling sering dipakai di tempat kerja. Ucapkan dulu: 你好 (nǐ hǎo) = halo.",
+      "chinese": "你好",
+      "pinyin": "nǐ hǎo",
+      "indonesian": "halo",
+      "followUp": "Sekarang giliranmu: ucapkan 你好, lalu tulis di sini.",
+      "strategy": "MINI_COURSE_START",
+      "intent": "STUDY_PLANNING",
+      "usage": {
+        "token_input": 0,
+        "token_output": 0,
+        "model_calls": 0,
+        "estimated_ai_cost": 0,
+        "model_used": "mandarin-coach-brain-v0.1",
+        "structured_retries": 0,
+        "safe_fallbacks": 0,
+        "retry_token_input": 0,
+        "retry_token_output": 0,
+        "retry_estimated_cost": 0,
+        "stt_seconds": 0,
+        "stt_model": null,
+        "response_latency_ms": 20
+      }
+    },
+    {
+      "turn": 4,
+      "message": "zai jian",
+      "status": 200,
+      "latency_ms": 29,
+      "answer": "Belum tepat, tapi tidak apa-apa 👍 Yang benar: 你好 (nǐ hǎo) = halo. Coba ucapkan sekali lagi, pelan-pelan.",
+      "chinese": "你好",
+      "pinyin": "nǐ hǎo",
+      "indonesian": "halo",
+      "followUp": "Ulangi: 你好 · nǐ hǎo",
+      "strategy": "MINI_COURSE_CORRECT",
+      "intent": "CONVERSATION",
+      "usage": {
+        "token_input": 0,
+        "token_output": 0,
+        "model_calls": 0,
+        "estimated_ai_cost": 0,
+        "model_used": "mandarin-coach-brain-v0.1",
+        "structured_retries": 0,
+        "safe_fallbacks": 0,
+        "retry_token_input": 0,
+        "retry_token_output": 0,
+        "retry_estimated_cost": 0,
+        "stt_seconds": 0,
+        "stt_model": null,
+        "response_latency_ms": 9
+      }
+    },
+    {
+      "turn": 5,
+      "message": "lanjut",
+      "status": 200,
+      "latency_ms": 37,
+      "answer": "Lanjut ke ekspresi berikutnya: 我叫… (wǒ jiào…) = nama saya….",
+      "chinese": "我叫…",
+      "pinyin": "wǒ jiào…",
+      "indonesian": "nama saya…",
+      "followUp": "Sekarang giliranmu: ucapkan 我叫…, lalu tulis di sini.",
+      "strategy": "MINI_COURSE_NEXT",
+      "intent": "STUDY_PLANNING",
+      "usage": {
+        "token_input": 0,
+        "token_output": 0,
+        "model_calls": 0,
+        "estimated_ai_cost": 0,
+        "model_used": "mandarin-coach-brain-v0.1",
+        "structured_retries": 0,
+        "safe_fallbacks": 0,
+        "retry_token_input": 0,
+        "retry_token_output": 0,
+        "retry_estimated_cost": 0,
+        "stt_seconds": 0,
+        "stt_model": null,
+        "response_latency_ms": 24
+      }
+    },
+    {
+      "turn": 6,
+      "message": "lanjut",
+      "status": 200,
+      "latency_ms": 23,
+      "answer": "Lanjut ke ekspresi berikutnya: 我是印尼人 (wǒ shì yìn ní rén) = saya orang Indonesia.",
+      "chinese": "我是印尼人",
+      "pinyin": "wǒ shì yìn ní rén",
+      "indonesian": "saya orang Indonesia",
+      "followUp": "Sekarang giliranmu: ucapkan 我是印尼人, lalu tulis di sini.",
+      "strategy": "MINI_COURSE_NEXT",
+      "intent": "STUDY_PLANNING",
+      "usage": {
+        "token_input": 0,
+        "token_output": 0,
+        "model_calls": 0,
+        "estimated_ai_cost": 0,
+        "model_used": "mandarin-coach-brain-v0.1",
+        "structured_retries": 0,
+        "safe_fallbacks": 0,
+        "retry_token_input": 0,
+        "retry_token_output": 0,
+        "retry_estimated_cost": 0,
+        "stt_seconds": 0,
+        "stt_model": null,
+        "response_latency_ms": 6
+      }
+    },
+    {
+      "turn": 7,
+      "message": "我是印尼人",
+      "status": 200,
+      "latency_ms": 40,
+      "answer": "Bagus sekali! 👏 我是印尼人 (wǒ shì yìn ní rén) = saya orang Indonesia sudah benar.",
+      "chinese": "我是印尼人",
+      "pinyin": "wǒ shì yìn ní rén",
+      "indonesian": "saya orang Indonesia",
+      "followUp": "Bilang \"lanjut\" kalau mau ekspresi berikutnya.",
+      "strategy": "MINI_COURSE_PASS",
+      "intent": "CONVERSATION",
+      "usage": {
+        "token_input": 0,
+        "token_output": 0,
+        "model_calls": 0,
+        "estimated_ai_cost": 0,
+        "model_used": "mandarin-coach-brain-v0.1",
+        "structured_retries": 0,
+        "safe_fallbacks": 0,
+        "retry_token_input": 0,
+        "retry_token_output": 0,
+        "retry_estimated_cost": 0,
+        "stt_seconds": 0,
+        "stt_model": null,
+        "response_latency_ms": 24
+      }
+    },
+    {
+      "turn": 8,
+      "message": "lanjut",
+      "status": 200,
+      "latency_ms": 20,
+      "answer": "Hari 2 — Sapaan sopan di kantor. Lanjut ke ekspresi berikutnya: 早上好 (zǎo shang hǎo) = selamat pagi.",
+      "chinese": "早上好",
+      "pinyin": "zǎo shang hǎo",
+      "indonesian": "selamat pagi",
+      "followUp": "Sekarang giliranmu: ucapkan 早上好, lalu tulis di sini.",
+      "strategy": "MINI_COURSE_NEXT",
+      "intent": "STUDY_PLANNING",
+      "usage": {
+        "token_input": 0,
+        "token_output": 0,
+        "model_calls": 0,
+        "estimated_ai_cost": 0,
+        "model_used": "mandarin-coach-brain-v0.1",
+        "structured_retries": 0,
+        "safe_fallbacks": 0,
+        "retry_token_input": 0,
+        "retry_token_output": 0,
+        "retry_estimated_cost": 0,
+        "stt_seconds": 0,
+        "stt_model": null,
+        "response_latency_ms": 3
+      }
+    },
+    {
+      "turn": 9,
+      "message": "Saya capek, bagaimana bilang ke sopir supaya dia yang nyetir?",
+      "status": 200,
+      "latency_ms": 41,
+      "answer": "Kalau kamu ingin minta tolong pengantar hari ini, bilang begini:",
+      "chinese": "今天我太累了，你来开车吧。",
+      "pinyin": "jīn tiān wǒ tài lèi le, nǐ lái kāi chē ba.",
+      "indonesian": "Hari ini saya terlalu lelah, kamu yang menyetir ya.",
+      "followUp": "Lebih santai: 今天我太累了，你帮我开吧。· Bicara ke sopir tidak perlu kata sopir.",
+      "strategy": "COMMUNICATION_REQUEST_PRACTICAL",
+      "intent": "COMMUNICATION_REQUEST",
+      "usage": {
+        "token_input": 0,
+        "token_output": 0,
+        "model_calls": 0,
+        "estimated_ai_cost": 0,
+        "model_used": "mandarin-coach-brain-v0.1",
+        "structured_retries": 0,
+        "safe_fallbacks": 0,
+        "retry_token_input": 0,
+        "retry_token_output": 0,
+        "retry_estimated_cost": 0,
+        "stt_seconds": 0,
+        "stt_model": null,
+        "response_latency_ms": 15
+      }
+    }
+  ]
+}

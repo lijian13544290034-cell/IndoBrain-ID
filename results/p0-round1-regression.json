@@ -1,0 +1,141 @@
+{
+  "run": "118659",
+  "base": "http://localhost:3341",
+  "totals": {
+    "pass": 9,
+    "fail": 0
+  },
+  "results": [
+    {
+      "id": "F1",
+      "title": "FAIL1 学习计划+求职：识别意图、给计划与求职条件、追问岗位",
+      "verdict": "PASS",
+      "expected": {
+        "intent": "STUDY_PLANNING",
+        "plan": true,
+        "jobRequirements": true,
+        "asksOccupation": true
+      },
+      "observed": {
+        "http": 200,
+        "intent": "STUDY_PLANNING",
+        "strategy": "STUDY_PLANNING_CAREER_PATH",
+        "answer": "Siap, saya buatkan rencananya 🎯 Minggu 1: sapaan & perkenalan diri (你好 / 我叫…). Minggu 2-3: bahasa kerja dasar (pabrik, gudang, kirim barang). Minggu 4: percakapan interview. Syarat kerja di perusahaan Tiongkok umumnya: ",
+        "followUp": "Pekerjaanmu nanti apa? Pabrik, gudang, kantor, atau lainnya?"
+      }
+    },
+    {
+      "id": "F2",
+      "title": "FAIL2 实用请求：给出目标句+拼音+印尼语+自然表达建议",
+      "verdict": "PASS",
+      "expected": {
+        "chinese": "今天我太累了，你来开车吧。",
+        "pinyinHas": "kāi chē",
+        "meaningHas": "menyetir",
+        "alternative": true
+      },
+      "observed": {
+        "http": 200,
+        "intent": "COMMUNICATION_REQUEST",
+        "strategy": "COMMUNICATION_REQUEST_PRACTICAL",
+        "chinese": "今天我太累了，你来开车吧。",
+        "pinyin": "jīn tiān wǒ tài lèi le, nǐ lái kāi chē ba.",
+        "indonesian": "Hari ini saya terlalu lelah, kamu yang menyetir ya.",
+        "followUp": "Lebih santai: 今天我太累了，你帮我开吧。· Bicara ke sopir tidak perlu kata sopir."
+      }
+    },
+    {
+      "id": "F3",
+      "title": "司机请求泛化：等我一 determinstic",
+      "verdict": "PASS",
+      "expected": {
+        "chinese": {}
+      },
+      "observed": {
+        "http": 200,
+        "chinese": "请在这里等我。",
+        "pinyin": "qǐng zài zhè lǐ děng wǒ."
+      }
+    },
+    {
+      "id": "F4",
+      "title": "通用学习计划分支",
+      "verdict": "PASS",
+      "expected": {
+        "intent": "STUDY_PLANNING",
+        "plan": true
+      },
+      "observed": {
+        "http": 200,
+        "intent": "STUDY_PLANNING",
+        "answer": "Siap! Rencana dasar: Minggu 1 sapaan & perkenalan diri, Minggu 2-3 kosakata & kalimat kerja harian, Minggu 4 percakapan singkat. Jalur lengk"
+      }
+    },
+    {
+      "id": "R1",
+      "title": "回归：词汇问答不受影响",
+      "verdict": "PASS",
+      "expected": {
+        "chinese": "喝",
+        "intent": "VOCABULARY"
+      },
+      "observed": {
+        "http": 200,
+        "intent": "VOCABULARY",
+        "chinese": "喝"
+      }
+    },
+    {
+      "id": "R2",
+      "title": "回归：跑题仍被拦截",
+      "verdict": "PASS",
+      "expected": {
+        "intent": "OFF_TOPIC"
+      },
+      "observed": {
+        "http": 200,
+        "intent": "OFF_TOPIC",
+        "answer": "Maaf, saya hanya membantu kamu belajar Mandarin. Kamu bisa bertanya tentang arti"
+      }
+    },
+    {
+      "id": "R3",
+      "title": "回归：意思问答不受影响",
+      "verdict": "PASS",
+      "expected": {
+        "chinese": {}
+      },
+      "observed": {
+        "http": 200,
+        "intent": "MEANING",
+        "chinese": "我饿了"
+      }
+    },
+    {
+      "id": "R4",
+      "title": "回归：职场用语不受影响",
+      "verdict": "PASS",
+      "expected": {
+        "chinese": "谢谢，不辛苦。"
+      },
+      "observed": {
+        "http": 200,
+        "intent": "WORKPLACE",
+        "chinese": "谢谢，不辛苦。"
+      }
+    },
+    {
+      "id": "R5",
+      "title": "回归：发音问答不受影响",
+      "verdict": "PASS",
+      "expected": {
+        "pinyin": {}
+      },
+      "observed": {
+        "http": 200,
+        "intent": "PRONUNCIATION",
+        "pinyin": "nǐ hǎo → ní hǎo"
+      }
+    }
+  ]
+}
