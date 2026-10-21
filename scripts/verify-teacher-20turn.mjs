@@ -86,7 +86,7 @@ const t = (n) => turns[n - 1];
 check('T1-goal', t(1).intent === 'STUDY_PLANNING' && /Minggu|rencana/i.test(t(1).answer) && !/^Tentu, saya bisa/i.test(t(1).answer), `intent=${t(1).intent} strategy=${t(1).strategy}`);
 check('T1-ask-job', /[?？]/.test(t(1).followUp), `followUp=${t(1).followUp.slice(0, 60)}`);
 check('T2-http200', t(2).http === 200, `skillGap=${t(2).skillGap}（本地无凭据时允许降级）`);
-check('T3-start-lesson', ['CONTINUE_NEXT_EXPRESSION','MINI_COURSE_START'].includes(t(3).strategy) && t(3).chinese === '你好', `chinese=${t(3).chinese}`);
+check('T3-start-lesson', ['CONTINUE_NEXT_EXPRESSION','MINI_COURSE_START','MINI_COURSE_START_FALLBACK'].includes(t(3).strategy) && t(3).chinese === '我在工厂工作', `chinese=${t(3).chinese}`);
 check('T4-correct', t(4).chinese === '我饿了' && /wǒ è le/i.test(t(4).pinyin), `chinese=${t(4).chinese}`);
 check('T5-correct-meaning', t(5).chinese === '谢谢' && /terima kasih/i.test(t(5).indonesian), `indonesian=${t(5).indonesian.slice(0, 40)}`);
 check('T6-pronounce', /xiè xie/i.test(t(6).pinyin), `pinyin=${t(6).pinyin}`);

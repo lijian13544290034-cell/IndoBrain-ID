@@ -3,11 +3,11 @@ import 'server-only';
 import { NoObjectGeneratedError, NoTranscriptGeneratedError, Output, transcribe, gateway, generateText, jsonSchema } from 'ai';
 import { DAY_ONE_EXPRESSIONS, type CoachBrainSkillId, type CoachDetectedLanguage, type CoachIntent, type CoachSkill, type CoachVerdict, type ExpressionId, type FeedbackId, type UserInitiatedMemory } from '@/lib/mandarin-ai-coach';
 import type { MandarinCoachCurriculumLesson } from '@/lib/mandarin-coach-curriculum-types';
-import { composeKnownCoachResponse, planCoachTurn, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
+import { composeKnownCoachResponse, composeStudyPlanFallback, planCoachTurn, routeCoachInput, type CoachBrainAnswer } from '@/lib/server/mandarin-coach-brain';
 import { buildTeacherSkillSystem, emptyStudentSessionMemory, MANDARIN_TEACHER_SKILL_VERSION, type StudentSessionMemory } from '@/lib/server/mandarin-teacher-skill';
 import {
   buildMiniCourse, detectOccupationKey, flattenMiniCourse, looksLikeAttempt, matchesTarget, miniCourseAnswer, miniCourseOutline,
-  type MiniCourseState,
+  occupationKeyFromMemory, occupationLabel, type OccupationKey, type MiniCourseState,
 } from '@/lib/server/mandarin-mini-course';
 
 const FAST_MODEL = process.env.FAST_MODEL || 'google/gemini-2.5-flash-lite';
@@ -21,17 +21,13 @@ const SESSION_MEMORY_MAX = 1000;
 
 function extractSessionMemoryUpdate(message: string, currentLessonId: string): Partial<StudentSessionMemory> {
   const update: Partial<StudentSessionMemory> = {};
-  const occupation =
-    /pabrik|factory|produksi|mesin|operator/i.test(message) ? 'pabrik/factory' :
-    /sales|penjualan|jualan|marketing|toko|pelanggan/i.test(message) ? 'sales' :
-    /admin|kantor|office|sekretaris|\bhr\b/i.test(message) ? 'admin/kantor' :
-    /gudang|logistik|ekspedisi|pengiriman|stok/i.test(message) ? 'gudang/logistik' :
-    /konstruksi|bangunan|proyek/i.test(message) ? 'konstruksi' :
-    /restoran|hotel|tamu|cafe|pelayan/i.test(message) ? 'hospitality' : null;
-  if (occupation) update.occupation = occupation;
-  const goalMatch = message.match(/(?:mau|ingin|pengin|bisa)\s+(?:bisa\s+)?(?:kerja|bekerja)\s+di\s+([^.,!?;]{2,60})/i);
-  if (goalMatch) update.goal = `kerja di ${goalMatch[1].trim()}`;
-  if (/belum bisa|pemula|zero|baru mulai|nggak bisa.{0,12}mandarin/i.test(message)) update.level = 'BEGINNER';
+  const occupationKey = detectOccupationKey(message);
+  if (occupationKey !== 'generic') update.occupation = `${occupationKey} (${occupationLabel(occupationKey)})`;
+  const workPlace = message.match(/(?:kerja|bekerja)\s+di\s+([^.,!?;]{2,50})/i);
+  if (workPlace) update.goal = `kerja di ${workPlace[1].trim()}`;
+  const purpose = message.match(/(?:supaya|agar|biar)\s+([^.!?;]{3,80})/i);
+  if (purpose) update.goal = `${update.goal ? `${update.goal} · ` : ''}supaya ${purpose[1].trim()}`;
+  if (/belum bisa|pemula|zero|baru mulai|nggak bisa.{0,12}mandarin|dari nol|dari awal/i.test(message)) update.level = 'BEGINNER';
   if (currentLessonId) update.currentLessonId = currentLessonId;
   return update;
 }
@@ -103,7 +99,31 @@ export function coachMiniCourseSnapshot(sessionId: string) {
 
 const START_COURSE = /^(?:(?:ayo|oke|ok|siap|ya|mau)\s+)?(?:mulai(?:i|kan)?|start)(?:\s+(?:pelajaran|belajar|kursus|kelas|sekarang|aja|dong|dari\s+awal|pertama|pelajaran\s+pertama|lesson\s*1))*[\s!.]*$|^pelajaran\s+pertama[\s!.]*$/i;
 const CONTINUE_COURSE = /^(?:lanjut(?:kan)?|next|terus(?:kan)?|continue|pelajaran\s+berikutnya|next\s+lesson)[\s!?.]*$/i;
-const COURSE_REQUEST = /kursus|rencana\s+belajar|rencana|study\s+plan|buatkan|program\s+belajar|belajar\s+dari\s+nol/i;
+/** 只有学生明确「要一份课程/学习计划」时才输出大纲。宽泛的 "buatkan" 不算。 */
+const COURSE_REQUEST = /kursus|rencana\s+belajar|study\s+plan|program\s+belajar|jadwal\s+belajar|belajar\s+dari\s+nol|buatkan\s+(?:saya\s+)?(?:kursus|rencana|program|jadwal)/i;
+/** 换职业信号：只有这些话出现时，才允许把已有课程切到新职业。 */
+const JOB_CHANGE = /(?:kerja|bekerja)\s+di|pindah|ganti|sekarang\s+(?:saya|aku)|mulai\s+kerja|saya\s+jadi/i;
+
+/**
+ * 学生一说出职业，就静默建好课程状态（不输出大纲）。
+ * 这样模型拿到的 courseFocus 直接对准该职业的首句，首轮就能开教。
+ */
+function ensureCareerCourse(sessionId: string, message: string): MiniCourseState | null {
+  const existing = readMiniCourse(sessionId);
+  const detected = detectOccupationKey(message);
+  if (existing) {
+    if (detected !== 'generic' && detected !== existing.key && JOB_CHANGE.test(message)) {
+      const switched: MiniCourseState = { key: detected, cursor: 0, updatedAt: Date.now() };
+      writeMiniCourse(sessionId, switched);
+      return switched;
+    }
+    return existing;
+  }
+  if (detected === 'generic') return null;
+  const state: MiniCourseState = { key: detected, cursor: 0, updatedAt: Date.now() };
+  writeMiniCourse(sessionId, state);
+  return state;
+}
 
 /**
  * 职业课程闭环（确定性，不调模型）：
@@ -124,10 +144,23 @@ function composeMiniCourseResponse(input: {
   if (asksForCourse) input.sessionMemory.courseRequested = true;
 
   const occupation = detectOccupationKey(message);
-  const occupationStated = occupation !== 'generic' && /(?:kerja|bekerja|admin|pabrik|gudang|sales|penjualan|restoran|hotel|kantor|magang|posisi|jabatan)/i.test(message);
+  const occupationStated = occupation !== 'generic';
 
-  // 1) 已有课程：开课 / 继续 / 纠错
+  // 1) 已有课程：明确要大纲 / 开课 / 继续 / 纠错
   if (state) {
+    if (input.phase === 'LIFECYCLE' && asksForCourse) {
+      const course = buildMiniCourse(state.key);
+      return {
+        answer: {
+          ...blankAnswer(),
+          answer: miniCourseOutline(course),
+          followUp: 'Mau mulai pelajaran pertama sekarang? Balas "mulai".',
+          summary: `Kursus 7 hari untuk ${course.label}.`,
+          teachingStrategy: 'MINI_COURSE_CREATED',
+        },
+        course: state,
+      };
+    }
     if (input.phase === 'PRACTICE') {
       if (asksForCourse || !looksLikeAttempt(message)) return null;
       const flat = flattenMiniCourse(buildMiniCourse(state.key));
@@ -183,9 +216,10 @@ function composeMiniCourseResponse(input: {
     return null;
   }
 
-  // 2) 还没有课程：说了职业 + 之前要过课程 → 直接生成 7 天课程
+  // 2) 还没有课程：学生「明确要课程」时才输出大纲。
+  //    只是说了职业 → 不出大纲，课程状态由 ensureCareerCourse 静默建好，首轮直接由模型开教。
   if (input.phase === 'PRACTICE') return null;
-  if (occupationStated && (input.sessionMemory.courseRequested || input.sessionMemory.goal)) {
+  if (occupationStated && asksForCourse) {
     const course = buildMiniCourse(occupation);
     const next: MiniCourseState = { key: occupation, cursor: 0, updatedAt: Date.now() };
     writeMiniCourse(input.sessionId, next);
@@ -374,7 +408,24 @@ function safeErrorDetails(error: unknown) {
   };
 }
 
-function safeTeachingFallback(plan: ReturnType<typeof routeCoachInput>, classification: ConversationClassification, summary: string): ConversationAnswer {
+function safeTeachingFallback(plan: ReturnType<typeof routeCoachInput>, classification: ConversationClassification, summary: string, courseState: MiniCourseState | null): ConversationAnswer {
+  // 模型彻底失败时的降级：
+  // 1) 职业课程刚建好（cursor=0）→ 直接教该职业第一句，无论学生消息是什么意图（不让首轮退化成"通用计划"或空提示）；
+  // 2) 其余学习计划类请求 → 一份最短计划；
+  // 3) 其他 → 一句安全提示。
+  if (courseState && courseState.cursor === 0) {
+    const reply = miniCourseAnswer(courseState, 'START');
+    return {
+      ...blankAnswer(), ...reply,
+      teachingStrategy: 'MINI_COURSE_START_FALLBACK',
+      rememberTarget: true,
+      targetChinese: reply.chinese, targetPinyin: reply.pinyin, targetMeaning: reply.indonesian,
+      skillGap: true,
+      skillGapReason: 'Teaching model unavailable — using the job course starter sentence.',
+    };
+  }
+  const studyPlan = composeStudyPlanFallback(plan);
+  if (studyPlan) return { ...studyPlan, summary: summary.slice(0, 280) };
   const target = classification.targetChinese || plan.targetChinese || '';
   return {
     answer: target
@@ -577,6 +628,8 @@ export async function answerCoachConversation(input: {
     brainPlan.learningIntents.includes('CORRECTION') ? brainPlan.targetChinese : null,
   );
   const continueContext = buildContinueContext(input.message, input.context);
+  // 职业一旦明确就静默建课（不输出大纲），保证下面模型的 courseFocus 直接对准职业首句。
+  ensureCareerCourse(input.sessionId, input.message);
   const miniCourse = composeMiniCourseResponse({ sessionId: input.sessionId, message: input.message, sessionMemory, phase: 'LIFECYCLE' });
   if (miniCourse) {
     const courseClassification: ConversationClassification = {
@@ -638,8 +691,8 @@ export async function answerCoachConversation(input: {
     courseLesson: input.context.courseLesson,
     currentExpression: input.context.currentExpression,
     currentSkill: input.context.currentSkill,
-    learningGoal: input.context.learningGoal,
-    userLevel: input.context.userLevel,
+    learningGoal: [sessionMemory.goal, input.context.learningGoal].filter(Boolean).join(' || ').slice(0, 300),
+    userLevel: sessionMemory.level || input.context.userLevel,
     masteryState: input.context.masteryState,
     recentMistakes: input.context.recentMistakes,
     reviewQueue: input.context.reviewQueue,
@@ -648,6 +701,7 @@ export async function answerCoachConversation(input: {
     recentConversationSummary: input.context.recentConversationSummary,
     sessionMemory,
     courseFocus,
+    occupation: occupationKeyFromMemory(sessionMemory.occupation),
   });
   const answerPrompt = JSON.stringify({
       classification,
@@ -709,7 +763,7 @@ export async function answerCoachConversation(input: {
       console.warn('[mandarin-coach-safe-fallback]', { repairModel: FAST_MODEL, ...safeErrorDetails(repairError) });
       return {
         classification,
-        answer: safeTeachingFallback(brainPlan, classification, input.context.recentConversationSummary),
+        answer: safeTeachingFallback(brainPlan, classification, input.context.recentConversationSummary, readMiniCourse(input.sessionId)),
         usage: mergeUsage(answerUsage, repairUsage),
       };
     }

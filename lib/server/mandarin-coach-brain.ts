@@ -47,7 +47,7 @@ export type UnifiedCoachTurnPlan = {
 };
 
 const OFF_TOPIC = /bitcoin|比特币|saham|股票|cuaca|天气|weather|game|\bgim\b|游戏|seleb|artis|明星|coding|programming|写程序|matematika|数学|berita hari ini|政治/i;
-const WORKPLACE = /bos|老板|atasan|hr\b|interview|面试|pabrik|工厂|gudang|仓库|供应商|supplier|客户|kantor|办公室|logistik|produksi|库存|发货|mesin|机器|文件|辛苦了/i;
+const WORKPLACE = /bos|老板|atasan|hr\b|interview|面试|pabrik|工厂|gudang|仓库|供应商|supplier|客户|kantor|办公室|logistik|produksi|库存|发货|mesin|机器|文件|辛苦了|restoran|resto|餐厅|服务员|pelayan|waitress|tamu|melayani|menu|点餐|hotel|kafe|cafe/i;
 const PRONUNCIATION = /怎么读|baca|ucap|pelafalan|pengucapan|tone|nada|声调|pelan|perlahan|慢一点|慢点/i;
 const MEANING = /什么意思|apa artinya|artinya apa|maksudnya|berarti apa/i;
 const CORRECTION = /bener ga|benar (?:nggak|tidak)|对吗|betul ga|salah ga/i;
@@ -191,23 +191,9 @@ export function composeKnownCoachResponse(plan: CoachBrainPlan, memory: UserInit
       teachingStrategy: 'CONTINUE_LESSON_DONE',
     });
   }
-  if (plan.learningIntents.includes('STUDY_PLANNING')) {
-    const careerCompany = /(?:\bpt\b|perusahaan|公司).{0,12}(?:china|tiongkok|cina)|中国公司/i.test(plan.normalizedInput);
-    if (careerCompany) return answer({
-      answer: 'Siap, saya buatkan rencananya 🎯 Minggu 1: sapaan & perkenalan diri (你好 / 我叫…). Minggu 2-3: bahasa kerja dasar (pabrik, gudang, kirim barang). Minggu 4: percakapan interview. Syarat kerja di perusahaan Tiongkok umumnya: bisa perkenalan diri, percakapan dasar (setara HSK 2-3), dan istilah kerja bidangmu.',
-      chinese: '我想去中国公司工作。', pinyin: 'wǒ xiǎng qù zhōngguó gōngsī gōngzuò.', indonesian: 'Saya mau kerja di perusahaan Tiongkok.',
-      followUp: 'Pekerjaanmu nanti apa? Pabrik, gudang, kantor, atau lainnya?',
-      teachingStrategy: 'STUDY_PLANNING_CAREER_PATH', rememberTarget: true,
-      targetChinese: '我想去中国公司工作', targetPinyin: 'wǒ xiǎng qù zhōngguó gōngsī gōngzuò', targetMeaning: 'Saya mau kerja di perusahaan Tiongkok',
-    });
-    return answer({
-      answer: 'Siap! Rencana dasar: Minggu 1 sapaan & perkenalan diri, Minggu 2-3 kosakata & kalimat kerja harian, Minggu 4 percakapan singkat. Jalur lengkapnya ada di kursus 30 hari di aplikasi.',
-      chinese: '我想学中文。', pinyin: 'wǒ xiǎng xué zhōngwén.', indonesian: 'Saya mau belajar Mandarin.',
-      followUp: 'Target utamamu apa? Kerja di perusahaan Tiongkok, atau kebutuhan lain?',
-      teachingStrategy: 'STUDY_PLANNING_BASELINE', rememberTarget: true,
-      targetChinese: '我想学中文', targetPinyin: 'wǒ xiǎng xué zhōngwén', targetMeaning: 'Saya mau belajar Mandarin',
-    });
-  }
+  // 注意：学习计划 / 职业规划不再走确定性文本。
+  // 首轮必须由教师模型依据职业场景直接开教（规则文本会把首轮变成"通用四周计划 + 我想学中文"）。
+  // 仅在模型彻底失败时，才用 composeStudyPlanFallback 兜底。
   if (plan.learningIntents.includes('COMMUNICATION_REQUEST')) {
     if (/supir|sopir|driver|司机/i.test(plan.normalizedInput) && /(?:太累|累|capek|cape)/i.test(plan.normalizedInput)) return answer({
       answer: 'Kalau kamu ingin minta tolong pengantar hari ini, bilang begini:',
@@ -250,4 +236,27 @@ export function composeKnownCoachResponse(plan: CoachBrainPlan, memory: UserInit
   if (/interview/.test(message) && /3 tahun|tiga tahun/.test(message)) return answer({ answer: 'Saat interview kerja, kamu bisa bilang:', chinese: '我有三年工作经验。', pinyin: 'wǒ yǒu sān nián gōng zuò jīng yàn', indonesian: 'Saya punya pengalaman kerja tiga tahun.', followUp: 'Coba ucapkan per bagian: 我有 · 三年 · 工作经验。', teachingStrategy: 'WORKPLACE_INTERVIEW', rememberTarget: true, targetChinese: '我有三年工作经验。', targetPinyin: 'wǒ yǒu sān nián gōng zuò jīng yàn', targetMeaning: 'Saya punya pengalaman kerja tiga tahun.' });
   if (/老板.*明天/.test(plan.normalizedInput)) return answer({ answer: 'Kalau kamu ingin bertanya sopan kepada bos, bisa bilang:', chinese: '老板，明天发货，可以吗？', pinyin: 'lǎo bǎn, míng tiān fā huò, kě yǐ ma?', indonesian: 'Bos, kirim barang besok, boleh?', followUp: 'Kamu boleh mengganti 发货 sesuai pekerjaanmu.', teachingStrategy: 'WORKPLACE_SENTENCE_COMPLETION' });
   return null;
+}
+
+/**
+ * 学习计划兜底（仅在模型调用失败、拿不到任何教学回答时使用）。
+ * 正常路径必须由教师模型回答；这里只保证"降级时不会白屏、也不会把学生劝退"。
+ */
+export function composeStudyPlanFallback(plan: CoachBrainPlan): CoachBrainAnswer | null {
+  if (!plan.learningIntents.includes('STUDY_PLANNING')) return null;
+  const careerCompany = /(?:\bpt\b|perusahaan|公司).{0,12}(?:china|tiongkok|cina)|中国公司/i.test(plan.normalizedInput);
+  if (careerCompany) return answer({
+    answer: 'Siap, saya bantu. Rencana singkat: Minggu 1 sapaan & perkenalan diri, Minggu 2-3 kalimat kerja sesuai bidangmu, Minggu 4 percakapan interview. Syarat kerja di perusahaan Tiongkok umumnya: bisa perkenalan diri, percakapan dasar (setara HSK 2-3), dan istilah kerja bidangmu.',
+    chinese: '我想去中国公司工作。', pinyin: 'wǒ xiǎng qù zhōngguó gōngsī gōngzuò.', indonesian: 'Saya mau kerja di perusahaan Tiongkok.',
+    followUp: 'Pekerjaanmu nanti apa? Restoran, gudang, pabrik, kantor, atau lainnya?',
+    teachingStrategy: 'STUDY_PLANNING_FALLBACK', rememberTarget: true,
+    targetChinese: '我想去中国公司工作', targetPinyin: 'wǒ xiǎng qù zhōngguó gōngsī gōngzuò', targetMeaning: 'Saya mau kerja di perusahaan Tiongkok',
+  });
+  return answer({
+    answer: 'Siap! Rencana singkat: Minggu 1 sapaan & perkenalan diri, Minggu 2-3 kalimat kerja harian, Minggu 4 percakapan singkat.',
+    chinese: '我想学中文。', pinyin: 'wǒ xiǎng xué zhōngwén.', indonesian: 'Saya mau belajar Mandarin.',
+    followUp: 'Kamu kerja atau mau kerja di bidang apa? Biar saya pilih kalimat yang paling kamu pakai.',
+    teachingStrategy: 'STUDY_PLANNING_FALLBACK', rememberTarget: true,
+    targetChinese: '我想学中文', targetPinyin: 'wǒ xiǎng xué zhōngwén', targetMeaning: 'Saya mau belajar Mandarin',
+  });
 }

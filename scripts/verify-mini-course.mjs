@@ -47,44 +47,61 @@ function check(name, pass, detail) {
 }
 
 async function main() {
+  // 0. 用户实测发现的首轮 bug：餐厅服务员自我介绍 → 必须直接进入餐厅场景教学，不得输出通用四周计划
+  const sidResto = `coach-mini-resto-${RUN}`;
+  const t0 = await send('Saya belum bisa bahasa Mandarin. Saya kerja di restoran, sering melayani tamu China. Saya mau belajar Mandarin supaya bisa melayani mereka dengan baik. Bisa ajarin saya dari nol?', sidResto);
+  check('T0 餐厅首轮：直接开教迎宾句（非通用计划）', t0.status === 200 && t0.chinese === '欢迎光临' && !/Minggu 1|4 minggu|rencana dasar/i.test(t0.answer || ''), `${t0.strategy} · ${t0.chinese} · ${t0.pinyin}`);
+  const t0b = await send('lanjut', sidResto);
+  check('T0b 餐厅 lanjut 进入下一句', t0b.status === 200 && t0b.strategy === 'MINI_COURSE_NEXT' && t0b.chinese === '几位？', `${t0b.chinese} · ${t0b.pinyin}`);
+
   // 1. 目标 + 要课程 + 没说职业 → 先问岗位，不硬塞课程
   const t1 = await send('Saya pemula, mau kerja di perusahaan China. Bisa buatkan kursus Mandarin?');
   check('T1 理解目标并询问岗位', t1.status === 200 && /pekerjaanmu|pekerjaan|posisi|jabatan|apa\?/i.test(t1.followUp || ''), t1.followUp);
 
-  // 2. 说出职业 → 生成 7 天课程
+  // 2. 说出职业 → 课程静默建好，立刻开教该职业第一句（本地降级也必须教，不允许空提示）
   const t2 = await send('Saya mau kerja sebagai admin.');
-  const dayLines = (t2.answer || '').split('\n').filter((line) => /^Hari \d/.test(line));
-  check('T2 生成 7 天职业课程', t2.status === 200 && dayLines.length === 7 && /Admin/i.test(t2.answer || ''), `${dayLines.length} 天 · ${t2.chinese || 'n/a'}`);
-  check('T2 课程含 admin 岗位内容', /文件|会议|报告/.test(t2.answer || ''), (t2.answer || '').split('\n').slice(2, 4).join(' | '));
+  const teachingLike = ['MINI_COURSE_START', 'MINI_COURSE_START_FALLBACK', 'MINI_COURSE_CREATED'].includes(t2.strategy) || /Hari \d/i.test(t2.answer || '');
+  check('T2 说出职业即开教 admin 第一句', t2.status === 200 && teachingLike && t2.chinese === '我整理文件' && /文件/.test(t2.answer || ''), `${t2.strategy} · ${t2.chinese} · ${t2.pinyin}`);
 
-  // 3. 开第一课
+  // 3. 开第一课（显式 mulai 仍可用）
   const t3 = await send('Mulai pelajaran pertama.');
-  check('T3 开始第一课', t3.status === 200 && t3.chinese === '你好' && t3.strategy === 'MINI_COURSE_START', `${t3.chinese} · ${t3.pinyin}`);
+  check('T3 开始第一课', t3.status === 200 && t3.chinese === '我整理文件' && t3.strategy === 'MINI_COURSE_START', `${t3.chinese} · ${t3.pinyin}`);
 
   // 4. 答错 → 指出并重试
   const t4 = await send('zai jian');
-  check('T4 答错被纠正（zai jian）', t4.status === 200 && t4.strategy === 'MINI_COURSE_CORRECT' && /belum tepat/i.test(t4.answer || '') && t4.chinese === '你好', t4.answer);
+  check('T4 答错被纠正（zai jian）', t4.status === 200 && t4.strategy === 'MINI_COURSE_CORRECT' && /belum tepat/i.test(t4.answer || '') && t4.chinese === '我整理文件', t4.answer);
 
   // 5. lanjut → 课内下一句
   const t5 = await send('lanjut');
-  check('T5 lanjut 进入下一句', t5.status === 200 && t5.strategy === 'MINI_COURSE_NEXT' && t5.chinese === '我叫…', `${t5.chinese} · ${t5.pinyin}`);
+  check('T5 lanjut 进入下一句', t5.status === 200 && t5.strategy === 'MINI_COURSE_NEXT' && t5.chinese === '会议几点开始？', `${t5.chinese} · ${t5.pinyin}`);
 
   // 6. 模拟刷新页面（新客户端、同 sessionId、只带历史摘要）→ 上下文仍能恢复
   const t6 = await send('lanjut');
-  check('T6 刷新后课程上下文恢复', t6.status === 200 && t6.strategy === 'MINI_COURSE_NEXT' && t6.chinese === '我是印尼人', `${t6.chinese} · ${t6.pinyin}`);
+  check('T6 刷新后课程上下文恢复', t6.status === 200 && t6.strategy === 'MINI_COURSE_NEXT' && t6.chinese === '报告做好了', `${t6.chinese} · ${t6.pinyin}`);
 
-  // 7. 答对 → 通过并提示继续
+  // 7. 答非当前目标 → 纠错并引导重试（不误判成答对）
   const t7 = await send('我是印尼人');
-  check('T7 答对确认并推进', t7.status === 200 && t7.strategy === 'MINI_COURSE_PASS', t7.answer);
+  check('T7 答非目标被纠正', t7.status === 200 && t7.strategy === 'MINI_COURSE_CORRECT' && /belum tepat/i.test(t7.answer || '') && t7.chinese === '报告做好了', t7.answer);
 
   // 7b. 无服务端记忆（等价重启/换实例）：只靠客户端带回的游标也能继续
   const t7b = await send('lanjut', `coach-mini-seed-${RUN}`, { key: 'admin', cursor: 2 });
-  check('T7b 无进程记忆时按游标恢复', t7b.status === 200 && t7b.strategy === 'MINI_COURSE_NEXT' && t7b.chinese === '早上好', `${t7b.chinese} · ${t7b.pinyin}`);
+  check('T7b 无进程记忆时按游标恢复', t7b.status === 200 && t7b.strategy === 'MINI_COURSE_NEXT' && t7b.chinese === '我发给您', `${t7b.chinese} · ${t7b.pinyin}`);
 
   // 8. sopir 场景回归（原确定性路径未被破坏）
   const sidSopir = `coach-mini-sopir-${RUN}`;
   const s1 = await send('Saya capek, bagaimana bilang ke sopir supaya dia yang nyetir?', sidSopir);
   check('T8 sopir 场景仍可用', s1.status === 200 && /开车/.test(s1.chinese || ''), `${s1.chinese} · ${s1.answer?.slice(0, 40)}`);
+
+  // 9. 学生课内自由提问不被练习判断抢答（修复回归的关键场景）
+  const sidAsk = `coach-mini-ask-${RUN}`;
+  await send('Saya mau kerja di gudang.', sidAsk);
+  const t9 = await send('xie xie itu artinya apa dan bagaimana cara bacanya?', sidAsk);
+  check('T9 课内自由提问不被当成练习', t9.status === 200 && t9.strategy !== 'MINI_COURSE_CORRECT', t9.strategy);
+
+  // 10. 跑题请求礼貌拒绝（不是通用聊天机器人）
+  const sidOff = `coach-mini-off-${RUN}`;
+  const t10 = await send('Eh, jadi kamu suka nonton bola? Tim favoritmu siapa?', sidOff);
+  check('T10 跑题礼貌拒绝', t10.status === 200 && t10.strategy !== 'DIRECT', t10.strategy);
 
   const passed = checks.filter((item) => item.pass).length;
   const summary = { run: RUN, base: BASE, sessionId: SID, passed, total: checks.length, checks, turns };
