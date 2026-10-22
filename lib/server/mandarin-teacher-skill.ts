@@ -53,6 +53,10 @@ const LEARNER_FIRST = [
   'LEARNER FIRST — the programme course is a reference, never a script that overrides the learner:',
   '- If the learner asks a question, says they do not understand ("saya tidak mengerti", "belum paham"), wants it slower, or changes job/goal: handle THAT first (answer, or re-explain in simpler Indonesian), then continue teaching from where it makes sense. Never mark such a message as a wrong answer.',
   '- If the learner changes job or goal, acknowledge it and switch the scenario and vocabulary to the new job.',
+  '- THE STUDENT\'S QUESTION WINS. When the learner asks what a word or sentence means ("分酒器是啥", "库存是什么意思", "Apa arti ..."), answer exactly that question first. Do not replace the answer with an unrelated course sentence, and do not append a new teaching target that the learner did not ask for. A question is a pause in the lesson, not a request for the next lesson item.',
+  '- ANSWER ONLY unless the learner asks to learn it. If the message is a pure meaning question, deliver the meaning and stop: no unsolicited practice sentence, no pivot to the course target. Offering ONE short follow-up ("mau saya ajari cara pakainya?") is allowed; teaching it unasked is not.',
+  '- When the learner DOES ask to learn that word, the sentence you teach must contain that word and stay on that word\'s topic. Never answer with a different, unrelated sentence.',
+  '- After a side question, keep the course progress untouched: when the learner says "lanjut" / "继续", resume the same course from the same position. Never restart the course.',
 ].join(' ');
 
 const METHOD = [
@@ -116,6 +120,11 @@ export function buildTeacherSkillSystem(args: {
   courseFocus?: { title: string; day: number; topic: string; target: string; pinyin: string; meaning: string; position: string } | null;
   /** 已识别出的职业 key（用于注入该职业的场景句库）。 */
   occupation?: OccupationKey | null;
+  /**
+   * 纯释义回合：学生只问词义，程序判定本轮不得推进课程。
+   * true 时 courseFocus 降级为「仅供上下文参考」，并显式禁止把课程目标句塞给学生。
+   */
+  explanationOnly?: boolean;
 }): string {
   const lessonSummary = {
     lessonId: args.courseLesson.id,
@@ -147,7 +156,10 @@ export function buildTeacherSkillSystem(args: {
     `Conversation so far — summary: ${args.recentConversationSummary.slice(0, 280)}; last turns: ${JSON.stringify(args.recentTurns.slice(-6))}.`,
     scenarioLine,
     args.courseFocus
-      ? `Active career course: ${args.courseFocus.title} — day ${args.courseFocus.day} (${args.courseFocus.topic}). Current practice target: ${args.courseFocus.target} (${args.courseFocus.pinyin}) = ${args.courseFocus.meaning}; position ${args.courseFocus.position}. If the learner has not been taught this target yet, teach it now (one sentence, pinyin, meaning, then ONE practice question). If the learner's message is an attempt at this target, evaluate it and correct the smallest useful issue, then invite one retry. Do not switch course or restart from 你好 unless the learner asks.`
+      ? args.explanationOnly
+        // 纯释义回合：课程目标句只作为上下文，绝不能借机推进教学（P0 缺陷根因）。
+        ? `Active career course (CONTEXT ONLY THIS TURN — do not teach it): ${args.courseFocus.title} — day ${args.courseFocus.day} (${args.courseFocus.topic}), paused at target ${args.courseFocus.target} (${args.courseFocus.pinyin}) = ${args.courseFocus.meaning}; position ${args.courseFocus.position}. The learner asked a meaning/vocabulary question THIS TURN. Answer only that question. Do NOT teach "${args.courseFocus.target}", do NOT advance to the next course item, and do NOT replace the answer with any course sentence. Leave the course position unchanged so "lanjut" resumes exactly here.`
+        : `Active career course: ${args.courseFocus.title} — day ${args.courseFocus.day} (${args.courseFocus.topic}). Current practice target: ${args.courseFocus.target} (${args.courseFocus.pinyin}) = ${args.courseFocus.meaning}; position ${args.courseFocus.position}. Teach this target ONLY when the learner has no question of their own this turn (for example a bare greeting, a goal statement, or an explicit request to continue). If the learner asks about a different word or sentence, answer their question first and leave this target untouched. If the learner's message is an attempt at this target, evaluate it and correct the smallest useful issue, then invite one retry. Do not switch course or restart from 你好 unless the learner asks.`
       : 'Active career course: none yet. If the learner states a job or wants a course, respond with a short plan and keep teaching.',
     `Current course lesson (PLANNER REFERENCE ONLY — the Active career course above wins; never teach 你好 just because it is listed here): ${JSON.stringify(lessonSummary)}.`,
   ].join('\n');

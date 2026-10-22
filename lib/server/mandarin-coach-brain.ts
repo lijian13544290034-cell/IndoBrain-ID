@@ -14,6 +14,12 @@ export type CoachBrainPlan = {
   offTopic: boolean;
   slowSpeech: boolean;
   confidence: number;
+  /**
+   * 纯释义请求：学生只是想知道某个词/句「是什么、啥意思、怎么读」，
+   * 没有要求「教我怎么说 / 我想学这句 / 给我例句」。
+   * 这一轮必须只解释，不能顺手把课程目标句塞给学生（P0 缺陷修复）。
+   */
+  explanationOnly: boolean;
 };
 
 export type CoachWordPart = {
@@ -57,7 +63,7 @@ export type UnifiedCoachTurnPlan = {
 const OFF_TOPIC = /bitcoin|比特币|saham|股票|cuaca|天气|weather|game|\bgim\b|游戏|seleb|artis|明星|coding|programming|写程序|matematika|数学|berita hari ini|政治/i;
 const WORKPLACE = /bos|老板|atasan|hr\b|interview|面试|pabrik|工厂|gudang|仓库|供应商|supplier|客户|kantor|办公室|logistik|produksi|库存|发货|mesin|机器|文件|辛苦了|restoran|resto|餐厅|服务员|pelayan|waitress|tamu|melayani|menu|点餐|hotel|kafe|cafe/i;
 const PRONUNCIATION = /怎么读|baca|ucap|pelafalan|pengucapan|tone|nada|声调|pelan|perlahan|慢一点|慢点/i;
-const MEANING = /什么意思|apa artinya|artinya apa|maksudnya|berarti apa/i;
+const MEANING = /什么意思|apa artinya|artinya apa|maksudnya|berarti apa|是啥|啥意思|是啥意思|是什么意思|是什么|啥东西|apa itu|itu apa|arti\s+dari|apa\s+arti|arti\s+nya|apa\s+maksud/i;
 const CORRECTION = /bener ga|benar (?:nggak|tidak)|对吗|betul ga|salah ga/i;
 const EXAMPLE = /contoh|例子|换一个|lain/i;
 const REVIEW = /review|复习|ulang(?:i)? kata|masih ingat/i;
@@ -66,6 +72,12 @@ const VOCABULARY = /mandarin apa|bahasa mandarin apa|中文怎么说|gimana ngom
 const GRAMMAR = /grammar|tata bahasa|语法|kenapa.*(?:pakai|用)/i;
 const STUDY_PLANNING = /(?:buat(?:kan)?(?:\s+\S+){0,3}\s*(?:kursus|les|rencana|plan)|rencana\s+belajar|study\s+plan|kursus\s+(?:mandarin|bahasa)|mau\s+(?:bisa\s+)?(?:kerja|bekerja)\s+di|kerja\s+(?:di\s+)?(?:\bpt\b|perusahaan)|perusahaan\s+(?:china|tiongkok|cina)|中国公司|求职|syarat\s+(?:kerja|melamar|lamar)|\b(?:orang|saya|aku)\s+pemulai\b|\bpemula\b|belum\s+(?:pernah|bisa)\s+(?:mandarin|bahasa))/i;
 const COMMUNICATION_REQUEST = /(?:怎么(?:和|跟|对).{0,10}说|应该怎么(?:跟|和|对)|怎么讲|bilang\s+(?:ke|pada|untuk|sama)|ngomong\s+(?:ke|sama|dengan)|cara\s+(?:bilang|ngomong|tanya|nyuruh|suruh|minta)|kasih\s+tahu|nyuruh|suruh\s+(?:dia|diaorang|supir|driver)|gimana\s+(?:cara|kalau)\s+(?:bilang|kata|tanya|nyuruh|suruh)|\bsupir\b|\bsopir\b|\bdriver\b|司机)/i;
+
+/**
+ * 「要我教你 / 我想学这句」——出现这些才允许把目标推进为教学。
+ * 只是问意思（分酒器是啥）不在此列。
+ */
+const LEARN_REQUEST = /(?:我想学|我想知道怎么|教我|教我怎么说|怎么用|怎么读|怎么说|怎么讲|cara\s+(?:pakai|mengucapkan|bilang|ngomong)|mau\s+belajar|mau\s+belajar\s+(?:cara|ngomong)|ajari|belajar\s+(?:cara|kalimat)|contoh\s+(?:kalimat|penggunaan)|例句|用这个造句|帮我记|记一下)/i;
 
 const PINYIN_TARGETS: Record<string, string> = {
   xiexie: '谢谢', 'xie xie': '谢谢', 'wo e le': '我饿了', 'ni hao': '你好', feichang: '非常',
@@ -87,12 +99,25 @@ function detectLanguage(message: string): CoachDetectedLanguage {
   return hasChinese && hasLatin ? 'MIXED' : hasChinese ? 'CHINESE' : 'INDONESIAN';
 }
 
+/** 「是啥 / 啥意思 / 是什么意思 / 是什么」这类疑问尾巴不属于被查的词，必须剥掉。 */
+const MEANING_TAIL = /(?:是啥意思|是啥|是什么|啥意思|什么意思|啥|是|什么意思啊|什么意思呢)$/;
+/** 「我想学习怎么介绍分酒器」里的动词框架：真正要查的是最后的名词。 */
+const LEARN_FRAME_HEAD = /^(?:我|saya|aku)?\s*(?:想|要|mau|ingin|mau\s+belajar)?\s*(?:学习|学|belajar)?\s*(?:怎么|怎样|如何|gimana|bagaimana|cara)?\s*(?:介绍|说明|jelaskan|pakai|用|说|读|写)?/;
+
 function extractTarget(message: string) {
   const chunks = message.match(/[\u3400-\u9FFF]+/g);
   if (chunks?.length) {
     const ignored = new Set(['什么意思', '怎么读', '怎么说', '老板']);
     const useful = chunks.find((chunk) => !ignored.has(chunk)) || chunks[0];
-    return useful.replace(/什么意思|怎么读|怎么说/g, '') || null;
+    const stripped = useful
+      .replace(/什么意思|怎么读|怎么说|怎么念|怎样读|如何读|怎么发音/g, '')
+      .replace(MEANING_TAIL, '')
+      .trim();
+    if (!stripped) return null;
+    // 「我想学习怎么介绍分酒器」→ 剥掉学习框架，只留「分酒器」；
+    // 剥完不足 2 字（如只剩单字动词）就保留原串，避免把目标词切碎。
+    const withoutFrame = stripped.replace(LEARN_FRAME_HEAD, '').trim();
+    return withoutFrame.length >= 2 ? withoutFrame : stripped;
   }
   const latin = message.toLowerCase().replace(/[?.!,]/g, ' ');
   for (const [pinyin, chinese] of Object.entries(PINYIN_TARGETS)) if (latin.includes(pinyin)) return chinese;
@@ -134,9 +159,18 @@ export function routeCoachInput(input: string): CoachBrainPlan {
   }
   const intents = [...learningIntents];
   const modelTier = intents.some((intent) => intent === 'ROLEPLAY' || intent === 'GRAMMAR' || intent === 'WORKPLACE' || intent === 'CORRECTION' || intent === 'STUDY_PLANNING' || intent === 'COMMUNICATION_REQUEST') ? 'SMART' : 'FAST';
+  const targetChinese = extractTarget(normalizedInput);
+  // 纯释义：问了意思、且没有明确「教我/造句/怎么用」的诉求。
+  // 没有可解释的目标词时不算（例如泛泛的问句），交给模型自由判断。
+  const explanationOnly = Boolean(targetChinese)
+    && MEANING.test(normalizedInput)
+    && !LEARN_REQUEST.test(normalizedInput)
+    && !offTopic;
   return {
-    normalizedInput, inputLanguage, learningIntents: intents, skillIds: skillIdsFor(intents), targetChinese: extractTarget(normalizedInput),
-    modelTier, offTopic, slowSpeech: /pelan|perlahan|lebih lambat|慢一点|慢点/i.test(normalizedInput), confidence: intents[0] === 'CONVERSATION' ? 0.45 : 0.92,
+    normalizedInput, inputLanguage, learningIntents: intents, skillIds: skillIdsFor(intents), targetChinese,
+    modelTier, offTopic, slowSpeech: /pelan|perlahan|lebih lambat|慢一点|慢点/i.test(normalizedInput),
+    confidence: intents[0] === 'CONVERSATION' ? 0.45 : 0.92,
+    explanationOnly,
   };
 }
 

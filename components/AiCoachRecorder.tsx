@@ -54,6 +54,7 @@ export default function AiCoachRecorder({ disabled, busy, onRecorded, idleLabel 
       {busy ? busyLabel : recording ? '■ Berhenti & kirim' : idleLabel}
     </button>
     {recording ? <p role="status" className="mt-2 text-center text-xs font-semibold text-rose-700">Merekam… ucapkan kalimat Mandarin, lalu tekan berhenti.</p> : null}
+    {!recording && !busy && !error ? <p className="mt-2 text-center text-xs text-[var(--ib-text-muted)]">Cara pakai: tekan tombol 🎙️, ucapkan dalam Mandarin, lalu tekan berhenti — AI akan memeriksa jawabanmu.</p> : null}
     {error ? <p role="alert" className="mt-2 text-sm text-rose-700">{error}</p> : null}
   </div>;
 }

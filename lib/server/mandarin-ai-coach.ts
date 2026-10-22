@@ -99,7 +99,7 @@ export function coachMiniCourseSnapshot(sessionId: string) {
 }
 
 const START_COURSE = /^(?:(?:ayo|oke|ok|siap|ya|mau)\s+)?(?:mulai(?:i|kan)?|start)(?:\s+(?:pelajaran|belajar|kursus|kelas|sekarang|aja|dong|dari\s+awal|pertama|pelajaran\s+pertama|lesson\s*1))*[\s!.]*$|^pelajaran\s+pertama[\s!.]*$/i;
-const CONTINUE_COURSE = /^(?:lanjut(?:kan)?|next|terus(?:kan)?|continue|pelajaran\s+berikutnya|next\s+lesson)[\s!?.]*$/i;
+const CONTINUE_COURSE = /^(?:lanjut(?:kan)?|next|terus(?:kan)?|continue|pelajaran\s+berikutnya|next\s+lesson|继续(?:刚才的)?(?:课程|课|学习|上课)?|接着(?:刚才的)?(?:课|课程|来|上)|回到(?:刚才的)?(?:课程|课)|我们继续|kembali\s+ke\s+(?:pelajaran|materi)|lanjut\s+(?:pelajaran|materi|belajar))[\s!?.。！？]*$/i;
 /** 只有学生明确「要一份课程/学习计划」时才输出大纲。宽泛的 "buatkan" 不算。 */
 const COURSE_REQUEST = /kursus|rencana\s+belajar|study\s+plan|program\s+belajar|jadwal\s+belajar|belajar\s+dari\s+nol|buatkan\s+(?:saya\s+)?(?:kursus|rencana|program|jadwal)/i;
 /** 换职业信号：只有这些话出现时，才允许把已有课程切到新职业。 */
@@ -595,8 +595,8 @@ export async function evaluateCoachAttempt(input: {
 }
 
 /** 极简"继续上课"上下文：学生说 lanjut/mulai 时，取当前课的下一句（或第一句）作为确定性续教内容。 */
-function buildContinueContext(message: string, context: { courseLesson: MandarinCoachCurriculumLesson; currentExpression: ExpressionId | null }): { lessonId: string; lessonTitle: string; next: { chinese: string; pinyin: string; indonesian: string } | null } | null {
-  if (!/^(?:lanjut(?:kan)?|continue|next(?:\s+lesson)?|terus(?:kan)?|pelajaran berikutnya|lanjut belajar|mulai(?:\s+(?:pelajaran|belajar|aja|dong))?|ayo\s+mulai)[\s!?.]*$/i.test(message.trim())) return null;
+export function buildContinueContext(message: string, context: { courseLesson: MandarinCoachCurriculumLesson; currentExpression: ExpressionId | null }): { lessonId: string; lessonTitle: string; next: { chinese: string; pinyin: string; indonesian: string } | null } | null {
+  if (!/^(?:lanjut(?:kan)?|continue|next(?:\s+lesson)?|terus(?:kan)?|pelajaran berikutnya|lanjut belajar|mulai(?:\s+(?:pelajaran|belajar|aja|dong))?|ayo\s+mulai|继续(?:刚才的)?(?:课程|课|学习|上课)?|接着(?:刚才的)?(?:课|课程|来|上)|回到(?:刚才的)?(?:课程|课)|我们继续|kembali\s+ke\s+(?:pelajaran|materi)|lanjut\s+(?:pelajaran|materi|belajar))[\s!?.。！？]*$/i.test(message.trim())) return null;
   const lesson = context.courseLesson;
   if (!lesson?.expressions?.length) return { lessonId: lesson?.id ?? '', lessonTitle: lesson?.title ?? '', next: null };
   const index = context.currentExpression ? lesson.expressions.findIndex((item) => item.id === context.currentExpression) : -1;
@@ -646,6 +646,7 @@ export async function answerCoachConversation(input: {
       'A request to complete an unrelated full task stays OFF_TOPIC even when the learner asks for that task in Chinese or calls it language practice.',
       'Select one or more of the ten available skill IDs (STUDY_PLANNING for study-plan/career-goal requests, COMMUNICATION_REQUEST for what-should-I-say-to-someone requests). Use SMART only for nuanced grammar, correction, workplace pragmatics, roleplay, planning or communication requests.',
       'Never reject an in-scope word merely because it is absent from the current course.',
+      'A pure meaning question ("分酒器是啥", "库存是什么意思", "Apa arti X") is MEANING/VOCABULARY, not a request to continue the course. Do not infer a request to teach a different sentence from it.',
       'Return only the structured object and preserve a concise normalizedInput.',
     ].join(' '),
     prompt: JSON.stringify({ learnerInput: input.message.slice(0, 500), deterministicHints: brainPlan }),
@@ -737,6 +738,7 @@ export async function answerCoachConversation(input: {
     sessionMemory,
     courseFocus,
     occupation: occupationKeyFromMemory(sessionMemory.occupation),
+    explanationOnly: brainPlan.explanationOnly,
   });
   const answerPrompt = JSON.stringify({
       classification,
