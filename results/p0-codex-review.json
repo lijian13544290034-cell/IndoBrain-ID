@@ -1,0 +1,38 @@
+{
+  "mode": "local",
+  "deploy": null,
+  "passed": 6,
+  "total": 6,
+  "checks": [
+    {
+      "name": "P0-1 短中文问句不被判为练习，跟读仍判为练习",
+      "pass": true,
+      "detail": "13 例全对"
+    },
+    {
+      "name": "P0-2 自由提问不被评分、不记失败、不推阶段",
+      "pass": true,
+      "detail": "分酒器是啥 / 那个呢 / 这个怎么读"
+    },
+    {
+      "name": "P0-2b 提问回复走 ANSWER_THEN_RESUME",
+      "pass": true,
+      "detail": "ANSWER_THEN_RESUME"
+    },
+    {
+      "name": "P0-3 路由不再硬编码目标「我明天上班」",
+      "pass": true,
+      "detail": "targetChinese 来自引擎"
+    },
+    {
+      "name": "P0-4 显示目标与评分目标一致（TRANSFER 阶段=我今天上班）",
+      "pass": true,
+      "detail": "{\"step\":\"TRANSFER_COMPLETE\",\"shownTarget\":\"我今天上班\",\"outcome\":\"INDEPENDENT_SUCCESS\",\"stage\":\"COMPLETE\"}"
+    },
+    {
+      "name": "P0-5 提问不重置课程/不切换教学目标",
+      "pass": true,
+      "detail": "换岗切换正常、提问不切换"
+    }
+  ]
+}

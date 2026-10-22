@@ -218,7 +218,10 @@ export async function POST(request: Request) {
         intent: activeTeaching.teachingIntent === 'OFF_TOPIC' ? 'OFF_TOPIC' as const : 'CONVERSATION' as const,
         intents: activeTeaching.teachingIntent === 'OFF_TOPIC' ? ['OFF_TOPIC' as const] : ['CONVERSATION' as const, 'WORKPLACE' as const],
         skillIds: activeTeaching.teachingIntent === 'OFF_TOPIC' ? [] : ['CONVERSATION' as const, 'WORKPLACE' as const], normalizedInput: message,
-        answerCategory: activeTeaching.teachingIntent === 'OFF_TOPIC' ? 'OFF_TOPIC' as const : 'ACTIVE_TEACHING_LOOP', targetChinese: activeTeaching.teachingIntent === 'LEARNING_RELATED' ? '我明天上班' : '',
+        answerCategory: activeTeaching.teachingIntent === 'OFF_TOPIC' ? 'OFF_TOPIC' as const : 'ACTIVE_TEACHING_LOOP',
+        // 必须跟随引擎本轮实际评分目标（TRANSFER_TEST 阶段是「我今天上班」），
+        // 否则埋点/后续判定会拿错目标，出现"显示的目标 ≠ 评分的目标"。
+        targetChinese: activeTeaching.teachingIntent === 'LEARNING_RELATED' ? (activeTeaching.response.targetChinese || '') : '',
       },
       answer: activeTeaching.response,
       usage: { token_input: 0, token_output: 0, model_calls: 0, estimated_ai_cost: 0, model_used: 'rules/teaching-engine-active-v1', structured_retries: 0, safe_fallbacks: 0, retry_token_input: 0, retry_token_output: 0, retry_estimated_cost: 0 },

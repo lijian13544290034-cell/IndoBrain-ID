@@ -272,11 +272,18 @@ export function miniCourseAnswer(state: MiniCourseState, mode: 'START' | 'NEXT' 
  * 判断学生这条消息是不是在对当前目标做练习（而不是提问/换话题/说听不懂）。
  * 只接受简短、无问号、无疑问词的复述；宁可放过，不可抢答。
  */
+/**
+ * 疑问/求助信号：出现即视为「在问」而不是「在背」。
+ * 必须覆盖口语疑问词（啥/啥意思/是啥/咋/干嘛/呢/哪/几个），否则「分酒器是啥」这类
+ * 短中文问句会被当成对当前课程目标的作答，被课程判定"答错"。
+ */
+const QUESTION_SIGNAL = /怎么|什么|为什么|如何|哪|多少|吗|啥|咋|几个|几点|干嘛|干吗|是不是|有没有|能不能|可不可以|好不好|对不对|什么意思|是啥|怎么说|怎么读|怎么念|怎么用|读什么|念什么|怎么办|在哪|是谁|多少钱|然后呢|那个呢|这个呢|你呢|apa|gimana|bagaimana|kenapa|mengapa|artinya|maksudnya|bilang|pakai|terjemah|ulang|pelan|salah|benar|bener|guru|terima kasih|makasih|lanjut|mulai/i;
+
 export function looksLikeAttempt(message: string) {
   const text = message.trim();
   if (!text || text.length > 24) return false;
   if (/[?？!！]/.test(text)) return false;
-  if (/怎么|什么|为什么|如何|哪|多少|吗|apa|gimana|bagaimana|kenapa|mengapa|artinya|maksudnya|bilang|pakai|terjemah|ulang|pelan|salah|benar|bener|guru|terima kasih|makasih|lanjut|mulai/i.test(text)) return false;
+  if (QUESTION_SIGNAL.test(text)) return false;
   // 说听不懂 / 想换方向 / 提问：必须交给模型，不能被课程练习判断抢走
   if (/tidak\s+(?:mengerti|ngerti|paham)|nggak\s+(?:mengerti|ngerti|paham)|belum\s+paham|bingung|susah|sulit|ganti|pindah|mau\s+(?:belajar|kerja)|maksud|kok|sih|emang/i.test(text)) return false;
   // 纠正老师 / 否定 / 说明真实意图：这是自由对话，绝不能判成"答错"

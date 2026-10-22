@@ -154,6 +154,16 @@ const asksMeaning = (text: string) => /artinya|maksud|apa arti|什么意思|tida
 const asksDemo = (text: string) => /ulang|contoh|dengar|示范|再说|再来|sekali lagi/i.test(text);
 const asksHelp = (text: string) => /tidak tahu|tidak bisa|nggak bisa|gak bisa|susah|不会|不懂/i.test(text);
 
+/**
+ * 学生在提问（而不是在做练习）。
+ * 短中文问句（「分酒器是啥」「那个呢」）同样是提问，绝不能被 attemptOutcome 当成
+ * 对目标句的作答而记为答错——错误的失败记录会污染掌握度与后续提示强度。
+ */
+const asksQuestion = (text: string) =>
+  /[?？]/.test(text)
+  || /\b(?:apa|apakah|apa itu|gimana|bagaimana|kenapa|mengapa|berapa|di ?mana|siapa|kapan|bisakah|maksudnya|artinya)\b/i.test(text)
+  || /什么|怎么|为什么|如何|哪|多少|吗|啥|咋|几个|几点|干嘛|干吗|是不是|有没有|能不能|什么意思|是啥|怎么说|怎么读|怎么念|怎么用|读什么|念什么|怎么办|在哪|是谁|多少钱|然后呢|那个呢|这个呢|请问/i.test(text);
+
 function prerequisiteCheck(text: string) {
   const value = normalize(text);
   return (/(saya|aku)/i.test(value) || value.includes('我'))
@@ -168,11 +178,16 @@ function attemptOutcome(text: string, target: '我明天上班' | '我今天上�
   return recalled >= 2 ? 'PARTIAL' : 'WRONG';
 }
 
-function answer(text: string, chinese = '', pinyin = '', indonesian = '', strategy = 'ACTIVE_TEACHING') {
+function answer(text: string, chinese = '', pinyin = '', indonesian = '', strategy = 'ACTIVE_TEACHING', fallback: { surface: string; pinyin: string; meaningId: string } = objective) {
+  // 目标跟随本轮实际要练的句子：chinese 为空时回落到调用方传入的本轮目标，
+  // 避免摘要/targetChinese 永远写死「我明天上班」（TRANSFER_TEST 阶段目标是「我今天上班」）。
+  const targetChinese = chinese || fallback.surface;
+  const targetPinyin = chinese ? pinyin : fallback.pinyin;
+  const targetMeaning = chinese ? indonesian : fallback.meaningId;
   return {
-    answer: text, chinese, pinyin, indonesian, followUp: '', summary: 'Latihan aktif sementara: 我明天上班',
+    answer: text, chinese, pinyin, indonesian, followUp: '', summary: `Latihan aktif: ${targetChinese}`,
     ttsRate: 'slow' as const, teachingStrategy: strategy, rememberTarget: false,
-    targetChinese: objective.surface, targetPinyin: objective.pinyin, targetMeaning: objective.meaningId,
+    targetChinese, targetPinyin, targetMeaning,
     skillGap: false, skillGapReason: '',
   };
 }
@@ -276,7 +291,8 @@ function advanceActiveTeachingTurn(input: ActiveInput, current: ActiveTeachingSe
     return result(input, current, next, answer(`${prefix} Dengarkan lalu coba ucapkan atau ketik:`, objective.surface, objective.pinyin, objective.meaningId, 'MODEL_THEN_INVITE'), { path: ['DIAGNOSE', 'MODEL', 'SPEAK'], action: 'MODEL_THEN_INVITE' });
   }
   if (current.stage === 'COMPLETE') {
-    return result(input, current, current, answer('Latihan ini sudah selesai. Kamu berhasil berlatih dan melakukan satu tes transfer. Statusnya belum “mastered”.', objective.surface, objective.pinyin, objective.meaningId, 'COMPLETE'), { path: ['COMPLETE'], action: 'COMPLETE' });
+    const doneTarget = { surface: '我今天上班', pinyin: 'wǒ jīn tiān shàng bān', meaningId: 'Hari ini saya masuk kerja.' };
+    return result(input, current, current, answer('Latihan ini sudah selesai. Kamu berhasil berlatih dan melakukan satu tes transfer. Statusnya belum “mastered”.', doneTarget.surface, doneTarget.pinyin, doneTarget.meaningId, 'COMPLETE', doneTarget), { path: ['COMPLETE'], action: 'COMPLETE' });
   }
   if (asksMeaning(input.message)) {
     const next = { ...current, promptLevel: 'SEMANTIC_CUE' as const };
@@ -288,6 +304,18 @@ function advanceActiveTeachingTurn(input: ActiveInput, current: ActiveTeachingSe
   }
 
   const target = current.stage === 'TRANSFER_TEST' ? '我今天上班' as const : objective.surface;
+  // 本轮实际目标：TRANSFER_TEST 阶段换成「我今天上班」，提示文案与回落目标都跟随它，
+  // 保证"学生看到的句子"与"引擎评分/埋点记录的句子"始终是同一句。
+  const turnTarget = current.stage === 'TRANSFER_TEST'
+    ? { surface: '我今天上班', pinyin: 'wǒ jīn tiān shàng bān', meaningId: 'Hari ini saya masuk kerja.', tokens: '我 / 今天 / 上班', when: 'Hari ini', whenId: 'hari ini' }
+    : { surface: objective.surface, pinyin: objective.pinyin, meaningId: objective.meaningId, tokens: '我 / 明天 / 上班', when: 'Besok', whenId: 'besok' };
+  // 学生在提问（含短中文问句）：只回应，不评分、不记失败、不推进阶段。
+  if (asksQuestion(input.message)) {
+    return result(input, current, current, answer(
+      'Pertanyaanmu aku catat ya. Kita selesaikan kalimat ini dulu, setelah itu aku jelaskan. Ucapkan atau ketik:',
+      '', '', '', 'ANSWER_THEN_RESUME', turnTarget,
+    ), { path: [current.stage], action: 'ANSWER_THEN_RESUME', outcome: 'NO_EVIDENCE', kind: 'NONE' });
+  }
   const outcome = attemptOutcome(input.message, target);
   const attempts = current.attempts + 1;
   if (input.modality === 'VOICE' && outcome !== 'EXACT') {
@@ -308,21 +336,22 @@ function advanceActiveTeachingTurn(input: ActiveInput, current: ActiveTeachingSe
       return result(input, current, next, answer('Bagus, itu benar dengan bantuan model. Sekarang coba sekali lagi tanpa melihat contoh.', '', '', '', 'REMOVE_SCAFFOLD_AND_RETRY'), { path: ['SPEAK', 'EVALUATE', 'ADVANCE', 'SPEAK'], action: 'REMOVE_SCAFFOLD_AND_RETRY', outcome: 'SCAFFOLDED_SUCCESS', kind: 'PROMPTED_ATTEMPT', source: input.modality === 'VOICE' ? 'STT_INTELLIGIBILITY' : 'MEANING_TASK' });
     }
     const next: ActiveTeachingSession = { ...current, stage: 'TRANSFER_TEST', attempts, consecutiveSuccesses: current.consecutiveSuccesses + 1, consecutiveErrors: 0, promptLevel: 'NONE', masteryStatus: 'INDEPENDENT' };
-    return result(input, current, next, answer('Benar tanpa petunjuk. Sekarang ganti satu bagian waktu saja. Bagaimana mengatakan “Hari ini saya masuk kerja” dalam Mandarin?', '', '', '', 'ADVANCE_TO_TRANSFER'), { path: ['SPEAK', 'EVALUATE', 'ADVANCE', 'TRANSFER_TEST'], action: 'ADVANCE_TO_TRANSFER', outcome: 'INDEPENDENT_SUCCESS', kind: 'INDEPENDENT_PRODUCTION', source: 'UNPROMPTED_RECALL' });
+    const transferTarget = { surface: '我今天上班', pinyin: 'wǒ jīn tiān shàng bān', meaningId: 'Hari ini saya masuk kerja.' };
+    return result(input, current, next, answer('Benar tanpa petunjuk. Sekarang ganti satu bagian waktu saja. Bagaimana mengatakan “Hari ini saya masuk kerja” dalam Mandarin?', transferTarget.surface, transferTarget.pinyin, transferTarget.meaningId, 'ADVANCE_TO_TRANSFER', transferTarget), { path: ['SPEAK', 'EVALUATE', 'ADVANCE', 'TRANSFER_TEST'], action: 'ADVANCE_TO_TRANSFER', outcome: 'INDEPENDENT_SUCCESS', kind: 'INDEPENDENT_PRODUCTION', source: 'UNPROMPTED_RECALL' });
   }
   if (outcome === 'PARTIAL') {
     const errors = current.consecutiveErrors + 1;
     const reduce = errors >= 2;
     const next: ActiveTeachingSession = { ...current, stage: current.stage, attempts, consecutiveErrors: errors, consecutiveSuccesses: 0, hints: Math.min(4, current.hints + 1), promptLevel: reduce ? 'FULL_MODEL' : 'FIRST_WORD', masteryStatus: current.masteryStatus === 'NOT_STARTED' ? 'PRACTICED' : current.masteryStatus };
     const copy = reduce
-      ? 'Kita pecah menjadi tiga bagian: 我 / 明天 / 上班. Gabungkan sekali lagi.'
-      : `Hampir. Bagian awalnya “我…”. Lengkapi sendiri sampai berarti “${current.stage === 'TRANSFER_TEST' ? 'Hari ini' : 'Besok'} saya masuk kerja”.`;
-    return result(input, current, next, answer(copy, reduce ? objective.surface : '', reduce ? objective.pinyin : '', reduce ? objective.meaningId : '', reduce ? 'REDUCE_ONE_VARIABLE' : 'ONE_TARGETED_HINT'), { path: [current.stage, 'EVALUATE', 'HINT', 'RETRY'], action: reduce ? 'REDUCE_ONE_VARIABLE' : 'ONE_TARGETED_HINT', outcome: 'PARTIAL', kind: 'PROMPTED_ATTEMPT', source: 'MEANING_TASK', hint: reduce ? 'SKELETON_BLANK' : 'FIRST_TOKEN', correction: 'ELICITATION', recordsFailure: true });
+      ? `Kita pecah menjadi tiga bagian: ${turnTarget.tokens}. Gabungkan sekali lagi.`
+      : `Hampir. Bagian awalnya “我…”. Lengkapi sendiri sampai berarti “${turnTarget.when} saya masuk kerja”.`;
+    return result(input, current, next, answer(copy, reduce ? turnTarget.surface : '', reduce ? turnTarget.pinyin : '', reduce ? turnTarget.meaningId : '', reduce ? 'REDUCE_ONE_VARIABLE' : 'ONE_TARGETED_HINT', turnTarget), { path: [current.stage, 'EVALUATE', 'HINT', 'RETRY'], action: reduce ? 'REDUCE_ONE_VARIABLE' : 'ONE_TARGETED_HINT', outcome: 'PARTIAL', kind: 'PROMPTED_ATTEMPT', source: 'MEANING_TASK', hint: reduce ? 'SKELETON_BLANK' : 'FIRST_TOKEN', correction: 'ELICITATION', recordsFailure: true });
   }
   const errors = current.consecutiveErrors + 1;
   const next: ActiveTeachingSession = { ...current, stage: current.stage, attempts, consecutiveErrors: errors, consecutiveSuccesses: 0, hints: Math.min(4, current.hints + 1), promptLevel: errors >= 2 ? 'FULL_MODEL' : 'SEMANTIC_CUE', masteryStatus: current.masteryStatus === 'NOT_STARTED' ? 'PRACTICED' : current.masteryStatus };
-  const copy = errors >= 2 ? 'Kita kecilkan dulu. Susun tiga bagian ini: 我 / 明天 / 上班. Lalu coba kalimat lengkap.' : 'Coba lagi. Pertahankan makna “saya + besok + masuk kerja”.';
-  return result(input, current, next, answer(copy, errors >= 2 ? objective.surface : '', errors >= 2 ? objective.pinyin : '', errors >= 2 ? objective.meaningId : '', errors >= 2 ? 'REDUCE_ONE_VARIABLE' : 'CORRECT_ONE_POINT'), { path: [current.stage, 'EVALUATE', 'HINT', 'RETRY'], action: errors >= 2 ? 'REDUCE_ONE_VARIABLE' : 'CORRECT_ONE_POINT', outcome: 'NOT_YET', kind: 'PROMPTED_ATTEMPT', source: 'MEANING_TASK', hint: errors >= 2 ? 'SKELETON_BLANK' : 'CONTRAST_HINT', correction: 'EXPLICIT', recordsFailure: true });
+  const copy = errors >= 2 ? `Kita kecilkan dulu. Susun tiga bagian ini: ${turnTarget.tokens}. Lalu coba kalimat lengkap.` : `Coba lagi. Pertahankan makna “saya + ${turnTarget.whenId} + masuk kerja”.`;
+  return result(input, current, next, answer(copy, errors >= 2 ? turnTarget.surface : '', errors >= 2 ? turnTarget.pinyin : '', errors >= 2 ? turnTarget.meaningId : '', errors >= 2 ? 'REDUCE_ONE_VARIABLE' : 'CORRECT_ONE_POINT', turnTarget), { path: [current.stage, 'EVALUATE', 'HINT', 'RETRY'], action: errors >= 2 ? 'REDUCE_ONE_VARIABLE' : 'CORRECT_ONE_POINT', outcome: 'NOT_YET', kind: 'PROMPTED_ATTEMPT', source: 'MEANING_TASK', hint: errors >= 2 ? 'SKELETON_BLANK' : 'CONTRAST_HINT', correction: 'EXPLICIT', recordsFailure: true });
 }
 
 export function runActiveTeachingTurn(input: ActiveInput) {

@@ -102,8 +102,15 @@ const START_COURSE = /^(?:(?:ayo|oke|ok|siap|ya|mau)\s+)?(?:mulai(?:i|kan)?|star
 const CONTINUE_COURSE = /^(?:lanjut(?:kan)?|next|terus(?:kan)?|continue|pelajaran\s+berikutnya|next\s+lesson)[\s!?.]*$/i;
 /** 只有学生明确「要一份课程/学习计划」时才输出大纲。宽泛的 "buatkan" 不算。 */
 const COURSE_REQUEST = /kursus|rencana\s+belajar|study\s+plan|program\s+belajar|jadwal\s+belajar|belajar\s+dari\s+nol|buatkan\s+(?:saya\s+)?(?:kursus|rencana|program|jadwal)/i;
-/** 换职业信号：只有这些话出现时，才允许把已有课程切到新职业。 */
-const JOB_CHANGE = /(?:kerja|bekerja)\s+di|pindah|ganti|sekarang\s+(?:saya|aku)|mulai\s+kerja|saya\s+jadi/i;
+/**
+ * 换职业信号：只有"学生宣告自己换岗位/换工作"时才允许把已有课程切到新职业并重置进度。
+ * 绝不能把提问里顺口提到的职业词算作换课——否则学生问一句「Di gudang kami pakai forklift，
+ * itu Mandarin-nya apa?」就会把餐厅课程打断并从第一句重来。
+ */
+const JOB_CHANGE = /(?:saya|aku)\s+(?:sekarang\s+)?(?:pindah|ganti|kerja|bekerja)\s+(?:ke|di)\s|(?:pindah|ganti)\s+(?:kerja|pekerjaan|jabatan)|sekarang\s+(?:saya|aku)\s+(?:jadi|kerja)| mulai\s+kerja\s+(?:di|sebagai)/i;
+
+/** 问句/求助式消息：即便提到职业词也不切换课程（学生只是在问）。 */
+const QUESTION_LIKE = /[?？]|\b(?:apa|gimana|bagaimana|kenapa|mengapa|artinya|maksud)\b|什么|怎么|为啥|啥|吗|请问|多少|哪/i;
 
 /**
  * 学生一说出职业，就静默建好课程状态（不输出大纲）。
@@ -113,7 +120,10 @@ function ensureCareerCourse(sessionId: string, message: string): MiniCourseState
   const existing = readMiniCourse(sessionId);
   const detected = detectOccupationKey(message);
   if (existing) {
-    if (detected !== 'generic' && detected !== existing.key && JOB_CHANGE.test(message)) {
+    // 已有课程：只有在"明确宣告换岗位 + 不是提问"时才切换，避免提问误重置教学目标。
+    const switching = detected !== 'generic' && detected !== existing.key
+      && JOB_CHANGE.test(message) && !QUESTION_LIKE.test(message);
+    if (switching) {
       const switched: MiniCourseState = { key: detected, cursor: 0, updatedAt: Date.now() };
       writeMiniCourse(sessionId, switched);
       return switched;
