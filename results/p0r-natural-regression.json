@@ -1,0 +1,680 @@
+{
+  "run": "581917",
+  "deployment": "https://indobrain-v12-rc2-integration-j0gvekrgt-lijian1.vercel.app",
+  "passed": 14,
+  "total": 14,
+  "checks": [
+    {
+      "name": "A1 首轮直接职业教学（欢迎光临优先）",
+      "pass": true,
+      "detail": "Teach first job-specific sentence · 欢迎光临！"
+    },
+    {
+      "name": "A1 非强制 7 天大纲",
+      "pass": true,
+      "detail": "answer 无完整 7 天大纲"
+    },
+    {
+      "name": "A1 教师自然邀请练习",
+      "pass": true,
+      "detail": "Coba kamu ucapkan \"Selamat datang!\" dalam bahasa Mandarin."
+    },
+    {
+      "name": "A2 拼音回答被理解",
+      "pass": true,
+      "detail": "MINI_COURSE_PASS · 欢迎光临 · Bagus sekali! 👏 欢迎光临 (huān yíng guāng lín) = selamat datang"
+    },
+    {
+      "name": "A3 lanjut 推进教学",
+      "pass": true,
+      "detail": "MINI_COURSE_NEXT · 几位？"
+    },
+    {
+      "name": "A4 印尼语回答被理解",
+      "pass": true,
+      "detail": "TEACH · Betul sekali! 几位？ (jǐ wèi?) artinya \"berapa orang?\". Ini kal"
+    },
+    {
+      "name": "A5 tidak mengerti 被理解并重新解释",
+      "pass": true,
+      "detail": "RETEACH · Tentu, mari kita ulangi pelan-pelan. 几位？ (jǐ wèi?) adalah cara sopan u"
+    },
+    {
+      "name": "A7 真模型课内答疑",
+      "pass": true,
+      "detail": "calls=2 mandarin-coach-brain-v0.1 → google/gemini-2.5-flash → google/gemini-2.5-flash-lite · Pertanyaan bagus sekali! Dalam bahasa Mandarin, kita punya d"
+    },
+    {
+      "name": "A10 带错的回答被纠错",
+      "pass": true,
+      "detail": "Correcting pronunciation, focusing on tones · Bagus sekali kamu peka dengan nada! Betul, ada sedikit penyesuaian di "
+    },
+    {
+      "name": "B1 首轮直接教数量/库存表达",
+      "pass": true,
+      "detail": "Teach job-specific sentence, then practice. · 有多少？"
+    },
+    {
+      "name": "B2 拼音回答被理解",
+      "pass": true,
+      "detail": "CORRECT · Bagus! Kamu sudah benar mengucapkan \"yǒu duō shao?\" (ada ber"
+    },
+    {
+      "name": "B5 tidak paham 被重新解释",
+      "pass": true,
+      "detail": "TEACH · Tentu, \"货到了吗?\" (huò dào le ma?) artinya \"Barangnya sudah sampai?\" Ini "
+    },
+    {
+      "name": "B7 主动新问题被回应",
+      "pass": true,
+      "detail": "calls=2 · 库存够吗？"
+    },
+    {
+      "name": "B10 无调拼音仍被评估",
+      "pass": true,
+      "detail": "MINI_COURSE_CORRECT · Belum tepat, tapi tidak apa-apa 👍 Yang benar: 今天出货 (jīn tiā"
+    }
+  ],
+  "sessions": [
+    {
+      "name": "resto",
+      "sessionId": "coach-nat-resto-410268",
+      "turns": [
+        {
+          "turn": 1,
+          "message": "Saya belum bisa bahasa Mandarin. Saya kerja di restoran, sering melayani tamu China. Saya mau belajar Mandarin supaya bisa melayani mereka dengan baik. Bisa ajarin saya dari nol?",
+          "latency_ms": 8082,
+          "strategy": "Teach first job-specific sentence",
+          "chinese": "欢迎光临！",
+          "pinyin": "Huānyíng guānglín!",
+          "indonesian": "Selamat datang!",
+          "answer": "Oke, kamu kerja di restoran dan mau belajar Mandarin dari nol supaya bisa melayani tamu China dengan baik. Bagus sekali! Kita mulai dari kalimat yang paling sering kamu pakai saat tamu datang ya. Ini dia:",
+          "followUp": "Coba kamu ucapkan \"Selamat datang!\" dalam bahasa Mandarin.",
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash",
+          "model_calls": 1,
+          "tokens": [
+            3173,
+            478
+          ],
+          "cost": 0.0021469,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 2,
+          "message": "huān yíng guāng lín",
+          "latency_ms": 5500,
+          "strategy": "MINI_COURSE_PASS",
+          "chinese": "欢迎光临",
+          "pinyin": "huān yíng guāng lín",
+          "indonesian": "selamat datang",
+          "answer": "Bagus sekali! 👏 欢迎光临 (huān yíng guāng lín) = selamat datang sudah benar.",
+          "followUp": "Bilang \"lanjut\" kalau mau ekspresi berikutnya.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "欢迎光临",
+            "position": "1/22"
+          }
+        },
+        {
+          "turn": 3,
+          "message": "lanjut",
+          "latency_ms": 5333,
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "几位？",
+          "pinyin": "jǐ wèi?",
+          "indonesian": "berapa orang?",
+          "answer": "Lanjut ke kalimat berikutnya: 几位？ (jǐ wèi?) = berapa orang?.",
+          "followUp": "Sekarang giliranmu: ucapkan 几位？, lalu tulis di sini.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 1,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "几位？",
+            "position": "2/22"
+          }
+        },
+        {
+          "turn": 4,
+          "message": "berapa orang?",
+          "latency_ms": 7363,
+          "strategy": "TEACH",
+          "chinese": "几位？",
+          "pinyin": "jǐ wèi?",
+          "indonesian": "Berapa orang?",
+          "answer": "Betul sekali! 几位？ (jǐ wèi?) artinya \"berapa orang?\". Ini kalimat penting untuk menanyakan jumlah tamu yang datang. Sekarang coba kamu ucapkan kalimat ini.",
+          "followUp": "Coba ucapkan: 几位？",
+          "model": "google/gemini-2.5-flash-lite → google/gemini-2.5-flash-lite",
+          "model_calls": 2,
+          "tokens": [
+            3801,
+            419
+          ],
+          "cost": 0.0005477,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 1,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "几位？",
+            "position": "2/22"
+          }
+        },
+        {
+          "turn": 5,
+          "message": "tidak mengerti, boleh jelaskan lagi?",
+          "latency_ms": 8036,
+          "strategy": "RETEACH",
+          "chinese": "几位？",
+          "pinyin": "jǐ wèi?",
+          "indonesian": "Berapa orang?",
+          "answer": "Tentu, mari kita ulangi pelan-pelan. 几位？ (jǐ wèi?) adalah cara sopan untuk bertanya \"Berapa orang?\" kepada tamu yang datang ke restoran. Bagian \"几 (jǐ)\" artinya \"berapa\", dan \"位 (wèi)\" adalah kata bantu hitung untuk orang, yang lebih sopan daripada \"个 (ge)\".",
+          "followUp": "Coba ucapkan lagi: 几位？ (jǐ wèi?)",
+          "model": "google/gemini-2.5-flash-lite → google/gemini-2.5-flash-lite",
+          "model_calls": 2,
+          "tokens": [
+            3746,
+            468
+          ],
+          "cost": 0.0005618,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 1,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "几位？",
+            "position": "2/22"
+          }
+        },
+        {
+          "turn": 6,
+          "message": "lanjut",
+          "latency_ms": 5212,
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "这边请",
+          "pinyin": "zhè biān qǐng",
+          "indonesian": "silakan lewat sini",
+          "answer": "Lanjut ke kalimat berikutnya: 这边请 (zhè biān qǐng) = silakan lewat sini.",
+          "followUp": "Sekarang giliranmu: ucapkan 这边请, lalu tulis di sini.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 2,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "这边请",
+            "position": "3/22"
+          }
+        },
+        {
+          "turn": 7,
+          "message": "kenapa harus pakai 您, bukan kamu?",
+          "latency_ms": 24367,
+          "strategy": "EXPLANATION",
+          "chinese": "您",
+          "pinyin": "nín",
+          "indonesian": "Anda (sopan)",
+          "answer": "Pertanyaan bagus sekali! Dalam bahasa Mandarin, kita punya dua cara untuk mengatakan 'kamu': '你 (nǐ)' yang umum, dan '您 (nín)' yang lebih sopan. Di lingkungan kerja, terutama saat bicara dengan atasan, klien, atau tamu, menggunakan '您 (nín)' menunjukkan rasa hormat. Jadi, kalau di restoran, lebih baik pakai '您 (nín)' saat menyapa tamu.",
+          "followUp": "Coba ucapkan '您 (nín)' dengan nada yang benar.",
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash → google/gemini-2.5-flash-lite",
+          "model_calls": 2,
+          "tokens": [
+            7048,
+            1001
+          ],
+          "cost": 0.0032416,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 2,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "这边请",
+            "position": "3/22"
+          }
+        },
+        {
+          "turn": 8,
+          "message": "zhè biān qǐng",
+          "latency_ms": 22317,
+          "strategy": "MINI_COURSE_PASS",
+          "chinese": "这边请",
+          "pinyin": "zhè biān qǐng",
+          "indonesian": "silakan lewat sini",
+          "answer": "Bagus sekali! 👏 这边请 (zhè biān qǐng) = silakan lewat sini sudah benar.",
+          "followUp": "Bilang \"lanjut\" kalau mau ekspresi berikutnya.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 2,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 1,
+            "topic": "Kalimat inti: Restoran / Kafe / Hotel",
+            "target": "这边请",
+            "position": "3/22"
+          }
+        },
+        {
+          "turn": 9,
+          "message": "lanjut",
+          "latency_ms": 4935,
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "这是菜单",
+          "pinyin": "zhè shì cài dān",
+          "indonesian": "ini menunya",
+          "answer": "Hari 2 — Latihan lanjutan: Restoran / Kafe / Hotel. Lanjut ke kalimat berikutnya: 这是菜单 (zhè shì cài dān) = ini menunya.",
+          "followUp": "Sekarang giliranmu: ucapkan 这是菜单, lalu tulis di sini.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 3,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 2,
+            "topic": "Latihan lanjutan: Restoran / Kafe / Hotel",
+            "target": "这是菜单",
+            "position": "4/22"
+          }
+        },
+        {
+          "turn": 10,
+          "message": "zhe shi cai dan (salah ton ya?)",
+          "latency_ms": 12396,
+          "strategy": "Correcting pronunciation, focusing on tones",
+          "chinese": "这是菜单",
+          "pinyin": "zhè shì cài dān",
+          "indonesian": "ini menunya",
+          "answer": "Bagus sekali kamu peka dengan nada! Betul, ada sedikit penyesuaian di nadanya. Mari kita lihat satu per satu ya:\n\n*   `这 (zhè)` adalah nada 4 (turun).\n*   `是 (shì)` juga nada 4 (turun).\n*   `菜 (cài)` adalah nada 4 (turun).\n*   `单 (dān)` adalah nada 1 (datar).\n\nJadi, `这是菜单 (zhè shì cài dān)` itu semua nada 4, kecuali `单 (dān)` yang nada 1. Coba kamu ucapkan lagi dengan nada yang benar ya!",
+          "followUp": "Coba kamu ucapkan lagi `这是菜单 (zhè shì cài dān)` dengan nada yang sudah kita bahas tadi.",
+          "model": "google/gemini-2.5-flash-lite → google/gemini-2.5-flash → google/gemini-2.5-flash-lite",
+          "model_calls": 3,
+          "tokens": [
+            7942,
+            1291
+          ],
+          "cost": 0.0034484,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 3,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 2,
+            "topic": "Latihan lanjutan: Restoran / Kafe / Hotel",
+            "target": "这是菜单",
+            "position": "4/22"
+          }
+        },
+        {
+          "turn": 11,
+          "message": "lanjut",
+          "latency_ms": 5134,
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "您要什么？",
+          "pinyin": "nín yào shén me?",
+          "indonesian": "Anda mau pesan apa?",
+          "answer": "Lanjut ke kalimat berikutnya: 您要什么？ (nín yào shén me?) = Anda mau pesan apa?.",
+          "followUp": "Sekarang giliranmu: ucapkan 您要什么？, lalu tulis di sini.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "hospitality",
+            "cursor": 4,
+            "title": "Kursus Mandarin 7 Hari · Restoran / Kafe / Hotel",
+            "day": 2,
+            "topic": "Latihan lanjutan: Restoran / Kafe / Hotel",
+            "target": "您要什么？",
+            "position": "5/22"
+          }
+        }
+      ]
+    },
+    {
+      "name": "gudang",
+      "sessionId": "coach-nat-gudang-518945",
+      "turns": [
+        {
+          "turn": 1,
+          "message": "Saya kerja di gudang perusahaan China. Bos saya sering tanya jumlah barang dan stok. Saya belum bisa Mandarin. Tolong ajarin saya.",
+          "latency_ms": 8720,
+          "strategy": "Teach job-specific sentence, then practice.",
+          "chinese": "有多少？",
+          "pinyin": "yǒu duō shao?",
+          "indonesian": "Ada berapa banyak?",
+          "answer": "Oke, kamu kerja di gudang perusahaan China dan bos sering tanya jumlah barang. Kita mulai dari kalimat yang paling sering kamu pakai ya. Untuk menanyakan 'ada berapa banyak?', kamu bisa bilang:",
+          "followUp": "Coba kamu ucapkan: 'yǒu duō shao?'",
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash",
+          "model_calls": 1,
+          "tokens": [
+            3123,
+            465
+          ],
+          "cost": 0.0020994,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "有多少？",
+            "position": "1/21"
+          }
+        },
+        {
+          "turn": 2,
+          "message": "yǒu duō shao?",
+          "latency_ms": 7218,
+          "strategy": "CORRECT",
+          "chinese": "仓库有多少货？",
+          "pinyin": "cāng kù yǒu duō shao huò?",
+          "indonesian": "Di gudang ada berapa banyak barang?",
+          "answer": "Bagus! Kamu sudah benar mengucapkan \"yǒu duō shao?\" (ada berapa banyak?). Ini kalimat yang sangat penting saat bos menanyakan jumlah barang. Sekarang, coba kamu tanyakan ke saya: \"Ada berapa banyak barang di gudang?\"",
+          "followUp": "Sekarang coba kamu tanyakan ke saya: \"Ada berapa banyak barang di gudang?\"",
+          "model": "google/gemini-2.5-flash-lite → google/gemini-2.5-flash-lite",
+          "model_calls": 2,
+          "tokens": [
+            3751,
+            506
+          ],
+          "cost": 0.0005775,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 0,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "有多少？",
+            "position": "1/21"
+          }
+        },
+        {
+          "turn": 3,
+          "message": "lanjut",
+          "latency_ms": 4990,
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "库存不够",
+          "pinyin": "kù cún bú gòu",
+          "indonesian": "stoknya tidak cukup",
+          "answer": "Lanjut ke kalimat berikutnya: 库存不够 (kù cún bú gòu) = stoknya tidak cukup.",
+          "followUp": "Sekarang giliranmu: ucapkan 库存不够, lalu tulis di sini.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 1,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "库存不够",
+            "position": "2/21"
+          }
+        },
+        {
+          "turn": 4,
+          "message": "kù cún bú gòu",
+          "latency_ms": 4625,
+          "strategy": "MINI_COURSE_PASS",
+          "chinese": "库存不够",
+          "pinyin": "kù cún bú gòu",
+          "indonesian": "stoknya tidak cukup",
+          "answer": "Bagus sekali! 👏 库存不够 (kù cún bú gòu) = stoknya tidak cukup sudah benar.",
+          "followUp": "Bilang \"lanjut\" kalau mau ekspresi berikutnya.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 1,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "库存不够",
+            "position": "2/21"
+          }
+        },
+        {
+          "turn": 5,
+          "message": "artinya apa 货到了吗? masih belum paham",
+          "latency_ms": 6620,
+          "strategy": "TEACH",
+          "chinese": "货到了吗?",
+          "pinyin": "huò dào le ma?",
+          "indonesian": "Barangnya sudah sampai?",
+          "answer": "Tentu, \"货到了吗?\" (huò dào le ma?) artinya \"Barangnya sudah sampai?\" Ini pertanyaan penting untuk menanyakan status kedatangan barang di gudang. Coba kamu ucapkan sekali lagi: \"货到了吗?\"",
+          "followUp": "Sekarang, coba kamu tanyakan: \"Barang pesanan saya sudah sampai?\"",
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash-lite",
+          "model_calls": 1,
+          "tokens": [
+            3401,
+            377
+          ],
+          "cost": 0.0004909,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 1,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "库存不够",
+            "position": "2/21"
+          }
+        },
+        {
+          "turn": 6,
+          "message": "lanjut",
+          "latency_ms": 4599,
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "货到了吗？",
+          "pinyin": "huò dào le ma?",
+          "indonesian": "barangnya sudah sampai?",
+          "answer": "Lanjut ke kalimat berikutnya: 货到了吗？ (huò dào le ma?) = barangnya sudah sampai?.",
+          "followUp": "Sekarang giliranmu: ucapkan 货到了吗？, lalu tulis di sini.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 2,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "货到了吗？",
+            "position": "3/21"
+          }
+        },
+        {
+          "turn": 7,
+          "message": "gimana cara tanya bos: stok cukup atau tidak?",
+          "latency_ms": 10443,
+          "strategy": "Teach new phrase based on user's question",
+          "chinese": "库存够吗？",
+          "pinyin": "kù cún gòu ma?",
+          "indonesian": "Stoknya cukup?",
+          "answer": "Oke, kamu mau tanya ke bos soal stok barang. Kalimat yang paling pas adalah:\n\n库存够吗？ (kù cún gòu ma?) artinya \"Stoknya cukup?\"\n\nIni pertanyaan langsung dan sopan untuk menanyakan ketersediaan stok.",
+          "followUp": "Coba kamu ucapkan kalimat ini: \"库存够吗？\"",
+          "model": "mandarin-coach-brain-v0.1 → google/gemini-2.5-flash → google/gemini-2.5-flash-lite",
+          "model_calls": 2,
+          "tokens": [
+            6957,
+            1040
+          ],
+          "cost": 0.0032343,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 2,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "货到了吗？",
+            "position": "3/21"
+          }
+        },
+        {
+          "turn": 8,
+          "message": "jīn tiān chū huò",
+          "latency_ms": 5220,
+          "strategy": "MINI_COURSE_CORRECT",
+          "chinese": "货到了吗？",
+          "pinyin": "huò dào le ma?",
+          "indonesian": "barangnya sudah sampai?",
+          "answer": "Belum tepat, tapi tidak apa-apa 👍 Yang benar: 货到了吗？ (huò dào le ma?) = barangnya sudah sampai?. Coba ucapkan sekali lagi, pelan-pelan.",
+          "followUp": "Ulangi: 货到了吗？ · huò dào le ma?",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 2,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 1,
+            "topic": "Kalimat inti: Gudang / Logistik",
+            "target": "货到了吗？",
+            "position": "3/21"
+          }
+        },
+        {
+          "turn": 9,
+          "message": "lanjut",
+          "latency_ms": 4690,
+          "strategy": "MINI_COURSE_NEXT",
+          "chinese": "今天出货",
+          "pinyin": "jīn tiān chū huò",
+          "indonesian": "hari ini kirim barang",
+          "answer": "Hari 2 — Latihan lanjutan: Gudang / Logistik. Lanjut ke kalimat berikutnya: 今天出货 (jīn tiān chū huò) = hari ini kirim barang.",
+          "followUp": "Sekarang giliranmu: ucapkan 今天出货, lalu tulis di sini.",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 3,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 2,
+            "topic": "Latihan lanjutan: Gudang / Logistik",
+            "target": "今天出货",
+            "position": "4/21"
+          }
+        },
+        {
+          "turn": 10,
+          "message": "qing dian yi xia",
+          "latency_ms": 5843,
+          "strategy": "MINI_COURSE_CORRECT",
+          "chinese": "今天出货",
+          "pinyin": "jīn tiān chū huò",
+          "indonesian": "hari ini kirim barang",
+          "answer": "Belum tepat, tapi tidak apa-apa 👍 Yang benar: 今天出货 (jīn tiān chū huò) = hari ini kirim barang. Coba ucapkan sekali lagi, pelan-pelan.",
+          "followUp": "Ulangi: 今天出货 · jīn tiān chū huò",
+          "model": "mandarin-coach-brain-v0.1",
+          "model_calls": 0,
+          "tokens": [
+            0,
+            0
+          ],
+          "cost": 0,
+          "skillGap": false,
+          "miniCourse": {
+            "key": "gudang",
+            "cursor": 3,
+            "title": "Kursus Mandarin 7 Hari · Gudang / Logistik",
+            "day": 2,
+            "topic": "Latihan lanjutan: Gudang / Logistik",
+            "target": "今天出货",
+            "position": "4/21"
+          }
+        }
+      ]
+    }
+  ]
+}

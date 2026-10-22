@@ -1,0 +1,28 @@
+{
+  "mode": "preview",
+  "deploy": "https://indobrain-v12-rc2-integration-j0gvekrgt-lijian1.vercel.app",
+  "passed": 4,
+  "total": 4,
+  "checks": [
+    {
+      "name": "Preview 开课",
+      "pass": true,
+      "detail": "Teach first job-specific sentence · 欢迎光临"
+    },
+    {
+      "name": "P0-1(Preview) 「分酒器是啥」不被判为跟读答错",
+      "pass": true,
+      "detail": "TEACH · calls=2 · Wah, kamu bertanya tentang \"分酒器\" (fēn jiǔ qì). Itu adalah al"
+    },
+    {
+      "name": "P0-1b(Preview) 「那个呢」不被判为跟读答错",
+      "pass": true,
+      "detail": "TEACH · Wah, kamu sudah bisa bertanya dalam Bahasa Mandarin ya! \"那个呢"
+    },
+    {
+      "name": "P0-5(Preview) 提问后 lanjut 仍沿原课程推进",
+      "pass": true,
+      "detail": "MINI_COURSE_NEXT · key=hospitality · 几位？"
+    }
+  ]
+}
