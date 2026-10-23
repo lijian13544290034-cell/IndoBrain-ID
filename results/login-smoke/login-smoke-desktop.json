@@ -1,0 +1,58 @@
+{
+  "deploy": "https://indobrain-01-prd-prd-v0-1-3r3lj9yq1-lijian1.vercel.app",
+  "mobile": false,
+  "passed": 10,
+  "total": 10,
+  "checks": [
+    {
+      "name": "登录页可打开且渲染手机号输入",
+      "pass": true,
+      "detail": "Masuk | IndoBrain"
+    },
+    {
+      "name": "登录接口已连接账号数据库（不再 503 未配置）",
+      "pass": true,
+      "detail": "status=401 · Phone number or password is incorrect."
+    },
+    {
+      "name": "登录页存在 Preview 验收入口按钮",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "点击验收入口后进入学习首页",
+      "pass": true,
+      "detail": "/learn-chinese"
+    },
+    {
+      "name": "AI 教练页面渲染（含 Pelatih Mandarin AI）",
+      "pass": true,
+      "detail": "← Beranda Belajar Mandarin"
+    },
+    {
+      "name": "AI 教练页可启动课程",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "登录会话下 AI 教练发消息并收到回复",
+      "pass": true,
+      "detail": "status=200 · 欢迎光临"
+    },
+    {
+      "name": "回复含中文目标句与拆词",
+      "pass": true,
+      "detail": "欢迎光临 · 2 个词"
+    },
+    {
+      "name": "页面无横向溢出",
+      "pass": true,
+      "detail": "scroll=1280 client=1280"
+    },
+    {
+      "name": "无前端运行时异常",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}
