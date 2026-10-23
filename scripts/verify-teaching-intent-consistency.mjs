@@ -198,6 +198,31 @@ for (const [message, expected, note] of relateCases) {
   );
 }
 
+// ── 12. 学生点名要学的东西，不能被课程目标句顶替 ──
+// Preview 实测：「我想学习怎么介绍分酒器」曾被教成「欢迎光临」。
+const requested = [
+  ['我想学习怎么介绍分酒器', '分酒器'],
+  ['我想学怎么介绍分酒器', '分酒器'],
+  ['教我怎么说分酒器', '分酒器'],
+  ['我想学习怎么用分酒器', '分酒器'],
+];
+for (const [message, expected] of requested) {
+  const plan = brain.routeCoachInput(message);
+  check(
+    `点名学习目标被识别: 「${message}」→ ${expected}`,
+    plan.requestedLearningTarget === expected && plan.explanationOnly === false,
+    `requested=${JSON.stringify(plan.requestedLearningTarget)} explanationOnly=${plan.explanationOnly}`,
+  );
+}
+for (const pureMeaning of ['分酒器是啥', '库存是什么意思']) {
+  const plan = brain.routeCoachInput(pureMeaning);
+  check(
+    `纯释义不误标成"点名学习": 「${pureMeaning}」`,
+    plan.requestedLearningTarget === null && plan.explanationOnly === true,
+    `requested=${JSON.stringify(plan.requestedLearningTarget)} explanationOnly=${plan.explanationOnly}`,
+  );
+}
+
 console.log(`\n结果: ${checks.filter((c) => c.pass).length}/${checks.length} 通过`);
 const failed = checks.filter((c) => !c.pass);
 if (failed.length) {

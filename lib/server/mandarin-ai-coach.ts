@@ -762,6 +762,7 @@ export async function answerCoachConversation(input: {
     courseFocus,
     occupation: occupationKeyFromMemory(sessionMemory.occupation),
     explanationOnly: brainPlan.explanationOnly,
+    requestedLearningTarget: brainPlan.requestedLearningTarget,
   });
   const answerPrompt = JSON.stringify({
       classification,

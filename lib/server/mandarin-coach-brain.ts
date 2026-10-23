@@ -20,6 +20,11 @@ export type CoachBrainPlan = {
    * 这一轮必须只解释，不能顺手把课程目标句塞给学生（P0 缺陷修复）。
    */
   explanationOnly: boolean;
+  /**
+   * 学生明确点名要学的内容（「我想学习怎么介绍分酒器」「教我说 X」）。
+   * 有值时本轮教学卡片必须围绕这个词/句，不能拿职业课程的当前目标顶替。
+   */
+  requestedLearningTarget: string | null;
 };
 
 export type CoachWordPart = {
@@ -102,7 +107,7 @@ function detectLanguage(message: string): CoachDetectedLanguage {
 /** 「是啥 / 啥意思 / 是什么意思 / 是什么」这类疑问尾巴不属于被查的词，必须剥掉。 */
 const MEANING_TAIL = /(?:是啥意思|是啥|是什么|啥意思|什么意思|啥|是|什么意思啊|什么意思呢)$/;
 /** 「我想学习怎么介绍分酒器」里的动词框架：真正要查的是最后的名词。 */
-const LEARN_FRAME_HEAD = /^(?:我|saya|aku)?\s*(?:想|要|mau|ingin|mau\s+belajar)?\s*(?:学习|学|belajar)?\s*(?:怎么|怎样|如何|gimana|bagaimana|cara)?\s*(?:介绍|说明|jelaskan|pakai|用|说|读|写)?/;
+const LEARN_FRAME_HEAD = /^(?:我|saya|aku)?\s*(?:想|要|mau|ingin|mau\s+belajar)?\s*(?:学习|学|belajar)?\s*(?:教(?:教)?我|教|ajari)?\s*(?:怎么|怎样|如何|gimana|bagaimana|cara)?\s*(?:介绍|说明|jelaskan|pakai|用|说|读|写)?/;
 
 function extractTarget(message: string) {
   const chunks = message.match(/[\u3400-\u9FFF]+/g);
@@ -166,11 +171,16 @@ export function routeCoachInput(input: string): CoachBrainPlan {
     && MEANING.test(normalizedInput)
     && !LEARN_REQUEST.test(normalizedInput)
     && !offTopic;
+  // 明确点名要学的东西：这一轮学生的目标就是它，课程目标必须让位。
+  const requestedLearningTarget = targetChinese && LEARN_REQUEST.test(normalizedInput) && !offTopic
+    ? targetChinese
+    : null;
   return {
     normalizedInput, inputLanguage, learningIntents: intents, skillIds: skillIdsFor(intents), targetChinese,
     modelTier, offTopic, slowSpeech: /pelan|perlahan|lebih lambat|慢一点|慢点/i.test(normalizedInput),
     confidence: intents[0] === 'CONVERSATION' ? 0.45 : 0.92,
     explanationOnly,
+    requestedLearningTarget,
   };
 }
 

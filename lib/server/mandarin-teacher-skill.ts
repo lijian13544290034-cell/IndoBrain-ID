@@ -125,6 +125,11 @@ export function buildTeacherSkillSystem(args: {
    * true 时 courseFocus 降级为「仅供上下文参考」，并显式禁止把课程目标句塞给学生。
    */
   explanationOnly?: boolean;
+  /**
+   * 学生本轮点名要学的内容（「我想学习怎么介绍分酒器」）。
+   * 有值时本轮教学必须围绕它，职业课程的当前目标句不得顶替。
+   */
+  requestedLearningTarget?: string | null;
 }): string {
   const lessonSummary = {
     lessonId: args.courseLesson.id,
@@ -158,9 +163,13 @@ export function buildTeacherSkillSystem(args: {
     args.courseFocus
       ? args.explanationOnly
         // 纯释义回合：课程目标句只作为上下文，绝不能借机推进教学（P0 缺陷根因）。
-        ? `Active career course (CONTEXT ONLY THIS TURN — do not teach it): ${args.courseFocus.title} — day ${args.courseFocus.day} (${args.courseFocus.topic}), paused at target ${args.courseFocus.target} (${args.courseFocus.pinyin}) = ${args.courseFocus.meaning}; position ${args.courseFocus.position}. The learner asked a meaning/vocabulary question THIS TURN. Answer only that question. Do NOT teach "${args.courseFocus.target}", do NOT advance to the next course item, and do NOT replace the answer with any course sentence. Leave the course position unchanged so "lanjut" resumes exactly here.`
+        ? `Active career course (CONTEXT ONLY THIS TURN — do not teach it): ${args.courseFocus.title} — day ${args.courseFocus.day} (${args.courseFocus.topic}), paused at target ${args.courseFocus.target} (${args.courseFocus.pinyin}) = ${args.courseFocus.meaning}; position ${args.courseFocus.position}. The learner asked a meaning/vocabulary question THIS TURN. Answer only that question. Do NOT teach "${args.courseFocus.target}", do NOT advance to the next course item, and do NOT replace the answer with any course sentence. If you output a card at all, its Chinese must be the exact word the learner asked about. Leave the course position unchanged so "lanjut" resumes exactly here.`
         : `Active career course: ${args.courseFocus.title} — day ${args.courseFocus.day} (${args.courseFocus.topic}). Current practice target: ${args.courseFocus.target} (${args.courseFocus.pinyin}) = ${args.courseFocus.meaning}; position ${args.courseFocus.position}. Teach this target ONLY when the learner has no question of their own this turn (for example a bare greeting, a goal statement, or an explicit request to continue). If the learner asks about a different word or sentence, answer their question first and leave this target untouched. If the learner's message is an attempt at this target, evaluate it and correct the smallest useful issue, then invite one retry. Do not switch course or restart from 你好 unless the learner asks.`
       : 'Active career course: none yet. If the learner states a job or wants a course, respond with a short plan and keep teaching.',
+    // 学生点名要学的东西优先级最高：职业课程的当前目标句必须让位。
+    args.requestedLearningTarget
+      ? `LEARNER-REQUESTED TARGET THIS TURN: "${args.requestedLearningTarget}". The learner explicitly asked to learn THIS, so it outranks the career course target. Teach ONE short, natural sentence that contains "${args.requestedLearningTarget}" (pinyin + Indonesian meaning + ONE practice question). Reuse the learner's job context if it fits, but the card MUST contain "${args.requestedLearningTarget}". Never substitute an unrelated course sentence such as 欢迎光临 or 几位.`
+      : null,
     `Current course lesson (PLANNER REFERENCE ONLY — the Active career course above wins; never teach 你好 just because it is listed here): ${JSON.stringify(lessonSummary)}.`,
   ].join('\n');
 }
