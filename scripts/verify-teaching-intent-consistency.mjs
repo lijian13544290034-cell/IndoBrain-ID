@@ -141,6 +141,43 @@ for (const message of offCourseAttempts) {
   );
 }
 
+// ── 10. 迷你课程「练习判断」不得抢走释义/学习请求 ──
+// 真实 Preview 暴露的缺陷：分酒器是啥 被 MINI_COURSE_CORRECT 判成答错，
+// 因为排除清单只有「什么」没有「啥」。
+const mc = await import('../lib/server/mandarin-mini-course.ts');
+const mustNotBeAttempt = [
+  ['分酒器是啥', '释义请求（啥）'],
+  ['分酒器是啥意思', '释义请求（是啥意思）'],
+  ['库存是什么意思', '释义请求（什么）'],
+  ['我想学习怎么介绍分酒器', '新学习目标'],
+  ['我想学怎么介绍分酒器', '新学习目标（我想学）'],
+  ['Bukan, maksud saya...', '印尼语纠正'],
+];
+for (const [message, note] of mustNotBeAttempt) {
+  check(
+    `练习判断不抢释义/学习请求: 「${message}」`,
+    mc.looksLikeAttempt(message) === false,
+    note,
+  );
+}
+// 真正的跟读仍要能被识别，否则纠错能力会退化。
+const mustBeAttempt = [
+  ['欢迎光临', '跟读课程句'],
+  ['几位', '跟读课程句'],
+  ['huān yíng guāng lín', '拼音跟读'],
+  // 含「是 / 用 / 点」等常见字的真课程句，不能因为放宽释义判断而失去评分能力。
+  ['这是菜单', '含「是」的课程句'],
+  ['我整理文件', '课程句'],
+  ['请稍等', '课程句'],
+];
+for (const [message, note] of mustBeAttempt) {
+  check(
+    `真实跟读仍被识别: 「${message}」`,
+    mc.looksLikeAttempt(message) === true,
+    note,
+  );
+}
+
 console.log(`\n结果: ${checks.filter((c) => c.pass).length}/${checks.length} 通过`);
 const failed = checks.filter((c) => !c.pass);
 if (failed.length) {

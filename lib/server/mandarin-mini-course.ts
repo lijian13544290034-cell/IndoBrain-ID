@@ -276,11 +276,13 @@ export function looksLikeAttempt(message: string) {
   const text = message.trim();
   if (!text || text.length > 24) return false;
   if (/[?？!！]/.test(text)) return false;
-  if (/怎么|什么|为什么|如何|哪|多少|吗|apa|gimana|bagaimana|kenapa|mengapa|artinya|maksudnya|bilang|pakai|terjemah|ulang|pelan|salah|benar|bener|guru|terima kasih|makasih|lanjut|mulai/i.test(text)) return false;
+  if (/怎么|什么|为什么|如何|哪|多少|吗|啥|是什么意思|是啥|啥意思|apa|gimana|bagaimana|kenapa|mengapa|artinya|arti\b|maksudnya|bilang|pakai|terjemah|ulang|pelan|salah|benar|bener|guru|terima kasih|makasih|lanjut|mulai/i.test(text)) return false;
   // 说听不懂 / 想换方向 / 提问：必须交给模型，不能被课程练习判断抢走
   if (/tidak\s+(?:mengerti|ngerti|paham)|nggak\s+(?:mengerti|ngerti|paham)|belum\s+paham|bingung|susah|sulit|ganti|pindah|mau\s+(?:belajar|kerja)|maksud|kok|sih|emang/i.test(text)) return false;
   // 纠正老师 / 否定 / 说明真实意图：这是自由对话，绝不能判成"答错"
   if (/不是|不对|不要|没有|别|我说|我问|我说的是|bukan|maksud\s+saya|yang\s+saya\s+maksud|bukan\s+begitu|begini|seperti|yang\s+benar|tadi\s+itu|booking|reservasi|kamar|paket/i.test(text)) return false;
+  // 学生明确"想学某个词/句子"：这是新的学习目标，不是对当前课程目标的跟读。
+  if (/我想学|我要学|教我|学怎么|学习怎么|mau\s+belajar|ajari/i.test(text)) return false;
   if (detectOccupationKey(text) !== 'generic') return false;
   const chinese = text.match(/[\u3400-\u9fff]/g) || [];
   const latin = text.match(/[a-z]/gi) || [];
