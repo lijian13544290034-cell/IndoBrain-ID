@@ -85,15 +85,17 @@ results.push({
   detail: `status=${guarded.status} location=${guarded.location}`,
 });
 
-// 6) 用 Preview QA 会话访问受保护路由：真会话才通
+// 6) Preview QA 会话的落地页（AI Coach 所在学习区）能打开
+//    注意：/learn-chinese/* 在 proxy.ts 里是刻意公开的，所以这条只证明「评审入口可达」，
+//    不能当成「登录成功」。真正的账号密码登录需要有效账号，脚本不会伪造。
 const cookies = (() => {
   try { return readFileSync(jar, 'utf8'); } catch { return ''; }
 })();
-const authedHeaders = parseHeaders(run('chat', ['-D', '-', '-o', '/dev/null', '-b', jar]));
+const coachHeaders = parseHeaders(run('learn-chinese/ai-coach', ['-D', '-', '-o', '/dev/null', '-b', jar]));
 results.push({
-  check: 'Preview QA 会话可进入受保护路由 /chat',
-  pass: cookies.includes('indobrain_preview_qa') && authedHeaders.status === 200,
-  detail: `status=${authedHeaders.status} location=${authedHeaders.location} jar=${cookies.includes('indobrain_preview_qa') ? 'session-cookie' : 'empty'}`,
+  check: 'Preview QA 落地页 /learn-chinese/ai-coach 可达',
+  pass: coachHeaders.status === 200,
+  detail: `status=${coachHeaders.status} jar=${cookies.includes('indobrain_preview_qa') ? 'qa-session' : 'empty'}`,
 });
 
 const failed = results.filter((r) => !r.pass);

@@ -7,7 +7,7 @@ import { composeKnownCoachResponse, composeStudyPlanFallback, planCoachTurn, rou
 import { buildTeacherSkillSystem, emptyStudentSessionMemory, MANDARIN_TEACHER_SKILL_VERSION, type StudentSessionMemory } from '@/lib/server/mandarin-teacher-skill';
 import {
   buildMiniCourse, detectOccupationKey, flattenMiniCourse, looksLikeAttempt, matchesTarget, miniCourseAnswer, miniCourseOutline,
-  occupationKeyFromMemory, occupationLabel, type OccupationKey, type MiniCourseState,
+  occupationKeyFromMemory, occupationLabel, relatesToTarget, type OccupationKey, type MiniCourseState,
 } from '@/lib/server/mandarin-mini-course';
 import { resolveWordBreakdown } from '@/lib/server/mandarin-word-breakdown';
 
@@ -100,8 +100,10 @@ export function coachMiniCourseSnapshot(sessionId: string) {
 
 const START_COURSE = /^(?:(?:ayo|oke|ok|siap|ya|mau)\s+)?(?:mulai(?:i|kan)?|start)(?:\s+(?:pelajaran|belajar|kursus|kelas|sekarang|aja|dong|dari\s+awal|pertama|pelajaran\s+pertama|lesson\s*1))*[\s!.]*$|^pelajaran\s+pertama[\s!.]*$/i;
 const CONTINUE_COURSE = /^(?:lanjut(?:kan)?|next|terus(?:kan)?|continue|pelajaran\s+berikutnya|next\s+lesson|继续(?:刚才的)?(?:课程|课|学习|上课)?|接着(?:刚才的)?(?:课|课程|来|上)|回到(?:刚才的)?(?:课程|课)|我们继续|kembali\s+ke\s+(?:pelajaran|materi)|lanjut\s+(?:pelajaran|materi|belajar))[\s!?.。！？]*$/i;
-/** 只有学生明确「要一份课程/学习计划」时才输出大纲。宽泛的 "buatkan" 不算。 */
+/** 「继续刚才的课程 / 回到刚才」= 回到被打断前的那个位置，不前进。 */
+const RESUME_COURSE = /(?:继续|接着|回到|回到刚才|接着刚才|继续刚才|我们回到).{0,6}(?:刚才|之前|原来|tadi|sebelumnya)|kembali\s+ke\s+(?:materi|pelajaran)\s+(?:tadi|sebelumnya)|(?:lanjut|terus)\s+dari\s+(?:tadi|yang\s+tadi)/i;
 const COURSE_REQUEST = /kursus|rencana\s+belajar|study\s+plan|program\s+belajar|jadwal\s+belajar|belajar\s+dari\s+nol|buatkan\s+(?:saya\s+)?(?:kursus|rencana|program|jadwal)/i;
+/** 只有学生明确「要一份课程/学习计划」时才输出大纲。宽泛的 "buatkan" 不算。 */
 /** 换职业信号：只有这些话出现时，才允许把已有课程切到新职业。 */
 const JOB_CHANGE = /(?:kerja|bekerja)\s+di|pindah|ganti|sekarang\s+(?:saya|aku)|mulai\s+kerja|saya\s+jadi/i;
 
@@ -182,6 +184,9 @@ function composeMiniCourseResponse(input: {
           course: state,
         };
       }
+      // 只有「确实在尝试当前目标」时才由规则评分；学生复述模型临时教的句子、
+      // 或说完全无关的中文，交回模型判断，不能被旧课程规则判成答错。
+      if (!relatesToTarget(message, item)) return null;
       const reply = miniCourseAnswer(state, 'CORRECT');
       return { answer: { ...blankAnswer(), ...reply, teachingStrategy: 'MINI_COURSE_CORRECT', rememberTarget: true, targetChinese: reply.chinese, targetPinyin: reply.pinyin, targetMeaning: reply.indonesian }, course: state };
     }
@@ -191,6 +196,24 @@ function composeMiniCourseResponse(input: {
       writeMiniCourse(input.sessionId, next);
       const reply = miniCourseAnswer(next, 'START');
       return { answer: { ...blankAnswer(), ...reply, teachingStrategy: 'MINI_COURSE_START', rememberTarget: true, targetChinese: reply.chinese, targetPinyin: reply.pinyin, targetMeaning: reply.indonesian }, course: next };
+    }
+    if (RESUME_COURSE.test(message)) {
+      // 被打断后回来：重新呈现当前目标，游标不动，学生不会漏掉上一句。
+      const reply = miniCourseAnswer(state, 'NEXT');
+      writeMiniCourse(input.sessionId, state);
+      return {
+        answer: {
+          ...blankAnswer(),
+          ...reply,
+          answer: `Oke, kita lanjutkan dari posisi tadi: ${reply.chinese} (${reply.pinyin}) = ${reply.indonesian}.`,
+          followUp: `Ucapkan ${reply.chinese}, atau bilang "lanjut" kalau mau kalimat berikutnya.`,
+          summary: `Kembali ke posisi ${state.cursor + 1}: ${reply.chinese}.`,
+          teachingStrategy: 'MINI_COURSE_RESUME',
+          rememberTarget: true,
+          targetChinese: reply.chinese, targetPinyin: reply.pinyin, targetMeaning: reply.indonesian,
+        },
+        course: state,
+      };
     }
     if (CONTINUE_COURSE.test(message)) {
       if (state.cursor >= flat.length - 1) {

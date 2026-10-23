@@ -178,6 +178,26 @@ for (const [message, note] of mustBeAttempt) {
   );
 }
 
+// ── 11. 规则只在「确实在尝试当前目标」时才有资格评分 ──
+// 真实 Preview 暴露：模型临时教了「这是分酒器。」，学生复述后却被按旧目标
+// 「几位？」判成答错。relatesToTarget 就是这条闸门。
+const target = { chinese: '几位？', pinyin: 'jǐ wèi?', indonesian: 'berapa orang?' };
+const relateCases = [
+  ['几位', true, '跟读当前目标'],
+  ['几位？', true, '带标点跟读'],
+  ['ji wei', true, '拼音跟读'],
+  ['这是分酒器。', false, '复述模型新教的句子（不是当前目标）'],
+  ['你好', false, '完全无关的中文'],
+  ['我要结账', false, '另一个话题的中文'],
+];
+for (const [message, expected, note] of relateCases) {
+  check(
+    `评分闸门 relatesToTarget: 「${message}」→ ${expected ? '可评分' : '交模型'}（${note}）`,
+    mc.relatesToTarget(message, target) === expected,
+    `actual=${mc.relatesToTarget(message, target)}`,
+  );
+}
+
 console.log(`\n结果: ${checks.filter((c) => c.pass).length}/${checks.length} 通过`);
 const failed = checks.filter((c) => !c.pass);
 if (failed.length) {

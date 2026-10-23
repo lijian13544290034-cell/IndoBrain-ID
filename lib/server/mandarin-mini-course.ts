@@ -303,3 +303,31 @@ export function matchesTarget(message: string, target: MiniCourseExpression) {
   const pinyin = normalize(target.pinyin);
   return Boolean(pinyin) && (said.includes(pinyin) || pinyin.includes(said));
 }
+
+/**
+ * 学生这句话是否在「对着当前课程目标」作答。
+ *
+ * 为什么需要：模型可以动态教一句课程外的句子（例如「这是分酒器。」），
+ * 学生复述这句时，若只看「是不是简短中文」，规则会把人家正确的复述判成
+ * 对旧目标答错。确定性规则只有在学生确实在尝试当前目标时才有资格评分，
+ * 否则必须交回模型理解。
+ */
+export function relatesToTarget(message: string, target: MiniCourseExpression) {
+  if (matchesTarget(message, target)) return true;
+  const normalize = (value: string) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\u3400-\u9fff]/g, '');
+  const said = normalize(message);
+  if (!said) return false;
+  const targetChinese = normalize(target.chinese);
+  const saidHan = [...said].filter((char) => /[\u3400-\u9fff]/.test(char));
+  if (saidHan.length && targetChinese) {
+    const targetChars = new Set([...targetChinese]);
+    const overlap = saidHan.filter((char) => targetChars.has(char)).length;
+    // 说错了但至少在尝试这个目标（例如把「欢迎光临」说成「欢迎」）。
+    return overlap > 0 && overlap / saidHan.length >= 0.5;
+  }
+  // 纯拼音/拉丁输入：只认与目标拼音有实质重合的尝试。
+  const targetPinyin = normalize(target.pinyin);
+  if (!targetPinyin) return false;
+  const head = targetPinyin.slice(0, Math.min(4, targetPinyin.length));
+  return Boolean(head) && said.includes(head);
+}
