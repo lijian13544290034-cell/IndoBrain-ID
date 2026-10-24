@@ -32,6 +32,7 @@ const strip = (file, name) => {
 strip('lib/account/guest-mode.ts', 'guest-mode.ts');
 strip('lib/server/guest-session.ts', 'guest-session.ts');
 strip('lib/server/guest-quota.ts', 'guest-quota.ts');
+strip('lib/account/preview-qa.ts', 'preview-qa.ts');
 
 const sessionMod = await import(`file://${path.join(tmp, 'guest-session.ts').replace(/\\/g, '/')}`);
 const quotaMod = await import(`file://${path.join(tmp, 'guest-quota.ts').replace(/\\/g, '/')}`);
@@ -103,7 +104,19 @@ check('统计不含 IP / 手机号 / 设备指纹', !/1\.2\.3\.4|\+62|ip_address
 quotaMod.recordGuestError();
 check('错误计数可累加', quotaMod.guestMetricsSnapshot().errors.total === 1);
 
-// 11. 生产环境默认关闭
+// 11. 公开访客部署上内部 QA 绕过自动关闭
+process.env.VERCEL_ENV = 'preview';
+process.env.ENABLE_PREVIEW_QA = 'true';
+process.env.PREVIEW_QA_SESSION_SECRET = process.env.GUEST_SESSION_SECRET;
+process.env.GUEST_MODE_ENABLED = 'true';
+delete process.env.PREVIEW_QA_ALLOW_ON_GUEST;
+const { isPreviewQaEnabled } = await import(`file://${path.join(tmp, 'preview-qa.ts').replace(/\\/g, '/')}`);
+check('公开访客部署上内部 QA 绕过自动关闭', isPreviewQaEnabled() === false);
+process.env.PREVIEW_QA_ALLOW_ON_GUEST = 'true';
+check('显式放行时 QA 可恢复（仅内部需要）', isPreviewQaEnabled() === true);
+delete process.env.PREVIEW_QA_ALLOW_ON_GUEST;
+
+// 12. 生产环境默认关闭
 delete process.env.VERCEL_ENV;
 process.env.VERCEL_ENV = 'production';
 check('Production 强制关闭访客入口', modeMod.isGuestModeEnabled() === false);

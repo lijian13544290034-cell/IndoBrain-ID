@@ -8,8 +8,15 @@ type PreviewQaPayload = {
   expiresAt: number;
 };
 
+// 公开访客部署的保护：一旦 GUEST_MODE_ENABLED=true（即这条链接会对外分发），
+// 内部 Preview QA 绕过入口默认关闭，避免同一部署既给访客开放、又留下一个
+// 不限额度的内部绕过通道。需要保留 QA 时显式设置 PREVIEW_QA_ALLOW_ON_GUEST=true。
+function guestDeploymentBlocksQa() {
+  return process.env.GUEST_MODE_ENABLED === 'true' && process.env.PREVIEW_QA_ALLOW_ON_GUEST !== 'true';
+}
+
 function isPreviewEnvironment() {
-  return process.env.VERCEL_ENV === 'preview' && process.env.ENABLE_PREVIEW_QA === 'true';
+  return process.env.VERCEL_ENV === 'preview' && process.env.ENABLE_PREVIEW_QA === 'true' && !guestDeploymentBlocksQa();
 }
 
 function secret() {
