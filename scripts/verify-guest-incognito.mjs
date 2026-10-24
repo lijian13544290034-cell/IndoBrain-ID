@@ -139,14 +139,26 @@ async function main() {
   check('中文 TTS 播放接口 200', played && okTts.length > 0, `trigger=${played} req=${ttsRequests.length} ok=${okTts.length} ${okTts[0]?.cache || ''}`);
   await page.screenshot({ path: path.join(OUT_DIR, '05-tts.png') });
 
-  // 7. 拆词面板
-  const breakdownClicked = await clickByText(page, /Penjelasan kata/);
-  await sleep(900);
-  const breakdownVisible = await page.evaluate(() => {
-    const lists = [...document.querySelectorAll('ul')].filter((ul) => /Penjelasan kata|拆词/.test(document.body.innerText) && ul.querySelectorAll('li').length >= 1);
-    return lists.length > 0 && /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(document.body.innerText);
+  // 7. 拆词面板（严格校验：点击后 aria-expanded=true 且出现按词拆分的中文条目）
+  const breakdownClicked = await page.evaluate(() => {
+    const buttons = [...document.querySelectorAll('button')].filter((el) => /Penjelasan kata/.test(el.textContent || ''));
+    if (!buttons.length) return false;
+    buttons[buttons.length - 1].click();
+    return true;
   });
-  check('拆词面板可展开（显示拼音与释义）', Boolean(breakdownClicked) && breakdownVisible);
+  await sleep(800);
+  const breakdown = await page.evaluate(() => {
+    const buttons = [...document.querySelectorAll('button')].filter((el) => /Penjelasan kata/.test(el.textContent || ''));
+    if (!buttons.length) return { expanded: false, items: 0 };
+    const target = buttons[buttons.length - 1];
+    const expanded = target.getAttribute('aria-expanded') === 'true';
+    const panel = target.parentElement;
+    const listItems = panel ? panel.querySelectorAll('ul li') : [];
+    const chineseItems = [...listItems].filter((li) => /[\u3400-\u9fff]/.test(li.textContent || '')).length;
+    return { expanded, items: chineseItems };
+  });
+  check('拆词面板可展开（aria-expanded + 中文词条 ≥2）', breakdownClicked && breakdown.expanded && breakdown.items >= 2,
+    `expanded=${breakdown.expanded} items=${breakdown.items}`);
   await page.screenshot({ path: path.join(OUT_DIR, '06-breakdown.png') });
 
   // 8. 页面健康
