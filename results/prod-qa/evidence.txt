@@ -1,0 +1,59 @@
+IndoBrain 公共中文课程 — 只读验收原始证据
+时间: 2026-10-25 (GMT+7)
+站点: https://www.indobrain.app
+
+## 1. 路由状态（匿名 fetch，redirect: manual）
+/                             307  → /login?next=%2F
+/login                        200
+/learn-chinese                200  （匿名可访问，完整 Day 1 内容）
+/learn-chinese/ai-coach       200
+/learn-chinese/level-2        200  （锁定目录）
+/learn-chinese/level-2/31     302/307 → /login?next=/learn-chinese/level-2/31
+/learn-chinese/level-2/60     302/307 → /login?next=/learn-chinese/level-2/60
+/learn-chinese/course         404  （新版分支路由，生产 IA 为单页课程）
+/learn-chinese/favorites      404
+/learn-chinese/review         404
+/learn-chinese/profile        404
+/coba-gratis                  404  （免登录访客模式未上线，不视为已上线）
+/about                        307 → /login?next=%2Fabout
+/life                         307 → /login?next=%2Flife
+
+## 2. 登录页可见链接（HTML 抓取）
+/ , /life , /about#favorites , /about
+站点导航中没有 /learn-chinese 链接
+
+## 3. robots / sitemap
+robots.txt 包含: Disallow: /learn-chinese  （同时 Disallow: /login, /about, /api/ 等）
+sitemap.xml 共 15 条 URL，无 /learn-chinese
+/learn-chinese HTML 中未出现 noindex
+
+## 4. Level 2 目录匿名（HTML）
+href 中含 level-2 的链接: ['/login?next=/learn-chinese/level-2/31']  ← 仅为登录按钮
+锁定标记: 'Login + akses Level 2' / 'Masuk untuk Level 2' 均存在
+课程内容链接数: 0
+
+## 5. TTS
+直连 API: POST https://www.indobrain.app/api/chinese-tts {"text":"你好"}
+  → 200 audio/mpeg, 7632 bytes
+浏览器内 fetch 同上：200 audio/mpeg 7632 bytes
+真实鼠标点击（CDP 受信）：
+  playCalls=1, srcKind=blob, events=['playing'], duration=1.908, currentTime 推进至 1.908, errors=[]
+Day 15 朗读：200 audio/mpeg
+移动端 390px 朗读：200 audio/mpeg
+
+## 6. 收藏 / 已学 / 进度
+收藏: aria-pressed false → true；刷新后仍 true
+localStorage 键: mandarin-work-30d:profile:guest
+勾选已学后 profile: {"completedDays":[],"currentDay":1,"completedItems":["CN-WORK-D01-I01"],"favorites":[]}
+点「Selesaikan Hari 1」后：0/30 → 1/30；profile: {"completedDays":[1],"currentDay":2,...}
+刷新后：1/30，页面标题 HARI 2；日选择器 Day 1 样式含 bg-emerald-50 text-emerald-700
+
+## 7. 移动端
+390×844: scrollWidth=390, clientWidth=390（无横向溢出）
+360×800: 360/360；414×800: 414/414
+Day 15 / Day 30 @390: 390/390 无溢出
+按钮高度: Dengarkan 44px, Favorit 44px, Tandai 44px, Hari berikutnya 48px
+
+## 8. 其它
+页面加载 10 次（/login ×5、/learn-chinese ×5）未复现 React #418 / hydration 报错
+早期脚本产物 a*/b*/c*/e*/g*/i* 为对齐生产 IA 之前的探查，结论以 01-07、mobile-*、v3-*、qa-* 为准

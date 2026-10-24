@@ -1,0 +1,236 @@
+{
+  "testedAt": "2026-10-24T17:52:37.644Z",
+  "prod": "https://www.indobrain.app",
+  "checks": [
+    {
+      "id": "1.1",
+      "name": "匿名访问根域",
+      "ok": true,
+      "detail": "200 → /login?next=%2F"
+    },
+    {
+      "id": "1.2",
+      "name": "匿名打开学习入口",
+      "ok": true,
+      "detail": "{\"entry\":true,\"hanzi\":true,\"pinyin\":true,\"indonesian\":true,\"cards\":7,\"coachEntry\":true}"
+    },
+    {
+      "id": "1.3",
+      "name": "Day 1 汉字/拼音/印尼语",
+      "ok": true,
+      "detail": "cards=7"
+    },
+    {
+      "id": "2.1",
+      "name": "中文朗读（Day 1）",
+      "ok": false,
+      "detail": "{\"status\":200,\"contentType\":\"audio/mpeg\",\"bytes\":0,\"at\":1792864285648}"
+    },
+    {
+      "id": "3.1",
+      "name": "收藏切换",
+      "ok": true,
+      "detail": "false→true; ls=mandarin-work-30d:profile:guest"
+    },
+    {
+      "id": "3.2",
+      "name": "刷新后收藏保持",
+      "ok": true,
+      "detail": "aria-pressed=true"
+    },
+    {
+      "id": "4.1",
+      "name": "标记已学 → 进度递增",
+      "ok": false,
+      "detail": "0 → 0 /30"
+    },
+    {
+      "id": "4.2",
+      "name": "刷新后进度恢复",
+      "ok": true,
+      "detail": "0 → 0 /30"
+    },
+    {
+      "id": "5.1",
+      "name": "进入下一课",
+      "ok": true,
+      "detail": "HARI2=true"
+    },
+    {
+      "id": "6.15",
+      "name": "Day 15 内容",
+      "ok": true,
+      "detail": "{\"heading\":true,\"hanzi\":true,\"pinyin\":true,\"indo\":true,\"listen\":true}"
+    },
+    {
+      "id": "6.15-tts",
+      "name": "Day 15 朗读",
+      "ok": true,
+      "detail": "{\"status\":200,\"contentType\":\"audio/mpeg\",\"bytes\":0,\"at\":1792864303830}"
+    },
+    {
+      "id": "6.30",
+      "name": "Day 30 内容",
+      "ok": true,
+      "detail": "{\"heading\":true,\"hanzi\":true,\"pinyin\":true,\"indo\":true,\"listen\":true}"
+    },
+    {
+      "id": "7.1",
+      "name": "Level2 目录匿名锁定",
+      "ok": false,
+      "detail": "locked=true links=1"
+    },
+    {
+      "id": "7.31",
+      "name": "匿名直开 Day 31",
+      "ok": true,
+      "detail": "200 → /login?next=/learn-chinese/level-2/31 leaked=false"
+    },
+    {
+      "id": "7.60",
+      "name": "匿名直开 Day 60",
+      "ok": true,
+      "detail": "200 → /login?next=/learn-chinese/level-2/60 leaked=false"
+    },
+    {
+      "id": "8.1",
+      "name": "/learn-chinese/course 路由",
+      "ok": true,
+      "detail": "status=404（该分支路由尚未上线，生产 IA 为单页课程）"
+    },
+    {
+      "id": "9.1",
+      "name": "手机端学习入口无横向溢出",
+      "ok": true,
+      "detail": "390/390"
+    },
+    {
+      "id": "9.2",
+      "name": "手机端朗读",
+      "ok": true,
+      "detail": "{\"status\":200,\"contentType\":\"audio/mpeg\",\"bytes\":0,\"at\":1792864322398}"
+    },
+    {
+      "id": "9.3",
+      "name": "手机端日选择器无溢出",
+      "ok": true,
+      "detail": "390/390"
+    },
+    {
+      "id": "9.4",
+      "name": "手机端 Level2 目录无溢出",
+      "ok": true,
+      "detail": "390/390"
+    },
+    {
+      "id": "10.1",
+      "name": "授权测试会话可用",
+      "ok": true,
+      "detail": "status=200 url=/learn-chinese"
+    },
+    {
+      "id": "10.2",
+      "name": "授权态 Level2 放行（现有设计）",
+      "ok": true,
+      "detail": "links=31 authorized=true"
+    },
+    {
+      "id": "10.3",
+      "name": "授权态 Day 31 正文可见",
+      "ok": true,
+      "detail": "status=200 body=true"
+    }
+  ],
+  "findings": [
+    {
+      "id": "TTS-1",
+      "url": "https://www.indobrain.app/learn-chinese",
+      "steps": "点击 Day 1 第一张卡的「Dengarkan Mandarin」",
+      "actual": "TTS 响应: {\"status\":200,\"contentType\":\"audio/mpeg\",\"bytes\":0,\"at\":1792864285648}",
+      "expected": "POST /api/chinese-tts 返回 200 audio/* 且字节 > 1KB",
+      "severity": "P1",
+      "evidence": "shots/02-day1.png"
+    },
+    {
+      "id": "PROG-1",
+      "url": "https://www.indobrain.app/learn-chinese",
+      "steps": "点击「Tandai dipelajari」（已学）",
+      "actual": "进度未变化: 0/30",
+      "expected": "进度计数增加",
+      "severity": "P1",
+      "evidence": "shots/04-progress.png"
+    },
+    {
+      "id": "L2-CAT",
+      "url": "https://www.indobrain.app/learn-chinese/level-2",
+      "steps": "匿名打开 Level 2 目录",
+      "actual": "locked=true, 可点课程链接=1",
+      "expected": "仅锁定卡片，无课程链接",
+      "severity": "P0",
+      "evidence": "shots/07-level2.png"
+    }
+  ],
+  "p0": [
+    {
+      "id": "L2-CAT",
+      "url": "https://www.indobrain.app/learn-chinese/level-2",
+      "steps": "匿名打开 Level 2 目录",
+      "actual": "locked=true, 可点课程链接=1",
+      "expected": "仅锁定卡片，无课程链接",
+      "severity": "P0",
+      "evidence": "shots/07-level2.png"
+    }
+  ],
+  "p1": [
+    {
+      "id": "TTS-1",
+      "url": "https://www.indobrain.app/learn-chinese",
+      "steps": "点击 Day 1 第一张卡的「Dengarkan Mandarin」",
+      "actual": "TTS 响应: {\"status\":200,\"contentType\":\"audio/mpeg\",\"bytes\":0,\"at\":1792864285648}",
+      "expected": "POST /api/chinese-tts 返回 200 audio/* 且字节 > 1KB",
+      "severity": "P1",
+      "evidence": "shots/02-day1.png"
+    },
+    {
+      "id": "PROG-1",
+      "url": "https://www.indobrain.app/learn-chinese",
+      "steps": "点击「Tandai dipelajari」（已学）",
+      "actual": "进度未变化: 0/30",
+      "expected": "进度计数增加",
+      "severity": "P1",
+      "evidence": "shots/04-progress.png"
+    }
+  ],
+  "p2": [],
+  "ttsLog": [
+    {
+      "status": 200,
+      "contentType": "audio/mpeg",
+      "bytes": 0,
+      "at": 1792864285648
+    },
+    {
+      "status": 200,
+      "contentType": "audio/mpeg",
+      "bytes": 0,
+      "at": 1792864303830
+    },
+    {
+      "status": 200,
+      "contentType": "audio/mpeg",
+      "bytes": 0,
+      "at": 1792864322398
+    }
+  ],
+  "netFails": [
+    "404 https://www.indobrain.app/learn-chinese/course?day=1",
+    "401 https://indobrain-01-prd-prd-v0-1-3r3lj9yq1-lijian1.vercel.app/api/auth/super-admin-status",
+    "401 https://indobrain-01-prd-prd-v0-1-3r3lj9yq1-lijian1.vercel.app/api/auth/super-admin-status",
+    "401 https://indobrain-01-prd-prd-v0-1-3r3lj9yq1-lijian1.vercel.app/api/auth/super-admin-status",
+    "401 https://indobrain-01-prd-prd-v0-1-3r3lj9yq1-lijian1.vercel.app/api/auth/super-admin-status"
+  ],
+  "consoleErrors": [
+    "console: Failed to load resource: the server responded with a status of 404 ()",
+    "console: Failed to load resource: the server responded with a status of 401 ()"
+  ]
+}

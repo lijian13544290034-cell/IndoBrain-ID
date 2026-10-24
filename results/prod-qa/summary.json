@@ -1,0 +1,291 @@
+{
+  "findings": [
+    {
+      "id": "A3",
+      "url": "https://www.indobrain.app/learn-chinese",
+      "steps": "匿名打开学习首页",
+      "actual": "未找到「Kursus 30 Hari」入口卡片",
+      "expected": "公共课程入口可见",
+      "severity": "P1",
+      "evidence": "a3-learn-chinese.png"
+    },
+    {
+      "id": "A4",
+      "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+      "steps": "匿名打开 Day 1",
+      "actual": "正文缺失: {\"hanzi\":false,\"pinyin\":false,\"indonesian\":false,\"listen\":false,\"favorite\":false}",
+      "expected": "汉字+拼音+印尼语解释均可见",
+      "severity": "P0",
+      "evidence": "a4-day1.png"
+    },
+    {
+      "id": "B1",
+      "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+      "steps": "打开 Day 1 课程页",
+      "actual": "异常: {\"day\":false,\"hanzi\":false,\"pinyin\":false,\"listen\":false}",
+      "expected": "标题/汉字/拼音/朗读按钮齐全",
+      "severity": "P1",
+      "evidence": "b-day1.png"
+    },
+    {
+      "id": "D-1",
+      "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+      "steps": "点击朗读按钮",
+      "actual": "未找到 Dengarkan 按钮",
+      "expected": "存在朗读按钮",
+      "severity": "P1",
+      "evidence": "b-day1.png"
+    },
+    {
+      "id": "B15",
+      "url": "https://www.indobrain.app/learn-chinese/course?day=15",
+      "steps": "打开 Day 15 课程页",
+      "actual": "异常: {\"day\":false,\"hanzi\":false,\"pinyin\":false,\"listen\":false}",
+      "expected": "标题/汉字/拼音/朗读按钮齐全",
+      "severity": "P1",
+      "evidence": "b-day15.png"
+    },
+    {
+      "id": "D-15",
+      "url": "https://www.indobrain.app/learn-chinese/course?day=15",
+      "steps": "点击朗读按钮",
+      "actual": "未找到 Dengarkan 按钮",
+      "expected": "存在朗读按钮",
+      "severity": "P1",
+      "evidence": "b-day15.png"
+    },
+    {
+      "id": "B30",
+      "url": "https://www.indobrain.app/learn-chinese/course?day=30",
+      "steps": "打开 Day 30 课程页",
+      "actual": "异常: {\"day\":false,\"hanzi\":false,\"pinyin\":false,\"listen\":false}",
+      "expected": "标题/汉字/拼音/朗读按钮齐全",
+      "severity": "P1",
+      "evidence": "b-day30.png"
+    },
+    {
+      "id": "D-30",
+      "url": "https://www.indobrain.app/learn-chinese/course?day=30",
+      "steps": "点击朗读按钮",
+      "actual": "未找到 Dengarkan 按钮",
+      "expected": "存在朗读按钮",
+      "severity": "P1",
+      "evidence": "b-day30.png"
+    },
+    {
+      "id": "E1",
+      "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+      "steps": "查找收藏按钮",
+      "actual": "未找到 Favorit 按钮",
+      "expected": "表达卡带收藏按钮",
+      "severity": "P1",
+      "evidence": "e1-favorite.png"
+    },
+    {
+      "id": "F1",
+      "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+      "steps": "查找进入下一课的入口",
+      "actual": "未找到 Lanjut/Berikutnyya 类按钮",
+      "expected": "有明确下一课入口",
+      "severity": "P1",
+      "evidence": "f1-next.png"
+    },
+    {
+      "id": "G-tts",
+      "url": "https://www.indobrain.app/learn-chinese/course?day=1 (390px)",
+      "steps": "点击朗读",
+      "actual": "未找到 Dengarkan 按钮",
+      "expected": "朗读按钮可点",
+      "severity": "P1",
+      "evidence": "g-tts.png"
+    },
+    {
+      "id": "I1",
+      "url": "https://indobrain-01-prd-prd-v0-1-3r3lj9yq1-lijian1.vercel.app/api/auth/preview-qa",
+      "steps": "授权测试会话进入学习首页",
+      "actual": "未能进入学习环境: Skip to content\n\nSign Up\n\nLog in to Vercel\nContinue with Email\nContinue with Goo",
+      "expected": "进入 /learn-chinese",
+      "severity": "P2",
+      "evidence": "i1-qa-home.png"
+    }
+  ],
+  "summary": {
+    "testedAt": "2026-10-24T17:50:09.213Z",
+    "prod": "https://www.indobrain.app",
+    "p0": [
+      {
+        "id": "A4",
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "steps": "匿名打开 Day 1",
+        "actual": "正文缺失: {\"hanzi\":false,\"pinyin\":false,\"indonesian\":false,\"listen\":false,\"favorite\":false}",
+        "expected": "汉字+拼音+印尼语解释均可见",
+        "severity": "P0",
+        "evidence": "a4-day1.png"
+      }
+    ],
+    "p1": [
+      {
+        "id": "A3",
+        "url": "https://www.indobrain.app/learn-chinese",
+        "steps": "匿名打开学习首页",
+        "actual": "未找到「Kursus 30 Hari」入口卡片",
+        "expected": "公共课程入口可见",
+        "severity": "P1",
+        "evidence": "a3-learn-chinese.png"
+      },
+      {
+        "id": "B1",
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "steps": "打开 Day 1 课程页",
+        "actual": "异常: {\"day\":false,\"hanzi\":false,\"pinyin\":false,\"listen\":false}",
+        "expected": "标题/汉字/拼音/朗读按钮齐全",
+        "severity": "P1",
+        "evidence": "b-day1.png"
+      },
+      {
+        "id": "D-1",
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "steps": "点击朗读按钮",
+        "actual": "未找到 Dengarkan 按钮",
+        "expected": "存在朗读按钮",
+        "severity": "P1",
+        "evidence": "b-day1.png"
+      },
+      {
+        "id": "B15",
+        "url": "https://www.indobrain.app/learn-chinese/course?day=15",
+        "steps": "打开 Day 15 课程页",
+        "actual": "异常: {\"day\":false,\"hanzi\":false,\"pinyin\":false,\"listen\":false}",
+        "expected": "标题/汉字/拼音/朗读按钮齐全",
+        "severity": "P1",
+        "evidence": "b-day15.png"
+      },
+      {
+        "id": "D-15",
+        "url": "https://www.indobrain.app/learn-chinese/course?day=15",
+        "steps": "点击朗读按钮",
+        "actual": "未找到 Dengarkan 按钮",
+        "expected": "存在朗读按钮",
+        "severity": "P1",
+        "evidence": "b-day15.png"
+      },
+      {
+        "id": "B30",
+        "url": "https://www.indobrain.app/learn-chinese/course?day=30",
+        "steps": "打开 Day 30 课程页",
+        "actual": "异常: {\"day\":false,\"hanzi\":false,\"pinyin\":false,\"listen\":false}",
+        "expected": "标题/汉字/拼音/朗读按钮齐全",
+        "severity": "P1",
+        "evidence": "b-day30.png"
+      },
+      {
+        "id": "D-30",
+        "url": "https://www.indobrain.app/learn-chinese/course?day=30",
+        "steps": "点击朗读按钮",
+        "actual": "未找到 Dengarkan 按钮",
+        "expected": "存在朗读按钮",
+        "severity": "P1",
+        "evidence": "b-day30.png"
+      },
+      {
+        "id": "E1",
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "steps": "查找收藏按钮",
+        "actual": "未找到 Favorit 按钮",
+        "expected": "表达卡带收藏按钮",
+        "severity": "P1",
+        "evidence": "e1-favorite.png"
+      },
+      {
+        "id": "F1",
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "steps": "查找进入下一课的入口",
+        "actual": "未找到 Lanjut/Berikutnyya 类按钮",
+        "expected": "有明确下一课入口",
+        "severity": "P1",
+        "evidence": "f1-next.png"
+      },
+      {
+        "id": "G-tts",
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1 (390px)",
+        "steps": "点击朗读",
+        "actual": "未找到 Dengarkan 按钮",
+        "expected": "朗读按钮可点",
+        "severity": "P1",
+        "evidence": "g-tts.png"
+      }
+    ],
+    "p2": [
+      {
+        "id": "I1",
+        "url": "https://indobrain-01-prd-prd-v0-1-3r3lj9yq1-lijian1.vercel.app/api/auth/preview-qa",
+        "steps": "授权测试会话进入学习首页",
+        "actual": "未能进入学习环境: Skip to content\n\nSign Up\n\nLog in to Vercel\nContinue with Email\nContinue with Goo",
+        "expected": "进入 /learn-chinese",
+        "severity": "P2",
+        "evidence": "i1-qa-home.png"
+      }
+    ],
+    "consoleErrors": [
+      "console: Failed to load resource: the server responded with a status of 404 ()",
+      "pageerror: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full e",
+      "console: Failed to load resource: the server responded with a status of 404 ()",
+      "pageerror: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full e",
+      "console: Failed to load resource: the server responded with a status of 404 ()",
+      "pageerror: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full e",
+      "console: Failed to load resource: the server responded with a status of 404 ()",
+      "pageerror: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full e",
+      "console: Failed to load resource: the server responded with a status of 404 ()",
+      "pageerror: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full e",
+      "console: Failed to load resource: the server responded with a status of 404 ()",
+      "pageerror: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full e",
+      "console: Failed to load resource: the server responded with a status of 404 ()",
+      "pageerror: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full e",
+      "console: Failed to load resource: the server responded with a status of 404 ()",
+      "console: Failed to load resource: the server responded with a status of 404 ()",
+      "pageerror: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full e",
+      "console: Failed to load resource: the server responded with a status of 404 ()",
+      "pageerror: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full e",
+      "console: Failed to load resource: the server responded with a status of 404 ()"
+    ],
+    "networkFailures": [
+      {
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "status": 404
+      },
+      {
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "status": 404
+      },
+      {
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "status": 404
+      },
+      {
+        "url": "https://www.indobrain.app/favicon.ico",
+        "status": 404
+      },
+      {
+        "url": "https://www.indobrain.app/learn-chinese/favorites",
+        "status": 404
+      },
+      {
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "status": 404
+      },
+      {
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "status": 404
+      },
+      {
+        "url": "https://www.indobrain.app/learn-chinese/course?day=1",
+        "status": 404
+      },
+      {
+        "url": "https://o205439.ingest.sentry.io/api/1323670/envelope/?sentry_key=d00780d432ac4ccf882f60dd02062e14&sentry_version=7&sentry_client=sentry.jav",
+        "status": 429
+      }
+    ],
+    "ttsResponses": []
+  }
+}
