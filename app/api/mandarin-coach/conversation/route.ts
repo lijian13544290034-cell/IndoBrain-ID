@@ -10,6 +10,8 @@ import { getMandarinCoachLesson } from '@/lib/server/mandarin-coach-curriculum';
 import { resolveRequestAccountScope } from '@/lib/server/request-account-scope';
 import { ActiveTeachingStateError, buildActiveTechnicalFailure, runActiveTeachingTurn } from '@/lib/server/teaching-engine-active';
 import { runTeachingEngineShadow, teachingEngineActiveEnabled } from '@/lib/server/teaching-engine-shadow';
+import { guestCountCookie, resolveGuestScope } from '@/lib/server/guest-auth';
+import { consumeGuestTurn, recordGuestError } from '@/lib/server/guest-quota';
 
 export const runtime = 'nodejs';
 
@@ -119,6 +121,7 @@ function safeContext(value: FormDataEntryValue | null) {
 
 export async function POST(request: Request) {
   const startedAt = Date.now();
+  let guestActive = false;
   try {
     const form = await request.formData();
     const sessionId = form.get('sessionId');
@@ -133,8 +136,20 @@ export async function POST(request: Request) {
     if (isLevelTwo && levelTwoAccess?.state !== 'authorized') return Response.json({ error: 'Akses Level 2 diperlukan.', code: 'LEVEL2_ACCESS_REQUIRED' }, { status: 403 });
     const scopePolicy = courseLesson.source === 'MANDARIN_WORK_LEVEL_1'
       ? 'ANONYMOUS_TRIAL_ALLOWED'
-      : levelTwoAccess?.source === 'preview-qa' ? 'EXTERNAL_ACCESS_VERIFIED' : 'ACCOUNT_REQUIRED';
-    const scope = await resolveRequestAccountScope(sessionId, scopePolicy);
+      : levelTwoAccess?.source === 'preview-qa' ? 'EXTERNAL_ACCESS_VERIFIED' : levelTwoAccess?.source === 'guest' ? 'ANONYMOUS_TRIAL_ALLOWED' : 'ACCOUNT_REQUIRED';
+    // Mode Tamu：合法访客令牌优先，作用域基于访客 id 派生，与账号会话完全隔离。
+    const guestScope = await resolveGuestScope(sessionId);
+    guestActive = Boolean(guestScope);
+    if (guestScope) {
+      const turn = consumeGuestTurn(guestScope.session.id, guestScope.session.conversations);
+      if (!turn.allowed) {
+        const message = turn.reason === 'GLOBAL_DAILY_BUDGET'
+          ? 'Kuota uji coba gratis hari ini sudah terpakai semua. Coba lagi besok ya.'
+          : 'Batas percakapan uji coba gratis sudah tercapai. Terima kasih sudah mencoba IndoBrain!';
+        return Response.json({ error: message, code: turn.reason }, { status: 429 });
+      }
+    }
+    const scope = guestScope ?? await resolveRequestAccountScope(sessionId, scopePolicy);
     if (!scope) return Response.json({ error: 'Masuk ke akun IndoBrain untuk menggunakan materi ini.', code: 'LOGIN_REQUIRED' }, { status: 401 });
     const scopedSessionId = scope.sessionId;
     const currentExpression = context.currentExpression && courseLesson.expressions.some((item) => item.id === context.currentExpression) ? context.currentExpression : null;
@@ -283,7 +298,7 @@ export async function POST(request: Request) {
     });
     if (!activeTeaching) await saveCoachInteraction({
       sessionId: scopedSessionId,
-      userId: scope.user?.id || null,
+      userId: 'user' in scope ? scope.user?.id || null : null,
       inputMode,
       userMessage: message,
       assistantMessage: [result.answer.answer, result.answer.chinese, result.answer.indonesian, result.answer.followUp].filter(Boolean).join(' '),
@@ -314,7 +329,7 @@ export async function POST(request: Request) {
     if (!activeTeaching && securedContext.messageCount === 0) {
       await saveCoachTelemetryEvent({
         sessionId: scopedSessionId,
-        userId: scope.user?.id || null,
+        userId: 'user' in scope ? scope.user?.id || null : null,
         event: 'first_coach_message',
         data: { message: anonymizeLearningQuestion(message), detected_language: result.classification.detectedLanguage, intent: result.classification.intent, lesson_id: courseLesson.id, current_day: securedContext.currentDay },
       });
@@ -342,8 +357,9 @@ export async function POST(request: Request) {
       ...(teachingEngine ? { teachingEngine } : {}),
       ...(activeTeaching ? { activeTeaching: activeTeaching.session, activeTeachingToken: activeTeaching.sessionToken, teachingTurnTelemetry: activeTeaching.telemetry } : {}),
       timestamp,
-    });
+    }, guestScope ? { headers: { 'Set-Cookie': guestCountCookie(guestScope.session) } } : undefined);
   } catch (error) {
+    if (guestActive) recordGuestError();
     const details = error && typeof error === 'object' ? error as { name?: unknown; message?: unknown; statusCode?: unknown } : {};
     console.error('[mandarin-coach-conversation]', {
       name: typeof details.name === 'string' ? details.name : 'UnknownError',

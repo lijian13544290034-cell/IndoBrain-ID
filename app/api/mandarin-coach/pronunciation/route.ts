@@ -3,6 +3,8 @@ import { getMandarinLevel2Access } from '@/lib/server/mandarin-work-level2-acces
 import { getMandarinCoachExpression } from '@/lib/server/mandarin-coach-curriculum';
 import { evaluateCoachAttempt, transcribeMandarin } from '@/lib/server/mandarin-ai-coach';
 import { resolveRequestAccountScope } from '@/lib/server/request-account-scope';
+import { resolveGuestScope } from '@/lib/server/guest-auth';
+import { consumeGuestTurn } from '@/lib/server/guest-quota';
 
 export const runtime = 'nodejs';
 
@@ -43,10 +45,16 @@ export async function POST(request: Request) {
     if (levelTwoAccess?.state === 'anonymous') return Response.json({ error: 'Masuk ke akun IndoBrain untuk menggunakan latihan suara Level 2.', code: 'LOGIN_REQUIRED' }, { status: 401 });
     if (levelTwoAccess?.state === 'locked') return Response.json({ error: 'Akun ini belum memiliki akses Level 2.', code: 'LEVEL2_ACCESS_REQUIRED' }, { status: 403 });
     const scopePolicy = isLevelTwo
-      ? levelTwoAccess?.source === 'preview-qa' ? 'EXTERNAL_ACCESS_VERIFIED' : 'ACCOUNT_REQUIRED'
+      ? levelTwoAccess?.source === 'preview-qa' ? 'EXTERNAL_ACCESS_VERIFIED' : levelTwoAccess?.source === 'guest' ? 'ANONYMOUS_TRIAL_ALLOWED' : 'ACCOUNT_REQUIRED'
       : 'ANONYMOUS_TRIAL_ALLOWED';
-    const scope = await resolveRequestAccountScope(sessionId, scopePolicy);
+    const scope = isLevelTwo
+      ? await resolveRequestAccountScope(sessionId, scopePolicy)
+      : await resolveGuestScope(sessionId) ?? await resolveRequestAccountScope(sessionId, scopePolicy);
     if (!scope) return Response.json({ error: 'Masuk ke akun IndoBrain, lalu coba latihan suara lagi.', code: 'LOGIN_REQUIRED' }, { status: 401 });
+    // 访客的发音评估同样计入访客额度（转写会消耗 STT 模型额度）。
+    if ('session' in scope && !consumeGuestTurn(scope.session.id, scope.session.conversations).allowed) {
+      return Response.json({ error: 'Batas latihan uji coba gratis sudah tercapai. Terima kasih sudah mencoba IndoBrain!', code: 'GUEST_LIMIT' }, { status: 429 });
+    }
     const scopedSessionId = scope.sessionId;
     if (!allowAttempt(scopedSessionId)) return Response.json({ error: 'Batas latihan harian sudah tercapai. Lanjutkan besok.' }, { status: 429 });
 
