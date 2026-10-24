@@ -1,0 +1,108 @@
+{
+  "deploy": "https://indobrain-01-prd-prd-v0-1-q0tepukp8-lijian1.vercel.app/coba-gratis?x-vercel-protection-bypass=tjsf5ySGeoMx5sKLkRPeatqEmXsEtZWl&x-vercel-set-bypass-cookie=true",
+  "passed": 18,
+  "total": 18,
+  "checks": [
+    {
+      "name": "分享链接无需 Vercel 登录即可打开",
+      "pass": true,
+      "detail": "http=200"
+    },
+    {
+      "name": "未跳转 Vercel 登录页",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "印尼语欢迎页突出「无需注册/密码」",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "存在「Mulai Belajar Sekarang」按钮",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "访客会话后直接进入 AI 教练页",
+      "pass": true,
+      "detail": "/learn-chinese/ai-coach"
+    },
+    {
+      "name": "选课成功（无需登录）",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "对话面板可打开且输入框可用",
+      "pass": true,
+      "detail": "opened=true"
+    },
+    {
+      "name": "第 1 轮对话收到 AI 回复",
+      "pass": true,
+      "detail": "Saya kerja di restoran, saya waiter."
+    },
+    {
+      "name": "第 2 轮对话收到 AI 回复",
+      "pass": true,
+      "detail": "Apa artinya 欢迎光临?"
+    },
+    {
+      "name": "第 3 轮对话收到 AI 回复",
+      "pass": true,
+      "detail": "Bagaimana cara mengucapkannya dengan benar?"
+    },
+    {
+      "name": "完成连续 3 轮真实 AI 对话",
+      "pass": true,
+      "detail": "3/3"
+    },
+    {
+      "name": "中文 TTS 播放接口 200",
+      "pass": true,
+      "detail": "trigger=true req=1 ok=1 HIT"
+    },
+    {
+      "name": "拆词面板可展开（aria-expanded + 中文词条 ≥2）",
+      "pass": true,
+      "detail": "expanded=true items=2"
+    },
+    {
+      "name": "移动端无横向溢出",
+      "pass": true,
+      "detail": "scroll=390 client=390"
+    },
+    {
+      "name": "无前端运行时异常",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "浏览器仅有访客 Cookie（无账号会话）",
+      "pass": true,
+      "detail": "_vercel_jwt,indobrain_guest_session"
+    },
+    {
+      "name": "访客无权访问管理员接口",
+      "pass": true,
+      "detail": "status=401"
+    },
+    {
+      "name": "访客无权访问运营统计接口",
+      "pass": true,
+      "detail": "status=401"
+    }
+  ],
+  "answers": [
+    "Oke, kamu bekerja di restoran sebagai waiter. Bagus sekali! Kita akan mulai dengan kalimat yang paling sering kamu gunakan saat menyambut tamu. Ini dia: Selamat datang!\n\n欢迎光临\n\nhuān",
+    "Tentu saja! 欢迎光临 (huān yíng guāng lín) artinya adalah \"Selamat datang\". Ini adalah ungkapan yang sangat penting saat menyambut tamu di restoran atau tempat kerja lainnya.  \n\nKita s",
+    "Tentu saja! Anda bertanya bagaimana cara mengucapkan \"Selamat datang\" (欢迎光临 - huān yíng guāng lín) dengan benar. Mari kita fokus pada pengucapan nada yang tepat. Nada pada huān ada"
+  ],
+  "tts": [
+    {
+      "status": 200,
+      "cache": "HIT"
+    }
+  ]
+}

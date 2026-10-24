@@ -1,0 +1,96 @@
+{
+  "passed": 18,
+  "total": 18,
+  "checks": [
+    {
+      "name": "访客令牌可签发并校验",
+      "pass": true,
+      "detail": "id 前缀=guest-…"
+    },
+    {
+      "name": "令牌载荷只含 v/iat/exp/n（无个人信息）",
+      "pass": true,
+      "detail": "exp,iat,n,v"
+    },
+    {
+      "name": "篡改计数被签名拒绝",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "篡改签名被拒绝",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "伪造访客 id 前缀被拒绝",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "过期令牌被拒绝",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "匿名 id 稳定且不含原始令牌",
+      "pass": true,
+      "detail": "guest-7864310f736148e7670a0ac8"
+    },
+    {
+      "name": "访客会话键与客户端 id 解耦",
+      "pass": true,
+      "detail": "scope-9e27c6f20c7a10a301d31f834018c11b"
+    },
+    {
+      "name": "同 IP 每日会话上限生效",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "单会话轮数上限生效",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "全站日对话预算熔断",
+      "pass": true,
+      "detail": "GLOBAL_DAILY_BUDGET"
+    },
+    {
+      "name": "统计快照含访客数/轮数/时长/错误率",
+      "pass": true,
+      "detail": "sessions=2 · turns=10 · errRate=0"
+    },
+    {
+      "name": "统计不含 IP / 手机号 / 设备指纹",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "错误计数可累加",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "公开访客部署上内部 QA 绕过自动关闭",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "显式放行时 QA 可恢复（仅内部需要）",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Production 强制关闭访客入口",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Preview + 开关打开时可用",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}
