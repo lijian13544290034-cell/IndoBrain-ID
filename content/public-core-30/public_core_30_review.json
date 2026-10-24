@@ -1,0 +1,383 @@
+{
+  "version": 1,
+  "direction": "ID_TO_ZH",
+  "contentType": "PUBLIC_HIGH_FREQUENCY",
+  "reviewStatus": "REVIEW_PASSED",
+  "reviewReference": "WB-public-core-30-review-2026-10-25 (pending human approval)",
+  "course": {
+    "id": "mandarin-public-core-30",
+    "titleZh": "日常高频中文 30 句",
+    "titleId": "30 Kalimat Mandarin Sehari-hari",
+    "groupId": "public-high-frequency",
+    "scenarioId": "daily-life-core",
+    "accessTier": "FREE",
+    "requiresPermission": null,
+    "pathway": {
+      "mode": "SUPPLEMENTAL",
+      "recommendedAfterLessonId": null,
+      "prerequisiteLessonIds": []
+    }
+  },
+  "expressions": [
+    {
+      "id": "CN-HF-001",
+      "chinese": "您好，先生。",
+      "pinyin": "nín hǎo, xiān sheng.",
+      "indonesian": "Halo, Pak.",
+      "ttsText": "您好，先生。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-greeting"
+      ]
+    },
+    {
+      "id": "CN-HF-002",
+      "chinese": "不好意思，先生。",
+      "pinyin": "bù hǎo yì si, xiān sheng.",
+      "indonesian": "Permisi, Pak.",
+      "ttsText": "不好意思，先生。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-greeting"
+      ]
+    },
+    {
+      "id": "CN-HF-003",
+      "chinese": "路上小心。",
+      "pinyin": "lù shang xiǎo xīn.",
+      "indonesian": "Hati-hati di jalan.",
+      "ttsText": "路上小心。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-greeting"
+      ]
+    },
+    {
+      "id": "CN-HF-004",
+      "chinese": "我在这里。",
+      "pinyin": "wǒ zài zhè lǐ.",
+      "indonesian": "Saya di sini.",
+      "ttsText": "我在这里。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-self-intro"
+      ]
+    },
+    {
+      "id": "CN-HF-005",
+      "chinese": "你到了吗？",
+      "pinyin": "nǐ dào le ma?",
+      "indonesian": "Kamu sudah sampai?",
+      "ttsText": "你到了吗？",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-self-intro"
+      ]
+    },
+    {
+      "id": "CN-HF-006",
+      "chinese": "我刚进去。",
+      "pinyin": "wǒ gāng jìn qù.",
+      "indonesian": "Saya baru masuk.",
+      "ttsText": "我刚进去。",
+      "difficulty": 2,
+      "tags": [
+        "high-frequency",
+        "cat-self-intro"
+      ]
+    },
+    {
+      "id": "CN-HF-007",
+      "chinese": "一个人。",
+      "pinyin": "yí gè rén.",
+      "indonesian": "satu orang",
+      "ttsText": "一个人。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-numbers"
+      ]
+    },
+    {
+      "id": "CN-HF-008",
+      "chinese": "两瓶。",
+      "pinyin": "liǎng píng.",
+      "indonesian": "dua botol",
+      "ttsText": "两瓶。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-numbers"
+      ]
+    },
+    {
+      "id": "CN-HF-009",
+      "chinese": "一点点就行。",
+      "pinyin": "yì diǎn diǎn jiù xíng.",
+      "indonesian": "sedikit saja",
+      "ttsText": "一点点就行。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-numbers"
+      ]
+    },
+    {
+      "id": "CN-HF-010",
+      "chinese": "八点半。",
+      "pinyin": "bā diǎn bàn.",
+      "indonesian": "Jam setengah sembilan.",
+      "ttsText": "八点半。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-time"
+      ]
+    },
+    {
+      "id": "CN-HF-011",
+      "chinese": "下周。",
+      "pinyin": "xià zhōu.",
+      "indonesian": "minggu depan",
+      "ttsText": "下周。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-time"
+      ]
+    },
+    {
+      "id": "CN-HF-012",
+      "chinese": "就今天吧。",
+      "pinyin": "jiù jīn tiān ba.",
+      "indonesian": "Hari ini saja.",
+      "ttsText": "就今天吧。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-time"
+      ]
+    },
+    {
+      "id": "CN-HF-013",
+      "chinese": "这个多少钱？",
+      "pinyin": "zhè ge duō shǎo qián?",
+      "indonesian": "Ini berapa?",
+      "ttsText": "这个多少钱？",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-shopping"
+      ]
+    },
+    {
+      "id": "CN-HF-014",
+      "chinese": "可以现金吗？",
+      "pinyin": "kě yǐ xiàn jīn ma?",
+      "indonesian": "Bisa cash?",
+      "ttsText": "可以现金吗？",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-shopping"
+      ]
+    },
+    {
+      "id": "CN-HF-015",
+      "chinese": "我想买这个。",
+      "pinyin": "wǒ xiǎng mǎi zhè ge.",
+      "indonesian": "Saya mau beli yang ini.",
+      "ttsText": "我想买这个。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-shopping"
+      ]
+    },
+    {
+      "id": "CN-HF-016",
+      "chinese": "不要太辣。",
+      "pinyin": "bú yào tài là.",
+      "indonesian": "Jangan terlalu pedas.",
+      "ttsText": "不要太辣。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-food-drink"
+      ]
+    },
+    {
+      "id": "CN-HF-017",
+      "chinese": "不加糖哦。",
+      "pinyin": "bù jiā táng ó.",
+      "indonesian": "Tanpa gula ya.",
+      "ttsText": "不加糖哦。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-food-drink"
+      ]
+    },
+    {
+      "id": "CN-HF-018",
+      "chinese": "温水就行。",
+      "pinyin": "wēn shuǐ jiù xíng.",
+      "indonesian": "Air hangat saja.",
+      "ttsText": "温水就行。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-food-drink"
+      ]
+    },
+    {
+      "id": "CN-HF-019",
+      "chinese": "厕所在哪里？",
+      "pinyin": "cè suǒ zài nǎ lǐ?",
+      "indonesian": "Toiletnya di mana?",
+      "ttsText": "厕所在哪里？",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-travel"
+      ]
+    },
+    {
+      "id": "CN-HF-020",
+      "chinese": "请到这个位置接我。",
+      "pinyin": "qǐng dào zhè ge wèi zhì jiē wǒ.",
+      "indonesian": "Tolong jemput saya di lokasi ini.",
+      "ttsText": "请到这个位置接我。",
+      "difficulty": 2,
+      "tags": [
+        "high-frequency",
+        "cat-travel"
+      ]
+    },
+    {
+      "id": "CN-HF-021",
+      "chinese": "先一直往前。",
+      "pinyin": "xiān yì zhí wǎng qián.",
+      "indonesian": "Lurus saja dulu.",
+      "ttsText": "先一直往前。",
+      "difficulty": 2,
+      "tags": [
+        "high-frequency",
+        "cat-travel"
+      ]
+    },
+    {
+      "id": "CN-HF-022",
+      "chinese": "帮我拿这个。",
+      "pinyin": "bāng wǒ ná zhè ge.",
+      "indonesian": "Tolong ambil ini.",
+      "ttsText": "帮我拿这个。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-requests"
+      ]
+    },
+    {
+      "id": "CN-HF-023",
+      "chinese": "帮我打包。",
+      "pinyin": "bāng wǒ dǎ bāo.",
+      "indonesian": "Tolong bungkus ya.",
+      "ttsText": "帮我打包。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-requests"
+      ]
+    },
+    {
+      "id": "CN-HF-024",
+      "chinese": "把灯打开。",
+      "pinyin": "bǎ dēng dǎ kāi.",
+      "indonesian": "Nyalakan lampunya.",
+      "ttsText": "把灯打开。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-requests"
+      ]
+    },
+    {
+      "id": "CN-HF-025",
+      "chinese": "稍等一下。",
+      "pinyin": "shāo děng yí xià.",
+      "indonesian": "Tunggu sebentar ya.",
+      "ttsText": "稍等一下。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-responses"
+      ]
+    },
+    {
+      "id": "CN-HF-026",
+      "chinese": "就是这个。",
+      "pinyin": "jiù shì zhè ge.",
+      "indonesian": "Ini nih.",
+      "ttsText": "就是这个。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-responses"
+      ]
+    },
+    {
+      "id": "CN-HF-027",
+      "chinese": "准备好了吗？",
+      "pinyin": "zhǔn bèi hǎo le ma?",
+      "indonesian": "Sudah siap?",
+      "ttsText": "准备好了吗？",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-responses"
+      ]
+    },
+    {
+      "id": "CN-HF-028",
+      "chinese": "我手机快没电了。",
+      "pinyin": "wǒ shǒu jī kuài méi diàn le.",
+      "indonesian": "HP-ku lowbat.",
+      "ttsText": "我手机快没电了。",
+      "difficulty": 2,
+      "tags": [
+        "high-frequency",
+        "cat-daily-life"
+      ]
+    },
+    {
+      "id": "CN-HF-029",
+      "chinese": "身体不舒服。",
+      "pinyin": "shēn tǐ bù shū fu.",
+      "indonesian": "Badan nggak enak.",
+      "ttsText": "身体不舒服。",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-daily-life"
+      ]
+    },
+    {
+      "id": "CN-HF-030",
+      "chinese": "什么时候好？",
+      "pinyin": "shén me shí hòu hǎo?",
+      "indonesian": "Kapan selesai?",
+      "ttsText": "什么时候好？",
+      "difficulty": 1,
+      "tags": [
+        "high-frequency",
+        "cat-daily-life"
+      ]
+    }
+  ]
+}
