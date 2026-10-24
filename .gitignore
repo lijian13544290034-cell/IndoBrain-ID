@@ -10,3 +10,8 @@ work/
 !.env.example
 
 .vercel
+
+# local browser profiles (guest E2E)
+.tmp-guest-profile/
+.tmp-guest/
+.tmp-p0/
