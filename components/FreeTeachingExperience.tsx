@@ -97,7 +97,16 @@ export default function FreeTeachingExperience({ initialReady }: { initialReady:
           message: clean,
           sessionId,
           contextSummary,
-          recentTurns: history.slice(-12).map((turn) => ({ role: turn.role, text: turn.text })),
+          recentTurns: history.slice(-12).map((turn) => ({
+            role: turn.role,
+            text: turn.role === 'assistant' && turn.payload
+              ? [
+                  turn.text,
+                  turn.payload.spokenChinese.length ? `Taught Chinese: ${turn.payload.spokenChinese.map((item) => item.text).join('、')}` : '',
+                  turn.payload.followUp ? `Teacher follow-up: ${turn.payload.followUp}` : '',
+                ].filter(Boolean).join('\n')
+              : turn.text,
+          })),
         }),
       });
       const payload = await response.json().catch(() => null) as AssistantPayload | null;

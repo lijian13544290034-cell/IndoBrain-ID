@@ -1,7 +1,6 @@
 import 'server-only';
 
 import { NoObjectGeneratedError, Output, gateway, generateText, jsonSchema } from 'ai';
-import { buildMiniCourse, type OccupationKey } from '@/lib/server/mandarin-mini-course';
 
 const FAST_MODEL = process.env.FAST_MODEL || 'google/gemini-2.5-flash-lite';
 const SMART_MODEL = process.env.SMART_MODEL || 'google/gemini-2.5-flash';
@@ -76,17 +75,6 @@ const answerSchema = jsonSchema<FreeTeachingAnswer>({
   },
 });
 
-function courseReference() {
-  const keys: OccupationKey[] = ['admin', 'pabrik', 'gudang', 'sales', 'hospitality', 'generic'];
-  return keys.map((key) => {
-    const course = buildMiniCourse(key);
-    return {
-      topic: course.label,
-      expressions: course.days.flatMap((day) => day.expressions).slice(0, 16),
-    };
-  });
-}
-
 function fallbackCost(model: string, inputTokens: number, outputTokens: number) {
   if (model === 'google/gemini-2.5-flash') return inputTokens * 0.30 / 1_000_000 + outputTokens * 2.50 / 1_000_000;
   return inputTokens * 0.10 / 1_000_000 + outputTokens * 0.40 / 1_000_000;
@@ -144,12 +132,13 @@ function mergeUsage(first: FreeTeachingUsage, second: FreeTeachingUsage): FreeTe
 const SYSTEM = [
   'You are the AI Free Teaching V1 teacher in IndoBrain. Teach Mainland Simplified Mandarin to Indonesian absolute beginners, mainly using clear Bahasa Indonesia.',
   'Infer the learner intent yourself. If they ask for a test, test them. If they ask for an explanation, explain. If they want practice or roleplay, begin it. If they answer an exercise, evaluate only against the exercise actually asked in the visible conversation.',
-  'A test request must produce at least one concrete question or translation task in the SAME turn; do not merely announce that a test will begin. A request for a harder question must actually give a harder question and use responseMode TEST, not switch into a lecture.',
-  'There is no mandatory lesson, target sentence, card, or state-machine progression. Never drag the learner back to an earlier lesson. Continue naturally from recent turns when the learner says things like “jelaskan lagi” or “继续刚才的练习”.',
+  'The learner’s latest explicit request overrides any unfinished test or exercise. A new roleplay request must begin roleplay in the same turn instead of continuing the old test.',
+  'A test request must produce at least one concrete question or translation task in answer in the SAME turn; do not put the only task in followUp or merely announce that a test will begin. A request for a harder question must actually give a harder question and use responseMode TEST, not switch into a lecture.',
+  'There is no mandatory lesson, target sentence, card, or state-machine progression. Never drag the learner back to an earlier lesson. “Jelaskan lagi” refers to the immediately preceding assistant topic; “继续刚才的练习” continues the immediately preceding practice.',
   'Adjust difficulty from the learner’s actual answers. Never claim mastery without direct evidence. A question, request, or “belum paham” is NOT an attempted answer and must use assessment.status NOT_ASSESSED.',
   'Do not say “benar”, “betul”, “bagus”, or equivalent praise unless assessment.status is CORRECT and assessment.evidence cites the learner answer that proves it. A request to continue is never evidence of correctness.',
   'Chinese must be accurate, natural, and useful in real workplace situations. Pinyin must use tone marks. Keep the teaching focused and interactive rather than producing a long syllabus.',
-  'The supplied course library is optional reference material only. Ignore it when a better answer fits the learner. Never expose internal course names or say the learner must follow it.',
+  'No course library is injected into this request. Use the learner’s current message, recent conversation, and prior context summary as the learning context. courseReferenceUsed must be false.',
   'spokenChinese is an explicit allowlist for zh-CN TTS and clickable sentence audio. Put only complete Chinese teaching text directly taught, explained, tested, or used in the current roleplay into spokenChinese[].text. Never add an unrelated example. Never put Indonesian, English, pinyin, labels, markdown, or UI copy in text. Do not collect every Han character from answer. If nothing should be spoken, return an empty array.',
   'answer and followUp are UI text and are never auto-read. Return only the structured object.',
 ].join(' ');
@@ -162,17 +151,20 @@ export async function answerFreeTeaching(input: {
   modelTier?: 'FAST' | 'SMART';
 }) {
   const model = input.modelTier === 'FAST' ? FAST_MODEL : SMART_MODEL;
+  const immediatePreviousAssistantTurn = [...input.recentTurns]
+    .reverse()
+    .find((turn) => turn.role === 'assistant')?.text.slice(0, 600) || '';
   const prompt = JSON.stringify({
     learnerMessage: input.message.slice(0, 500),
-    recentTurns: input.recentTurns.slice(-12).map((turn) => ({ role: turn.role, text: turn.text.slice(0, 800) })),
-    priorContextSummary: input.contextSummary.slice(0, 500),
-    optionalCourseReference: courseReference(),
+    recentTurns: input.recentTurns.slice(-8).map((turn) => ({ role: turn.role, text: turn.text.slice(0, 600) })),
+    priorContextSummary: input.contextSummary.slice(0, 350),
+    immediatePreviousAssistantTurn,
   });
   const generate = (repair?: string) => generateText({
     model: gateway(model),
     output: Output.object({ schema: answerSchema, name: 'indobrain_free_teacher_answer' }),
     maxOutputTokens: 1100,
-    temperature: 0.45,
+    temperature: 0.25,
     maxRetries: 0,
     providerOptions: {
       gateway: {

@@ -122,7 +122,17 @@ for (let index = 0; index < prompts.length; index += 1) {
     bResponse = await freeRequest();
     b = await bResponse.json().catch(() => ({ error: `HTTP ${bResponse.status}` }));
   }
-  histories.B.push({ role: 'user', text: prompt }, { role: 'assistant', text: b.answer || b.error || '' });
+  histories.B.push(
+    { role: 'user', text: prompt },
+    {
+      role: 'assistant',
+      text: [
+        b.answer || b.error || '',
+        b.spokenChinese?.length ? `Taught Chinese: ${b.spokenChinese.map((item) => item.text).join('、')}` : '',
+        b.followUp ? `Teacher follow-up: ${b.followUp}` : '',
+      ].filter(Boolean).join('\n'),
+    },
+  );
   summaryB = b.contextSummary || summaryB;
 
   results.push({
@@ -143,6 +153,7 @@ for (let index = 0; index < prompts.length; index += 1) {
     B: {
       status: bResponse.status,
       answer: b.answer || b.error,
+      followUp: b.followUp || '',
       spokenChinese: b.spokenChinese || [],
       mode: b.responseMode || '',
       assessment: b.assessment || null,
