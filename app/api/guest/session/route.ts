@@ -23,7 +23,8 @@ export async function POST(request: Request) {
 
   const { token, session } = issueGuestToken();
   const requested = typeof body?.next === 'string' ? body.next : '';
-  const reviewPath = requested === '/learn-chinese' || requested.startsWith('/learn-chinese/')
+  const freeTeachingPath = '/coba-gratis/ai-free-teaching';
+  const reviewPath = requested === freeTeachingPath || requested === '/learn-chinese' || requested.startsWith('/learn-chinese/')
     ? requested
     : '/learn-chinese/ai-coach';
   const limits = guestLimits();
