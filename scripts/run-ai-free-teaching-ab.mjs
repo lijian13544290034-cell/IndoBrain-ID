@@ -27,12 +27,19 @@ function cookieHeader() {
   return [...cookies].map(([key, value]) => `${key}=${value}`).join('; ');
 }
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
-async function request(path, init = {}) {
+async function request(path, init = {}, attempt = 0) {
   const headers = new Headers(init.headers || {});
   if (cookies.size) headers.set('cookie', cookieHeader());
-  const response = await fetch(`${baseUrl}${path}`, { ...init, headers, redirect: 'manual' });
-  rememberCookies(response);
-  return response;
+  try {
+    const response = await fetch(`${baseUrl}${path}`, { ...init, headers, redirect: 'manual' });
+    rememberCookies(response);
+    return response;
+  } catch (error) {
+    if (attempt >= 2) throw error;
+    console.error(`Network request failed; retrying in ${2 ** attempt * 2}s.`);
+    await wait(2 ** attempt * 2_000);
+    return request(path, init, attempt + 1);
+  }
 }
 
 if (shareToken) {
