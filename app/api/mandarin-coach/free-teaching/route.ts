@@ -87,11 +87,15 @@ export async function POST(request: Request) {
     const questionId = randomUUID();
     const responseLatencyMs = Date.now() - startedAt;
     const natural = isNaturalAnswer(result.answer) ? result.answer : null;
+    const textOnlyPronunciationRequest = /(?:stt|transkrip|transkripsi|transcript)/i.test(input.message)
+      && /(?:nada|pengucapan|pronunciation|lafal|发音)/i.test(input.message);
     const skillChecks = natural ? {
       assessmentRequiresAttempt: natural.learnerAct === 'ATTEMPT' || natural.assessment.status === 'NOT_ASSESSED',
       correctionLimit: natural.corrections.length <= 2,
       oneExplicitTask: natural.task === null || typeof natural.task.prompt === 'string',
       independentEvidenceRequiresAttempt: natural.learnerAct === 'ATTEMPT' || natural.learningEvidence.independentUses.length === 0,
+      textTranscriptNotAcousticallyScored: !textOnlyPronunciationRequest
+        || (natural.assessment.status === 'NOT_ASSESSED' && /tidak bisa menilai pengucapan/i.test(natural.answer)),
       strategyChangedAfterRepeatedFailure: input.coachingState.consecutiveFailures < 2
         || !input.coachingState.lastTeachingStrategy
         || natural.teachingStrategy !== input.coachingState.lastTeachingStrategy,

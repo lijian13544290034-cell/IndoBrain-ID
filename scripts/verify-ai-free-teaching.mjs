@@ -48,6 +48,8 @@ assert.match(teacher, /Natural Conversation Skill V1/i);
 assert.match(teacher, /Correct at most one or two errors/i);
 assert.match(teacher, /Repetition or shadowing is practice, never mastery evidence/i);
 assert.match(teacher, /never acoustic pronunciation claims/i);
+assert.match(teacher, /learnerAct: 'PRACTICE'/);
+assert.match(teacher, /Saya tidak bisa menilai pengucapan atau nada hanya dari transkrip teks/);
 assert.match(teacher, /recall exercises/i);
 assert.match(teacher, /maxItems: 2/);
 assert.match(teacher, /minItems: 3, maxItems: 5/);

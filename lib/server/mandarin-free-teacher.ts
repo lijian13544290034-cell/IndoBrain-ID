@@ -28,7 +28,7 @@ export type FreeTeachingAnswer = {
   courseReferenceUsed: boolean;
 };
 
-export type NaturalLearnerAct = 'QUESTION' | 'REQUEST' | 'ATTEMPT' | 'CONFUSION' | 'SESSION_END';
+export type NaturalLearnerAct = 'QUESTION' | 'REQUEST' | 'ATTEMPT' | 'PRACTICE' | 'CONFUSION' | 'SESSION_END';
 export type NaturalTeachingStrategy = 'DIRECT_ANSWER' | 'EXPLAIN' | 'MODEL' | 'CONTRAST' | 'SCAFFOLD' | 'ROLEPLAY' | 'RECALL' | 'REVIEW';
 
 export type NaturalConversationAnswer = FreeTeachingAnswer & {
@@ -111,7 +111,7 @@ const naturalAnswerSchema = jsonSchema<NaturalConversationAnswer>({
   ],
   properties: {
     ...answerSchema.jsonSchema.properties,
-    learnerAct: { type: 'string', enum: ['QUESTION', 'REQUEST', 'ATTEMPT', 'CONFUSION', 'SESSION_END'] },
+    learnerAct: { type: 'string', enum: ['QUESTION', 'REQUEST', 'ATTEMPT', 'PRACTICE', 'CONFUSION', 'SESSION_END'] },
     teachingStrategy: { type: 'string', enum: ['DIRECT_ANSWER', 'EXPLAIN', 'MODEL', 'CONTRAST', 'SCAFFOLD', 'ROLEPLAY', 'RECALL', 'REVIEW'] },
     corrections: {
       type: 'array', maxItems: 2,
@@ -242,19 +242,49 @@ const BASE_SYSTEM = [
 const NATURAL_CONVERSATION_SKILL_V1 = [
   BASE_SYSTEM,
   'Apply Natural Conversation Skill V1 as teaching behavior, not as a second agent or course system.',
-  'First classify the learner’s real act: QUESTION, REQUEST, ATTEMPT, CONFUSION, or SESSION_END. Correct only an actual ATTEMPT. For every other act, assessment must be NOT_ASSESSED, corrections must be empty, and independentUses must be empty.',
+  'First classify the learner’s real act: QUESTION, REQUEST, ATTEMPT, PRACTICE, CONFUSION, or SESSION_END. PRACTICE means explicit repetition or shadowing of an answer just supplied. Correct or score only an actual independent ATTEMPT. For every other act, assessment must be NOT_ASSESSED, corrections must be empty, and independentUses must be empty.',
   'Correct at most one or two errors that most affect meaning or naturalness. Do not list every imperfection. Keep Indonesian explanations natural, conversational, and brief.',
   'Give at most one explicit learning task per turn, represented only in task. followUp may invite the learner to continue but must not add another exercise.',
   'Never demand the same sentence mechanically more than twice. When consecutiveFailures is 2 or more, change teachingStrategy from lastTeachingStrategy and reduce difficulty by changing the explanation, hint, contrast, or situation. Do not repeat the same prompt.',
   'If the learner requests a new situation, switch in this turn. Their latest request overrides unfinished practice.',
   'Record a weak expression only from an actual failed attempt. Record independent use only when the learner produced the expression without being given the exact answer in the immediately preceding task. Repetition or shadowing is practice, never mastery evidence.',
+  'After a genuinely CORRECT independent attempt, give one short transfer task in a different situation so understanding is checked beyond repetition.',
   'When learnerAct is SESSION_END, set sessionWrapUp with a short targeted recap and 3 to 5 recall exercises. Otherwise sessionWrapUp must be null.',
   'This is text-first. Never claim acoustic pronunciation scoring, end-of-speech detection, automatic waiting, or real-time duplex voice. A transcript alone can support meaning feedback but never acoustic pronunciation claims.',
   'Use coachingState only as recent session evidence. It is not permanent memory and does not prove mastery.',
   'Return the exact structured object.',
 ].join(' ');
 
-function normalizeNaturalAnswer(answer: NaturalConversationAnswer) {
+function normalizeNaturalAnswer(answer: NaturalConversationAnswer, input: { message: string; immediatePreviousAssistantTurn: string }) {
+  const transcriptOnlyPronunciationRequest = /(?:stt|transkrip|transkripsi|transcript)/i.test(input.message)
+    && /(?:nada|pengucapan|pronunciation|lafal|发音)/i.test(input.message);
+  const explicitRepetition = /(?:跟读|照着|ikut(?:i)?|mengikuti|ulang)/i.test(input.message)
+    || (/[㐀-鿿]/.test(input.message) && input.immediatePreviousAssistantTurn.includes(input.message.replace(/^[^：:]*[：:]\s*/, '').trim()));
+  if (transcriptOnlyPronunciationRequest) {
+    return {
+      ...answer,
+      learnerAct: 'QUESTION' as const,
+      answer: 'Saya tidak bisa menilai pengucapan atau nada hanya dari transkrip teks. Teks hanya dapat dipakai untuk memeriksa susunan kata dan arti; penilaian bunyi memerlukan rekaman audio yang benar-benar dianalisis.',
+      spokenChinese: [],
+      followUp: '',
+      corrections: [],
+      task: null,
+      assessment: { status: 'NOT_ASSESSED' as const, evidence: '' },
+      learningEvidence: { weakExpressions: [], independentUses: [] },
+      sessionWrapUp: null,
+    };
+  }
+  if (explicitRepetition) {
+    return {
+      ...answer,
+      learnerAct: 'PRACTICE' as const,
+      answer: 'Ini masih latihan mengikuti contoh, jadi saya belum menilai penguasaan atau pengucapanmu dari teks ini.',
+      corrections: [],
+      task: { type: 'REFORMULATE' as const, prompt: 'Sekarang, tanpa melihat contoh, gunakan ungkapan itu dalam situasi lain yang kamu pilih.' },
+      assessment: { status: 'NOT_ASSESSED' as const, evidence: '' },
+      learningEvidence: { weakExpressions: [], independentUses: [] },
+    };
+  }
   if (answer.learnerAct !== 'ATTEMPT') {
     return {
       ...answer,
@@ -263,7 +293,17 @@ function normalizeNaturalAnswer(answer: NaturalConversationAnswer) {
       learningEvidence: { ...answer.learningEvidence, independentUses: [] },
     };
   }
-  return { ...answer, corrections: answer.corrections.slice(0, 2) };
+  const correctedAnswer = answer.assessment.status === 'NEEDS_WORK'
+    ? answer.answer.replace(/^(?:Bagus sekali|Benar sekali|Tepat sekali)[!,.\s]*/i, '')
+    : answer.answer;
+  return {
+    ...answer,
+    answer: correctedAnswer,
+    corrections: answer.corrections.slice(0, 2),
+    task: answer.assessment.status === 'CORRECT' && !answer.task
+      ? { type: 'REFORMULATE' as const, prompt: 'Sekarang gunakan ungkapan itu dalam situasi berbeda tanpa melihat contoh.' }
+      : answer.task,
+  };
 }
 
 export async function answerFreeTeaching(input: {
@@ -292,8 +332,8 @@ export async function answerFreeTeaching(input: {
     output: natural
       ? Output.object({ schema: naturalAnswerSchema, name: 'indobrain_natural_conversation_answer' })
       : Output.object({ schema: answerSchema, name: 'indobrain_free_teacher_answer' }),
-    maxOutputTokens: 1100,
-    temperature: 0.25,
+    maxOutputTokens: natural ? 1500 : 1100,
+    temperature: natural ? 0.15 : 0.25,
     maxRetries: 0,
     providerOptions: {
       gateway: {
@@ -309,14 +349,14 @@ export async function answerFreeTeaching(input: {
 
   try {
     const result = await generate();
-    return { answer: natural ? normalizeNaturalAnswer(result.output as NaturalConversationAnswer) : result.output as FreeTeachingAnswer, usage: usageOf(result, model) };
+    return { answer: natural ? normalizeNaturalAnswer(result.output as NaturalConversationAnswer, { message: input.message, immediatePreviousAssistantTurn }) : result.output as FreeTeachingAnswer, usage: usageOf(result, model) };
   } catch (error) {
     const firstUsage = failedUsage(error, model);
     const malformed = NoObjectGeneratedError.isInstance(error) ? error.text || '' : '';
     const repaired = await generate(malformed);
     const repairUsage = usageOf(repaired, model);
     repairUsage.structured_retries = 1;
-    return { answer: natural ? normalizeNaturalAnswer(repaired.output as NaturalConversationAnswer) : repaired.output as FreeTeachingAnswer, usage: mergeUsage(firstUsage, repairUsage) };
+    return { answer: natural ? normalizeNaturalAnswer(repaired.output as NaturalConversationAnswer, { message: input.message, immediatePreviousAssistantTurn }) : repaired.output as FreeTeachingAnswer, usage: mergeUsage(firstUsage, repairUsage) };
   }
 }
 

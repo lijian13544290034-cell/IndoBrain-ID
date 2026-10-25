@@ -1,6 +1,8 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 
 const baseUrl = process.argv[2]?.replace(/\/$/, '');
+const outputPath = process.argv[3] || '';
+const requestIntervalMs = Math.max(0, Number(process.env.AB_REQUEST_INTERVAL_MS) || 13_000);
 const shareToken = process.env.VERCEL_SHARE_TOKEN || '';
 const oidcToken = process.env.VERCEL_OIDC_TOKEN || '';
 if (!baseUrl) throw new Error('Usage: node scripts/run-natural-conversation-ab.mjs <preview-url>');
@@ -42,6 +44,7 @@ async function prepare(client) {
 const clients = { A: createClient(), B: createClient() };
 await prepare(clients.A);
 await prepare(clients.B);
+const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 const results = [];
 for (let index = 0; index < cases.length; index += 1) {
@@ -62,6 +65,7 @@ for (let index = 0; index < cases.length; index += 1) {
     });
     const payload = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
     row[variant] = { status: response.status, ...payload };
+    if (requestIntervalMs) await wait(requestIntervalMs);
   }
   results.push(row);
   console.error(`Completed ${index + 1}/${cases.length}: ${test.id}`);
@@ -84,4 +88,6 @@ for (const value of Object.values(summary)) {
   value.projected20TurnCost = value.successful ? value.cost / value.successful * 20 : 0;
 }
 
-console.log(JSON.stringify({ experiment: 'NATURAL_CONVERSATION_SKILL_V1', baseUrl, modelTier: 'SMART', cases: results, totals: summary }, null, 2));
+const report = JSON.stringify({ experiment: 'NATURAL_CONVERSATION_SKILL_V1', baseUrl, modelTier: 'SMART', cases: results, totals: summary }, null, 2);
+if (outputPath) await writeFile(outputPath, report, 'utf8');
+else console.log(report);

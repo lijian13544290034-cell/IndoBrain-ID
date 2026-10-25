@@ -10,7 +10,7 @@ type AssistantPayload = {
   followUp: string;
   contextSummary: string;
   assessment: { status: string; evidence: string };
-  learnerAct?: 'QUESTION' | 'REQUEST' | 'ATTEMPT' | 'CONFUSION' | 'SESSION_END';
+  learnerAct?: 'QUESTION' | 'REQUEST' | 'ATTEMPT' | 'PRACTICE' | 'CONFUSION' | 'SESSION_END';
   teachingStrategy?: string;
   corrections?: Array<{ issue: string; explanation: string; modelChinese: string }>;
   task?: null | { type: string; prompt: string };
