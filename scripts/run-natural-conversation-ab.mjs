@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 const baseUrl = process.argv[2]?.replace(/\/$/, '');
 const shareToken = process.env.VERCEL_SHARE_TOKEN || '';
+const oidcToken = process.env.VERCEL_OIDC_TOKEN || '';
 if (!baseUrl) throw new Error('Usage: node scripts/run-natural-conversation-ab.mjs <preview-url>');
 
 const cases = JSON.parse(await readFile(new URL('./data/natural-conversation-round1-v1.json', import.meta.url), 'utf8'));
@@ -19,6 +20,7 @@ function createClient() {
   return async (path, init = {}) => {
     const headers = new Headers(init.headers || {});
     if (cookies.size) headers.set('cookie', [...cookies].map(([key, value]) => `${key}=${value}`).join('; '));
+    if (oidcToken) headers.set('x-vercel-trusted-oidc-idp-token', oidcToken);
     const response = await fetch(`${baseUrl}${path}`, { ...init, headers, redirect: 'manual' });
     remember(response);
     return response;
