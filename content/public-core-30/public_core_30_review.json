@@ -3,7 +3,7 @@
   "direction": "ID_TO_ZH",
   "contentType": "PUBLIC_HIGH_FREQUENCY",
   "reviewStatus": "REVIEW_PASSED",
-  "reviewReference": "WB-public-core-30-review-2026-10-25 (pending human approval)",
+  "reviewReference": "WB-public-core-30-review-2026-10-25-rev2 (pending human approval)",
   "course": {
     "id": "mandarin-public-core-30",
     "titleZh": "日常高频中文 30 句",
@@ -33,10 +33,10 @@
     },
     {
       "id": "CN-HF-002",
-      "chinese": "不好意思，先生。",
-      "pinyin": "bù hǎo yì si, xiān sheng.",
+      "chinese": "打扰一下，先生。",
+      "pinyin": "dǎ rǎo yí xià, xiān sheng.",
       "indonesian": "Permisi, Pak.",
-      "ttsText": "不好意思，先生。",
+      "ttsText": "打扰一下，先生。",
       "difficulty": 1,
       "tags": [
         "high-frequency",
@@ -177,10 +177,10 @@
     },
     {
       "id": "CN-HF-014",
-      "chinese": "可以现金吗？",
-      "pinyin": "kě yǐ xiàn jīn ma?",
+      "chinese": "可以用现金吗？",
+      "pinyin": "kě yǐ yòng xiàn jīn ma?",
       "indonesian": "Bisa cash?",
-      "ttsText": "可以现金吗？",
+      "ttsText": "可以用现金吗？",
       "difficulty": 1,
       "tags": [
         "high-frequency",
@@ -213,10 +213,10 @@
     },
     {
       "id": "CN-HF-017",
-      "chinese": "不加糖哦。",
-      "pinyin": "bù jiā táng ó.",
+      "chinese": "不要加糖。",
+      "pinyin": "bú yào jiā táng.",
       "indonesian": "Tanpa gula ya.",
-      "ttsText": "不加糖哦。",
+      "ttsText": "不要加糖。",
       "difficulty": 1,
       "tags": [
         "high-frequency",
@@ -261,11 +261,11 @@
     },
     {
       "id": "CN-HF-021",
-      "chinese": "先一直往前。",
-      "pinyin": "xiān yì zhí wǎng qián.",
+      "chinese": "先直走。",
+      "pinyin": "xiān zhí zǒu.",
       "indonesian": "Lurus saja dulu.",
-      "ttsText": "先一直往前。",
-      "difficulty": 2,
+      "ttsText": "先直走。",
+      "difficulty": 1,
       "tags": [
         "high-frequency",
         "cat-travel"
@@ -369,10 +369,10 @@
     },
     {
       "id": "CN-HF-030",
-      "chinese": "什么时候好？",
-      "pinyin": "shén me shí hòu hǎo?",
+      "chinese": "什么时候做完？",
+      "pinyin": "shén me shí hòu zuò wán?",
       "indonesian": "Kapan selesai?",
-      "ttsText": "什么时候好？",
+      "ttsText": "什么时候做完？",
       "difficulty": 1,
       "tags": [
         "high-frequency",

@@ -17,7 +17,7 @@ const SRC_2 = 'docs/BASIC_ESSENTIALS_REAL_USE_V1_GROUPS_40_93.md';
 const rows = [
   // —— 1. 问候与礼貌 ——
   { id: 'CN-HF-001', sourceId: 'basic-essentials-G38#3', sourceFile: SRC_1, category: 'greeting', indonesian: 'Halo, Pak.', chinese: '您好，先生。', pinyin: 'nín hǎo, xiān sheng.', difficulty: 1, reviewNotes: '' },
-  { id: 'CN-HF-002', sourceId: 'basic-essentials-G39#2', sourceFile: SRC_1, category: 'greeting', indonesian: 'Permisi, Pak.', chinese: '不好意思，先生。', pinyin: 'bù hǎo yì si, xiān sheng.', difficulty: 1, reviewNotes: '' },
+  { id: 'CN-HF-002', sourceId: 'basic-essentials-G39#2', sourceFile: SRC_1, category: 'greeting', indonesian: 'Permisi, Pak.', chinese: '打扰一下，先生。', pinyin: 'dǎ rǎo yí xià, xiān sheng.', difficulty: 1, reviewNotes: '终审修订：「Permisi」是引起注意的礼貌语，教学表达定为「打扰一下」（「不好意思」偏道歉/婉拒语境，不作为 Permisi 首选对译）；「一下」的「一」读第四声（yí），与 CN-HF-025 口径一致。' },
   { id: 'CN-HF-003', sourceId: 'basic-essentials-G39#3', sourceFile: SRC_1, category: 'greeting', indonesian: 'Hati-hati di jalan.', chinese: '路上小心。', pinyin: 'lù shang xiǎo xīn.', difficulty: 1, reviewNotes: '' },
   // —— 2. 人称与位置 ——
   { id: 'CN-HF-004', sourceId: 'basic-essentials-G14#1', sourceFile: SRC_1, category: 'self-intro', indonesian: 'Saya di sini.', chinese: '我在这里。', pinyin: 'wǒ zài zhè lǐ.', difficulty: 1, reviewNotes: '' },
@@ -33,16 +33,16 @@ const rows = [
   { id: 'CN-HF-012', sourceId: 'basic-essentials-G07#2', sourceFile: SRC_1, category: 'time', indonesian: 'Hari ini saja.', chinese: '就今天吧。', pinyin: 'jiù jīn tiān ba.', difficulty: 1, reviewNotes: '' },
   // —— 5. 购物与价格 ——
   { id: 'CN-HF-013', sourceId: 'basic-essentials-G26#2', sourceFile: SRC_1, category: 'shopping', indonesian: 'Ini berapa?', chinese: '这个多少钱？', pinyin: 'zhè ge duō shǎo qián?', difficulty: 1, reviewNotes: '' },
-  { id: 'CN-HF-014', sourceId: 'basic-essentials-G36#3', sourceFile: SRC_1, category: 'shopping', indonesian: 'Bisa cash?', chinese: '可以现金吗？', pinyin: 'kě yǐ xiàn jīn ma?', difficulty: 1, reviewNotes: '' },
+  { id: 'CN-HF-014', sourceId: 'basic-essentials-G36#3', sourceFile: SRC_1, category: 'shopping', indonesian: 'Bisa cash?', chinese: '可以用现金吗？', pinyin: 'kě yǐ yòng xiàn jīn ma?', difficulty: 1, reviewNotes: '终审修订：「可以现金吗」缺动词、不成句，补「用」为自然问法；印尼语 Bisa cash? 语义不变。' },
   { id: 'CN-HF-015', sourceId: 'basic-essentials-G18#2', sourceFile: SRC_1, category: 'shopping', indonesian: 'Saya mau beli yang ini.', chinese: '我想买这个。', pinyin: 'wǒ xiǎng mǎi zhè ge.', difficulty: 1, reviewNotes: '' },
   // —— 6. 吃饭与饮水 ——
   { id: 'CN-HF-016', sourceId: 'basic-essentials-G61#1', sourceFile: SRC_2, category: 'food-drink', indonesian: 'Jangan terlalu pedas.', chinese: '不要太辣。', pinyin: 'bú yào tài là.', difficulty: 1, reviewNotes: '「不」在第四声前变第二声（bú）。' },
-  { id: 'CN-HF-017', sourceId: 'basic-essentials-G60#2', sourceFile: SRC_2, category: 'food-drink', indonesian: 'Tanpa gula ya.', chinese: '不加糖哦。', pinyin: 'bù jiā táng ó.', difficulty: 1, reviewNotes: '句尾语气词「哦」读 ó。' },
+  { id: 'CN-HF-017', sourceId: 'basic-essentials-G60#2', sourceFile: SRC_2, category: 'food-drink', indonesian: 'Tanpa gula ya.', chinese: '不要加糖。', pinyin: 'bú yào jiā táng.', difficulty: 1, reviewNotes: '终审修订：改为点单祈使句「不要加糖」，消除句尾语气词「哦」的声调标注争议（ó/ō 各有依据，统一避开）；「不」在第四声「要」前变第二声（bú），与 CN-HF-016 口径一致。源句语气词 ya 的软化功能由祈使句式自然承担，印尼语保持原文。' },
   { id: 'CN-HF-018', sourceId: 'basic-essentials-G61#3', sourceFile: SRC_2, category: 'food-drink', indonesian: 'Air hangat saja.', chinese: '温水就行。', pinyin: 'wēn shuǐ jiù xíng.', difficulty: 1, reviewNotes: '' },
   // —— 7. 出行与位置 ——
   { id: 'CN-HF-019', sourceId: 'basic-essentials-G26#1', sourceFile: SRC_1, category: 'travel', indonesian: 'Toiletnya di mana?', chinese: '厕所在哪里？', pinyin: 'cè suǒ zài nǎ lǐ?', difficulty: 1, reviewNotes: '与工作中文「请问洗手间在哪里？」近义但措辞不同，保留。' },
   { id: 'CN-HF-020', sourceId: 'basic-essentials-G85#1', sourceFile: SRC_2, category: 'travel', indonesian: 'Tolong jemput saya di lokasi ini.', chinese: '请到这个位置接我。', pinyin: 'qǐng dào zhè ge wèi zhì jiē wǒ.', difficulty: 2, reviewNotes: '' },
-  { id: 'CN-HF-021', sourceId: 'basic-essentials-G88#2', sourceFile: SRC_2, category: 'travel', indonesian: 'Lurus saja dulu.', chinese: '先一直往前。', pinyin: 'xiān yì zhí wǎng qián.', difficulty: 2, reviewNotes: '「一」在第二声前读第四声（yì）。' },
+  { id: 'CN-HF-021', sourceId: 'basic-essentials-G88#2', sourceFile: SRC_2, category: 'travel', indonesian: 'Lurus saja dulu.', chinese: '先直走。', pinyin: 'xiān zhí zǒu.', difficulty: 1, reviewNotes: '终审修订：「先一直往前」冗长且无落点，改为对司机更自然的「先直走」，与源句 Lurus saja dulu. 的指令语境一致；句长变短，difficulty 2→1。' },
   // —— 8. 简单请求 ——
   { id: 'CN-HF-022', sourceId: 'basic-essentials-G16#1', sourceFile: SRC_1, category: 'requests', indonesian: 'Tolong ambil ini.', chinese: '帮我拿这个。', pinyin: 'bāng wǒ ná zhè ge.', difficulty: 1, reviewNotes: '' },
   { id: 'CN-HF-023', sourceId: 'basic-essentials-G21#3', sourceFile: SRC_1, category: 'requests', indonesian: 'Tolong bungkus ya.', chinese: '帮我打包。', pinyin: 'bāng wǒ dǎ bāo.', difficulty: 1, reviewNotes: '' },
@@ -54,7 +54,7 @@ const rows = [
   // —— 10. 基础生活沟通 ——
   { id: 'CN-HF-028', sourceId: 'basic-essentials-G82#1', sourceFile: SRC_2, category: 'daily-life', indonesian: 'HP-ku lowbat.', chinese: '我手机快没电了。', pinyin: 'wǒ shǒu jī kuài méi diàn le.', difficulty: 2, reviewNotes: '' },
   { id: 'CN-HF-029', sourceId: 'basic-essentials-G41#3', sourceFile: SRC_2, category: 'daily-life', indonesian: 'Badan nggak enak.', chinese: '身体不舒服。', pinyin: 'shēn tǐ bù shū fu.', difficulty: 1, reviewNotes: '「舒服」第二字轻声（fu）。' },
-  { id: 'CN-HF-030', sourceId: 'basic-essentials-G27#1', sourceFile: SRC_1, category: 'daily-life', indonesian: 'Kapan selesai?', chinese: '什么时候好？', pinyin: 'shén me shí hòu hǎo?', difficulty: 1, reviewNotes: '「什么」第二字轻声（me）。' },
+  { id: 'CN-HF-030', sourceId: 'basic-essentials-G27#1', sourceFile: SRC_1, category: 'daily-life', indonesian: 'Kapan selesai?', chinese: '什么时候做完？', pinyin: 'shén me shí hòu zuò wán?', difficulty: 1, reviewNotes: '终审修订：源语境是追问完成时间（GROUP 27「问时间、原因和情况」），「什么时候好？」语义模糊，改为「什么时候做完」与 selesai 精确对应；「什么」第二字轻声（me）。' },
 ];
 
 for (const r of rows) {
@@ -74,7 +74,7 @@ const pkg = {
   // 注意：schema 要求正式导入时 reviewStatus === 'HUMAN_APPROVED'。
   // 本候选包仅通过自动校验与内容自审，人工批准前保持 REVIEW_PASSED（validator 会相应提示）。
   reviewStatus: 'REVIEW_PASSED',
-  reviewReference: 'WB-public-core-30-review-2026-10-25 (pending human approval)',
+  reviewReference: 'WB-public-core-30-review-2026-10-25-rev2 (pending human approval)',
   course: {
     id: 'mandarin-public-core-30',
     titleZh: '日常高频中文 30 句',

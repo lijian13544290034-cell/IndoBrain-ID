@@ -1,6 +1,6 @@
 # Codex 交接说明 · 日常高频中文公共课程第一批（30 条）
 
-日期：2026-10-25 · 分支：`feature/public-core-30-candidates`
+日期：2026-10-25（rev2 终审修订版）· 分支：`feature/public-core-30-candidates` · reviewReference：`WB-public-core-30-review-2026-10-25-rev2`
 
 ## 1. 文件位置
 
@@ -54,7 +54,7 @@ import('./scripts/validate-mandarin-course-import.mjs').then(async (m) => {
 ## 7. 哪些内容仍不可发布
 
 - **未人工批准前整包不可发布/不可进 Production**：当前 `reviewStatus=REVIEW_PASSED` 会被 validator 与 V2 适配器（要求 `HUMAN_APPROVED`）双重拒绝——这是刻意的安全控制。
-- 需人工终审项见 QA 报告第 9 节（5 处「一/不」变调标注口径、语气词「哦」声调、正式批准引用）。
+- rev2 终审已修订 5 条自然度问题（CN-HF-002/014/017/021/030，详见 QA 报告第 4 节）并消除拼音争议点（「哦」已移除；「一/不」变调与轻声按实际读音统一口径），**仅剩一项人工动作：正式 HUMAN_APPROVED 批准 + 真实 reviewReference**。
 - 本批之外的一切内容（其余 249 条 Real Use、48 条职业表达、Level 2 门禁内容）均不在本包范围。
 - 禁改清单不变：Production、main、Supabase Schema、Day 1–60、中→印模块、AI Free Teaching、AI Coach V1.2、会员系统。
 
