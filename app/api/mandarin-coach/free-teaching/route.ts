@@ -42,6 +42,7 @@ function safeBody(value: unknown) {
       consecutiveFailures: Math.min(5, Math.max(0, Number(rawState.consecutiveFailures) || 0)),
       lastTeachingStrategy: typeof rawState.lastTeachingStrategy === 'string' && strategies.has(rawState.lastTeachingStrategy) ? rawState.lastTeachingStrategy as 'DIRECT_ANSWER' | 'EXPLAIN' | 'MODEL' | 'CONTRAST' | 'SCAFFOLD' | 'ROLEPLAY' | 'RECALL' | 'REVIEW' : '' as const,
       sameTaskRepeatCount: Math.min(3, Math.max(0, Number(rawState.sameTaskRepeatCount) || 0)),
+      lastTaskPrompt: typeof rawState.lastTaskPrompt === 'string' ? rawState.lastTaskPrompt.slice(0, 360) : '',
       weakExpressions: textList(rawState.weakExpressions),
       independentUses: textList(rawState.independentUses),
     },

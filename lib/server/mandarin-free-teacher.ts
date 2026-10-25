@@ -51,6 +51,7 @@ export type NaturalConversationState = {
   consecutiveFailures: number;
   lastTeachingStrategy: NaturalTeachingStrategy | '';
   sameTaskRepeatCount: number;
+  lastTaskPrompt: string;
   weakExpressions: string[];
   independentUses: string[];
 };
@@ -250,6 +251,8 @@ const NATURAL_CONVERSATION_SKILL_V1 = [
   'Record a weak expression only from an actual failed attempt. Record independent use only when the learner produced the expression without being given the exact answer in the immediately preceding task. Repetition or shadowing is practice, never mastery evidence.',
   'After a genuinely CORRECT independent attempt, give one short transfer task in a different situation so understanding is checked beyond repetition.',
   'When learnerAct is SESSION_END, set sessionWrapUp with a short targeted recap and 3 to 5 recall exercises. Otherwise sessionWrapUp must be null.',
+  'Mixed-language input is quoted evidence: every Chinese fragment inside an Indonesian message must be treated as a verbatim quotation. Quote it exactly as the learner wrote it — never merge, reorder, complete, or "fix" it into a different sentence — then give its pinyin and meaning. If the fragment is reported speech (e.g. the learner says the boss "bilang" something), the explanation must keep it as reported speech instead of restating it as a plain description. If the learner asks how to respond ("saya jawab apa"), also give one short natural Chinese reply with pinyin and its meaning.',
+  'When the learner asks for a harder question (e.g. "kasih soal yang lebih sulit"), compare with the previous task in coachingState.lastTaskPrompt: the new task must use a different target sentence and be measurably harder (longer utterance, new structure, or two-step production), and answer must state briefly what makes it harder. Presenting the same or an easier sentence as "more difficult" is forbidden.',
   'This is text-first. Never claim acoustic pronunciation scoring, end-of-speech detection, automatic waiting, or real-time duplex voice. A transcript alone can support meaning feedback but never acoustic pronunciation claims.',
   'Use coachingState only as recent session evidence. It is not permanent memory and does not prove mastery.',
   'Return the exact structured object.',
@@ -258,6 +261,10 @@ const NATURAL_CONVERSATION_SKILL_V1 = [
 function normalizeNaturalAnswer(answer: NaturalConversationAnswer, input: { message: string; immediatePreviousAssistantTurn: string }) {
   const transcriptOnlyPronunciationRequest = /(?:stt|transkrip|transkripsi|transcript)/i.test(input.message)
     && /(?:nada|pengucapan|pronunciation|lafal|发音)/i.test(input.message);
+  // R1-29 fix: a session-end/summary request must take priority over the follow-read heuristic.
+  // "yang perlu saya ulang" contains "ulang" but is a wrap-up request, not repetition practice.
+  const sessionEndRequest = /(?:sudah\s+selesai|saya\s+(?:sudah\s+)?selesai|selesai\s+(?:ya|dah|dulu)|akhiri(?:\s+sesi|\s+belajar)?|berhenti\s+(?:dulu|sini)|buat(?:kan)?\s+(?:saya\s+)?ringkasan|rangkum(?:kan)?|ringkas(?:an)?\s+(?:sesi|belajar)|总结|結束課程|下课)/i.test(input.message)
+    && !/belum\s+selesai/i.test(input.message);
   const explicitRepetition = /(?:跟读|照着|ikut(?:i)?|mengikuti|ulang)/i.test(input.message)
     || (/[㐀-鿿]/.test(input.message) && input.immediatePreviousAssistantTurn.includes(input.message.replace(/^[^：:]*[：:]\s*/, '').trim()));
   if (transcriptOnlyPronunciationRequest) {
@@ -274,7 +281,7 @@ function normalizeNaturalAnswer(answer: NaturalConversationAnswer, input: { mess
       sessionWrapUp: null,
     };
   }
-  if (explicitRepetition) {
+  if (explicitRepetition && !sessionEndRequest) {
     return {
       ...answer,
       learnerAct: 'PRACTICE' as const,
@@ -306,6 +313,22 @@ function normalizeNaturalAnswer(answer: NaturalConversationAnswer, input: { mess
   };
 }
 
+// R1-05 fix: detect a repeated target so a "harder question" request cannot be answered
+// with (a variant of) the previous task. Comparison runs on normalized text across the
+// task prompt and every taught Chinese sentence.
+function normalizeTaskText(value: string) {
+  return value.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/gu, ' ').trim();
+}
+
+function sameTaskTarget(previousTaskPrompt: string, answer: NaturalConversationAnswer) {
+  const previous = normalizeTaskText(previousTaskPrompt);
+  if (previous.length < 4) return false;
+  const candidates = [answer.task?.prompt || '', ...answer.spokenChinese.map((item) => item.text)].map(normalizeTaskText).filter(Boolean);
+  return candidates.some((text) => text === previous
+    || (text.length > 6 && previous.includes(text))
+    || (previous.length > 6 && text.includes(previous)));
+}
+
 export async function answerFreeTeaching(input: {
   message: string;
   sessionId: string;
@@ -327,7 +350,10 @@ export async function answerFreeTeaching(input: {
     ...(input.skillVersion === 'NATURAL_V1' ? { coachingState: input.coachingState } : {}),
   });
   const natural = input.skillVersion === 'NATURAL_V1';
-  const generate = (repair?: string) => generateText({
+  const normalizeInput = { message: input.message, immediatePreviousAssistantTurn };
+  // R1-05 fix: explicit harder-question request enables the repeated-target comparison below.
+  const harderRequest = natural && /(?:lebih\s+(?:sulit|susah|menantang)|soal\s+yang\s+lebih|harder|更难)/i.test(input.message);
+  const generate = (repair?: string, promptOverride?: string) => generateText({
     model: gateway(model),
     output: natural
       ? Output.object({ schema: naturalAnswerSchema, name: 'indobrain_natural_conversation_answer' })
@@ -344,19 +370,38 @@ export async function answerFreeTeaching(input: {
     system: repair
       ? `${natural ? NATURAL_CONVERSATION_SKILL_V1 : BASE_SYSTEM} This is one controlled repair. Convert the malformed candidate into the exact schema without adding facts.`
       : natural ? NATURAL_CONVERSATION_SKILL_V1 : BASE_SYSTEM,
-    prompt: repair ? JSON.stringify({ originalRequest: JSON.parse(prompt), malformedCandidate: repair.slice(0, 2200) }) : prompt,
+    prompt: promptOverride || (repair ? JSON.stringify({ originalRequest: JSON.parse(prompt), malformedCandidate: repair.slice(0, 2200) }) : prompt),
   });
 
   try {
     const result = await generate();
-    return { answer: natural ? normalizeNaturalAnswer(result.output as NaturalConversationAnswer, { message: input.message, immediatePreviousAssistantTurn }) : result.output as FreeTeachingAnswer, usage: usageOf(result, model) };
+    if (!natural) return { answer: result.output as FreeTeachingAnswer, usage: usageOf(result, model) };
+    let answer = normalizeNaturalAnswer(result.output as NaturalConversationAnswer, normalizeInput);
+    let usage = usageOf(result, model);
+    // R1-05 fix: if a harder-question request still produced the previous task, make one
+    // controlled retry that names the repeated task and demands a measurably harder one.
+    if (harderRequest && answer.task && input.coachingState?.lastTaskPrompt
+      && sameTaskTarget(input.coachingState.lastTaskPrompt, answer)) {
+      const retryResult = await generate(undefined, JSON.stringify({
+        ...JSON.parse(prompt),
+        previousRepeatedTask: answer.task,
+        correctionInstruction: 'The learner asked for a harder question, but the produced task repeats the previous task shown in previousRepeatedTask. Give ONE measurably harder task with a different target sentence (longer, new structure, or two-step production), and briefly state in answer what makes it harder.',
+      }));
+      usage = mergeUsage(usage, usageOf(retryResult, model));
+      usage.structured_retries += 1;
+      const retryAnswer = normalizeNaturalAnswer(retryResult.output as NaturalConversationAnswer, normalizeInput);
+      if (!(retryAnswer.task && sameTaskTarget(input.coachingState.lastTaskPrompt, retryAnswer))) {
+        answer = retryAnswer;
+      }
+    }
+    return { answer, usage };
   } catch (error) {
     const firstUsage = failedUsage(error, model);
     const malformed = NoObjectGeneratedError.isInstance(error) ? error.text || '' : '';
     const repaired = await generate(malformed);
     const repairUsage = usageOf(repaired, model);
     repairUsage.structured_retries = 1;
-    return { answer: natural ? normalizeNaturalAnswer(repaired.output as NaturalConversationAnswer, { message: input.message, immediatePreviousAssistantTurn }) : repaired.output as FreeTeachingAnswer, usage: mergeUsage(firstUsage, repairUsage) };
+    return { answer: normalizeNaturalAnswer(repaired.output as NaturalConversationAnswer, normalizeInput), usage: mergeUsage(firstUsage, repairUsage) };
   }
 }
 

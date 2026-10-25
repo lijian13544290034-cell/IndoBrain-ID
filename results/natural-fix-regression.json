@@ -1,0 +1,73 @@
+{
+  "baseUrl": "https://indobrain-01-prd-prd-v0-1-jlre53jca-lijian1.vercel.app",
+  "executedAt": "2026-10-25T14:13:15.630Z",
+  "checks": [
+    {
+      "id": "R1-29",
+      "name": "session-end learnerAct",
+      "passed": true,
+      "detail": "learnerAct=SESSION_END"
+    },
+    {
+      "id": "R1-29",
+      "name": "wrap-up present with 3-5 exercises",
+      "passed": true,
+      "detail": "exercises=5"
+    },
+    {
+      "id": "R1-29",
+      "name": "no practice task on wrap-up",
+      "passed": true,
+      "detail": "task=null"
+    },
+    {
+      "id": "R1-29-negative",
+      "name": "genuine follow-read stays PRACTICE",
+      "passed": true,
+      "detail": "learnerAct=PRACTICE"
+    },
+    {
+      "id": "R1-28",
+      "name": "quotes fragment verbatim (明天早点来)",
+      "passed": true,
+      "detail": "has fragment=true"
+    },
+    {
+      "id": "R1-28",
+      "name": "no fused new sentence (老板明天)",
+      "passed": true,
+      "detail": "fused present=false"
+    },
+    {
+      "id": "R1-28",
+      "name": "keeps reported speech (atasan/bos/bilang)",
+      "passed": true,
+      "detail": "reported=true"
+    },
+    {
+      "id": "R1-28",
+      "name": "gives a way to respond",
+      "passed": true,
+      "detail": "suggestedReply=好的，老板。"
+    },
+    {
+      "id": "R1-05",
+      "name": "new task given",
+      "passed": true,
+      "detail": "task=Bagaimana Anda akan mengatakan \"Apakah Anda membayar dengan kartu atau tunai?\" d"
+    },
+    {
+      "id": "R1-05",
+      "name": "different from previous task",
+      "passed": true,
+      "detail": "first=Bagaimana Anda akan mengatakan \"Selamat datang\" dalam bahasa | second=Bagaimana Anda akan mengatakan \"Apakah Anda membayar dengan "
+    },
+    {
+      "id": "R1-05",
+      "name": "states what is harder",
+      "passed": true,
+      "detail": "answer=Baik, ini soal yang lebih sulit. Soal sebelumnya hanya meminta terjemahan satu frasa sederhana. Soal ini meminta Anda me"
+    }
+  ],
+  "allPassed": true
+}

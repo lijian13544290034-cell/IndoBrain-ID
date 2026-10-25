@@ -138,14 +138,19 @@ export default function FreeTeachingExperience({ initialReady }: { initialReady:
       if (payload.teachingStrategy && payload.learningEvidence) {
         const evidence = payload.learningEvidence;
         const nextTask = payload.task?.prompt || '';
-        setCoachingState((current) => ({
-          consecutiveFailures: payload.assessment.status === 'NEEDS_WORK' ? Math.min(5, current.consecutiveFailures + 1) : payload.assessment.status === 'CORRECT' ? 0 : current.consecutiveFailures,
-          lastTeachingStrategy: payload.teachingStrategy || current.lastTeachingStrategy,
-          sameTaskRepeatCount: nextTask && nextTask === current.lastTaskPrompt ? Math.min(3, current.sameTaskRepeatCount + 1) : nextTask ? 1 : 0,
-          lastTaskPrompt: nextTask,
-          weakExpressions: [...new Set([...current.weakExpressions, ...evidence.weakExpressions.map((item) => item.expression)])].slice(-12),
-          independentUses: [...new Set([...current.independentUses, ...evidence.independentUses.map((item) => item.expression)])].slice(-12),
-        }));
+        setCoachingState((current) => {
+          // 连续失败达到阈值后教师已按规则换策略 → 计数清零，避免后续回合被误判为"未换策略"。
+          const strategyChangeApplied = current.consecutiveFailures >= 2
+            && payload.teachingStrategy !== current.lastTeachingStrategy;
+          return {
+            consecutiveFailures: strategyChangeApplied ? 0 : payload.assessment.status === 'NEEDS_WORK' ? Math.min(5, current.consecutiveFailures + 1) : payload.assessment.status === 'CORRECT' ? 0 : current.consecutiveFailures,
+            lastTeachingStrategy: payload.teachingStrategy || current.lastTeachingStrategy,
+            sameTaskRepeatCount: nextTask && nextTask === current.lastTaskPrompt ? Math.min(3, current.sameTaskRepeatCount + 1) : nextTask ? 1 : 0,
+            lastTaskPrompt: nextTask,
+            weakExpressions: [...new Set([...current.weakExpressions, ...evidence.weakExpressions.map((item) => item.expression)])].slice(-12),
+            independentUses: [...new Set([...current.independentUses, ...evidence.independentUses.map((item) => item.expression)])].slice(-12),
+          };
+        });
       }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Koneksi terputus. Coba lagi.');

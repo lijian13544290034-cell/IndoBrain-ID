@@ -1,0 +1,1631 @@
+{
+  "baseUrl": "https://indobrain-01-prd-prd-v0-1-jlre53jca-lijian1.vercel.app",
+  "executedAt": "2026-10-25T14:10:49.121Z",
+  "modality": "TEXT ONLY — voice/pronunciation NOT verified",
+  "turns": 17,
+  "sessionDurationBudget": "≈10 min including rate-limit intervals",
+  "skillChecksAllPassed": true,
+  "teachingRecord": {
+    "taughtChinese": [
+      "你好",
+      "欢迎光临",
+      "您想买什么？",
+      "一共多少钱？",
+      "一共二十五块",
+      "一共二十五块。",
+      "你好，我要买这个。",
+      "你好，欢迎光临！你要买什么？",
+      "我要买这个。",
+      "这个多少钱？",
+      "这个一共十五块。",
+      "三十五块。",
+      "好的，一共三十五块。请问怎么支付？",
+      "可以刷卡。",
+      "好的，请刷卡。",
+      "您",
+      "请",
+      "请您刷卡。"
+    ],
+    "strategiesUsed": [
+      "DIRECT_ANSWER",
+      "SCAFFOLD",
+      "CONTRAST",
+      "EXPLAIN",
+      "MODEL",
+      "ROLEPLAY",
+      "REVIEW"
+    ],
+    "correctionsGiven": [
+      {
+        "turn": 5,
+        "issue": "Penggunaan '你' (nǐ) dan '您' (nín)",
+        "modelChinese": "您"
+      },
+      {
+        "turn": 5,
+        "issue": "Partikel '的' (de) di akhir kalimat",
+        "modelChinese": "您想买什么？"
+      },
+      {
+        "turn": 7,
+        "issue": "Misunderstanding of the task: stating a price instead of asking for it.",
+        "modelChinese": "一共多少钱？"
+      },
+      {
+        "turn": 10,
+        "issue": "Penambahan '是' dan '钱的'",
+        "modelChinese": "一共二十五块"
+      },
+      {
+        "turn": 14,
+        "issue": "Numerical error in the price.",
+        "modelChinese": "三十五块"
+      }
+    ],
+    "assessments": [
+      {
+        "turn": 3,
+        "status": "CORRECT",
+        "evidence": "Learner correctly provided \"欢迎光临\" for 'Selamat datang'.",
+        "studentInput": "你好，欢迎光临。"
+      },
+      {
+        "turn": 5,
+        "status": "NEEDS_WORK",
+        "evidence": "Learner used '你' instead of '您' and added '的' at the end: '你要买什么的？'",
+        "studentInput": "你要买什么的？"
+      },
+      {
+        "turn": 7,
+        "status": "NEEDS_WORK",
+        "evidence": "Learner provided '一起二十块' (yīqǐ èrshí kuài) which means 'Together twenty kuai' instead of '一共多少钱？' (Yīgòng duōshǎo qián?) for 'Totalnya berapa harganya?'",
+        "studentInput": "一起二十块。"
+      },
+      {
+        "turn": 10,
+        "status": "NEEDS_WORK",
+        "evidence": "Learner used \"一共是二十五块钱的\" instead of the more common \"一共二十五块\".",
+        "studentInput": "一共是二十五块钱的。"
+      },
+      {
+        "turn": 13,
+        "status": "CORRECT",
+        "evidence": "Learner's response '你好，欢迎光临！你要买什么？' is a correct and natural cashier response to '你好，我要买这个。'",
+        "studentInput": "你好，欢迎光临！你要买什么？"
+      },
+      {
+        "turn": 14,
+        "status": "NEEDS_WORK",
+        "evidence": "Learner stated '十五块' (shíwǔ kuài) instead of the requested '三十五块' (sānshíwǔ kuài). However, the structure '这个一共...块' is correct.",
+        "studentInput": "这个……一共十五块。"
+      },
+      {
+        "turn": 15,
+        "status": "CORRECT",
+        "evidence": "Learner's response \"可以刷卡。\" is a correct and natural way to offer card payment.",
+        "studentInput": "Aku coba sendiri tanpa contoh ya: 可以刷卡。 Udah benar nggak?"
+      }
+    ],
+    "independentUses": [
+      {
+        "turn": 3,
+        "expression": "欢迎光临",
+        "learnerEvidence": "你好，欢迎光临。"
+      },
+      {
+        "turn": 13,
+        "expression": "你好，欢迎光临！你要买什么？",
+        "learnerEvidence": "你好，欢迎光临！你要买什么？"
+      },
+      {
+        "turn": 15,
+        "expression": "可以刷卡",
+        "learnerEvidence": "Aku coba sendiri tanpa contoh ya: 可以刷卡。"
+      }
+    ],
+    "weakExpressions": [
+      {
+        "turn": 5,
+        "expression": "你"
+      },
+      {
+        "turn": 5,
+        "expression": "的"
+      },
+      {
+        "turn": 7,
+        "expression": "一起二十块"
+      },
+      {
+        "turn": 10,
+        "expression": "一共是二十五块钱的"
+      },
+      {
+        "turn": 11,
+        "expression": "一共是二十五块钱的"
+      },
+      {
+        "turn": 17,
+        "expression": "你"
+      },
+      {
+        "turn": 17,
+        "expression": "的"
+      }
+    ],
+    "wrapUp": {
+      "recap": "Hari ini kita sudah berlatih banyak hal penting untuk peran kasir, mulai dari menyapa pelanggan, menanyakan apa yang ingin mereka beli, menyatakan harga, menanyakan cara pembayaran, hingga menawarkan pembayaran dengan kartu dan meminta pelanggan untuk menggesek kartu dengan sopan.",
+      "weakFocus": [
+        "Angka dalam konteks harga (misalnya, membedakan lima belas dan tiga puluh lima)",
+        "Penggunaan kata \"您\" (nín) dan \"请\" (qǐng) untuk kesopanan"
+      ],
+      "recallExercises": [
+        "Bagaimana cara menyapa pelanggan dan menanyakan apa yang ingin mereka beli dalam bahasa Mandarin?",
+        "Jika totalnya 48 kuai, bagaimana kamu mengatakannya dalam bahasa Mandarin?",
+        "Bagaimana cara mengatakan \"Silakan gesek kartu Anda\" dengan sopan?",
+        "Bagaimana cara menanyakan \"Bagaimana cara membayar?\""
+      ]
+    },
+    "tasksGiven": [
+      {
+        "turn": 1,
+        "type": "TRANSLATE",
+        "prompt": "Bagaimana cara mengucapkan 'Halo' atau 'Selamat datang' dalam bahasa Mandarin? Coba ucapkan salah satunya."
+      },
+      {
+        "turn": 2,
+        "type": "TRANSLATE",
+        "prompt": "Coba ucapkan \"Selamat datang\" dalam bahasa Mandarin."
+      },
+      {
+        "turn": 3,
+        "type": "ROLEPLAY",
+        "prompt": "Bayangkan ada pelanggan yang baru masuk toko. Bagaimana kamu akan menyapa mereka?"
+      },
+      {
+        "turn": 4,
+        "type": "TRANSLATE",
+        "prompt": "Coba ucapkan 'Anda ingin membeli apa?' dalam bahasa Mandarin."
+      },
+      {
+        "turn": 5,
+        "type": "TRANSLATE",
+        "prompt": "Sekarang, coba ucapkan 'Anda ingin membeli apa?' dengan kalimat yang lebih sopan dan alami: 您想买什么？"
+      },
+      {
+        "turn": 6,
+        "type": "TRANSLATE",
+        "prompt": "Coba ucapkan 'Totalnya berapa harganya?' dalam bahasa Mandarin."
+      },
+      {
+        "turn": 7,
+        "type": "TRANSLATE",
+        "prompt": "Coba ucapkan 'Totalnya berapa harganya?' dalam bahasa Mandarin."
+      },
+      {
+        "turn": 10,
+        "type": "TRANSLATE",
+        "prompt": "Coba ucapkan lagi \"Totalnya dua puluh lima kuai\" dengan cara yang lebih ringkas dan umum."
+      },
+      {
+        "turn": 11,
+        "type": "TRANSLATE",
+        "prompt": "Coba ucapkan \"Totalnya dua puluh lima kuai\" dalam bahasa Mandarin, dengan cara yang paling ringkas dan umum."
+      },
+      {
+        "turn": 12,
+        "type": "ROLEPLAY",
+        "prompt": "Kamu adalah kasir. Pelanggan (saya) baru saja mengatakan \"你好，我要买这个。\" (Nǐ hǎo, wǒ yào mǎi zhège.). Bagaimana kamu akan merespons sebagai kasir?"
+      },
+      {
+        "turn": 13,
+        "type": "ROLEPLAY",
+        "prompt": "Saya (pelanggan) baru saja bertanya \"这个多少钱？\" (Zhège duōshǎo qián?). Bagaimana kamu (kasir) akan menjawab harga barangnya? Anggap saja harganya 35 kuai."
+      },
+      {
+        "turn": 14,
+        "type": "ROLEPLAY",
+        "prompt": "Saya (pelanggan) baru saja mengatakan \"好的，一共三十五块。请问怎么支付？\" (Hǎo de, yīgòng sānshíwǔ kuài. Qǐngwèn zěnme zhīfù?). Bagaimana kamu akan merespons sebagai kasir?"
+      },
+      {
+        "turn": 15,
+        "type": "ROLEPLAY",
+        "prompt": "Apa lagi yang akan kamu katakan atau lakukan sebagai kasir setelah pelanggan menggesek kartu?"
+      }
+    ],
+    "finalCoachingState": {
+      "consecutiveFailures": 0,
+      "lastTeachingStrategy": "REVIEW",
+      "sameTaskRepeatCount": 0,
+      "lastTaskPrompt": "",
+      "weakExpressions": [
+        "你",
+        "的",
+        "一起二十块",
+        "一共是二十五块钱的"
+      ],
+      "independentUses": [
+        "你好，欢迎光临。",
+        "你好，欢迎光临！你要买什么？",
+        "Aku coba sendiri tanpa contoh ya: 可以刷卡。"
+      ]
+    }
+  },
+  "transferCheck": {
+    "studentProduced": "Aku coba sendiri tanpa contoh ya: 可以刷卡。 Udah benar nggak?",
+    "withoutHint": true,
+    "assessed": "CORRECT",
+    "evidence": "Learner's response \"可以刷卡。\" is a correct and natural way to offer card payment.",
+    "recordedAsIndependentUse": true
+  },
+  "transcript": [
+    {
+      "turn": 1,
+      "intent": "needs-analysis",
+      "studentInput": "Halo! Saya Rina, saya kerja sebagai kasir di minimarket. Sering ada pelanggan dari China, tapi saya tidak bisa bahasa Mandarin sama sekali. Bisa tolong ajarin saya?",
+      "httpStatus": 200,
+      "latencyMs": 4213,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "4f142c85-6b71-493e-84b7-61259e1edab4",
+        "responseMode": "TEACH",
+        "answer": "Halo Rina! Tentu saja, saya bisa bantu kamu belajar bahasa Mandarin dasar yang berguna di minimarket. Kita bisa mulai dengan sapaan dasar. Bagaimana kalau kita belajar mengucapkan 'Halo' atau 'Selamat datang'?",
+        "spokenChinese": [
+          {
+            "text": "你好",
+            "pinyin": "Nǐ hǎo",
+            "indonesian": "Halo",
+            "purpose": "Greeting"
+          },
+          {
+            "text": "欢迎光临",
+            "pinyin": "Huānyíng guānglín",
+            "indonesian": "Selamat datang",
+            "purpose": "Greeting for customers"
+          }
+        ],
+        "followUp": "Coba ucapkan 'Nǐ hǎo' atau 'Huānyíng guānglín'. Mana yang ingin kamu coba duluan?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner Rina, a minimarket cashier, wants to learn basic Mandarin for Chinese customers. She is an absolute beginner.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Bagaimana cara mengucapkan 'Halo' atau 'Selamat datang' dalam bahasa Mandarin? Coba ucapkan salah satunya."
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "你好"
+          },
+          {
+            "language": "zh-CN",
+            "text": "欢迎光临"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 2,
+          "billableCharacters": 6,
+          "chineseRequestCount": 2,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1595,
+          "token_output": 561,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.001881,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3848
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:03:12.356Z"
+      }
+    },
+    {
+      "turn": 2,
+      "intent": "request-greeting",
+      "studentInput": "Biasanya pelanggan masuk terus saya bingung mau bilang apa. Tolong ajarin cara menyapa pelanggan yang baru masuk toko.",
+      "httpStatus": 200,
+      "latencyMs": 3368,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "0648615a-e802-4fc7-9982-3f6321d2b0be",
+        "responseMode": "TEACH",
+        "answer": "Tentu, Rina! Untuk menyapa pelanggan yang baru masuk toko, kamu bisa bilang \"Selamat datang\" dalam bahasa Mandarin. Frasanya adalah:",
+        "spokenChinese": [
+          {
+            "text": "欢迎光临",
+            "pinyin": "Huānyíng guānglín",
+            "indonesian": "Selamat datang (di toko/tempat usaha)",
+            "purpose": "Mengajarkan frasa sapaan"
+          }
+        ],
+        "followUp": "Frasa ini sangat umum digunakan di toko, restoran, atau tempat usaha lainnya. Coba kamu ucapkan \"Huānyíng guānglín\"!",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner Rina, a minimarket cashier, wants to learn basic Mandarin for Chinese customers. She is an absolute beginner. She asked how to greet customers entering the store.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Coba ucapkan \"Selamat datang\" dalam bahasa Mandarin."
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "欢迎光临"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 4,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1860,
+          "token_output": 402,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.00123198,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2714
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:03:28.745Z"
+      }
+    },
+    {
+      "turn": 3,
+      "intent": "practice-follow-read",
+      "studentInput": "你好，欢迎光临。",
+      "httpStatus": 200,
+      "latencyMs": 6430,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "1d33788d-6f8c-4308-b956-bbe66daf2cc1",
+        "responseMode": "CORRECT",
+        "answer": "Bagus sekali, Rina! Kamu sudah benar mengucapkan \"欢迎光临\" (huānyíng guānglín) yang berarti 'Selamat datang'. Kamu juga menambahkan \"你好\" (nǐ hǎo) yang berarti 'Halo', itu juga sapaan yang baik!",
+        "spokenChinese": [
+          {
+            "text": "欢迎光临",
+            "pinyin": "huānyíng guānglín",
+            "indonesian": "Selamat datang",
+            "purpose": "Correct phrase for 'Selamat datang'"
+          },
+          {
+            "text": "你好",
+            "pinyin": "nǐ hǎo",
+            "indonesian": "Halo",
+            "purpose": "Additional phrase used by learner"
+          }
+        ],
+        "followUp": "Sekarang, coba bayangkan ada pelanggan yang baru masuk toko. Bagaimana kamu akan menyapa mereka?",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner correctly provided \"欢迎光临\" for 'Selamat datang'."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner Rina, a minimarket cashier, wants to learn basic Mandarin for Chinese customers. She is an absolute beginner. She correctly translated 'Selamat datang' as '欢迎光临'.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "SCAFFOLD",
+        "corrections": [],
+        "task": {
+          "type": "ROLEPLAY",
+          "prompt": "Bayangkan ada pelanggan yang baru masuk toko. Bagaimana kamu akan menyapa mereka?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": [
+            {
+              "expression": "欢迎光临",
+              "learnerEvidence": "你好，欢迎光临。"
+            }
+          ]
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "欢迎光临"
+          },
+          {
+            "language": "zh-CN",
+            "text": "你好"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 2,
+          "billableCharacters": 6,
+          "chineseRequestCount": 2,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1912,
+          "token_output": 1264,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0037336,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 6014
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:03:48.196Z"
+      }
+    },
+    {
+      "turn": 4,
+      "intent": "request-ask-need",
+      "studentInput": "Oke! Terus gimana cara nanya pelanggan itu mau beli apa?",
+      "httpStatus": 200,
+      "latencyMs": 3306,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "b1bb5050-5296-49a5-82fc-538eefe463dc",
+        "responseMode": "TEACH",
+        "answer": "Oke, Rina! Untuk menanyakan apa yang ingin dibeli pelanggan, kamu bisa menggunakan kalimat ini:",
+        "spokenChinese": [
+          {
+            "text": "您想买什么？",
+            "pinyin": "Nín xiǎng mǎi shénme?",
+            "indonesian": "Anda ingin membeli apa?",
+            "purpose": "Contoh kalimat untuk menanyakan apa yang ingin dibeli"
+          }
+        ],
+        "followUp": "Kalimat ini sopan dan langsung menanyakan kebutuhan pelanggan. '您' (nín) adalah bentuk sopan dari 'kamu' atau 'Anda', '想' (xiǎng) berarti 'ingin', '买' (mǎi) berarti 'membeli', dan '什么' (shénme) berarti 'apa'.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Rina, a minimarket cashier, wants to learn how to ask customers what they want to buy in Mandarin. She has previously learned greetings.",
+        "courseReferenceUsed": false,
+        "learnerAct": "QUESTION",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Coba ucapkan 'Anda ingin membeli apa?' dalam bahasa Mandarin."
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "您想买什么？"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 6,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2073,
+          "token_output": 422,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0016769,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2727
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:04:04.520Z"
+      }
+    },
+    {
+      "turn": 5,
+      "intent": "attempt-with-mistake",
+      "studentInput": "你要买什么的？",
+      "httpStatus": 200,
+      "latencyMs": 5194,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "dd4d2479-af10-4e45-a362-a0a8ea2f01ae",
+        "responseMode": "CORRECT",
+        "answer": "Hampir benar, Rina! Ada sedikit penyesuaian agar lebih sopan dan alami.",
+        "spokenChinese": [
+          {
+            "text": "您想买什么？",
+            "pinyin": "Nín xiǎng mǎi shénme?",
+            "indonesian": "Anda ingin membeli apa?",
+            "purpose": "Model correct sentence"
+          }
+        ],
+        "followUp": "Coba ulangi kalimat yang benar ini ya.",
+        "assessment": {
+          "status": "NEEDS_WORK",
+          "evidence": "Learner used '你' instead of '您' and added '的' at the end: '你要买什么的？'"
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Rina is learning to ask customers what they want to buy in Mandarin. She attempted to translate 'Anda ingin membeli apa?'",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "CONTRAST",
+        "corrections": [
+          {
+            "issue": "Penggunaan '你' (nǐ) dan '您' (nín)",
+            "explanation": "Dalam konteks pelayanan pelanggan, lebih baik menggunakan '您' (nín) yang berarti 'Anda' dan lebih sopan daripada '你' (nǐ) yang berarti 'kamu'.",
+            "modelChinese": "您"
+          },
+          {
+            "issue": "Partikel '的' (de) di akhir kalimat",
+            "explanation": "Dalam kalimat tanya dengan '什么' (shénme), kita tidak perlu menambahkan partikel '的' (de) di akhir. Kalimatnya akan lebih alami tanpa itu.",
+            "modelChinese": "您想买什么？"
+          }
+        ],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Sekarang, coba ucapkan 'Anda ingin membeli apa?' dengan kalimat yang lebih sopan dan alami: 您想买什么？"
+        },
+        "learningEvidence": {
+          "weakExpressions": [
+            {
+              "expression": "你",
+              "evidence": "Used '你' instead of '您' for politeness in customer service."
+            },
+            {
+              "expression": "的",
+              "evidence": "Added '的' at the end of a '什么' question: '你要买什么的？'"
+            }
+          ],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "您想买什么？"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 6,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2094,
+          "token_output": 821,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0026807,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4822
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:04:22.728Z"
+      }
+    },
+    {
+      "turn": 6,
+      "intent": "request-price",
+      "studentInput": "Paham. Kalau pas bayar, saya mau bilang total harganya. Tolong ajarin dong.",
+      "httpStatus": 200,
+      "latencyMs": 3034,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "b3efa321-4179-4b0c-93ec-54933ee5bc95",
+        "responseMode": "TEACH",
+        "answer": "Tentu, Rina! Untuk bilang \"total harganya\" saat bayar, kamu bisa pakai frasa ini:",
+        "spokenChinese": [
+          {
+            "text": "一共多少钱？",
+            "pinyin": "Yīgòng duōshǎo qián?",
+            "indonesian": "Totalnya berapa uang?",
+            "purpose": "Mengajarkan frasa 'total harganya'"
+          }
+        ],
+        "followUp": "Frasa \"一共\" (yīgòng) berarti 'total' atau 'seluruhnya', dan \"多少钱\" (duōshǎo qián) berarti 'berapa uang'. Jadi, \"一共多少钱？\" artinya 'Totalnya berapa uang?' atau 'Berapa total harganya?'.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Rina wants to learn how to say \"total harganya\" in Mandarin when a customer is paying.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Coba ucapkan 'Totalnya berapa harganya?' dalam bahasa Mandarin."
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "一共多少钱？"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 6,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2077,
+          "token_output": 411,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0016506,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2658
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:04:38.768Z"
+      }
+    },
+    {
+      "turn": 7,
+      "intent": "attempt-with-mistake",
+      "studentInput": "一起二十块。",
+      "httpStatus": 200,
+      "latencyMs": 4947,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "12f2b63d-4706-4a79-b616-c22fd49ce5c0",
+        "responseMode": "CORRECT",
+        "answer": "Terima kasih, Rina, sudah mencoba! \"一起二十块\" (yīqǐ èrshí kuài) artinya \"Totalnya dua puluh Yuan/kuai\". Ini adalah cara untuk memberitahu harga totalnya, bukan untuk bertanya \"Berapa total harganya?\".",
+        "spokenChinese": [
+          {
+            "text": "一共多少钱？",
+            "pinyin": "Yīgòng duōshǎo qián?",
+            "indonesian": "Totalnya berapa harganya?",
+            "purpose": "Model for asking total price"
+          }
+        ],
+        "followUp": "Sekarang, coba lagi ucapkan 'Totalnya berapa harganya?' dalam bahasa Mandarin.",
+        "assessment": {
+          "status": "NEEDS_WORK",
+          "evidence": "Learner provided '一起二十块' (yīqǐ èrshí kuài) which means 'Together twenty kuai' instead of '一共多少钱？' (Yīgòng duōshǎo qián?) for 'Totalnya berapa harganya?'"
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner is trying to ask for the total price in Mandarin but instead stated a price. The previous task was to translate 'Totalnya berapa harganya?'.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [
+          {
+            "issue": "Misunderstanding of the task: stating a price instead of asking for it.",
+            "explanation": "Kamu mengucapkan 'Totalnya dua puluh Yuan/kuai', bukan 'Totalnya berapa harganya?'. Untuk bertanya, kita perlu menggunakan kata tanya '多少钱' (duōshǎo qián) yang berarti 'berapa uang'.",
+            "modelChinese": "一共多少钱？"
+          }
+        ],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Coba ucapkan 'Totalnya berapa harganya?' dalam bahasa Mandarin."
+        },
+        "learningEvidence": {
+          "weakExpressions": [
+            {
+              "expression": "一起二十块",
+              "evidence": "Learner used '一起二十块' (yīqǐ èrshí kuài) when asked to translate 'Totalnya berapa harganya?'"
+            }
+          ],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "一共多少钱？"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 6,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2030,
+          "token_output": 751,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0024865,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4336
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:04:56.716Z"
+      }
+    },
+    {
+      "turn": 8,
+      "intent": "request-harder",
+      "studentInput": "Kayaknya gampang, kasih saya soal yang lebih sulit dong.",
+      "httpStatus": 503,
+      "latencyMs": 16709,
+      "payload": {
+        "error": "Guru AI belum dapat menjawab. Coba lagi sebentar."
+      }
+    },
+    {
+      "turn": 9,
+      "intent": "attempt-harder-fail-1",
+      "studentInput": "一共二十五块，对吗？ehm... 我说 \"Yígòng èrshíwǔ kuài\" betul nggak?",
+      "httpStatus": 200,
+      "latencyMs": 4658,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "38825cd4-54fd-42d3-a904-2e4337c97350",
+        "responseMode": "FREE_QA",
+        "answer": "Betul sekali, Rina! \"一共二十五块\" (yígòng èrshíwǔ kuài) artinya \"Totalnya dua puluh lima kuai\". Ini adalah cara yang tepat untuk menyatakan harga totalnya.",
+        "spokenChinese": [
+          {
+            "text": "一共二十五块",
+            "pinyin": "Yígòng èrshíwǔ kuài",
+            "indonesian": "Totalnya dua puluh lima kuai",
+            "purpose": "Mengkonfirmasi frasa yang ditanyakan oleh pembelajar"
+          }
+        ],
+        "followUp": "Apakah kamu ingin mencoba lagi menanyakan \"Totalnya berapa harganya?\" dalam bahasa Mandarin?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked if \"一共二十五块\" is correct for \"Totalnya dua puluh lima kuai\". The previous task was to ask \"Totalnya berapa harganya?\".",
+        "courseReferenceUsed": false,
+        "learnerAct": "QUESTION",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "一共二十五块"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 6,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2110,
+          "token_output": 696,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.002373,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4285
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:05:44.104Z"
+      }
+    },
+    {
+      "turn": 10,
+      "intent": "attempt-harder-fail-2",
+      "studentInput": "一共是二十五块钱的。",
+      "httpStatus": 200,
+      "latencyMs": 6188,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "62290d38-ac6c-433e-971e-0cee8c03085c",
+        "responseMode": "CORRECT",
+        "answer": "Hampir tepat, Rina! Kalimatmu \"一共是二十五块钱的\" (Yīgòng shì èrshíwǔ kuài qián de) bisa dimengerti, tapi ada cara yang lebih umum dan alami untuk mengatakannya.",
+        "spokenChinese": [
+          {
+            "text": "一共二十五块。",
+            "pinyin": "Yīgòng èrshíwǔ kuài.",
+            "indonesian": "Totalnya dua puluh lima kuai.",
+            "purpose": "Model for natural expression"
+          }
+        ],
+        "followUp": "Coba ucapkan lagi \"Totalnya dua puluh lima kuai\" dengan cara yang lebih ringkas dan umum.",
+        "assessment": {
+          "status": "NEEDS_WORK",
+          "evidence": "Learner used \"一共是二十五块钱的\" instead of the more common \"一共二十五块\"."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner is practicing stating the total price in Mandarin. The previous turn confirmed \"一共二十五块\" as correct for \"Totalnya dua puluh lima kuai\". The learner then attempted \"一共是二十五块钱的\".",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "MODEL",
+        "corrections": [
+          {
+            "issue": "Penambahan '是' dan '钱的'",
+            "explanation": "Dalam konteks menyatakan harga total, biasanya kita langsung mengatakan angkanya. Penambahan '是' (shì) dan '钱的' (qián de) tidak salah, tapi seringkali tidak diperlukan dan membuat kalimat terasa sedikit kurang alami. Cukup \"一共二十五块\" sudah sangat jelas.",
+            "modelChinese": "一共二十五块"
+          }
+        ],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Coba ucapkan lagi \"Totalnya dua puluh lima kuai\" dengan cara yang lebih ringkas dan umum."
+        },
+        "learningEvidence": {
+          "weakExpressions": [
+            {
+              "expression": "一共是二十五块钱的",
+              "evidence": "Learner used \"一共是二十五块钱的\" when a simpler form is more natural."
+            }
+          ],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "一共二十五块。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 7,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2059,
+          "token_output": 797,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0026102,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5842
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:06:03.316Z"
+      }
+    },
+    {
+      "turn": 11,
+      "intent": "request-strategy-change",
+      "studentInput": "Aku bingung sendiri. Coba ajarin lagi pelan-pelan pakai cara yang beda ya.",
+      "httpStatus": 200,
+      "latencyMs": 4212,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "2bc82599-2bf6-49c8-96be-5dfcca555349",
+        "responseMode": "TEACH",
+        "answer": "Tentu, Rina. Maaf kalau penjelasanku sebelumnya kurang jelas. Mari kita coba lagi dengan cara yang berbeda ya.",
+        "spokenChinese": [
+          {
+            "text": "一共二十五块。",
+            "pinyin": "Yīgòng èrshíwǔ kuài.",
+            "indonesian": "Totalnya dua puluh lima kuai.",
+            "purpose": "Model sentence for stating total price"
+          }
+        ],
+        "followUp": "Sebelumnya kamu bilang \"一共是二十五块钱的\". Kalimat ini sebenarnya tidak salah, tapi \"是\" (shì) dan \"的\" (de) di sini seringkali tidak perlu dipakai saat kita menyebutkan harga total. Ini seperti di Indonesia, kita bisa bilang \"Totalnya dua puluh lima ribu\" atau \"Totalnya adalah dua puluh lima ribu rupiah\". Keduanya benar, tapi yang pertama lebih sering dipakai dan lebih ringkas.\n\nJadi, untuk mengatakan \"Totalnya dua puluh lima kuai\" dengan cara yang paling umum dan ringkas, cukup bilang:",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner is confused about the nuance between \"一共是二十五块钱的\" and \"一共二十五块\" when stating the total price. They requested a different, slower explanation.",
+        "courseReferenceUsed": false,
+        "learnerAct": "CONFUSION",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Coba ucapkan \"Totalnya dua puluh lima kuai\" dalam bahasa Mandarin, dengan cara yang paling ringkas dan umum."
+        },
+        "learningEvidence": {
+          "weakExpressions": [
+            {
+              "expression": "一共是二十五块钱的",
+              "evidence": "Learner used this phrase, which is understandable but less common than the simpler version."
+            }
+          ],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "一共二十五块。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 7,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2189,
+          "token_output": 561,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.00170685,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3775
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:06:20.556Z"
+      }
+    },
+    {
+      "turn": 12,
+      "intent": "request-roleplay",
+      "studentInput": "Sekarang ayo latihan sungguhan! Kamu jadi pelanggan dari China, saya kasir. Mulai ya.",
+      "httpStatus": 200,
+      "latencyMs": 4214,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "4a05d056-7ccf-447c-840c-697118ab9a50",
+        "responseMode": "ROLEPLAY",
+        "answer": "Baik, Rina! Mari kita mulai roleplay-nya. Saya akan jadi pelanggan dari China, dan kamu kasirnya. Saya akan mulai ya.",
+        "spokenChinese": [
+          {
+            "text": "你好，我要买这个。",
+            "pinyin": "Nǐ hǎo, wǒ yào mǎi zhège.",
+            "indonesian": "Halo, saya mau beli ini.",
+            "purpose": "Customer's opening line in roleplay"
+          }
+        ],
+        "followUp": "Silakan kamu sebagai kasir merespons.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner wants to start a roleplay as a cashier, with the AI as a Chinese customer. The previous topic was about stating total price.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "ROLEPLAY",
+        "corrections": [],
+        "task": {
+          "type": "ROLEPLAY",
+          "prompt": "Kamu adalah kasir. Pelanggan (saya) baru saja mengatakan \"你好，我要买这个。\" (Nǐ hǎo, wǒ yào mǎi zhège.). Bagaimana kamu akan merespons sebagai kasir?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "你好，我要买这个。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 9,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2175,
+          "token_output": 580,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0021025,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3773
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:06:37.769Z"
+      }
+    },
+    {
+      "turn": 13,
+      "intent": "roleplay-answer-1",
+      "studentInput": "你好，欢迎光临！你要买什么？",
+      "httpStatus": 200,
+      "latencyMs": 4573,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "2b06d345-f763-4be1-9a04-7d50912e0c8d",
+        "responseMode": "ROLEPLAY",
+        "answer": "Bagus sekali, Rina! Responmu sebagai kasir sangat natural dan tepat.",
+        "spokenChinese": [
+          {
+            "text": "你好，欢迎光临！你要买什么？",
+            "pinyin": "Nǐ hǎo, huānyíng guānglín! Nǐ yào mǎi shénme?",
+            "indonesian": "Halo, selamat datang! Anda mau beli apa?",
+            "purpose": "Learner's correct roleplay response"
+          },
+          {
+            "text": "我要买这个。",
+            "pinyin": "Wǒ yào mǎi zhège.",
+            "indonesian": "Saya mau beli ini.",
+            "purpose": "AI's previous customer line"
+          },
+          {
+            "text": "这个多少钱？",
+            "pinyin": "Zhège duōshǎo qián?",
+            "indonesian": "Ini berapa harganya?",
+            "purpose": "AI's next customer line"
+          }
+        ],
+        "followUp": "Sekarang giliran saya sebagai pelanggan. Saya akan bertanya harga barang yang saya pegang.",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner's response '你好，欢迎光临！你要买什么？' is a correct and natural cashier response to '你好，我要买这个。'"
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner is roleplaying as a cashier and the AI is a customer. The learner correctly responded to the customer's initial statement.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "ROLEPLAY",
+        "corrections": [],
+        "task": {
+          "type": "ROLEPLAY",
+          "prompt": "Saya (pelanggan) baru saja bertanya \"这个多少钱？\" (Zhège duōshǎo qián?). Bagaimana kamu (kasir) akan menjawab harga barangnya? Anggap saja harganya 35 kuai."
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": [
+            {
+              "expression": "你好，欢迎光临！你要买什么？",
+              "learnerEvidence": "你好，欢迎光临！你要买什么？"
+            }
+          ]
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "你好，欢迎光临！你要买什么？"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我要买这个。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "这个多少钱？"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 3,
+          "billableCharacters": 26,
+          "chineseRequestCount": 3,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2217,
+          "token_output": 689,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0023876,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4202
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:06:55.362Z"
+      }
+    },
+    {
+      "turn": 14,
+      "intent": "roleplay-answer-2-price",
+      "studentInput": "这个……一共十五块。",
+      "httpStatus": 200,
+      "latencyMs": 7532,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "0def8e84-115a-4542-af11-fa792a6f006f",
+        "responseMode": "CORRECT",
+        "answer": "Bagus, Rina! Struktur kalimatmu \"这个一共十五块\" (Zhège yīgòng shíwǔ kuài) sudah sangat tepat untuk menyatakan harga. Hanya saja, kamu menyebutkan 'lima belas kuai' (十五块), padahal saya minta 'tiga puluh lima kuai' (三十五块).",
+        "spokenChinese": [
+          {
+            "text": "这个一共十五块。",
+            "pinyin": "Zhège yīgòng shíwǔ kuài.",
+            "indonesian": "Ini total lima belas kuai.",
+            "purpose": "Learner's answer"
+          },
+          {
+            "text": "三十五块。",
+            "pinyin": "Sānshíwǔ kuài.",
+            "indonesian": "Tiga puluh lima kuai.",
+            "purpose": "Corrected price"
+          },
+          {
+            "text": "好的，一共三十五块。请问怎么支付？",
+            "pinyin": "Hǎo de, yīgòng sānshíwǔ kuài. Qǐngwèn zěnme zhīfù?",
+            "indonesian": "Baik, total tiga puluh lima kuai. Bagaimana cara pembayarannya?",
+            "purpose": "Next customer line in roleplay"
+          }
+        ],
+        "followUp": "Tapi tidak apa-apa, yang penting kamu sudah bisa menyampaikan harga dengan baik. Sekarang, saya sebagai pelanggan akan melanjutkan:\n\n\"好的，一共三十五块。请问怎么支付？\" (Hǎo de, yīgòng sānshíwǔ kuài. Qǐngwèn zěnme zhīfù?)\n\nBagaimana kamu akan merespons sebagai kasir?",
+        "assessment": {
+          "status": "NEEDS_WORK",
+          "evidence": "Learner stated '十五块' (shíwǔ kuài) instead of the requested '三十五块' (sānshíwǔ kuài). However, the structure '这个一共...块' is correct."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner is roleplaying as a cashier. The AI customer asked for the price, and the learner responded with a price, but it was numerically different from the requested price.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "MODEL",
+        "corrections": [
+          {
+            "issue": "Numerical error in the price.",
+            "explanation": "Kamu menyebutkan 'lima belas kuai' (十五块), padahal saya minta 'tiga puluh lima kuai' (三十五块). Tapi struktur kalimatnya sudah benar.",
+            "modelChinese": "三十五块"
+          }
+        ],
+        "task": {
+          "type": "ROLEPLAY",
+          "prompt": "Saya (pelanggan) baru saja mengatakan \"好的，一共三十五块。请问怎么支付？\" (Hǎo de, yīgòng sānshíwǔ kuài. Qǐngwèn zěnme zhīfù?). Bagaimana kamu akan merespons sebagai kasir?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "这个一共十五块。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "三十五块。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "好的，一共三十五块。请问怎么支付？"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 3,
+          "billableCharacters": 30,
+          "chineseRequestCount": 3,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2250,
+          "token_output": 1257,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0038175,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 6752
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:09:36.575Z"
+      }
+    },
+    {
+      "turn": 15,
+      "intent": "transfer-independent-attempt",
+      "studentInput": "Aku coba sendiri tanpa contoh ya: 可以刷卡。 Udah benar nggak?",
+      "httpStatus": 200,
+      "latencyMs": 4746,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "ec96f24d-3c09-45e5-8ff5-92d396568ae0",
+        "responseMode": "ROLEPLAY",
+        "answer": "Benar sekali, Rina! \"可以刷卡\" (Kěyǐ shuākǎ) adalah jawaban yang sangat tepat dan umum untuk menawarkan pembayaran dengan kartu.",
+        "spokenChinese": [
+          {
+            "text": "可以刷卡。",
+            "pinyin": "Kěyǐ shuākǎ.",
+            "indonesian": "Bisa gesek kartu.",
+            "purpose": "Mengulang jawaban benar dari pembelajar"
+          },
+          {
+            "text": "好的，请刷卡。",
+            "pinyin": "Hǎo de, qǐng shuākǎ.",
+            "indonesian": "Baik, silakan gesek kartu.",
+            "purpose": "Contoh respons pelanggan"
+          }
+        ],
+        "followUp": "Lalu, saya (pelanggan) akan menjawab: \"好的，请刷卡。\" (Hǎo de, qǐng shuākǎ.).\n\nApa lagi yang akan kamu katakan atau lakukan sebagai kasir setelah pelanggan menggesek kartu?",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner's response \"可以刷卡。\" is a correct and natural way to offer card payment."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner is roleplaying as a cashier. The AI customer asked about payment methods. The learner correctly offered card payment.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "MODEL",
+        "corrections": [],
+        "task": {
+          "type": "ROLEPLAY",
+          "prompt": "Apa lagi yang akan kamu katakan atau lakukan sebagai kasir setelah pelanggan menggesek kartu?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": [
+            {
+              "expression": "可以刷卡",
+              "learnerEvidence": "Aku coba sendiri tanpa contoh ya: 可以刷卡。"
+            }
+          ]
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "可以刷卡。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "好的，请刷卡。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 2,
+          "billableCharacters": 12,
+          "chineseRequestCount": 2,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2414,
+          "token_output": 649,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0023467,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4107
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:09:54.312Z"
+      }
+    },
+    {
+      "turn": 16,
+      "intent": "request-polite-form",
+      "studentInput": "Kalau mau lebih sopan gimana ya bilangnya? Ajarin versi sopannya dong.",
+      "httpStatus": 200,
+      "latencyMs": 6103,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "5501e010-d8d7-41d7-b28a-274a56061e66",
+        "responseMode": "TEACH",
+        "answer": "Tentu! Untuk membuat kalimat lebih sopan, kita bisa menggunakan kata \"您\" (nín) yang berarti \"Anda\" (bentuk sopan dari \"kamu\"), dan juga \"请\" (qǐng) yang berarti \"mohon\" atau \"silakan\".",
+        "spokenChinese": [
+          {
+            "text": "您",
+            "pinyin": "nín",
+            "indonesian": "Anda (bentuk sopan)",
+            "purpose": "Vocabulary explanation"
+          },
+          {
+            "text": "请",
+            "pinyin": "qǐng",
+            "indonesian": "mohon, silakan",
+            "purpose": "Vocabulary explanation"
+          },
+          {
+            "text": "请您刷卡。",
+            "pinyin": "Qǐng nín shuākǎ.",
+            "indonesian": "Mohon Anda menggesek kartu.",
+            "purpose": "Example of polite phrase"
+          }
+        ],
+        "followUp": "Jadi, daripada hanya \"刷卡\" (shuākǎ - gesek kartu), kamu bisa bilang \"请您刷卡\" (Qǐng nín shuākǎ) yang lebih sopan. Atau, jika ingin lebih lengkap, \"好的，请您刷卡\" (Hǎo de, qǐng nín shuākǎ) – \"Baik, mohon Anda menggesek kartu.\"\n\nBagaimana, apakah kamu ingin mencoba menggunakan versi sopan ini dalam roleplay kita?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner asked for a more polite way to phrase something in the context of the cashier roleplay, specifically after offering card payment.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "您"
+          },
+          {
+            "language": "zh-CN",
+            "text": "请"
+          },
+          {
+            "language": "zh-CN",
+            "text": "请您刷卡。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 3,
+          "billableCharacters": 7,
+          "chineseRequestCount": 3,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2281,
+          "token_output": 928,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0030043,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5745
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:10:13.470Z"
+      }
+    },
+    {
+      "turn": 17,
+      "intent": "session-end",
+      "studentInput": "Sudah selesai ya untuk hari ini. Tolong rangkum apa saja yang harus saya ulang.",
+      "httpStatus": 200,
+      "latencyMs": 8848,
+      "payload": {
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "c63d2440-6e98-4d74-bfb4-b43b54ab4f90",
+        "responseMode": "TEACH",
+        "answer": "Baik, Rina! Senang sekali kamu sudah belajar banyak hari ini. Mari kita rangkum apa saja yang sudah kita pelajari dan apa yang bisa kamu ulas lagi.",
+        "spokenChinese": [],
+        "followUp": "Apakah kamu siap untuk rangkuman dan beberapa latihan singkat?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner has been practicing role-playing as a cashier, including greeting customers, stating prices, asking about payment methods, offering card payment, and asking for polite phrasing.",
+        "courseReferenceUsed": false,
+        "learnerAct": "SESSION_END",
+        "teachingStrategy": "REVIEW",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [
+            {
+              "expression": "你",
+              "evidence": "from coachingState"
+            },
+            {
+              "expression": "的",
+              "evidence": "from coachingState"
+            }
+          ],
+          "independentUses": []
+        },
+        "sessionWrapUp": {
+          "recap": "Hari ini kita sudah berlatih banyak hal penting untuk peran kasir, mulai dari menyapa pelanggan, menanyakan apa yang ingin mereka beli, menyatakan harga, menanyakan cara pembayaran, hingga menawarkan pembayaran dengan kartu dan meminta pelanggan untuk menggesek kartu dengan sopan.",
+          "weakFocus": [
+            "Angka dalam konteks harga (misalnya, membedakan lima belas dan tiga puluh lima)",
+            "Penggunaan kata \"您\" (nín) dan \"请\" (qǐng) untuk kesopanan"
+          ],
+          "recallExercises": [
+            "Bagaimana cara menyapa pelanggan dan menanyakan apa yang ingin mereka beli dalam bahasa Mandarin?",
+            "Jika totalnya 48 kuai, bagaimana kamu mengatakannya dalam bahasa Mandarin?",
+            "Bagaimana cara mengatakan \"Silakan gesek kartu Anda\" dengan sopan?",
+            "Bagaimana cara menanyakan \"Bagaimana cara membayar?\""
+          ]
+        },
+        "speechSegments": [],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 0,
+          "billableCharacters": 0,
+          "chineseRequestCount": 0,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 2234,
+          "token_output": 1476,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0043602,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 8452
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "textTranscriptNotAcousticallyScored": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T14:10:35.308Z"
+      }
+    }
+  ]
+}
