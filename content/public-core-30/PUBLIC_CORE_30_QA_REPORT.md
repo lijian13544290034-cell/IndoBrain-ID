@@ -1,6 +1,6 @@
 # 日常高频中文公共课程 · 第一批 30 条候选 QA 报告
 
-日期：2026-10-25 · 分支：`feature/public-core-30-candidates` · 生成脚本：`scripts/build-public-core-30.mjs`（可复跑）
+日期：2026-10-25（rev2 终审修订版）· 分支：`feature/public-core-30-candidates` · 生成脚本：`scripts/build-public-core-30.mjs`（可复跑）· reviewReference：`WB-public-core-30-review-2026-10-25-rev2`
 
 ## 1. 选出的表达数量
 
@@ -22,20 +22,29 @@
 - 无方向颠倒：30 条均以印尼语原意为准确定中文，未机械调换。
 - 本轮对语料中文做的反向教学调整：全部保留自然口语形态（如 `Ini berapa?→这个多少钱？`、`Tunggu sebentar ya.→稍等一下。`），未出现翻译腔。
 - 有意排除的高重复候选：`Terima kasich.→谢谢。`、`Mahal banget.→太贵了。` 等 8 条与 Day 1–60 逐字重复（validator 会直接拒绝），已替换为近义不重复表达（稍等一下 / 就是这个 等）。
+- **rev2 终审修订（5 条，均为提升自然度，非源错误）**：
+
+| ID | 修订前 → 修订后 | 理由 |
+|---|---|---|
+| CN-HF-002 | 不好意思，先生。→ **打扰一下，先生。** | Permisi 是引起注意的礼貌语；「不好意思」偏道歉/婉拒语境，「打扰一下」是更准确的教学对译 |
+| CN-HF-014 | 可以现金吗？→ **可以用现金吗？** | 补动词「用」，中文更自然；印尼语 Bisa cash? 语义不变 |
+| CN-HF-017 | 不加糖哦。→ **不要加糖。** | 改为点单祈使句，消除句尾语气词「哦」的声调标注争议（ó/ō 各有依据，统一避开） |
+| CN-HF-021 | 先一直往前。→ **先直走。** | 原句冗长且无落点；「先直走」更自然，与源句 Lurus saja dulu. 指令语境一致 |
+| CN-HF-030 | 什么时候好？→ **什么时候做完？** | 源语境是追问完成时间（GROUP 27），「做完」与 selesai 精确对应，原句语义模糊 |
 
 ## 5. 拼音问题（已在 reviewNotes 中逐条标注）
 
 | 条目 | 处理 |
 |---|---|
+| CN-HF-002 打扰一下 | 「一下」读 yí xià（与 CN-HF-025 同口径） |
 | CN-HF-007 一个人 | 「一」变调 yí（第四声前） |
 | CN-HF-009 一点点就行 | 「一」变调 yì（第三声前） |
-| CN-HF-016 不要太辣 | 「不」变调 bú（第四声前） |
-| CN-HF-021 先一直往前 | 「一」变调 yì（第二声前） |
+| CN-HF-016 不要太辣 / CN-HF-017 不要加糖 | 「不」变调 bú（第四声前，同口径） |
 | CN-HF-025 稍等一下 | 「一下」读 yí xià |
 | CN-HF-008 两瓶 | 量词用「两」不用于「二」，note 已注明 |
 | 轻声处理 | 先生/意思(sheng, si)、吗/了/吧/这个(ge, le, ma, ba)、舒服(fu)、什么(me) 均按实际读音标轻声 |
 
-全部拼音为带声调符号、无数字标注（符合 validator 硬规则）；语气词「哦」标 ó（CN-HF-017）。
+全部拼音为带声调符号、无数字标注（符合 validator 硬规则）。「一/不」变调与轻声按**实际读音**统一标注（同口径：同结构句子标注方式完全一致）；rev2 已删除语气词「哦」，无争议点。
 
 ## 6. 重复项目
 
@@ -44,7 +53,7 @@
 
 ## 7. 自动 validator 结果
 
-`scripts/validate-mandarin-course-import.mjs` 实测两遍：
+`scripts/validate-mandarin-course-import.mjs` 实测两遍（rev2 修订后复跑，结果与初版一致）：
 
 1. **交付版（reviewStatus=REVIEW_PASSED）**：唯一提示 `reviewStatus: must be HUMAN_APPROVED before import` —— 这正是流程设计，不是数据缺陷。
 2. **模拟人工批准副本（HUMAN_APPROVED + 占位 reviewReference）**：**0 错误**。即人工批准后无需任何数据修改即可通过正式导入校验。
@@ -57,10 +66,8 @@
 
 ## 9. 尚需人工审核的内容
 
-1. **拼音终审**（规范要求人工复核变调/多音字）：重点复核上表 6 处变调标注是否与项目教学口径一致（若项目惯用「一/不」标原调，仅需改 5 条拼音字符串，chinese/tts 不受影响）。
-2. **语气词「哦」**（CN-HF-017）的声调标注口径（ó / ō）。
-3. **正式 HUMAN_APPROVED 批准 + reviewReference 填写**——WorkBuddy 按规则不自行批准。
-4. 品牌词不存在于本批（QRIS/e-toll/Wi-Fi 已全部避开），无需特殊 TTS 处理标记。
+1. **正式 HUMAN_APPROVED 批准 + reviewReference 填写**——WorkBuddy 按规则不自行批准（rev2 已消除待人工裁决的拼音争议点「哦」）。
+2. 品牌词不存在于本批（QRIS/e-toll/Wi-Fi 已全部避开），无需特殊 TTS 处理标记。
 
 ## 10. 结论
 
