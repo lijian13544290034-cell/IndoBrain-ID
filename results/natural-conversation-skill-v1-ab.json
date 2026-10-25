@@ -1,0 +1,3874 @@
+{
+  "experiment": "NATURAL_CONVERSATION_SKILL_V1",
+  "baseUrl": "https://indobrain-01-prd-prd-v0-1-p2w6ixbni-lijian1.vercel.app",
+  "modelTier": "SMART",
+  "cases": [
+    {
+      "id": "R1-01",
+      "title": "请求测试",
+      "message": "boleh buat tes untuk saya ya",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "39ca6665-38d1-4218-b48a-f323514c8020",
+        "responseMode": "TEST",
+        "answer": "Tentu! Mari kita mulai tesnya. Bagaimana Anda akan mengucapkan \"Halo\" dalam bahasa Mandarin?",
+        "spokenChinese": [
+          {
+            "text": "你好",
+            "pinyin": "Nǐ hǎo",
+            "indonesian": "Halo",
+            "purpose": "Testing basic greeting"
+          }
+        ],
+        "followUp": "Coba tuliskan dalam Hanzi atau Pinyin.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner requested a test. The first test question is to translate 'Halo' into Mandarin.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "你好"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 2,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 526,
+          "token_output": 285,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.00078822,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 1,
+          "response_latency_ms": 2191
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:28:26.185Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "ea38c72d-ead8-4fc4-86ce-2a610953e791",
+        "responseMode": "TEST",
+        "answer": "Tentu, mari kita mulai tesnya! Coba terjemahkan kalimat ini ke dalam bahasa Mandarin:",
+        "spokenChinese": [
+          {
+            "text": "你好",
+            "pinyin": "Nǐ hǎo",
+            "indonesian": "Halo",
+            "purpose": "Model answer for a common greeting"
+          }
+        ],
+        "followUp": "Bagaimana Anda akan mengatakan 'Halo' dalam bahasa Mandarin?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner requested a test. Starting with a basic greeting translation.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "RECALL",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Bagaimana Anda akan mengatakan 'Halo' dalam bahasa Mandarin?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "你好"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 2,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 909,
+          "token_output": 356,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0011627,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2350
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:28:41.909Z"
+      }
+    },
+    {
+      "id": "R1-02",
+      "title": "餐厅学习目标",
+      "message": "saya mau belajar Mandarin untuk restoran",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "b9c0c5b9-f19d-4a81-8a9e-15ac170ba98a",
+        "responseMode": "TEACH",
+        "answer": "Tentu! Mari kita mulai dengan frasa yang sangat umum dan penting di restoran: \"Selamat datang\".",
+        "spokenChinese": [
+          {
+            "text": "欢迎光临",
+            "pinyin": "Huānyíng guānglín",
+            "indonesian": "Selamat datang (di tempat usaha)",
+            "purpose": "Teaching a common restaurant greeting"
+          }
+        ],
+        "followUp": "Bisakah Anda coba ucapkan \"Huānyíng guānglín\"?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner wants to learn Mandarin for restaurant use. Starting with 'Welcome'.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "欢迎光临"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 4,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 672,
+          "token_output": 276,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0008916,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2718
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:28:57.994Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "fdc6a127-bf80-4685-be5e-287b1b6e3e48",
+        "responseMode": "TEACH",
+        "answer": "Tentu! Senang sekali kamu mau belajar Mandarin untuk restoran. Ini akan sangat berguna. Mari kita mulai dengan frasa dasar saat menyambut pelanggan atau menanyakan berapa orang yang akan makan. Untuk menyambut, kamu bisa bilang:",
+        "spokenChinese": [
+          {
+            "text": "欢迎光临！",
+            "pinyin": "Huānyíng guānglín!",
+            "indonesian": "Selamat datang!",
+            "purpose": "Greeting customers"
+          }
+        ],
+        "followUp": "Coba ucapkan 'Huānyíng guānglín!' atau tanyakan jika ada yang ingin kamu ketahui tentang frasa ini.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner wants to learn Mandarin for restaurant settings. Introduced '欢迎光临! (Huānyíng guānglín!)' for 'Welcome!'.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [],
+        "task": {
+          "type": "ANSWER",
+          "prompt": "Bagaimana cara mengucapkan 'Selamat datang!' dalam bahasa Mandarin?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "欢迎光临！"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 5,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1304,
+          "token_output": 637,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0019837,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3136
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:29:14.553Z"
+      }
+    },
+    {
+      "id": "R1-03",
+      "title": "自由词义提问",
+      "message": "apa arti 分酒器?",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "fea89b24-bc0d-4e27-925e-33133077032b",
+        "responseMode": "TEACH",
+        "answer": "分酒器 (fēnjiǔqì) artinya \"dispenser minuman\" atau \"decanter\". Ini adalah alat yang digunakan untuk membagi atau menuangkan minuman, terutama anggur atau minuman beralkohol lainnya, dari botol besar ke gelas atau wadah yang lebih kecil. Kadang juga disebut \"aerator\" jika fungsinya untuk mengangin-anginkan anggur.",
+        "spokenChinese": [
+          {
+            "text": "分酒器",
+            "pinyin": "fēnjiǔqì",
+            "indonesian": "dispenser minuman / decanter",
+            "purpose": "Meaning of the requested term"
+          }
+        ],
+        "followUp": "Apakah ada kata atau frasa lain yang ingin kamu ketahui artinya?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked for the meaning of '分酒器'.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "分酒器"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 3,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 672,
+          "token_output": 324,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0010116,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2062
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:29:30.059Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "a4b8e74b-37e9-4c4d-af25-3af9cde52854",
+        "responseMode": "TEACH",
+        "answer": "分酒器 (fēnjiǔqì) artinya 'dispenser minuman' atau 'decanter'. Ini adalah alat yang digunakan untuk membagi atau menuangkan minuman, terutama anggur, dari botol besar ke gelas atau wadah yang lebih kecil.",
+        "spokenChinese": [
+          {
+            "text": "分酒器",
+            "pinyin": "fēnjiǔqì",
+            "indonesian": "dispenser minuman / decanter",
+            "purpose": "Menjelaskan arti kata"
+          }
+        ],
+        "followUp": "Apakah penjelasan ini cukup jelas?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked for the meaning of '分酒器'.",
+        "courseReferenceUsed": false,
+        "learnerAct": "QUESTION",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "分酒器"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 3,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1304,
+          "token_output": 349,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0012637,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2303
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:29:45.752Z"
+      }
+    },
+    {
+      "id": "R1-04",
+      "title": "不懂后换方式解释",
+      "message": "saya belum paham, jelaskan lagi",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "399374de-a63d-405c-aa77-9edbbbb0cb61",
+        "responseMode": "TEACH",
+        "answer": "Tentu, mari kita jelaskan lagi perbedaan antara 要 (yào) dan 想 (xiǎng) dengan lebih detail.\n\n1.  **要 (yào)**\n    *   **Artinya:** \"ingin\", \"mau\", \"harus\", \"akan\".\n    *   **Kapan digunakan:** Menunjukkan keinginan yang lebih kuat, kebutuhan, atau niat yang pasti. Bisa juga berarti \"harus\" atau \"akan\" dalam konteks tertentu.\n    *   **Contoh:**\n        *   Ketika kamu benar-benar butuh air karena haus:\n        *   Ketika kamu berencana melakukan sesuatu dengan pasti:\n\n2.  **想 (xiǎng)**\n    *   **Artinya:** \"ingin\", \"mau\", \"berpikir\", \"merasa kangen\".\n    *   **Kapan digunakan:** Menunjukkan keinginan yang lebih lembut, harapan, atau sekadar \"berpikir untuk melakukan sesuatu\". Ini lebih ke arah \"ingin\" yang tidak sekuat \"harus\" atau \"pasti\".\n    *   **Contoh:**\n        *   Ketika kamu hanya ingin minum air, tapi tidak terlalu mendesak:\n        *   Ketika kamu berpikir untuk pergi ke suatu tempat:\n\n**Perbedaan Kunci:**\n*   **要 (yào)** sering kali menyiratkan keputusan atau kebutuhan yang lebih kuat. Ini seperti \"I *will*\" atau \"I *must*\" atau \"I *definitely want*\".\n*   **想 (xiǎng)** lebih ke arah \"I *would like to*\" atau \"I *feel like*\" atau \"I *am thinking of*\". Keinginannya lebih fleksibel dan tidak seharus itu.\n\nJadi, \"我要水\" (Wǒ yào shuǐ) berarti \"Saya mau air\" (karena saya butuh/sangat ingin). Sedangkan \"我想喝水\" (Wǒ xiǎng hē shuǐ) berarti \"Saya ingin minum air\" (sebagai keinginan, mungkin tidak terlalu mendesak).",
+        "spokenChinese": [
+          {
+            "text": "我要水。",
+            "pinyin": "Wǒ yào shuǐ.",
+            "indonesian": "Saya mau air.",
+            "purpose": "Contoh penggunaan 要 (yào) untuk kebutuhan/keinginan kuat."
+          },
+          {
+            "text": "我要去北京。",
+            "pinyin": "Wǒ yào qù Běijīng.",
+            "indonesian": "Saya akan/mau pergi ke Beijing.",
+            "purpose": "Contoh penggunaan 要 (yào) untuk niat pasti."
+          },
+          {
+            "text": "我想喝水。",
+            "pinyin": "Wǒ xiǎng hē shuǐ.",
+            "indonesian": "Saya ingin minum air.",
+            "purpose": "Contoh penggunaan 想 (xiǎng) untuk keinginan lembut."
+          },
+          {
+            "text": "我想去中国。",
+            "pinyin": "Wǒ xiǎng qù Zhōngguó.",
+            "indonesian": "Saya ingin pergi ke Tiongkok.",
+            "purpose": "Contoh penggunaan 想 (xiǎng) untuk harapan/pemikiran."
+          }
+        ],
+        "followUp": "Apakah penjelasan ini lebih membantu? Jika ada bagian yang masih kurang jelas, jangan ragu untuk bertanya lagi!",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": "Learner stated 'belum paham, jelaskan lagi'."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The user asked for a re-explanation of the difference between 要 (yào) and 想 (xiǎng). The previous explanation was brief. I need to provide a more detailed and clearer explanation with distinct examples.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "我要水。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我要去北京。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我想喝水。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我想去中国。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 4,
+          "billableCharacters": 21,
+          "chineseRequestCount": 4,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 733,
+          "token_output": 1081,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0029224,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 6118
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:30:05.257Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "9e7240f5-93b8-4dc5-a83e-7fe8fd40dbac",
+        "responseMode": "TEACH",
+        "answer": "Tentu, mari kita jelaskan lagi perbedaan antara 要 (yào) dan 想 (xiǎng) agar lebih jelas ya. Keduanya memang bisa diartikan \"mau\" atau \"ingin\", tapi ada nuansa yang berbeda:\n\n1.  **要 (yào)**: Ini menunjukkan keinginan yang lebih kuat, seperti \"butuh\", \"harus\", atau \"akan\". Biasanya digunakan untuk menyatakan kebutuhan yang mendesak, perintah, atau rencana yang pasti. Ini lebih langsung dan tegas.\n\n2.  **想 (xiǎng)**: Ini menunjukkan keinginan yang lebih lembut, seperti \"ingin\", \"berharap\", atau \"berpikir untuk\". Biasanya digunakan untuk menyatakan keinginan, niat, atau kerinduan. Ini lebih ke arah preferensi atau ide, bukan keharusan.",
+        "spokenChinese": [
+          {
+            "text": "要",
+            "pinyin": "yào",
+            "indonesian": "mau/butuh/akan",
+            "purpose": "Introduce key vocabulary"
+          },
+          {
+            "text": "想",
+            "pinyin": "xiǎng",
+            "indonesian": "ingin/berharap/berpikir",
+            "purpose": "Introduce key vocabulary"
+          },
+          {
+            "text": "我要水。",
+            "pinyin": "Wǒ yào shuǐ.",
+            "indonesian": "Saya butuh air. (lebih tegas, mungkin haus sekali)",
+            "purpose": "Example sentence for 要"
+          },
+          {
+            "text": "我想喝水。",
+            "pinyin": "Wǒ xiǎng hē shuǐ.",
+            "indonesian": "Saya ingin minum air. (lebih lembut, sekadar keinginan)",
+            "purpose": "Example sentence for 想"
+          },
+          {
+            "text": "我要去北京。",
+            "pinyin": "Wǒ yào qù Běijīng.",
+            "indonesian": "Saya akan pergi ke Beijing. (rencana pasti)",
+            "purpose": "Example sentence for 要"
+          },
+          {
+            "text": "我想去北京。",
+            "pinyin": "Wǒ xiǎng qù Běijīng.",
+            "indonesian": "Saya ingin pergi ke Beijing. (keinginan, belum tentu pasti)",
+            "purpose": "Example sentence for 想"
+          }
+        ],
+        "followUp": "Apakah penjelasan ini membantu? Atau ada bagian yang masih ingin ditanyakan?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner is confused about the difference between 要 (yào) and 想 (xiǎng) and requested a re-explanation.",
+        "courseReferenceUsed": false,
+        "learnerAct": "CONFUSION",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "要"
+          },
+          {
+            "language": "zh-CN",
+            "text": "想"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我要水。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我想喝水。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我要去北京。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我想去北京。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 6,
+          "billableCharacters": 23,
+          "chineseRequestCount": 6,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 3042,
+          "token_output": 2051,
+          "model_calls": 2,
+          "estimated_ai_cost": 0.0060401,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 1,
+          "response_latency_ms": 11078
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:30:29.789Z"
+      }
+    },
+    {
+      "id": "R1-05",
+      "title": "要求更难题",
+      "message": "kasih saya soal yang lebih sulit",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "5fa551ae-fb5a-41f3-a334-cba0867bc0ea",
+        "responseMode": "TEST",
+        "answer": "Baik, mari kita coba soal yang sedikit lebih sulit. Terjemahkan kalimat ini ke dalam bahasa Mandarin:",
+        "spokenChinese": [
+          {
+            "text": "我要喝水。",
+            "pinyin": "Wǒ yào hē shuǐ.",
+            "indonesian": "Saya mau minum air.",
+            "purpose": "Contoh kalimat yang akan diterjemahkan oleh pelajar"
+          }
+        ],
+        "followUp": "Bagaimana Anda akan mengatakan 'Saya mau minum air' dalam bahasa Mandarin?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "ELEMENTARY",
+        "contextSummary": "Learner asked for a harder question after correctly translating 'Saya mau air' to '我要水'. I am providing a new translation task: 'Saya mau minum air'.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "我要喝水。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 5,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 708,
+          "token_output": 309,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0009849,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4842
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:30:47.996Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "47a360a2-2278-4402-9384-ca8ff00656ad",
+        "responseMode": "TEST",
+        "answer": "Baik, mari kita coba soal yang sedikit lebih sulit. Terjemahkan kalimat ini ke dalam bahasa Mandarin:\n\nSaya mau minum teh.",
+        "spokenChinese": [],
+        "followUp": "Bagaimana Anda akan mengatakan 'Saya mau minum teh' dalam bahasa Mandarin?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner previously translated 'Saya mau air' (我要水) and now requests a harder question.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "SCAFFOLD",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Terjemahkan kalimat ini ke dalam bahasa Mandarin:\n\nSaya mau minum teh."
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 0,
+          "billableCharacters": 0,
+          "chineseRequestCount": 0,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 947,
+          "token_output": 625,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0018466,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3827
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:31:05.325Z"
+      }
+    },
+    {
+      "id": "R1-06",
+      "title": "客户对话练习",
+      "message": "saya mau latihan percakapan dengan pelanggan",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "b63db704-ef72-4005-89e8-b9e0da2997ca",
+        "responseMode": "ROLEPLAY",
+        "answer": "Baik, mari kita mulai latihan percakapan dengan pelanggan. Saya akan menjadi pelanggan Anda. Anda bisa mulai dengan menyapa saya dan menanyakan apa yang bisa saya bantu. Anggap saja Anda bekerja di sebuah toko atau layanan.\n\nSaya akan mulai sebagai pelanggan:\n\n\"Halo, saya sedang mencari sesuatu.\"",
+        "spokenChinese": [
+          {
+            "text": "您好，我正在找东西。",
+            "pinyin": "Nín hǎo, wǒ zhèngzài zhǎo dōngxi.",
+            "indonesian": "Halo, saya sedang mencari sesuatu.",
+            "purpose": "Customer's opening line in a roleplay"
+          }
+        ],
+        "followUp": "Bagaimana Anda akan merespons sebagai staf toko?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner requested roleplay for customer conversation. Assistant initiated roleplay as customer.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "您好，我正在找东西。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 10,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 674,
+          "token_output": 299,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0009497,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2904
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:31:21.703Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "df28e37b-df53-4dc2-80bf-e1001d2ba099",
+        "responseMode": "ROLEPLAY",
+        "answer": "Tentu, mari kita mulai latihan percakapan dengan pelanggan. Saya akan menjadi pelanggan Anda. Anda bisa mulai dengan menyapa saya.",
+        "spokenChinese": [],
+        "followUp": "Bagaimana Anda akan menyapa pelanggan?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner requested to practice customer conversation.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "ROLEPLAY",
+        "corrections": [],
+        "task": {
+          "type": "ROLEPLAY",
+          "prompt": "Anda adalah staf toko. Saya adalah pelanggan. Sapa saya."
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 0,
+          "billableCharacters": 0,
+          "chineseRequestCount": 0,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1306,
+          "token_output": 311,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0011693,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2468
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:32:19.930Z"
+      }
+    },
+    {
+      "id": "R1-07",
+      "title": "继续刚才练习",
+      "message": "继续刚才的练习",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "aa6dd0b2-59e4-402a-87a6-9f100ff3b913",
+        "responseMode": "ROLEPLAY",
+        "answer": "Baik, tehnya akan segera saya siapkan. Ada lagi yang bisa saya bantu?",
+        "spokenChinese": [
+          {
+            "text": "好的，请稍等。",
+            "pinyin": "Hǎo de, qǐng shāo děng.",
+            "indonesian": "Baik, mohon tunggu sebentar.",
+            "purpose": "Waiter acknowledging the order and asking to wait."
+          }
+        ],
+        "followUp": "Sekarang giliran Anda sebagai pelanggan. Apa yang akan Anda katakan selanjutnya?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The user is roleplaying as a waiter in a restaurant. The assistant, as a customer, just ordered \"请给我一杯茶。\" (Please give me a cup of tea.). The user needs to respond as the waiter.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "好的，请稍等。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 7,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 719,
+          "token_output": 317,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0010082,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2866
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:32:36.183Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "2e0596e7-5b05-49a6-9285-2bc8cd88c2a0",
+        "responseMode": "ROLEPLAY",
+        "answer": "Baik, mohon tunggu sebentar.",
+        "spokenChinese": [
+          {
+            "text": "好的，请稍等。",
+            "pinyin": "Hǎo de, qǐng shāo děng.",
+            "indonesian": "Baik, mohon tunggu sebentar.",
+            "purpose": "Model response for waiter"
+          }
+        ],
+        "followUp": "Sekarang giliran Anda untuk melanjutkan percakapan. Mungkin Anda ingin memesan makanan lain atau menanyakan sesuatu?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "User is roleplaying as a waiter in a restaurant. Assistant (customer) just ordered '请给我一杯茶。'",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "ROLEPLAY",
+        "corrections": [],
+        "task": {
+          "type": "ROLEPLAY",
+          "prompt": "Sekarang giliran Anda untuk melanjutkan percakapan. Mungkin Anda ingin memesan makanan lain atau menanyakan sesuatu?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "好的，请稍等。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 7,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1353,
+          "token_output": 533,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0017384,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2954
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:32:52.519Z"
+      }
+    },
+    {
+      "id": "R1-08",
+      "title": "未作答不得判分",
+      "message": "saya belum jawab, tolong jelaskan dulu",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "7c6a4303-b79d-4d03-ba79-9da2be405a85",
+        "responseMode": "TEACH",
+        "answer": "Tentu, mari kita bedah kalimat \"Pelanggan mau pesan nasi goreng\":\n\n1.  **Pelanggan**: Dalam bahasa Mandarin, kita bisa menggunakan 顾客 (gùkè).\n2.  **Mau**: Untuk menyatakan \"mau\" dalam konteks memesan makanan, kita bisa menggunakan 要 (yào). Ini menunjukkan keinginan atau niat untuk melakukan sesuatu.\n3.  **Pesan**: Untuk \"pesan\" makanan, kata kerja yang umum digunakan adalah 点 (diǎn).\n4.  **Nasi goreng**: Ini adalah 炒饭 (chǎofàn).\n\nJadi, jika digabungkan, kalimatnya menjadi \"顾客要点炒饭\" (Gùkè yào diǎn chǎofàn).",
+        "spokenChinese": [
+          {
+            "text": "顾客",
+            "pinyin": "gùkè",
+            "indonesian": "pelanggan",
+            "purpose": "Menjelaskan kata 'pelanggan'"
+          },
+          {
+            "text": "要",
+            "pinyin": "yào",
+            "indonesian": "mau",
+            "purpose": "Menjelaskan kata 'mau'"
+          },
+          {
+            "text": "点",
+            "pinyin": "diǎn",
+            "indonesian": "pesan (makanan)",
+            "purpose": "Menjelaskan kata 'pesan'"
+          },
+          {
+            "text": "炒饭",
+            "pinyin": "chǎofàn",
+            "indonesian": "nasi goreng",
+            "purpose": "Menjelaskan kata 'nasi goreng'"
+          },
+          {
+            "text": "顾客要点炒饭",
+            "pinyin": "Gùkè yào diǎn chǎofàn",
+            "indonesian": "Pelanggan mau pesan nasi goreng.",
+            "purpose": "Contoh kalimat lengkap"
+          }
+        ],
+        "followUp": "Apakah penjelasan ini cukup jelas? Mau coba terjemahkan lagi?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": "Learner requested an explanation, not an answer attempt."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner asked for an explanation of how to translate 'Pelanggan mau pesan nasi goreng' into Mandarin. I explained the vocabulary for 'pelanggan' (顾客), 'mau' (要), 'pesan' (点), and 'nasi goreng' (炒饭), then provided the full translated sentence.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "顾客"
+          },
+          {
+            "language": "zh-CN",
+            "text": "要"
+          },
+          {
+            "language": "zh-CN",
+            "text": "点"
+          },
+          {
+            "language": "zh-CN",
+            "text": "炒饭"
+          },
+          {
+            "language": "zh-CN",
+            "text": "顾客要点炒饭"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 5,
+          "billableCharacters": 12,
+          "chineseRequestCount": 5,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 709,
+          "token_output": 943,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0025702,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5065
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:33:10.977Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "d9012a39-6b3c-45db-9c37-74f9ab058086",
+        "responseMode": "TEACH",
+        "answer": "Tentu, mari kita bahas kalimat \"Pelanggan mau pesan nasi goreng.\" dalam bahasa Mandarin.",
+        "spokenChinese": [
+          {
+            "text": "顾客",
+            "pinyin": "gùkè",
+            "indonesian": "pelanggan",
+            "purpose": "vocabulary"
+          },
+          {
+            "text": "要",
+            "pinyin": "yào",
+            "indonesian": "mau/ingin",
+            "purpose": "vocabulary"
+          },
+          {
+            "text": "点",
+            "pinyin": "diǎn",
+            "indonesian": "memesan (makanan)",
+            "purpose": "vocabulary"
+          },
+          {
+            "text": "炒饭",
+            "pinyin": "chǎofàn",
+            "indonesian": "nasi goreng",
+            "purpose": "vocabulary"
+          }
+        ],
+        "followUp": "Dalam bahasa Mandarin, \"pelanggan\" adalah 顾客 (gùkè). Untuk \"mau/ingin\", kita bisa pakai 要 (yào). Sedangkan \"memesan\" (makanan) adalah 点 (diǎn). Dan \"nasi goreng\" adalah 炒饭 (chǎofàn). Jadi, kalau digabungkan, kalimatnya menjadi \"顾客要点炒饭\" (Gùkè yào diǎn chǎofàn).",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked for an explanation of how to translate \"Pelanggan mau pesan nasi goreng\" into Mandarin.",
+        "courseReferenceUsed": false,
+        "learnerAct": "CONFUSION",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Sekarang coba terjemahkan \"Saya mau nasi goreng\" ke dalam Mandarin."
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "顾客"
+          },
+          {
+            "language": "zh-CN",
+            "text": "要"
+          },
+          {
+            "language": "zh-CN",
+            "text": "点"
+          },
+          {
+            "language": "zh-CN",
+            "text": "炒饭"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 4,
+          "billableCharacters": 6,
+          "chineseRequestCount": 4,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1343,
+          "token_output": 687,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0021204,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5000
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:33:29.355Z"
+      }
+    },
+    {
+      "id": "R1-09",
+      "title": "错误作答只纠关键点",
+      "message": "我昨天想喝了咖啡。",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "11d32cae-66e0-4bbc-acab-c1db3ca3ba39",
+        "responseMode": "TEST",
+        "answer": "Hampir benar! Penggunaan partikel 了 (le) di sini kurang tepat. Dalam kalimat \"Kemarin saya ingin minum kopi,\" kita tidak menggunakan 了 (le) setelah kata kerja 想 (xiǎng) atau 喝 (hē) jika kita hanya menyatakan keinginan yang terjadi di masa lalu.",
+        "spokenChinese": [
+          {
+            "text": "我昨天想喝咖啡。",
+            "pinyin": "Wǒ zuótiān xiǎng hē kāfēi.",
+            "indonesian": "Kemarin saya ingin minum kopi.",
+            "purpose": "Corrected sentence"
+          }
+        ],
+        "followUp": "Coba ulangi kalimatnya tanpa 了 (le): \"Kemarin saya ingin minum kopi.\"",
+        "assessment": {
+          "status": "NEEDS_WORK",
+          "evidence": "Penggunaan 了 (le) setelah 喝 (hē) tidak tepat di sini. Kalimat ini berarti \"Kemarin saya ingin minum kopi.\""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner is trying to translate \"Kemarin saya ingin minum kopi.\" and incorrectly used 了 (le) in their attempt \"我昨天想喝了咖啡。\"",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "我昨天想喝咖啡。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 8,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 703,
+          "token_output": 827,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0022784,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3955
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:33:46.702Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "0c229e41-4198-40f8-ab80-e2e4993fe1ed",
+        "responseMode": "CORRECT",
+        "answer": "Bagus sekali! Kamu sudah benar menggunakan 我 (wǒ) untuk 'saya', 昨天 (zuótiān) untuk 'kemarin', dan 咖啡 (kāfēi) untuk 'kopi'.",
+        "spokenChinese": [
+          {
+            "text": "我昨天想喝咖啡。",
+            "pinyin": "Wǒ zuótiān xiǎng hē kāfēi.",
+            "indonesian": "Kemarin saya ingin minum kopi.",
+            "purpose": "Model sentence"
+          }
+        ],
+        "followUp": "Dalam kalimat ini, kita tidak perlu menambahkan 了 (le) setelah 喝 (hē). 了 (le) biasanya menunjukkan bahwa suatu tindakan sudah selesai atau terjadi. Karena kamu hanya ingin mengungkapkan 'ingin minum', bukan 'sudah minum', maka cukup gunakan 想喝 (xiǎng hē).",
+        "assessment": {
+          "status": "NEEDS_WORK",
+          "evidence": "Learner used '喝了' instead of '喝' for 'ingin minum' in '我昨天想喝了咖啡。'"
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner is translating 'Kemarin saya ingin minum kopi.' and incorrectly used '了' after '喝'.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [
+          {
+            "issue": "Penggunaan 了 (le) yang tidak tepat.",
+            "explanation": "了 (le) setelah kata kerja biasanya menunjukkan tindakan yang sudah selesai. Untuk menyatakan 'ingin minum', cukup gunakan 想喝 (xiǎng hē) tanpa 了 (le) karena tindakan minumnya belum tentu terjadi atau selesai.",
+            "modelChinese": "我昨天想喝咖啡。"
+          }
+        ],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Coba ulangi kalimatnya dengan koreksi tadi: Kemarin saya ingin minum kopi."
+        },
+        "learningEvidence": {
+          "weakExpressions": [
+            {
+              "expression": "了 (le) after verb for desire",
+              "evidence": "Learner used '喝了' when expressing 'ingin minum' in '我昨天想喝了咖啡。'"
+            }
+          ],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "我昨天想喝咖啡。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 8,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1337,
+          "token_output": 939,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0027486,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 7751
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:34:07.860Z"
+      }
+    },
+    {
+      "id": "R1-10",
+      "title": "独立正确使用",
+      "message": "请给我菜单。",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "fdd8291a-1ed9-4d5a-a5c8-e7daf4fecdc2",
+        "responseMode": "CORRECT",
+        "answer": "Tepat sekali! \"请给我菜单。\" adalah cara yang sopan untuk meminta menu.",
+        "spokenChinese": [
+          {
+            "text": "请给我菜单。",
+            "pinyin": "Qǐng gěi wǒ càidān.",
+            "indonesian": "Tolong berikan saya menu.",
+            "purpose": "Correct answer for asking for a menu"
+          }
+        ],
+        "followUp": "Sekarang, bagaimana jika kamu ingin bertanya, \"Apakah ada menu dalam bahasa Inggris?\"?",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner provided '请给我菜单。' which correctly translates to 'Please give me the menu.' and is a polite way to ask for a menu."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner successfully translated 'Please give me the menu' to '请给我菜单。' in Mandarin.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "请给我菜单。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 6,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 698,
+          "token_output": 368,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0011294,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2474
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:34:23.699Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "4ca44bc6-effe-4709-b04c-4993fb113b3a",
+        "responseMode": "CORRECT",
+        "answer": "Bagus sekali! \"请给我菜单\" (Qǐng gěi wǒ càidān) artinya \"Tolong berikan saya menu\". Ini adalah cara yang benar dan sopan untuk meminta menu di restoran.",
+        "spokenChinese": [
+          {
+            "text": "请给我菜单。",
+            "pinyin": "Qǐng gěi wǒ càidān.",
+            "indonesian": "Tolong berikan saya menu.",
+            "purpose": "Model answer for asking for a menu"
+          }
+        ],
+        "followUp": "Apakah kamu ingin mencoba kalimat lain yang berguna di restoran?",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner correctly provided '请给我菜单。' as a polite way to ask for a menu."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner successfully used '请给我菜单' (Qǐng gěi wǒ càidān) to ask for a menu politely.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "MODEL",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "请给我菜单。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 6,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1332,
+          "token_output": 664,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0020596,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4644
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:34:41.716Z"
+      }
+    },
+    {
+      "id": "R1-11",
+      "title": "跟读不算掌握",
+      "message": "欢迎光临。",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "fe3f140f-3551-4423-ab9a-bd40a3df91ad",
+        "responseMode": "TEACH",
+        "answer": "Bagus sekali! Kamu sudah mengucapkan 欢迎光临 (huān yíng guāng lín) dengan tepat. Ini adalah ungkapan yang sangat umum dan sopan yang berarti \"Selamat datang\" atau \"Selamat datang di tempat kami\". Biasanya digunakan di toko, restoran, atau tempat bisnis lainnya untuk menyambut pelanggan.",
+        "spokenChinese": [
+          {
+            "text": "欢迎光临",
+            "pinyin": "huān yíng guāng lín",
+            "indonesian": "Selamat datang",
+            "purpose": "Menjelaskan arti ungkapan"
+          }
+        ],
+        "followUp": "Apakah kamu ingin mencoba mengucapkannya lagi atau kita lanjut ke ungkapan lain?",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner successfully repeated '欢迎光临。' as requested."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner successfully repeated '欢迎光临。'",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "欢迎光临"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 4,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 700,
+          "token_output": 320,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.00101,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3024
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:34:58.149Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "170bd9d8-d2a9-403e-bae7-a0e5a695dacb",
+        "responseMode": "TEACH",
+        "answer": "Bagus sekali! Kamu sudah mengucapkan \"欢迎光临\" (huānyíng guānglín) dengan benar. Artinya \"Selamat datang\" atau \"Selamat datang di toko kami\".",
+        "spokenChinese": [
+          {
+            "text": "欢迎光临",
+            "pinyin": "huānyíng guānglín",
+            "indonesian": "Selamat datang",
+            "purpose": "model"
+          }
+        ],
+        "followUp": "Sekarang, mari kita coba kalimat lain. Bagaimana kalau kamu mencoba mengucapkan: 谢谢 (xièxie)?",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner correctly repeated '欢迎光临'."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner successfully repeated '欢迎光临'.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "MODEL",
+        "corrections": [],
+        "task": {
+          "type": "ANSWER",
+          "prompt": "Coba ucapkan: 谢谢 (xièxie)."
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "欢迎光临"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 4,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1334,
+          "token_output": 489,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0016227,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3777
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:35:15.315Z"
+      }
+    },
+    {
+      "id": "R1-12",
+      "title": "文本不能声学评分",
+      "message": "hasil STT saya 'qing gei wo cai dan', apakah nada saya sudah benar?",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "ee92e158-9034-4891-aaca-913bb389c615",
+        "responseMode": "REVIEW",
+        "answer": "Pinyin yang Anda berikan, \"qing gei wo cai dan\", belum memiliki nada. Mari kita lihat nada yang benar untuk setiap karakter:",
+        "spokenChinese": [
+          {
+            "text": "请",
+            "pinyin": "qǐng",
+            "indonesian": "tolong/silakan",
+            "purpose": "Correct pinyin and meaning for the first character"
+          },
+          {
+            "text": "给",
+            "pinyin": "gěi",
+            "indonesian": "memberi",
+            "purpose": "Correct pinyin and meaning for the second character"
+          },
+          {
+            "text": "我",
+            "pinyin": "wǒ",
+            "indonesian": "saya",
+            "purpose": "Correct pinyin and meaning for the third character"
+          },
+          {
+            "text": "菜",
+            "pinyin": "cài",
+            "indonesian": "sayur/hidangan",
+            "purpose": "Correct pinyin and meaning for the fourth character"
+          },
+          {
+            "text": "单",
+            "pinyin": "dān",
+            "indonesian": "daftar/menu",
+            "purpose": "Correct pinyin and meaning for the fifth character"
+          }
+        ],
+        "followUp": "Jadi, frasa lengkapnya adalah \"qǐng gěi wǒ cài dān\" (Tolong berikan saya menu). Apakah Anda ingin mencoba mengucapkannya lagi dengan nada yang benar?",
+        "assessment": {
+          "status": "NEEDS_WORK",
+          "evidence": "Learner provided pinyin without tones: 'qing gei wo cai dan'. Correct pinyin is 'qǐng gěi wǒ cài dān'."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked for tone correctness of 'qing gei wo cai dan'.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "请"
+          },
+          {
+            "language": "zh-CN",
+            "text": "给"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我"
+          },
+          {
+            "language": "zh-CN",
+            "text": "菜"
+          },
+          {
+            "language": "zh-CN",
+            "text": "单"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 5,
+          "billableCharacters": 5,
+          "chineseRequestCount": 5,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 684,
+          "token_output": 656,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0018452,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4570
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:35:33.310Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "55d919fa-9eea-4003-958d-45dd317ee4c1",
+        "responseMode": "TEACH",
+        "answer": "Bagus sekali! Kamu sudah benar dalam mengucapkan \"qǐng gěi wǒ cài dān\" (请给我菜单). Nada yang kamu sebutkan sudah tepat. Mari kita ulas sedikit tentang nadanya:",
+        "spokenChinese": [
+          {
+            "text": "请",
+            "pinyin": "qǐng",
+            "indonesian": "tolong/silakan",
+            "purpose": "Contoh kata dengan nada 3"
+          },
+          {
+            "text": "给",
+            "pinyin": "gěi",
+            "indonesian": "memberi",
+            "purpose": "Contoh kata dengan nada 3"
+          },
+          {
+            "text": "我",
+            "pinyin": "wǒ",
+            "indonesian": "saya",
+            "purpose": "Contoh kata dengan nada 3"
+          },
+          {
+            "text": "菜",
+            "pinyin": "cài",
+            "indonesian": "sayur/hidangan",
+            "purpose": "Contoh kata dengan nada 4"
+          },
+          {
+            "text": "单",
+            "pinyin": "dān",
+            "indonesian": "daftar/lembar",
+            "purpose": "Contoh kata dengan nada 1"
+          },
+          {
+            "text": "请给我菜单",
+            "pinyin": "qǐng gěi wǒ cài dān",
+            "indonesian": "Tolong berikan saya menu",
+            "purpose": "Frasa lengkap"
+          }
+        ],
+        "followUp": "Dalam kasus tiga nada ketiga berurutan seperti \"qǐng gěi wǒ\", biasanya nada pertama (qǐng) akan berubah menjadi nada kedua (qíng), sehingga menjadi \"qíng gěi wǒ\". Namun, pengucapan \"qǐng gěi wǒ\" juga masih bisa dimengerti. Apakah ada bagian lain yang ingin kamu tanyakan?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked about the correctness of their pinyin tones for 'qǐng gěi wǒ cài dān'. The response confirms the tones and explains the tone sandhi rule for three consecutive third tones.",
+        "courseReferenceUsed": false,
+        "learnerAct": "QUESTION",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "请"
+          },
+          {
+            "language": "zh-CN",
+            "text": "给"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我"
+          },
+          {
+            "language": "zh-CN",
+            "text": "菜"
+          },
+          {
+            "language": "zh-CN",
+            "text": "单"
+          },
+          {
+            "language": "zh-CN",
+            "text": "请给我菜单"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 6,
+          "billableCharacters": 10,
+          "chineseRequestCount": 6,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1316,
+          "token_output": 1051,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0030223,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5191
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:35:51.897Z"
+      }
+    },
+    {
+      "id": "R1-13",
+      "title": "立即换场景",
+      "message": "ganti situasi, sekarang saya mau latihan di hotel",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "68562ff6-8552-46c0-a9c1-289ec0074a1b",
+        "responseMode": "ROLEPLAY",
+        "answer": "Baik, mari kita mulai roleplay di hotel! Saya akan menjadi staf hotel. Anda bisa mulai dengan check-in atau menanyakan sesuatu.",
+        "spokenChinese": [
+          {
+            "text": "欢迎光临！请问您有什么需要帮助的吗？",
+            "pinyin": "Huānyíng guānglín! Qǐngwèn nín yǒu shénme xūyào bāngzhù de ma?",
+            "indonesian": "Selamat datang! Ada yang bisa saya bantu?",
+            "purpose": "Opening line for hotel roleplay"
+          }
+        ],
+        "followUp": "Bagaimana Anda ingin memulai skenario ini?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner requested to change roleplay situation from restaurant to hotel.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "欢迎光临！请问您有什么需要帮助的吗？"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 18,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 712,
+          "token_output": 285,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0009261,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2683
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:36:07.982Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "13bbe477-7db8-4fe1-8e1f-6b8b1fb13a38",
+        "responseMode": "ROLEPLAY",
+        "answer": "Baik, mari kita mulai roleplay di hotel. Anda adalah staf hotel. Bagaimana Anda akan menyapa tamu yang baru datang?",
+        "spokenChinese": [],
+        "followUp": "Coba sapa tamu dan tanyakan apa yang bisa Anda bantu.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner requested to change roleplay situation from restaurant to hotel.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "ROLEPLAY",
+        "corrections": [],
+        "task": {
+          "type": "ROLEPLAY",
+          "prompt": "Anda adalah staf hotel. Bagaimana Anda akan menyapa tamu yang baru datang?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 0,
+          "billableCharacters": 0,
+          "chineseRequestCount": 0,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1346,
+          "token_output": 285,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0011163,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2504
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:36:23.889Z"
+      }
+    },
+    {
+      "id": "R1-14",
+      "title": "结束时复习",
+      "message": "cukup dulu, saya mau selesai belajar",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "77c2a822-eb4b-4529-a29c-6ed3d8dbe5ad",
+        "responseMode": "FREE_QA",
+        "answer": "Baik, kalau begitu kita akhiri sesi belajar hari ini. Semoga bermanfaat!",
+        "spokenChinese": [],
+        "followUp": "Kapan pun kamu siap untuk belajar lagi, beritahu aku ya!",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": "User wants to end the session."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "User wants to end the learning session.",
+        "courseReferenceUsed": false,
+        "speechSegments": [],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 0,
+          "billableCharacters": 0,
+          "chineseRequestCount": 0,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 674,
+          "token_output": 163,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0006097,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 1806
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:36:39.074Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "07768684-c51f-47a8-a81c-29d04778f5a4",
+        "responseMode": "TEACH",
+        "answer": "Baik, sesi belajar kita hari ini sudah selesai. Senang sekali bisa belajar bersama Anda!",
+        "spokenChinese": [],
+        "followUp": "Semoga Anda mendapatkan banyak hal baru hari ini. Sampai jumpa lagi!",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner is ending the session. Providing a session wrap-up.",
+        "courseReferenceUsed": false,
+        "learnerAct": "SESSION_END",
+        "teachingStrategy": "REVIEW",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": {
+          "recap": "Hari ini kita sudah belajar beberapa frasa penting, seperti cara meminta menu, meminta makanan dengan tingkat kepedasan tertentu, dan mengucapkan terima kasih. Terus berlatih ya!",
+          "weakFocus": [
+            "请给我菜单 (Qǐng gěi wǒ càidān)",
+            "少放辣 (Shǎo fàng là)"
+          ],
+          "recallExercises": [
+            "Bagaimana cara bilang 'Tolong berikan saya menu' dalam bahasa Mandarin?",
+            "Bagaimana cara bilang 'Kurangi pedasnya' dalam bahasa Mandarin?",
+            "Bagaimana cara bilang 'Terima kasih' dalam bahasa Mandarin?",
+            "Coba terjemahkan: 'Saya mau makan.'",
+            "Coba terjemahkan: 'Saya tidak mau pedas.'"
+          ]
+        },
+        "speechSegments": [],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 0,
+          "billableCharacters": 0,
+          "chineseRequestCount": 0,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1314,
+          "token_output": 973,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0028267,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 6272
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:36:58.764Z"
+      }
+    },
+    {
+      "id": "R1-15",
+      "title": "连续失败后换策略",
+      "message": "saya masih salah dan belum bisa",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "7187bc71-3910-4219-a307-ec7e53680418",
+        "responseMode": "TEACH",
+        "answer": "Tidak apa-apa, belajar bahasa memang butuh waktu dan latihan! Mari kita coba pahami lagi kalimat ini:\n\n请 (qǐng) artinya 'tolong' atau 'silakan'.\n给 (gěi) artinya 'memberi'.\n我 (wǒ) artinya 'saya' atau 'aku'.\n菜单 (cài dān) artinya 'menu'.\n\nJadi, urutan yang benar adalah 'Tolong berikan saya menu', atau dalam bahasa Mandarin: 请给我菜单 (qǐng gěi wǒ cài dān).",
+        "spokenChinese": [
+          {
+            "text": "请给我菜单",
+            "pinyin": "qǐng gěi wǒ cài dān",
+            "indonesian": "Tolong berikan saya menu.",
+            "purpose": "Correct phrase for the learner to repeat"
+          }
+        ],
+        "followUp": "Coba ucapkan lagi: 请给我菜单。",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": "Learner stated they are still making mistakes and cannot do it, not an attempt at the exercise."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner is trying to say 'Please give me the menu' (请给我菜单) but is struggling with the word order. They have made two incorrect attempts and expressed frustration.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "请给我菜单"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 5,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 731,
+          "token_output": 610,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0017443,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4155
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:37:16.350Z"
+      },
+      "B": {
+        "status": 503,
+        "error": "Guru AI belum dapat menjawab. Coba lagi sebentar."
+      }
+    },
+    {
+      "id": "R1-16",
+      "title": "简短口语解释",
+      "message": "jelaskan bedanya 可以 dan 能 dengan cara gampang",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "05555f7a-0741-41bc-a940-9ab4bcc8d015",
+        "responseMode": "TEACH",
+        "answer": "Tentu, mari kita bahas perbedaan antara 可以 (kěyǐ) dan 能 (néng) dengan cara yang mudah dipahami.\n\nKeduanya memang sering diartikan sebagai \"bisa\" atau \"dapat\", tapi ada sedikit perbedaan nuansa:\n\n1.  **可以 (kěyǐ)**\n    *   Lebih sering digunakan untuk menyatakan **izin atau persetujuan (permission)**. Artinya, \"diizinkan\" atau \"boleh\".\n    *   Juga bisa menyatakan **kemungkinan (possibility)**, terutama jika kemungkinan itu bergantung pada kondisi atau izin.\n\n2.  **能 (néng)**\n    *   Lebih sering digunakan untuk menyatakan **kemampuan (ability)**, artinya \"mampu\" atau \"punya keahlian untuk melakukan sesuatu\".\n    *   Juga bisa menyatakan **kemungkinan (possibility)**, terutama jika kemungkinan itu berdasarkan kondisi objektif atau fakta.\n\nMari kita lihat contohnya:",
+        "spokenChinese": [
+          {
+            "text": "可以",
+            "pinyin": "kěyǐ",
+            "indonesian": "bisa, boleh (izin, kemungkinan)",
+            "purpose": "Contoh kata yang dijelaskan"
+          },
+          {
+            "text": "能",
+            "pinyin": "néng",
+            "indonesian": "bisa, dapat (kemampuan, kemungkinan)",
+            "purpose": "Contoh kata yang dijelaskan"
+          },
+          {
+            "text": "我可以去吗？",
+            "pinyin": "Wǒ kěyǐ qù ma?",
+            "indonesian": "Bolehkah saya pergi?",
+            "purpose": "Contoh kalimat untuk 可以 (izin)"
+          },
+          {
+            "text": "你可以坐在这里。",
+            "pinyin": "Nǐ kěyǐ zuò zài zhèlǐ.",
+            "indonesian": "Kamu boleh duduk di sini.",
+            "purpose": "Contoh kalimat untuk 可以 (izin)"
+          },
+          {
+            "text": "我能说汉语。",
+            "pinyin": "Wǒ néng shuō Hànyǔ.",
+            "indonesian": "Saya bisa berbicara bahasa Mandarin.",
+            "purpose": "Contoh kalimat untuk 能 (kemampuan)"
+          },
+          {
+            "text": "他能举起很重的东西。",
+            "pinyin": "Tā néng jǔ qǐ hěn zhòng de dōngxi.",
+            "indonesian": "Dia bisa mengangkat barang yang sangat berat.",
+            "purpose": "Contoh kalimat untuk 能 (kemampuan)"
+          }
+        ],
+        "followUp": "Apakah penjelasan ini cukup jelas? Atau ada bagian yang ingin kamu tanyakan lebih lanjut?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": "User asked for an explanation."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The user asked for an explanation of the difference between 可以 (kěyǐ) and 能 (néng).",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "可以"
+          },
+          {
+            "language": "zh-CN",
+            "text": "能"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我可以去吗？"
+          },
+          {
+            "language": "zh-CN",
+            "text": "你可以坐在这里。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我能说汉语。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "他能举起很重的东西。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 6,
+          "billableCharacters": 33,
+          "chineseRequestCount": 6,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 677,
+          "token_output": 790,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0021781,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3621
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:38:01.227Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "eadacc63-f367-496e-ba21-a2981888c7fd",
+        "responseMode": "TEACH",
+        "answer": "Tentu, mari kita jelaskan bedanya 可以 (kěyǐ) dan 能 (néng) dengan cara yang mudah dipahami.\n\nKeduanya bisa diartikan \"bisa\" atau \"dapat\" dalam Bahasa Indonesia, tapi ada nuansa yang berbeda:\n\n1.  **可以 (kěyǐ)**:\n    *   Lebih sering berarti **\"boleh\"** atau **\"diizinkan\"** (permission).\n    *   Bisa juga berarti **\"mungkin\"** atau **\"ada kemungkinan\"** (possibility/feasibility).\n\n2.  **能 (néng)**:\n    *   Lebih sering berarti **\"bisa\"** atau **\"mampu\"** karena punya kemampuan atau keahlian (ability/capability).\n    *   Bisa juga berarti **\"mungkin\"** atau **\"ada kemungkinan\"** karena kondisi atau keadaan memungkinkan (possibility due to circumstances).\n\n**Contoh mudahnya:**\n\nKalau kamu bilang \"Saya bisa berenang\":\n*   Kalau maksudnya kamu punya kemampuan berenang, pakai **能**.\n*   Kalau maksudnya kamu diizinkan/boleh berenang (misalnya di kolam renang itu), pakai **可以**.\n\nJadi, 可以 lebih ke \"boleh/diizinkan\" atau \"mungkin terjadi\", sedangkan 能 lebih ke \"mampu/punya keahlian\" atau \"kondisi memungkinkan\".",
+        "spokenChinese": [
+          {
+            "text": "可以",
+            "pinyin": "kěyǐ",
+            "indonesian": "boleh; bisa (diizinkan)",
+            "purpose": "Word explanation"
+          },
+          {
+            "text": "能",
+            "pinyin": "néng",
+            "indonesian": "bisa (mampu)",
+            "purpose": "Word explanation"
+          },
+          {
+            "text": "我可以去吗？",
+            "pinyin": "Wǒ kěyǐ qù ma?",
+            "indonesian": "Bolehkah saya pergi?",
+            "purpose": "Example sentence for 可以 (permission)"
+          },
+          {
+            "text": "我能说汉语。",
+            "pinyin": "Wǒ néng shuō Hànyǔ.",
+            "indonesian": "Saya bisa bicara bahasa Mandarin.",
+            "purpose": "Example sentence for 能 (ability)"
+          },
+          {
+            "text": "今天可以下雨。",
+            "pinyin": "Jīntiān kěyǐ xiàyǔ.",
+            "indonesian": "Hari ini bisa hujan (ada kemungkinan).",
+            "purpose": "Example sentence for 可以 (possibility)"
+          },
+          {
+            "text": "我能去。",
+            "pinyin": "Wǒ néng qù.",
+            "indonesian": "Saya bisa pergi (karena saya punya waktu/kondisi memungkinkan).",
+            "purpose": "Example sentence for 能 (circumstantial possibility)"
+          }
+        ],
+        "followUp": "Apakah penjelasan ini cukup jelas? Mau coba latihan dengan beberapa kalimat?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked for a simple explanation of the difference between 可以 (kěyǐ) and 能 (néng).",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "可以"
+          },
+          {
+            "language": "zh-CN",
+            "text": "能"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我可以去吗？"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我能说汉语。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "今天可以下雨。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "我能去。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 6,
+          "billableCharacters": 26,
+          "chineseRequestCount": 6,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 3339,
+          "token_output": 2143,
+          "model_calls": 2,
+          "estimated_ai_cost": 0.006359200000000001,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 1,
+          "response_latency_ms": 11495
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:38:26.125Z"
+      }
+    },
+    {
+      "id": "R1-17",
+      "title": "印尼口语缩写",
+      "message": "gw bingung, gmn bilang 'jangan pedas' dlm Mandarin?",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "00ccdaf0-5a66-41bf-9120-0c9a24b795c3",
+        "responseMode": "TEACH",
+        "answer": "Untuk mengatakan \"jangan pedas\" dalam bahasa Mandarin, Anda bisa menggunakan:\n\n",
+        "spokenChinese": [
+          {
+            "text": "不要辣",
+            "pinyin": "bú yào là",
+            "indonesian": "jangan pedas",
+            "purpose": "Main phrase for 'jangan pedas'"
+          }
+        ],
+        "followUp": "Apakah Anda ingin mencoba mengucapkannya atau ada pertanyaan lain?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked how to say 'jangan pedas' in Mandarin.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "不要辣"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 3,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 682,
+          "token_output": 246,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0008196,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 1820
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:38:41.353Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "7ea3b499-c41f-47db-bbf9-7aee8fda584d",
+        "responseMode": "TEACH",
+        "answer": "Untuk bilang \"jangan pedas\" dalam bahasa Mandarin, kamu bisa pakai \"不要辣\" (bú yào là).",
+        "spokenChinese": [
+          {
+            "text": "不要辣",
+            "pinyin": "bú yào là",
+            "indonesian": "jangan pedas",
+            "purpose": "Contoh ungkapan yang diajarkan"
+          }
+        ],
+        "followUp": "Apakah kamu mau coba mengucapkannya atau ada pertanyaan lain?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked how to say 'jangan pedas' in Mandarin. Taught '不要辣 (bú yào là)'.",
+        "courseReferenceUsed": false,
+        "learnerAct": "QUESTION",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Bagaimana kamu akan bilang 'jangan pedas' dalam bahasa Mandarin?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "不要辣"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 3,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1314,
+          "token_output": 444,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0015042,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3461
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:38:58.268Z"
+      }
+    },
+    {
+      "id": "R1-18",
+      "title": "当前需求优先",
+      "message": "jangan lanjut soal tadi, saya mau tahu cara bilang toilet di mana",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "db216d56-0720-497b-b425-b96c5067332b",
+        "responseMode": "TEACH",
+        "answer": "Tentu, untuk menanyakan \"di mana toilet?\" dalam bahasa Mandarin, Anda bisa bilang:\n\n",
+        "spokenChinese": [
+          {
+            "text": "洗手间在哪里？",
+            "pinyin": "Xǐshǒujiān zài nǎlǐ?",
+            "indonesian": "Di mana toilet?",
+            "purpose": "Main phrase"
+          },
+          {
+            "text": "洗手间",
+            "pinyin": "xǐshǒujiān",
+            "indonesian": "toilet / kamar kecil",
+            "purpose": "Vocabulary breakdown"
+          },
+          {
+            "text": "在",
+            "pinyin": "zài",
+            "indonesian": "berada di / di",
+            "purpose": "Vocabulary breakdown"
+          },
+          {
+            "text": "哪里",
+            "pinyin": "nǎlǐ",
+            "indonesian": "di mana",
+            "purpose": "Vocabulary breakdown"
+          }
+        ],
+        "followUp": "Apakah Anda ingin mencoba mengucapkan kalimat ini, atau ada pertanyaan lain?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked how to say 'where is the toilet' in Mandarin, overriding a previous exercise.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "洗手间在哪里？"
+          },
+          {
+            "language": "zh-CN",
+            "text": "洗手间"
+          },
+          {
+            "language": "zh-CN",
+            "text": "在"
+          },
+          {
+            "language": "zh-CN",
+            "text": "哪里"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 4,
+          "billableCharacters": 13,
+          "chineseRequestCount": 4,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 701,
+          "token_output": 445,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0013228,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3227
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:39:14.932Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "6304c4fc-fb26-4ad8-81c4-8fcac0810dfb",
+        "responseMode": "TEACH",
+        "answer": "Tentu, untuk menanyakan \"toilet di mana?\" dalam bahasa Mandarin, kamu bisa bilang:",
+        "spokenChinese": [
+          {
+            "text": "洗手间在哪里？",
+            "pinyin": "Xǐshǒujiān zài nǎlǐ?",
+            "indonesian": "Toilet di mana?",
+            "purpose": "Model sentence for 'toilet di mana'"
+          }
+        ],
+        "followUp": "Coba kamu ucapkan atau ketik kalimat ini.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner wants to know how to say 'toilet di mana' in Mandarin.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Bagaimana kamu akan menanyakan 'toilet di mana?' dalam bahasa Mandarin?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "洗手间在哪里？"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 7,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1335,
+          "token_output": 581,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.001853,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4264
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:39:32.573Z"
+      }
+    },
+    {
+      "id": "R1-19",
+      "title": "多错误限纠两处",
+      "message": "昨天我去餐厅吃饭了很好吃菜。",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "74e49474-55a1-47fe-8f2d-e617d5e8925c",
+        "responseMode": "CORRECT",
+        "answer": "Kalimatmu sudah bagus dalam menyampaikan informasi, tapi ada sedikit perbaikan tata bahasa di bagian akhir. \n\n\"很好吃菜\" (hěn hǎo chī cài) kurang tepat. \"好吃\" (hǎo chī) adalah kata sifat yang berarti 'enak' atau 'lezat'. Biasanya kita mengatakan \"菜很好吃\" (cài hěn hǎo chī) yang berarti 'masakannya enak sekali'.\n\nJadi, kalimat yang lebih alami adalah:",
+        "spokenChinese": [
+          {
+            "text": "昨天我去餐厅吃饭了，菜很好吃。",
+            "pinyin": "Zuótiān wǒ qù cāntīng chīfàn le, cài hěn hǎo chī.",
+            "indonesian": "Kemarin saya pergi ke restoran untuk makan, masakannya enak sekali.",
+            "purpose": "Corrected sentence example"
+          }
+        ],
+        "followUp": "Apakah penjelasan ini cukup jelas? Ada pertanyaan lain?",
+        "assessment": {
+          "status": "NEEDS_WORK",
+          "evidence": "Learner used '很好吃菜' (hěn hǎo chī cài) which is grammatically incorrect. '好吃' (hǎo chī) is an adjective and should be structured as '菜很好吃' (cài hěn hǎo chī) or '吃了很好吃的菜' (chī le hěn hǎo chī de cài)."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner attempted to describe a past dining experience in Mandarin. The sentence was '昨天我去餐厅吃饭了很好吃菜。' The issue is with the phrase '很好吃菜'.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "昨天我去餐厅吃饭了，菜很好吃。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 15,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 701,
+          "token_output": 946,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0025753,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 6189
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:39:52.146Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "f400d74d-8eeb-4c4f-b381-a3d66e15cc6a",
+        "responseMode": "CORRECT",
+        "answer": "Bagus sekali, kamu sudah bisa menceritakan pengalamanmu! Ada sedikit perbaikan pada bagian akhir kalimatmu.",
+        "spokenChinese": [
+          {
+            "text": "昨天我去餐厅吃饭了，菜很好吃。",
+            "pinyin": "Zuótiān wǒ qù cāntīng chīfàn le, cài hěn hǎochī.",
+            "indonesian": "Kemarin saya pergi ke restoran untuk makan, makanannya sangat enak.",
+            "purpose": "Model sentence for correction"
+          }
+        ],
+        "followUp": "Coba ulangi kalimatmu dengan perbaikan ini ya.",
+        "assessment": {
+          "status": "NEEDS_WORK",
+          "evidence": "Learner used '很好吃菜' instead of '菜很好吃' or '饭很好吃' to describe the food."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner is trying to describe a past experience of eating at a restaurant and finding the food delicious.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "MODEL",
+        "corrections": [
+          {
+            "issue": "Struktur kalimat untuk 'enak'.",
+            "explanation": "Untuk mengatakan 'makanannya enak', kita biasanya menempatkan subjek (makanan/菜) di depan predikat (enak/很好吃), menjadi '菜很好吃' (cài hěn hǎochī). Bukan '很好吃菜'.",
+            "modelChinese": "菜很好吃"
+          }
+        ],
+        "task": {
+          "type": "REFORMULATE",
+          "prompt": "Coba gabungkan kembali kalimatmu dengan perbaikan ini: '昨天我去餐厅吃饭了，菜很好吃。'"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "昨天我去餐厅吃饭了，菜很好吃。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 15,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1335,
+          "token_output": 937,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.002743,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4932
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:40:10.472Z"
+      }
+    },
+    {
+      "id": "R1-20",
+      "title": "提问不算作答",
+      "message": "kenapa di sini pakai 了?",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "3182dbdd-5290-4272-badb-9c611f27df95",
+        "responseMode": "TEACH",
+        "answer": "Pertanyaan yang bagus! Dalam kalimat \"我吃饭了。\" (wǒ chīfàn le), partikel 了 (le) digunakan untuk menunjukkan bahwa suatu tindakan telah selesai atau telah terjadi. Ini seperti mengatakan \"Saya sudah makan.\" atau \"Saya telah makan.\"\n\nAda dua fungsi utama 了 (le):\n\n1.  **Menunjukkan tindakan selesai:** Seperti dalam \"我吃饭了。\" (wǒ chīfàn le) - \"Saya sudah makan.\"\n2.  **Menunjukkan perubahan keadaan:** Misalnya, \"下雨了。\" (xiàyǔ le) - \"Hujan (sekarang).\" (Sebelumnya tidak hujan, sekarang hujan).\n\nDalam kasus \"我吃饭了。\", 了 (le) berfungsi sebagai penanda bahwa tindakan \"makan\" (吃饭) telah selesai.",
+        "spokenChinese": [
+          {
+            "text": "我吃饭了。",
+            "pinyin": "Wǒ chīfàn le.",
+            "indonesian": "Saya sudah makan.",
+            "purpose": "Example sentence for 了"
+          },
+          {
+            "text": "下雨了。",
+            "pinyin": "Xiàyǔ le.",
+            "indonesian": "Hujan (sekarumg).",
+            "purpose": "Example sentence for 了 indicating change of state"
+          }
+        ],
+        "followUp": "Apakah penjelasan ini cukup jelas? Atau ada bagian yang ingin ditanyakan lebih lanjut?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The learner asked why 了 is used in \"我吃饭了。\"",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "我吃饭了。"
+          },
+          {
+            "language": "zh-CN",
+            "text": "下雨了。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 2,
+          "billableCharacters": 9,
+          "chineseRequestCount": 2,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 687,
+          "token_output": 490,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.00127666,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2916
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:40:26.774Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "2b0fd3f9-6d6b-4fed-bdce-f8e28180af3e",
+        "responseMode": "TEACH",
+        "answer": "Pertanyaan bagus! Dalam kalimat \"我吃饭了。\" (wǒ chī fàn le.), partikel \"了\" (le) di sini menunjukkan bahwa suatu tindakan telah selesai atau suatu perubahan telah terjadi. Dalam kasus ini, \"makan\" (吃饭) sudah selesai dilakukan.",
+        "spokenChinese": [
+          {
+            "text": "我吃饭了。",
+            "pinyin": "wǒ chī fàn le.",
+            "indonesian": "Saya sudah makan.",
+            "purpose": "Contoh kalimat yang dijelaskan"
+          }
+        ],
+        "followUp": "Apakah penjelasan ini cukup jelas? Ada pertanyaan lain?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked about the usage of 了 in \"我吃饭了。\"",
+        "courseReferenceUsed": false,
+        "learnerAct": "QUESTION",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "我吃饭了。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 5,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1321,
+          "token_output": 393,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0013788,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2830
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:40:43.013Z"
+      }
+    },
+    {
+      "id": "R1-21",
+      "title": "真实工作寒暄",
+      "message": "ajari saya menyapa pelanggan China yang baru masuk toko",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "9a574fad-2fa6-4de7-86f4-660e25db4aae",
+        "responseMode": "TEACH",
+        "answer": "Tentu! Untuk menyapa pelanggan Tiongkok yang baru masuk toko, Anda bisa menggunakan ungkapan ini:",
+        "spokenChinese": [
+          {
+            "text": "欢迎光临！",
+            "pinyin": "Huānyíng guānglín!",
+            "indonesian": "Selamat datang!",
+            "purpose": "Greeting a customer"
+          }
+        ],
+        "followUp": "Ungkapan ini adalah cara yang sangat umum dan sopan untuk menyambut pelanggan. Apakah Anda ingin mencoba mengucapkannya?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The user wants to learn how to greet Chinese customers entering a store. I've provided the phrase '欢迎光临' (Huānyíng guānglín) meaning 'Welcome'.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "欢迎光临！"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 5,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 676,
+          "token_output": 426,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0012678,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2847
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:40:59.247Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "a7d2b77d-daab-43ca-b367-757dba289210",
+        "responseMode": "TEACH",
+        "answer": "Tentu! Untuk menyapa pelanggan China yang baru masuk toko, kamu bisa menggunakan ungkapan ini:",
+        "spokenChinese": [
+          {
+            "text": "欢迎光临！",
+            "pinyin": "Huānyíng guānglín!",
+            "indonesian": "Selamat datang!",
+            "purpose": "Greeting for customers"
+          }
+        ],
+        "followUp": "Ungkapan ini sangat umum dan sopan. Coba ucapkan '欢迎光临！' (Huānyíng guānglín!)",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner requested to learn how to greet Chinese customers entering a store. Taught '欢迎光临! (Huānyíng guānglín!)' meaning 'Welcome!'.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "MODEL",
+        "corrections": [],
+        "task": {
+          "type": "ANSWER",
+          "prompt": "Coba ucapkan '欢迎光临！' (Huānyíng guānglín!)"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "欢迎光临！"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 5,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1308,
+          "token_output": 570,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0018174,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4303
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:41:16.963Z"
+      }
+    },
+    {
+      "id": "R1-22",
+      "title": "角色扮演中的实际作答",
+      "message": "您好，请问您几位？",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "4ff68c01-f218-4e76-9174-d8e4cca4bbf6",
+        "responseMode": "ROLEPLAY",
+        "answer": "Bagus sekali! Itu adalah cara yang sangat tepat dan sopan untuk menyambut pelanggan dan menanyakan jumlah orang. Sekarang, saya akan menjawab sebagai pelanggan:\n\n我两位。",
+        "spokenChinese": [
+          {
+            "text": "我两位。",
+            "pinyin": "Wǒ liǎng wèi.",
+            "indonesian": "Kami berdua.",
+            "purpose": "Contoh respons pelanggan dalam roleplay"
+          }
+        ],
+        "followUp": "Apa yang akan Anda katakan atau lakukan selanjutnya sebagai staf restoran?",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Pengguna menjawab dengan \"您好，请问您几位？\" yang merupakan respons yang sangat tepat dan sopan untuk menyambut pelanggan dan menanyakan jumlah orang dalam konteks roleplay restoran."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Melanjutkan roleplay restoran. Pengguna berperan sebagai staf restoran yang menyambut pelanggan dan menanyakan jumlah orang. Saya berperan sebagai pelanggan.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "我两位。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 4,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 725,
+          "token_output": 579,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.001665,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3450
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:41:33.775Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "9f500100-5667-42ae-8786-0636c61fcb2e",
+        "responseMode": "ROLEPLAY",
+        "answer": "Bagus sekali! Itu cara yang sangat tepat untuk menyambut pelanggan dan menanyakan jumlah orang. Sekarang, saya akan menjawab sebagai pelanggan.",
+        "spokenChinese": [
+          {
+            "text": "您好，请问您几位？",
+            "pinyin": "Nín hǎo, qǐngwèn nín jǐ wèi?",
+            "indonesian": "Halo, boleh saya tanya Anda berapa orang?",
+            "purpose": "Model the correct learner answer"
+          }
+        ],
+        "followUp": "Saya akan menjawab sebagai pelanggan. Bagaimana Anda akan melanjutkan percakapan?",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner correctly greeted and asked '您好，请问您几位？' which is appropriate for the roleplay scenario."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner is roleplaying as restaurant staff, greeting a customer and asking about the number of people.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "MODEL",
+        "corrections": [],
+        "task": {
+          "type": "ROLEPLAY",
+          "prompt": "Saya akan menjawab sebagai pelanggan. Bagaimana Anda akan melanjutkan percakapan?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": [
+            {
+              "expression": "您好，请问您几位？",
+              "learnerEvidence": "Learner used '您好，请问您几位？' correctly and appropriately in the roleplay context."
+            }
+          ]
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "您好，请问您几位？"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 9,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1359,
+          "token_output": 554,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0017927,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3361
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:41:50.566Z"
+      }
+    },
+    {
+      "id": "R1-23",
+      "title": "一次一个任务",
+      "message": "saya mau latihan pesan minuman, beri saya satu tugas saja",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "75922515-ae42-4146-b6d2-c04ea5c69d2e",
+        "responseMode": "ROLEPLAY",
+        "answer": "Baik, mari kita mulai latihan memesan minuman. Saya akan menjadi pelayan di kafe. Anda bisa mulai dengan memesan minuman yang Anda inginkan. Misalnya, Anda bisa memesan kopi atau teh.",
+        "spokenChinese": [
+          {
+            "text": "您好，请问您想喝点什么？",
+            "pinyin": "Nín hǎo, qǐng wèn nín xiǎng hē diǎn shénme?",
+            "indonesian": "Halo, Anda ingin minum apa?",
+            "purpose": "To initiate the roleplay as a server asking for an order."
+          }
+        ],
+        "followUp": "Silakan pesan minuman Anda dalam bahasa Mandarin.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The user wants to practice ordering drinks. I am starting a roleplay scenario as a server and asking them to order a drink.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "您好，请问您想喝点什么？"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 12,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 677,
+          "token_output": 304,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0009631,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2685
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:42:06.723Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "4c84e02d-2ae2-41f2-a8d3-47b5ff30f068",
+        "responseMode": "ROLEPLAY",
+        "answer": "Baik! Mari kita latihan memesan minuman. Bayangkan kamu ada di sebuah kafe di Tiongkok. Kamu ingin memesan secangkir kopi. Bagaimana kamu akan mengatakannya dalam bahasa Mandarin?",
+        "spokenChinese": [],
+        "followUp": "Coba ucapkan kalimatmu.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner wants to practice ordering drinks in a cafe setting.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "SCAFFOLD",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Bagaimana kamu akan mengatakan 'Saya ingin secangkir kopi' dalam bahasa Mandarin di sebuah kafe?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 0,
+          "billableCharacters": 0,
+          "chineseRequestCount": 0,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1309,
+          "token_output": 503,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0016502,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3308
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:42:23.501Z"
+      }
+    },
+    {
+      "id": "R1-24",
+      "title": "换解释方式",
+      "message": "contoh tadi terlalu susah, jelaskan pakai situasi warung",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "c0d72349-ae38-41b5-8b24-c7f880961c16",
+        "responseMode": "TEACH",
+        "answer": "Tentu, mari kita bayangkan di sebuah warung makan. Kita akan menggunakan contoh makanan dan minuman yang biasa ada di sana.\n\n**1. Penggunaan 把 (bǎ)**\n\n把 (bǎ) digunakan saat kita ingin menekankan apa yang *terjadi pada* objek. Objeknya diletakkan *sebelum* kata kerja. Ini seperti kita \"mengambil\" objek itu lalu melakukan sesuatu padanya. Struktur dasarnya adalah: Subjek + 把 (bǎ) + Objek + Kata Kerja + Elemen Lain.\n\nContoh:\nSeorang pelayan \"mengambil\" teh itu lalu \"meminumnya\".",
+        "spokenChinese": [
+          {
+            "text": "服务员把茶喝了。",
+            "pinyin": "Fúwùyuán bǎ chá hē le.",
+            "indonesian": "Pelayan itu meminum tehnya.",
+            "purpose": "Example sentence for 把 (bǎ)"
+          }
+        ],
+        "followUp": "Dalam contoh ini, kita menekankan bahwa teh (茶) itu yang diminum oleh pelayan. Apakah contoh ini lebih mudah dipahami? Kita bisa lanjut ke 被 (bèi) jika sudah jelas.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The user found the previous explanation of 把 and 被 too difficult and requested an explanation using a 'warung' (food stall) situation. The assistant is now explaining 把 (bǎ) with a warung example.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "服务员把茶喝了。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 8,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1568,
+          "token_output": 1796,
+          "model_calls": 2,
+          "estimated_ai_cost": 0.0049604,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 1,
+          "response_latency_ms": 11592
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:42:48.507Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "d2853ea6-fad0-463a-9572-a73fd3f52cf2",
+        "responseMode": "TEACH",
+        "answer": "Tentu, mari kita jelaskan 把 (bǎ) dan 被 (bèi) dengan situasi warung yang lebih sederhana. Anggap saja ini tentang siapa yang melakukan apa dan siapa yang dikenai tindakan.\n\n**把 (bǎ) - Untuk kalimat aktif (pelaku melakukan sesuatu pada objek)**\n\nBayangkan kamu adalah pemilik warung. Kamu mengambil mangkuk.\n\n",
+        "spokenChinese": [
+          {
+            "text": "我把碗拿走了。",
+            "pinyin": "Wǒ bǎ wǎn ná zǒu le.",
+            "indonesian": "Saya mengambil mangkuk itu.",
+            "purpose": "Example for 把"
+          }
+        ],
+        "followUp": "Di sini, kamu (我) adalah pelakunya, mangkuk (碗) adalah objek yang dikenai tindakan, dan mengambil (拿走了) adalah tindakannya. Struktur umumnya: **Pelaku + 把 + Objek + Kata Kerja**.\n\n**被 (bèi) - Untuk kalimat pasif (objek dikenai tindakan oleh pelaku)**\n\nSekarang, bayangkan mangkuk itu. Mangkuk itu diambil oleh kamu.\n\n",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Menjelaskan perbedaan 把 (bǎ) dan 被 (bèi) menggunakan situasi warung yang lebih sederhana, fokus pada kalimat aktif dan pasif.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "EXPLAIN",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Di sini, mangkuk (碗) adalah objek yang dikenai tindakan, dan kamu (我) adalah pelakunya. Struktur umumnya: **Objek + 被 + Pelaku (opsional) + Kata Kerja**.\n\nCoba terjemahkan kalimat ini ke Mandarin menggunakan 被:\n\n\"Mangkuk itu diambil oleh saya.\""
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "我把碗拿走了。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 7,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1346,
+          "token_output": 756,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0022938,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5476
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:43:07.452Z"
+      }
+    },
+    {
+      "id": "R1-25",
+      "title": "两次失败最小帮助",
+      "message": "我还是不会。",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "2f344df8-72c4-4dc6-9684-f526aced72b9",
+        "responseMode": "TEACH",
+        "answer": "Tidak apa-apa! Mari kita pelajari bersama. Untuk mengatakan \"tunggu sebentar\" dalam bahasa Mandarin, kita bisa menggunakan \"等一下\" (děng yī xià). Kata \"等\" (děng) berarti \"tunggu\", dan \"一下\" (yī xià) di sini menunjukkan durasi yang singkat atau tindakan yang sebentar.\n\nJadi, jika digabungkan dengan \"tolong\" (请 - qǐng), kalimat lengkapnya menjadi \"请等一下\" (qǐng děng yī xià).",
+        "spokenChinese": [
+          {
+            "text": "等一下",
+            "pinyin": "děng yī xià",
+            "indonesian": "tunggu sebentar",
+            "purpose": "Teaching a new phrase"
+          },
+          {
+            "text": "等",
+            "pinyin": "děng",
+            "indonesian": "tunggu",
+            "purpose": "Explaining a character"
+          },
+          {
+            "text": "一下",
+            "pinyin": "yī xià",
+            "indonesian": "sebentar",
+            "purpose": "Explaining a character"
+          },
+          {
+            "text": "请",
+            "pinyin": "qǐng",
+            "indonesian": "tolong",
+            "purpose": "Recalling a previously learned character"
+          },
+          {
+            "text": "请等一下",
+            "pinyin": "qǐng děng yī xià",
+            "indonesian": "Tolong tunggu sebentar.",
+            "purpose": "Full sentence example"
+          }
+        ],
+        "followUp": "Sekarang, coba terjemahkan lagi: \"Tolong tunggu sebentar.\"",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": "Learner stated '我还是不会' (I still don't know/can't do it) after previous attempts."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The user is trying to translate \"Tolong tunggu sebentar.\" and has struggled with previous attempts. I am now explaining the correct phrase \"请等一下\" (qǐng děng yī xià).",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "等一下"
+          },
+          {
+            "language": "zh-CN",
+            "text": "等"
+          },
+          {
+            "language": "zh-CN",
+            "text": "一下"
+          },
+          {
+            "language": "zh-CN",
+            "text": "请"
+          },
+          {
+            "language": "zh-CN",
+            "text": "请等一下"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 5,
+          "billableCharacters": 11,
+          "chineseRequestCount": 5,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 722,
+          "token_output": 734,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0020516,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3939
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:43:24.850Z"
+      },
+      "B": {
+        "status": 503,
+        "error": "Guru AI belum dapat menjawab. Coba lagi sebentar."
+      }
+    },
+    {
+      "id": "R1-26",
+      "title": "正确后迁移检查",
+      "message": "请稍等一下。",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "ddbf6842-8ece-4367-9822-fd0210421f96",
+        "responseMode": "CORRECT",
+        "answer": "Benar sekali! \"请稍等一下\" adalah cara yang tepat untuk mengatakan 'Tolong tunggu sebentar' dalam bahasa Mandarin.",
+        "spokenChinese": [
+          {
+            "text": "请稍等一下",
+            "pinyin": "qǐng shāo děng yí xià",
+            "indonesian": "Tolong tunggu sebentar",
+            "purpose": "Correct answer"
+          }
+        ],
+        "followUp": "Apakah Anda ingin mencoba kalimat lain yang berhubungan dengan menunggu atau meminta sesuatu?",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner provided '请稍等一下' which correctly translates to 'Tolong tunggu sebentar'."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner correctly translated 'Tolong tunggu sebentar' to '请稍等一下'.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "请稍等一下"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 5,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 707,
+          "token_output": 367,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0011296,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2807
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:44:08.039Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "24aa48ab-2a70-4d7b-aefc-7efe6f3b8053",
+        "responseMode": "CORRECT",
+        "answer": "Bagus sekali! \"请稍等一下\" (qǐng shāo děng yí xià) adalah cara yang tepat untuk mengatakan 'Tolong tunggu sebentar'.",
+        "spokenChinese": [
+          {
+            "text": "请稍等一下",
+            "pinyin": "qǐng shāo děng yí xià",
+            "indonesian": "Tolong tunggu sebentar",
+            "purpose": "Model sentence"
+          }
+        ],
+        "followUp": "Apakah ada pertanyaan lain tentang frasa ini, atau kita bisa lanjut ke topik berikutnya?",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner correctly translated 'Tolong tunggu sebentar' to '请稍等一下。'"
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner successfully translated 'Tolong tunggu sebentar' to '请稍等一下'.",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "MODEL",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": [
+            {
+              "expression": "请稍等一下",
+              "learnerEvidence": "Learner provided '请稍等一下。' as a translation for 'Tolong tunggu sebentar' without a direct example in the immediate preceding turn."
+            }
+          ]
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "请稍等一下"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 5,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1345,
+          "token_output": 420,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0014535,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3108
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:44:24.545Z"
+      }
+    },
+    {
+      "id": "R1-27",
+      "title": "明确跟读仅作练习",
+      "message": "好的，我跟读：请稍等一下。",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "eda4ff98-6734-4b60-8e22-495a0de9ff4b",
+        "responseMode": "TEACH",
+        "answer": "Bagus sekali! Anda sudah mengucapkan 请稍等一下 (qǐng shāo děng yī xià) dengan baik. Ini berarti \"Mohon tunggu sebentar.\"",
+        "spokenChinese": [
+          {
+            "text": "请稍等一下",
+            "pinyin": "qǐng shāo děng yī xià",
+            "indonesian": "Mohon tunggu sebentar",
+            "purpose": "Reinforcement of the practiced phrase"
+          }
+        ],
+        "followUp": "Apakah Anda ingin mencoba mengucapkan kalimat lain, atau ada pertanyaan tentang kalimat ini?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": "User is repeating a phrase, not answering a question or performing a task that requires assessment."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "The user is practicing repeating the phrase '请稍等一下' (qǐng shāo děng yī xià), meaning 'Mohon tunggu sebentar'.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "请稍等一下"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 5,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 701,
+          "token_output": 308,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0009803,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2308
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:44:40.207Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "0d538cfe-3c22-4695-b969-2c6a3b952f02",
+        "responseMode": "TEACH",
+        "answer": "Bagus sekali! Pengucapanmu sudah tepat.",
+        "spokenChinese": [
+          {
+            "text": "请稍等一下。",
+            "pinyin": "Qǐng shāo děng yí xià.",
+            "indonesian": "Tolong tunggu sebentar.",
+            "purpose": "Review of the practiced phrase"
+          }
+        ],
+        "followUp": "Sekarang, mari kita coba kalimat lain. Bagaimana kalau mengucapkan: ‘Saya ingin memesan kopi.’",
+        "assessment": {
+          "status": "CORRECT",
+          "evidence": "Learner repeated the phrase '请稍等一下。' correctly as instructed."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner practiced repeating '请稍等一下。' (Tolong tunggu sebentar).",
+        "courseReferenceUsed": false,
+        "learnerAct": "ATTEMPT",
+        "teachingStrategy": "MODEL",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Bagaimana kamu akan mengatakan ‘Saya ingin memesan kopi.’ dalam bahasa Mandarin?"
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "请稍等一下。"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 6,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1335,
+          "token_output": 666,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0020655,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5658
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:44:59.348Z"
+      }
+    },
+    {
+      "id": "R1-28",
+      "title": "中印混合自然回应",
+      "message": "老板 bilang 明天早点来, maksudnya apa dan saya jawab apa?",
+      "A": {
+        "status": 503,
+        "error": "Guru AI belum dapat menjawab. Coba lagi sebentar."
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "7f4b8ca5-5a0f-49ac-b43e-09e953977c73",
+        "responseMode": "TEACH",
+        "answer": "Frasa \"明天早点来\" (míngtiān zǎodiǎn lái) artinya \"besok datang lebih awal\". Jadi, \"老板 bilang 明天早点来\" berarti \"Bos bilang besok datang lebih awal.\"",
+        "spokenChinese": [
+          {
+            "text": "明天早点来",
+            "pinyin": "míngtiān zǎodiǎn lái",
+            "indonesian": "besok datang lebih awal",
+            "purpose": "explanation"
+          },
+          {
+            "text": "好的",
+            "pinyin": "hǎo de",
+            "indonesian": "Baiklah",
+            "purpose": "model response"
+          }
+        ],
+        "followUp": "Untuk menjawabnya, kamu bisa bilang \"好的\" (hǎo de) yang artinya \"Baiklah\".",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner asked for the meaning of \"老板 bilang 明天早点来\" and how to respond.",
+        "courseReferenceUsed": false,
+        "learnerAct": "QUESTION",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "corrections": [],
+        "task": {
+          "type": "TRANSLATE",
+          "prompt": "Coba katakan \"Baiklah\" dalam bahasa Mandarin."
+        },
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "明天早点来"
+          },
+          {
+            "language": "zh-CN",
+            "text": "好的"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 2,
+          "billableCharacters": 7,
+          "chineseRequestCount": 2,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1314,
+          "token_output": 688,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0021142,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4363
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:45:42.702Z"
+      }
+    },
+    {
+      "id": "R1-29",
+      "title": "针对弱项结束复习",
+      "message": "saya selesai ya, tolong rangkum yang perlu saya ulang",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "e01dd3c0-ab49-4400-aa6e-1d12b7e50a1c",
+        "responseMode": "TEACH",
+        "answer": "Selamat datang! Karena ini adalah percakapan pertama kita, belum ada materi yang bisa saya rangkum untuk Anda. \n\nApa yang ingin Anda pelajari hari ini? Apakah Anda ingin belajar salam, perkenalan diri, atau topik lainnya?",
+        "spokenChinese": [],
+        "followUp": "Saya siap membantu Anda memulai perjalanan belajar bahasa Mandarin!",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": "Percakapan pertama, belum ada materi untuk dirangkum."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Pengguna baru, meminta rangkuman materi yang perlu diulang. Karena ini adalah interaksi pertama, belum ada materi yang diajarkan atau diulang.",
+        "courseReferenceUsed": false,
+        "speechSegments": [],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 0,
+          "billableCharacters": 0,
+          "chineseRequestCount": 0,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 678,
+          "token_output": 244,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0008134,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2148
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:45:58.217Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "0d36fcf3-9439-4c52-b6b0-6cc88732d4d5",
+        "responseMode": "TEACH",
+        "answer": "Baik, sesi kita hari ini sudah selesai. Senang belajar bersama Anda! Berikut adalah rangkuman singkat dari apa yang sudah kita pelajari dan beberapa hal yang bisa Anda ulas kembali.",
+        "spokenChinese": [],
+        "followUp": "Semoga bermanfaat untuk latihan Anda!",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner wants to end the session and requests a recap of weak points and recall exercises.",
+        "courseReferenceUsed": false,
+        "learnerAct": "SESSION_END",
+        "teachingStrategy": "RECALL",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": {
+          "recap": "Hari ini kita sudah belajar beberapa frasa penting untuk situasi di restoran, seperti cara meminta menu, cara meminta agar makanan tidak terlalu pedas, dan cara menanyakan jumlah orang secara sopan. Anda juga sudah berhasil menggunakan 'terima kasih' dan 'tolong berikan saya menu' secara mandiri.",
+          "weakFocus": [
+            "少放辣",
+            "请稍等一下",
+            "您几位"
+          ],
+          "recallExercises": [
+            "Bagaimana cara bilang \"tolong berikan saya menu\" dalam bahasa Mandarin?",
+            "Bagaimana cara bilang \"kurangi pedasnya\" dalam bahasa Mandarin?",
+            "Bagaimana cara bertanya \"berapa orang?\" (formal) dalam bahasa Mandarin?",
+            "Bagaimana cara bilang \"tolong tunggu sebentar\" dalam bahasa Mandarin?",
+            "Bagaimana cara bilang \"terima kasih\" dalam bahasa Mandarin?"
+          ]
+        },
+        "speechSegments": [],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 0,
+          "billableCharacters": 0,
+          "chineseRequestCount": 0,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1332,
+          "token_output": 925,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0027121,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4793
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:46:16.399Z"
+      }
+    },
+    {
+      "id": "R1-30",
+      "title": "STT边界声明",
+      "message": "transkrip saya tertulis 我想喝水, nilai pengucapan saya dong",
+      "A": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "739bb294-ae86-45eb-ac38-7fc845e37061",
+        "responseMode": "TEST",
+        "answer": "Baik, saya akan bantu nilai pengucapan Anda untuk \"我想喝水\".\n\nSilakan rekam suara Anda mengucapkan kalimat ini:",
+        "spokenChinese": [
+          {
+            "text": "我想喝水",
+            "pinyin": "wǒ xiǎng hē shuǐ",
+            "indonesian": "Saya ingin minum air",
+            "purpose": "Kalimat yang akan dinilai pengucapannya"
+          }
+        ],
+        "followUp": "Setelah Anda merekam, saya akan berikan masukan.",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": "Menunggu rekaman suara dari pengguna untuk dinilai pengucapannya."
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Pengguna meminta penilaian pengucapan untuk kalimat '我想喝水'.",
+        "courseReferenceUsed": false,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "我想喝水"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 4,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 683,
+          "token_output": 310,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0009799,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 2381
+        },
+        "skillVersion": "BASELINE",
+        "skillChecks": null,
+        "timestamp": "2026-10-25T10:46:32.220Z"
+      },
+      "B": {
+        "status": 200,
+        "experiment": "AI_FREE_TEACHING_V1",
+        "questionId": "3da078d6-3ee6-49b9-b5b5-253124b1499d",
+        "responseMode": "TEACH",
+        "answer": "Maaf, saya tidak bisa menilai pengucapan dari transkrip teks. Saya hanya bisa membantu dengan arti dan Pinyin dari kalimat yang kamu berikan.",
+        "spokenChinese": [
+          {
+            "text": "我想喝水",
+            "pinyin": "Wǒ xiǎng hē shuǐ",
+            "indonesian": "Saya ingin minum air",
+            "purpose": "Example of the phrase provided by the learner"
+          }
+        ],
+        "followUp": "Kalimat \"我想喝水\" (Wǒ xiǎng hē shuǐ) artinya \"Saya ingin minum air\". Apakah kamu ingin belajar lebih lanjut tentang kalimat ini atau mencoba kalimat lain?",
+        "assessment": {
+          "status": "NOT_ASSESSED",
+          "evidence": ""
+        },
+        "difficulty": "BEGINNER",
+        "contextSummary": "Learner provided a Chinese phrase '我想喝水' and asked for pronunciation evaluation.",
+        "courseReferenceUsed": false,
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "corrections": [],
+        "task": null,
+        "learningEvidence": {
+          "weakExpressions": [],
+          "independentUses": []
+        },
+        "sessionWrapUp": null,
+        "speechSegments": [
+          {
+            "language": "zh-CN",
+            "text": "我想喝水"
+          }
+        ],
+        "tts": {
+          "policy": "EXPLICIT_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 4,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0
+        },
+        "usage": {
+          "token_input": 1315,
+          "token_output": 537,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.001737,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4198
+        },
+        "skillVersion": "NATURAL_V1",
+        "skillChecks": {
+          "assessmentRequiresAttempt": true,
+          "correctionLimit": true,
+          "oneExplicitTask": true,
+          "independentEvidenceRequiresAttempt": true,
+          "strategyChangedAfterRepeatedFailure": true,
+          "sessionWrapUpValid": true
+        },
+        "timestamp": "2026-10-25T10:46:49.815Z"
+      }
+    }
+  ],
+  "totals": {
+    "A": {
+      "successful": 29,
+      "tokens": 35948,
+      "modelCalls": 30,
+      "cost": 0.043653479999999995,
+      "latencyMs": 103363,
+      "averageTokens": 1240,
+      "averageLatencyMs": 3564,
+      "projected20TurnCost": 0.030105848275862063
+    },
+    "B": {
+      "successful": 28,
+      "tokens": 60161,
+      "modelCalls": 30,
+      "cost": 0.0621957,
+      "latencyMs": 128805,
+      "averageTokens": 2149,
+      "averageLatencyMs": 4600,
+      "projected20TurnCost": 0.0444255
+    }
+  }
+}
