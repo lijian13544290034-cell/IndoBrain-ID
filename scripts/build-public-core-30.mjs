@@ -1,7 +1,7 @@
 // build-public-core-30.mjs
-// 生成「日常高频中文公共课程」第一批 30 条候选数据（CSV + JSON）。
+// 生成「日常高频中文公共课程」第一批 30 条已批准数据（CSV + JSON）。
 // 数据来源：docs/BASIC_ESSENTIALS_REAL_USE_V1_GROUPS_01_39.md / _40_93.md 的 Real Use 条目（可逐条追溯）。
-// 只生成本目录下的候选文件，不触碰运行时代码、课程注册表或 Production。
+// 只生成本目录下的数据文件，不触碰运行时代码、课程注册表或 Production。
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,7 +17,7 @@ const SRC_2 = 'docs/BASIC_ESSENTIALS_REAL_USE_V1_GROUPS_40_93.md';
 const rows = [
   // —— 1. 问候与礼貌 ——
   { id: 'CN-HF-001', sourceId: 'basic-essentials-G38#3', sourceFile: SRC_1, category: 'greeting', indonesian: 'Halo, Pak.', chinese: '您好，先生。', pinyin: 'nín hǎo, xiān sheng.', difficulty: 1, reviewNotes: '' },
-  { id: 'CN-HF-002', sourceId: 'basic-essentials-G39#2', sourceFile: SRC_1, category: 'greeting', indonesian: 'Permisi, Pak.', chinese: '打扰一下，先生。', pinyin: 'dǎ rǎo yí xià, xiān sheng.', difficulty: 1, reviewNotes: '终审修订：「Permisi」是引起注意的礼貌语，教学表达定为「打扰一下」（「不好意思」偏道歉/婉拒语境，不作为 Permisi 首选对译）；「一下」的「一」读第四声（yí），与 CN-HF-025 口径一致。' },
+  { id: 'CN-HF-002', sourceId: 'basic-essentials-G39#2', sourceFile: SRC_1, category: 'greeting', indonesian: 'Permisi, Pak.', chinese: '打扰一下，先生。', pinyin: 'dǎ rǎo yí xià, xiān sheng.', difficulty: 1, reviewNotes: '终审修订：「Permisi」是引起注意的礼貌语，教学表达定为「打扰一下」（「不好意思」偏道歉/婉拒语境，不作为 Permisi 首选对译）；「一下」的「一」读第二声（yí），与 CN-HF-025 口径一致。' },
   { id: 'CN-HF-003', sourceId: 'basic-essentials-G39#3', sourceFile: SRC_1, category: 'greeting', indonesian: 'Hati-hati di jalan.', chinese: '路上小心。', pinyin: 'lù shang xiǎo xīn.', difficulty: 1, reviewNotes: '' },
   // —— 2. 人称与位置 ——
   { id: 'CN-HF-004', sourceId: 'basic-essentials-G14#1', sourceFile: SRC_1, category: 'self-intro', indonesian: 'Saya di sini.', chinese: '我在这里。', pinyin: 'wǒ zài zhè lǐ.', difficulty: 1, reviewNotes: '' },
@@ -60,7 +60,7 @@ const rows = [
 for (const r of rows) {
   r.ttsText = r.chinese; // 现有 zh-CN TTS 路径要求 ttsText 与中文完全一致
   r.tags = ['high-frequency', `cat-${r.category}`];
-  r.reviewStatus = 'REVIEW_PASSED'; // 通过本轮内容+技术检查；正式导入前须人工批准为 HUMAN_APPROVED
+  r.reviewStatus = 'HUMAN_APPROVED';
   r.duplicateStatus = 'CHECKED_NO_CONFLICT';
 }
 
@@ -71,10 +71,8 @@ const pkg = {
   version: 1,
   direction: 'ID_TO_ZH',
   contentType: 'PUBLIC_HIGH_FREQUENCY',
-  // 注意：schema 要求正式导入时 reviewStatus === 'HUMAN_APPROVED'。
-  // 本候选包仅通过自动校验与内容自审，人工批准前保持 REVIEW_PASSED（validator 会相应提示）。
-  reviewStatus: 'REVIEW_PASSED',
-  reviewReference: 'WB-public-core-30-review-2026-10-25-rev2 (pending human approval)',
+  reviewStatus: 'HUMAN_APPROVED',
+  reviewReference: 'USER-CHAT-APPROVAL-2026-10-25-PUBLIC-CORE-30-REV2 (source: user confirmation in this chat on 2026-10-25)',
   course: {
     id: 'mandarin-public-core-30',
     titleZh: '日常高频中文 30 句',

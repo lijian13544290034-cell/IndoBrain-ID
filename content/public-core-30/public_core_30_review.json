@@ -2,8 +2,8 @@
   "version": 1,
   "direction": "ID_TO_ZH",
   "contentType": "PUBLIC_HIGH_FREQUENCY",
-  "reviewStatus": "REVIEW_PASSED",
-  "reviewReference": "WB-public-core-30-review-2026-10-25-rev2 (pending human approval)",
+  "reviewStatus": "HUMAN_APPROVED",
+  "reviewReference": "USER-CHAT-APPROVAL-2026-10-25-PUBLIC-CORE-30-REV2 (source: user confirmation in this chat on 2026-10-25)",
   "course": {
     "id": "mandarin-public-core-30",
     "titleZh": "日常高频中文 30 句",

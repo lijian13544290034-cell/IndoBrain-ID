@@ -1,6 +1,8 @@
-# 日常高频中文公共课程 · 第一批 30 条候选 QA 报告
+# 日常高频中文公共课程 · 第一批 30 条批准版 QA 报告
 
-日期：2026-10-25（rev2 终审修订版）· 分支：`feature/public-core-30-candidates` · 生成脚本：`scripts/build-public-core-30.mjs`（可复跑）· reviewReference：`WB-public-core-30-review-2026-10-25-rev2`
+日期：2026-10-25（rev2 人工批准版）· 内容来源提交：`c7f8083097260da89e797b89484af9318806d453` · 生成脚本：`scripts/build-public-core-30.mjs`（可复跑）
+
+审批标识：`USER-CHAT-APPROVAL-2026-10-25-PUBLIC-CORE-30-REV2`。来源仅为用户在本次聊天中明确确认已完成人工测试、验收及最终内容审核；本记录不表示存在独立第三方审核报告。
 
 ## 1. 选出的表达数量
 
@@ -53,22 +55,18 @@
 
 ## 7. 自动 validator 结果
 
-`scripts/validate-mandarin-course-import.mjs` 实测两遍（rev2 修订后复跑，结果与初版一致）：
-
-1. **交付版（reviewStatus=REVIEW_PASSED）**：唯一提示 `reviewStatus: must be HUMAN_APPROVED before import` —— 这正是流程设计，不是数据缺陷。
-2. **模拟人工批准副本（HUMAN_APPROVED + 占位 reviewReference）**：**0 错误**。即人工批准后无需任何数据修改即可通过正式导入校验。
+`scripts/validate-mandarin-course-import.mjs` 已对批准版复跑：`reviewStatus=HUMAN_APPROVED`，使用上述真实聊天审批引用，结果为 **0 错误**。
 
 其余硬规则全部满足：ID `CN-HF-001…030` 合规、courseId `mandarin-public-core-30` 合规、`ttsText === chinese`（zh-CN 只读中文）、difficulty 1–3、tags 非空。
 
-## 8. 可直接交给 Codex 集成的候选数量
+## 8. 已批准并接入的数量
 
-**30 / 30。** 结构与 Schema 完全对齐（无字段映射猜测），重复检测已通过，拼音已自审并标注全部变调点。人工批准（reviewStatus → HUMAN_APPROVED + 真实 reviewReference）后可直接填入 `lib/server/mandarin-v2-reviewed-packages.ts`。
+**30 / 30。** 结构与 Schema 完全对齐，重复检测通过，并已接入 `lib/server/mandarin-v2-reviewed-packages.ts`。
 
-## 9. 尚需人工审核的内容
+## 9. 人工审核状态
 
-1. **正式 HUMAN_APPROVED 批准 + reviewReference 填写**——WorkBuddy 按规则不自行批准（rev2 已消除待人工裁决的拼音争议点「哦」）。
-2. 品牌词不存在于本批（QRIS/e-toll/Wi-Fi 已全部避开），无需特殊 TTS 处理标记。
+用户已于 2026-10-25 在本次聊天中确认人工测试、验收及最终内容审核通过。品牌词不存在于本批，无需特殊 TTS 处理标记。
 
 ## 10. 结论
 
-第一批 30 条满足「高价值、可独立学习、来源可追溯、重复清晰、自动校验通过」全部要求。批准后即可按 `docs/mandarin-v2-runtime-architecture.md` 激活清单进入 Preview 集成；不得绕过人工批准直接进 Production。
+第一批 30 条满足「高价值、可独立学习、来源可追溯、重复清晰、自动校验通过」全部要求，现已具备进入 Production 发布候选验收的内容条件。

@@ -77,7 +77,7 @@ function ExpressionCard({
   );
 }
 
-export default function PublicCoreExperience({ expressions, sourceCommit }: { expressions: PublicCoreExpression[]; sourceCommit: string }) {
+export default function PublicCoreExperience({ expressions }: { expressions: PublicCoreExpression[] }) {
   const [category, setCategory] = useState<(typeof categories)[number]['id']>('all');
   const [profile, setProfile] = useState(emptyPublicCoreProfile());
 
@@ -113,10 +113,6 @@ export default function PublicCoreExperience({ expressions, sourceCommit }: { ex
           <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/20"><div className="h-full bg-[#71d6a2]" style={{ width: `${Math.round(profile.learned.length / expressions.length * 100)}%` }} /></div>
           <p className="mt-2 text-xs text-blue-100">{profile.learned.length}/{expressions.length} sudah dipelajari · {profile.favorites.length} favorit</p>
         </header>
-
-        <aside className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs leading-5 text-amber-900" role="note">
-          Preview internal · Materi telah lolos review awal dan masih menunggu persetujuan akhir. Sumber konten: <code>{sourceCommit.slice(0, 7)}</code>.
-        </aside>
 
         <nav aria-label="Kategori kalimat" className="mt-4 overflow-x-auto pb-2">
           <div className="flex min-w-max gap-2">

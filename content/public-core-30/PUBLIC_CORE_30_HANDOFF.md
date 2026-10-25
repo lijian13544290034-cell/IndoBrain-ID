@@ -1,13 +1,15 @@
 # Codex 交接说明 · 日常高频中文公共课程第一批（30 条）
 
-日期：2026-10-25（rev2 终审修订版）· 分支：`feature/public-core-30-candidates` · reviewReference：`WB-public-core-30-review-2026-10-25-rev2`
+日期：2026-10-25（rev2 人工批准版）· 内容来源提交：`c7f8083097260da89e797b89484af9318806d453`
+
+审批标识：`USER-CHAT-APPROVAL-2026-10-25-PUBLIC-CORE-30-REV2`。来源为用户在本次聊天中明确确认人工测试与验收通过；未声称存在独立审核报告。
 
 ## 1. 文件位置
 
 | 文件 | 路径 |
 |---|---|
-| 候选 JSON（Schema 兼容） | `content/public-core-30/public_core_30_review.json` |
-| 候选 CSV（含追溯与审核列，UTF-8 BOM） | `content/public-core-30/public_core_30_review.csv` |
+| 已批准 JSON（Schema 兼容） | `content/public-core-30/public_core_30_review.json` |
+| 已批准 CSV（含追溯与审核列，UTF-8 BOM） | `content/public-core-30/public_core_30_review.csv` |
 | QA 报告 | `content/public-core-30/PUBLIC_CORE_30_QA_REPORT.md` |
 | 生成脚本（可复跑） | `scripts/build-public-core-30.mjs` |
 
@@ -42,23 +44,22 @@ import('./scripts/validate-mandarin-course-import.mjs').then(async (m) => {
 });"
 ```
 
-当前交付版输出仅 1 条：`reviewStatus: must be HUMAN_APPROVED before import`（流程设计使然）。已实测：把 `reviewStatus` 改为 `HUMAN_APPROVED` 并填真实 `reviewReference` 后 **0 错误**。
+当前批准版输出 **0 错误**。
 
-## 6. 内容注册表如何接入（人工批准后）
+## 6. 内容注册表接入状态
 
-1. 人工完成 QA 报告第 9 节的拼音终审与批准，将 JSON 的 `reviewStatus` 改为 `HUMAN_APPROVED`、`reviewReference` 填真实审批引用。
-2. 把整个 package 对象加入 `lib/server/mandarin-v2-reviewed-packages.ts` 的 `mandarinV2ReviewedPackages`（server-only 注册表）。
-3. 按 `docs/mandarin-v2-runtime-architecture.md`「Activation checklist」执行：validator + `verify-mandarin-v2-runtime` → server 渲染路由调用 `getMandarinV2Runtime` → 接入 `MandarinV2VocabularyModule` 显示组件 → 收藏/复习解析器 → 访客隔离、zh-CN TTS、移动端回归 → 最后才加导航。
-4. 运行时保证（无需额外工作）：`day: null` 不写 Day 1–60；收藏走 `mandarin-v2:` 独立命名空间；TTS 走既有 `ChineseSpeechButton`（zh-CN、fail-closed）。
+1. JSON 与 CSV 均已标记 `HUMAN_APPROVED` 并记录真实聊天审批来源。
+2. 已加入 `lib/server/mandarin-v2-reviewed-packages.ts` 的 server-only 注册表。
+3. `/learn-chinese/public-core` 通过 `getMandarinV2Runtime` 读取课程，不直接绕过注册表。
+4. 运行时保证：`day: null` 不写 Day 1–60；FREE 内容要求 `requiresPermission=null`；收藏走 `mandarin-v2:` 独立命名空间；TTS 走既有中文通道。
 
-## 7. 哪些内容仍不可发布
+## 7. 发布范围
 
-- **未人工批准前整包不可发布/不可进 Production**：当前 `reviewStatus=REVIEW_PASSED` 会被 validator 与 V2 适配器（要求 `HUMAN_APPROVED`）双重拒绝——这是刻意的安全控制。
-- rev2 终审已修订 5 条自然度问题（CN-HF-002/014/017/021/030，详见 QA 报告第 4 节）并消除拼音争议点（「哦」已移除；「一/不」变调与轻声按实际读音统一口径），**仅剩一项人工动作：正式 HUMAN_APPROVED 批准 + 真实 reviewReference**。
+- 本批 30 条已批准，可进入 Production 发布候选验证。
 - 本批之外的一切内容（其余 249 条 Real Use、48 条职业表达、Level 2 门禁内容）均不在本包范围。
 - 禁改清单不变：Production、main、Supabase Schema、Day 1–60、中→印模块、AI Free Teaching、AI Coach V1.2、会员系统。
 
 ## 8. 与既有系统的隔离确认
 
-- 本批未触碰任何运行时代码/注册表/UI；只有 `content/public-core-30/` 数据、生成脚本与文档。
+- 本批只接入独立公共课程路由、正式注册表和 `/learn-chinese` 入口；未修改 Day 1–60 数据或会员逻辑。
 - 不使用共享管理员账号；不暴露 Service Role Key 或 AI Gateway 凭据。

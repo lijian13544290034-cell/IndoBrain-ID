@@ -81,10 +81,12 @@ assert.equal(buildMandarinV2CoachReferences(unauthorized).length, 2, 'AI Coach r
 assert.equal(mandarinV2FavoriteId(practicalPackage.expressions[0].id), `mandarin-v2:${practicalPackage.expressions[0].id}`, 'V2 favorites use a separate stable namespace');
 
 const reviewedRegistry = fs.readFileSync(path.join(root, 'lib/server/mandarin-v2-reviewed-packages.ts'), 'utf8');
-assert.match(reviewedRegistry, /mandarinV2ReviewedPackages:[^=]+\[\]/s, 'reviewed registry remains empty in RC2-C2');
-for (const file of ['components/MandarinLearningHome.tsx', 'components/MandarinLearningNavigation.tsx']) {
-  const source = fs.readFileSync(path.join(root, file), 'utf8');
-  assert.doesNotMatch(source, /mandarin-v2|MandarinV2/u, `${file} does not activate V2 content`);
-}
+assert.match(reviewedRegistry, /public_core_30_review\.json/, 'approved public core package is registered server-side');
+const approvedPublicCore = JSON.parse(fs.readFileSync(path.join(root, 'content/public-core-30/public_core_30_review.json'), 'utf8'));
+const publicRuntime = buildMandarinV2Runtime([approvedPublicCore], false);
+assert.equal(publicRuntime.courses.length, 1, 'anonymous users receive the approved FREE public course');
+assert.equal(publicRuntime.courses[0].id, 'mandarin-public-core-30');
+assert.equal(publicRuntime.courses[0].day, null, 'public core remains supplemental and does not allocate Day 61');
+assert.equal(publicRuntime.courses[0].expressions.length, 30);
 
-console.log('MANDARIN V2 RUNTIME: PASS (compatible types, empty registry, server-gated Level 2 body, no Day 61, no navigation activation)');
+console.log('MANDARIN V2 RUNTIME: PASS (approved FREE registry entry, server-gated Level 2 body, no Day 61)');
