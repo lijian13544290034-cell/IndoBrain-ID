@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const sourceCommit = '685c0a38b039fcb227b0ff67cb044fd138d8378a';
+const sourceCommit = 'c7f8083097260da89e797b89484af9318806d453';
 
 function candidateIsValid() {
   return candidatePackage.direction === 'ID_TO_ZH'
