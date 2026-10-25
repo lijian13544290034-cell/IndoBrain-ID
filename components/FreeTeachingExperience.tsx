@@ -10,6 +10,15 @@ type AssistantPayload = {
   followUp: string;
   contextSummary: string;
   assessment: { status: string; evidence: string };
+  learnerAct?: 'QUESTION' | 'REQUEST' | 'ATTEMPT' | 'CONFUSION' | 'SESSION_END';
+  teachingStrategy?: string;
+  corrections?: Array<{ issue: string; explanation: string; modelChinese: string }>;
+  task?: null | { type: string; prompt: string };
+  learningEvidence?: {
+    weakExpressions: Array<{ expression: string; evidence: string }>;
+    independentUses: Array<{ expression: string; learnerEvidence: string }>;
+  };
+  sessionWrapUp?: null | { recap: string; weakFocus: string[]; recallExercises: string[] };
   tts: { policy: string; eligibleRequestCount: number; billableCharacters: number; nonChineseRequestCount: number; rejectedItems: number };
   usage: { token_input: number; token_output: number; model_calls: number; estimated_ai_cost: number; model_used: string; response_latency_ms: number };
   error?: string;
@@ -21,8 +30,17 @@ type Turn = {
   payload?: AssistantPayload;
 };
 type TtsActual = { clicks: number; providerRequests: number; cacheHits: number; billableCharacters: number };
+type CoachingState = {
+  consecutiveFailures: number;
+  lastTeachingStrategy: string;
+  sameTaskRepeatCount: number;
+  lastTaskPrompt: string;
+  weakExpressions: string[];
+  independentUses: string[];
+};
 
 const STORAGE_KEY = 'indobrain:ai-free-teaching:v1';
+const EMPTY_COACHING_STATE: CoachingState = { consecutiveFailures: 0, lastTeachingStrategy: '', sameTaskRepeatCount: 0, lastTaskPrompt: '', weakExpressions: [], independentUses: [] };
 const SUGGESTIONS = [
   'boleh buat tes untuk saya ya',
   'saya mau belajar Mandarin untuk restoran',
@@ -42,23 +60,25 @@ export default function FreeTeachingExperience({ initialReady }: { initialReady:
   const [error, setError] = useState('');
   const [turns, setTurns] = useState<Turn[]>([]);
   const [contextSummary, setContextSummary] = useState('');
+  const [coachingState, setCoachingState] = useState<CoachingState>(EMPTY_COACHING_STATE);
   const [sessionId] = useState(newSessionId);
   const [ttsActual, setTtsActual] = useState<TtsActual>({ clicks: 0, providerRequests: 0, cacheHits: 0, billableCharacters: 0 });
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') as { turns?: Turn[]; contextSummary?: string } | null;
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') as { turns?: Turn[]; contextSummary?: string; coachingState?: CoachingState } | null;
       if (saved?.turns?.length) setTurns(saved.turns.slice(-20));
       if (saved?.contextSummary) setContextSummary(saved.contextSummary.slice(0, 500));
+      if (saved?.coachingState) setCoachingState({ ...EMPTY_COACHING_STATE, ...saved.coachingState });
     } catch { /* Ignore stale or malformed local experiment state. */ }
   }, []);
 
   useEffect(() => {
     if (!turns.length) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, turns: turns.slice(-20), contextSummary }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 2, turns: turns.slice(-20), contextSummary, coachingState }));
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, [turns, contextSummary]);
+  }, [turns, contextSummary, coachingState]);
 
   async function startGuestSession() {
     setStarting(true);
@@ -97,6 +117,8 @@ export default function FreeTeachingExperience({ initialReady }: { initialReady:
           message: clean,
           sessionId,
           contextSummary,
+          skillVersion: 'NATURAL_V1',
+          coachingState,
           recentTurns: history.slice(-12).map((turn) => ({
             role: turn.role,
             text: turn.role === 'assistant' && turn.payload
@@ -113,6 +135,18 @@ export default function FreeTeachingExperience({ initialReady }: { initialReady:
       if (!response.ok || !payload?.answer) throw new Error(payload?.error || 'Guru AI belum dapat menjawab.');
       setTurns((current) => [...current, { id: `a-${Date.now()}`, role: 'assistant', text: payload.answer, payload }]);
       setContextSummary(payload.contextSummary || contextSummary);
+      if (payload.teachingStrategy && payload.learningEvidence) {
+        const evidence = payload.learningEvidence;
+        const nextTask = payload.task?.prompt || '';
+        setCoachingState((current) => ({
+          consecutiveFailures: payload.assessment.status === 'NEEDS_WORK' ? Math.min(5, current.consecutiveFailures + 1) : payload.assessment.status === 'CORRECT' ? 0 : current.consecutiveFailures,
+          lastTeachingStrategy: payload.teachingStrategy || current.lastTeachingStrategy,
+          sameTaskRepeatCount: nextTask && nextTask === current.lastTaskPrompt ? Math.min(3, current.sameTaskRepeatCount + 1) : nextTask ? 1 : 0,
+          lastTaskPrompt: nextTask,
+          weakExpressions: [...new Set([...current.weakExpressions, ...evidence.weakExpressions.map((item) => item.expression)])].slice(-12),
+          independentUses: [...new Set([...current.independentUses, ...evidence.independentUses.map((item) => item.expression)])].slice(-12),
+        }));
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Koneksi terputus. Coba lagi.');
     } finally {
@@ -150,6 +184,7 @@ export default function FreeTeachingExperience({ initialReady }: { initialReady:
     localStorage.removeItem(STORAGE_KEY);
     setTurns([]);
     setContextSummary('');
+    setCoachingState(EMPTY_COACHING_STATE);
     setTtsActual({ clicks: 0, providerRequests: 0, cacheHits: 0, billableCharacters: 0 });
   }
 
@@ -192,6 +227,20 @@ export default function FreeTeachingExperience({ initialReady }: { initialReady:
           </div>
         </div>)}
         {turn.payload?.followUp ? <p className="mt-3 text-sm font-semibold text-violet-800">{turn.payload.followUp}</p> : null}
+        {turn.payload?.corrections?.map((item) => <div key={`${turn.id}-${item.issue}`} className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-stone-700">
+          <p className="font-bold text-amber-900">Koreksi utama: {item.issue}</p>
+          <p>{item.explanation}</p>
+          {item.modelChinese ? <p lang="zh-CN" className="mt-1 font-bold text-stone-950">{item.modelChinese}</p> : null}
+        </div>)}
+        {turn.payload?.task ? <div className="mt-3 rounded-xl border border-violet-200 bg-violet-50 p-3 text-sm leading-6 text-violet-950">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-violet-700">Satu latihan</p>
+          <p className="mt-1 font-semibold">{turn.payload.task.prompt}</p>
+        </div> : null}
+        {turn.payload?.sessionWrapUp ? <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm leading-6 text-stone-700">
+          <p className="font-bold text-emerald-900">Ringkasan belajar</p>
+          <p>{turn.payload.sessionWrapUp.recap}</p>
+          <ol className="mt-2 list-decimal space-y-1 pl-5">{turn.payload.sessionWrapUp.recallExercises.map((exercise) => <li key={exercise}>{exercise}</li>)}</ol>
+        </div> : null}
         {turn.payload ? <p className="mt-3 text-[11px] text-stone-400">{turn.payload.responseMode} · {turn.payload.usage.model_used} · {turn.payload.usage.token_input + turn.payload.usage.token_output} token · TTS {turn.payload.tts.billableCharacters} karakter kandidat</p> : null}
       </article>)}
       {sending ? <div role="status" className="mr-20 rounded-2xl bg-white p-4 text-sm text-stone-500">Guru AI sedang berpikir…</div> : null}

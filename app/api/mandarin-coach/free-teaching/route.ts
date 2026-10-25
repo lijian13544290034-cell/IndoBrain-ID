@@ -4,11 +4,15 @@ import { buildExplicitChineseSpeechSegments, coachSpeechMetrics, isValidatedSpok
 import { guestCountCookie, resolveGuestScope } from '@/lib/server/guest-auth';
 import { consumeGuestTurn, recordGuestError } from '@/lib/server/guest-quota';
 import { anonymizeLearningQuestion } from '@/lib/server/mandarin-ai-coach';
-import { answerFreeTeaching } from '@/lib/server/mandarin-free-teacher';
+import { answerFreeTeaching, type FreeTeachingAnswer, type NaturalConversationAnswer } from '@/lib/server/mandarin-free-teacher';
 
 export const runtime = 'nodejs';
 
 type RecentTurn = { role: 'user' | 'assistant'; text: string };
+
+function isNaturalAnswer(answer: FreeTeachingAnswer | NaturalConversationAnswer): answer is NaturalConversationAnswer {
+  return 'learnerAct' in answer && 'learningEvidence' in answer;
+}
 
 function safeBody(value: unknown) {
   if (!value || typeof value !== 'object') return null;
@@ -22,12 +26,25 @@ function safeBody(value: unknown) {
     if ((turn.role !== 'user' && turn.role !== 'assistant') || typeof turn.text !== 'string') return [];
     return [{ role: turn.role, text: turn.text.slice(0, 800) }];
   }).slice(-12) : [];
+  const rawState = body.coachingState && typeof body.coachingState === 'object' ? body.coachingState as Record<string, unknown> : {};
+  const strategies = new Set(['DIRECT_ANSWER', 'EXPLAIN', 'MODEL', 'CONTRAST', 'SCAFFOLD', 'ROLEPLAY', 'RECALL', 'REVIEW']);
+  const textList = (candidate: unknown) => Array.isArray(candidate)
+    ? candidate.filter((item): item is string => typeof item === 'string').map((item) => item.slice(0, 80)).slice(-12)
+    : [];
   return {
     message,
     sessionId,
     recentTurns,
     contextSummary: typeof body.contextSummary === 'string' ? body.contextSummary.slice(0, 500) : '',
     modelTier: body.modelTier === 'FAST' ? 'FAST' as const : 'SMART' as const,
+    skillVersion: body.skillVersion === 'BASELINE' ? 'BASELINE' as const : 'NATURAL_V1' as const,
+    coachingState: {
+      consecutiveFailures: Math.min(5, Math.max(0, Number(rawState.consecutiveFailures) || 0)),
+      lastTeachingStrategy: typeof rawState.lastTeachingStrategy === 'string' && strategies.has(rawState.lastTeachingStrategy) ? rawState.lastTeachingStrategy as 'DIRECT_ANSWER' | 'EXPLAIN' | 'MODEL' | 'CONTRAST' | 'SCAFFOLD' | 'ROLEPLAY' | 'RECALL' | 'REVIEW' : '' as const,
+      sameTaskRepeatCount: Math.min(3, Math.max(0, Number(rawState.sameTaskRepeatCount) || 0)),
+      weakExpressions: textList(rawState.weakExpressions),
+      independentUses: textList(rawState.independentUses),
+    },
   };
 }
 
@@ -60,6 +77,8 @@ export async function POST(request: Request) {
       recentTurns: input.recentTurns,
       contextSummary: input.contextSummary,
       modelTier: input.modelTier,
+      skillVersion: input.skillVersion,
+      coachingState: input.coachingState,
     });
     const spokenChinese = result.answer.spokenChinese.filter((item) => isValidatedSpokenChinese(item.text));
     const rejectedSpokenChinese = result.answer.spokenChinese.length - spokenChinese.length;
@@ -67,6 +86,19 @@ export async function POST(request: Request) {
     const speechMetrics = coachSpeechMetrics(speechSegments);
     const questionId = randomUUID();
     const responseLatencyMs = Date.now() - startedAt;
+    const natural = isNaturalAnswer(result.answer) ? result.answer : null;
+    const skillChecks = natural ? {
+      assessmentRequiresAttempt: natural.learnerAct === 'ATTEMPT' || natural.assessment.status === 'NOT_ASSESSED',
+      correctionLimit: natural.corrections.length <= 2,
+      oneExplicitTask: natural.task === null || typeof natural.task.prompt === 'string',
+      independentEvidenceRequiresAttempt: natural.learnerAct === 'ATTEMPT' || natural.learningEvidence.independentUses.length === 0,
+      strategyChangedAfterRepeatedFailure: input.coachingState.consecutiveFailures < 2
+        || !input.coachingState.lastTeachingStrategy
+        || natural.teachingStrategy !== input.coachingState.lastTeachingStrategy,
+      sessionWrapUpValid: natural.learnerAct === 'SESSION_END'
+        ? Boolean(natural.sessionWrapUp && natural.sessionWrapUp.recallExercises.length >= 3 && natural.sessionWrapUp.recallExercises.length <= 5)
+        : natural.sessionWrapUp === null,
+    } : null;
 
     console.info('[ai-free-teaching-v1]', {
       question_id: questionId,
@@ -82,6 +114,8 @@ export async function POST(request: Request) {
       tts_billable_characters: speechMetrics.billableCharacters,
       tts_rejected_items: rejectedSpokenChinese,
       response_latency_ms: responseLatencyMs,
+      skill_version: input.skillVersion,
+      skill_checks_passed: skillChecks ? Object.values(skillChecks).every(Boolean) : undefined,
     });
 
     return Response.json({
@@ -96,6 +130,8 @@ export async function POST(request: Request) {
         rejectedItems: rejectedSpokenChinese,
       },
       usage: { ...result.usage, response_latency_ms: responseLatencyMs },
+      skillVersion: input.skillVersion,
+      skillChecks,
       timestamp: new Date().toISOString(),
     }, { headers: { 'Set-Cookie': guestCountCookie(guestScope.session) } });
   } catch (error) {

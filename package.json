@@ -33,6 +33,7 @@
     "verify:mandarin-coach-conversation-access": "node scripts/verify-mandarin-coach-conversation-access.mjs",
     "verify:mandarin-coach-send-reliability": "node --experimental-strip-types scripts/verify-mandarin-coach-send-reliability.mjs",
     "verify:ai-free-teaching": "node --experimental-strip-types scripts/verify-ai-free-teaching.mjs",
+    "ab:natural-conversation": "node scripts/run-natural-conversation-ab.mjs",
     "verify:mandarin-learning-home": "node scripts/verify-mandarin-learning-home.mjs",
     "verify:mandarin-local-account-isolation": "node --experimental-strip-types scripts/verify-mandarin-local-account-isolation.mjs",
     "verify:mandarin-favorites": "node --experimental-strip-types scripts/verify-mandarin-favorites.mjs",

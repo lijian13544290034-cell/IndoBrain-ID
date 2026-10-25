@@ -44,8 +44,18 @@ assert.doesNotMatch(teacher, /buildMiniCourse|optionalCourseReference/);
 assert.match(teacher, /question.*NOT an attempted answer/i);
 assert.match(teacher, /test request must produce at least one concrete question/i);
 assert.match(teacher, /request to continue is never evidence of correctness/i);
+assert.match(teacher, /Natural Conversation Skill V1/i);
+assert.match(teacher, /Correct at most one or two errors/i);
+assert.match(teacher, /Repetition or shadowing is practice, never mastery evidence/i);
+assert.match(teacher, /never acoustic pronunciation claims/i);
+assert.match(teacher, /recall exercises/i);
+assert.match(teacher, /maxItems: 2/);
+assert.match(teacher, /minItems: 3, maxItems: 5/);
+assert.doesNotMatch(teacher, /from ['"].*(?:teaching-engine-active|state-machine|mandarin-coach-personalization-profile)/);
 assert.doesNotMatch(client, /playChinese\(.*\).*useEffect/s);
 assert.match(client, /localStorage\.setItem/);
+assert.match(client, /skillVersion: 'NATURAL_V1'/);
+assert.match(client, /consecutiveFailures/);
 assert.match(ttsRoute, /isValidatedSpokenChinese/);
 
 console.log('AI Free Teaching V1 static and speech-policy verification passed.');
