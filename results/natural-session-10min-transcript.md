@@ -11,7 +11,7 @@
 **学生：** Halo! Saya Rina, saya kerja sebagai kasir di minimarket. Sering ada pelanggan dari China, tapi saya tidak bisa bahasa Mandarin sama sekali. Bisa tolong ajarin saya?
 
 **意图识别：** REQUEST · **策略：** DIRECT_ANSWER · **评估：** NOT_ASSESSED
-**评估依据：** 
+**评估依据：**
 
 **教师回答：** Halo Rina! Tentu saja, saya bisa bantu kamu belajar bahasa Mandarin dasar yang berguna di minimarket. Kita bisa mulai dengan sapaan dasar. Bagaimana kalau kita belajar mengucapkan 'Halo' atau 'Selamat datang'?
 
@@ -26,7 +26,7 @@
 **学生：** Biasanya pelanggan masuk terus saya bingung mau bilang apa. Tolong ajarin cara menyapa pelanggan yang baru masuk toko.
 
 **意图识别：** REQUEST · **策略：** DIRECT_ANSWER · **评估：** NOT_ASSESSED
-**评估依据：** 
+**评估依据：**
 
 **教师回答：** Tentu, Rina! Untuk menyapa pelanggan yang baru masuk toko, kamu bisa bilang "Selamat datang" dalam bahasa Mandarin. Frasanya adalah:
 
@@ -58,7 +58,7 @@
 **学生：** Oke! Terus gimana cara nanya pelanggan itu mau beli apa?
 
 **意图识别：** QUESTION · **策略：** DIRECT_ANSWER · **评估：** NOT_ASSESSED
-**评估依据：** 
+**评估依据：**
 
 **教师回答：** Oke, Rina! Untuk menanyakan apa yang ingin dibeli pelanggan, kamu bisa menggunakan kalimat ini:
 
@@ -91,7 +91,7 @@
 **学生：** Paham. Kalau pas bayar, saya mau bilang total harganya. Tolong ajarin dong.
 
 **意图识别：** REQUEST · **策略：** DIRECT_ANSWER · **评估：** NOT_ASSESSED
-**评估依据：** 
+**评估依据：**
 
 **教师回答：** Tentu, Rina! Untuk bilang "total harganya" saat bayar, kamu bisa pakai frasa ini:
 
@@ -129,7 +129,7 @@
 **学生：** 一共二十五块，对吗？ehm... 我说 "Yígòng èrshíwǔ kuài" betul nggak?
 
 **意图识别：** QUESTION · **策略：** DIRECT_ANSWER · **评估：** NOT_ASSESSED
-**评估依据：** 
+**评估依据：**
 
 **教师回答：** Betul sekali, Rina! "一共二十五块" (yígòng èrshíwǔ kuài) artinya "Totalnya dua puluh lima kuai". Ini adalah cara yang tepat untuk menyatakan harga totalnya.
 
@@ -159,7 +159,7 @@
 **学生：** Aku bingung sendiri. Coba ajarin lagi pelan-pelan pakai cara yang beda ya.
 
 **意图识别：** CONFUSION · **策略：** EXPLAIN · **评估：** NOT_ASSESSED
-**评估依据：** 
+**评估依据：**
 
 **教师回答：** Tentu, Rina. Maaf kalau penjelasanku sebelumnya kurang jelas. Mari kita coba lagi dengan cara yang berbeda ya.
 
@@ -173,7 +173,7 @@
 **学生：** Sekarang ayo latihan sungguhan! Kamu jadi pelanggan dari China, saya kasir. Mulai ya.
 
 **意图识别：** REQUEST · **策略：** ROLEPLAY · **评估：** NOT_ASSESSED
-**评估依据：** 
+**评估依据：**
 
 **教师回答：** Baik, Rina! Mari kita mulai roleplay-nya. Saya akan jadi pelanggan dari China, dan kamu kasirnya. Saya akan mulai ya.
 
@@ -244,7 +244,7 @@
 **学生：** Kalau mau lebih sopan gimana ya bilangnya? Ajarin versi sopannya dong.
 
 **意图识别：** REQUEST · **策略：** EXPLAIN · **评估：** NOT_ASSESSED
-**评估依据：** 
+**评估依据：**
 
 **教师回答：** Tentu! Untuk membuat kalimat lebih sopan, kita bisa menggunakan kata "您" (nín) yang berarti "Anda" (bentuk sopan dari "kamu"), dan juga "请" (qǐng) yang berarti "mohon" atau "silakan".
 
@@ -258,7 +258,7 @@
 **学生：** Sudah selesai ya untuk hari ini. Tolong rangkum apa saja yang harus saya ulang.
 
 **意图识别：** SESSION_END · **策略：** REVIEW · **评估：** NOT_ASSESSED
-**评估依据：** 
+**评估依据：**
 
 **教师回答：** Baik, Rina! Senang sekali kamu sudah belajar banyak hari ini. Mari kita rangkum apa saja yang sudah kita pelajari dan apa yang bisa kamu ulas lagi.
 
