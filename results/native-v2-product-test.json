@@ -1,0 +1,1025 @@
+{
+  "experiment": "FREE_MODEL_NATIVE_V2",
+  "baseUrl": "https://indobrain-01-prd-prd-v0-1-hvgf2sikc-lijian1.vercel.app",
+  "executedAt": "2026-10-26T15:39:51.806Z",
+  "model": "google/gemini-2.5-flash",
+  "scenarios": 9,
+  "checks": {
+    "total": 56,
+    "passed": 56,
+    "failed": 0
+  },
+  "cost": {
+    "B": {
+      "totalUsd": 0.0202,
+      "tokens": 17198,
+      "avgLatencyMs": 6066
+    },
+    "A": {
+      "totalUsd": 0.0186,
+      "tokens": 25137,
+      "avgLatencyMs": 5099
+    },
+    "note": "9 个相同输入的独立请求；B 为自由文本单次调用，A 为结构化教学调用"
+  },
+  "rows": [
+    {
+      "id": "S1-real-user-sentence",
+      "note": "真实用户原句（含拼写错误 retoran/boelh）；允许先给计划+追问岗位，不必立刻教中文",
+      "input": "saya mau kerja di retoran china, tolong bantu buat les untuk saya, boelh ya",
+      "B": {
+        "status": 200,
+        "answer": "Wah, seru sekali! Mau bekerja di restoran China itu kesempatan yang bagus untuk belajar bahasa dan budayanya. Tentu saja saya bisa bantu!\n\nUntuk permulaan, kita bisa fokus pada frasa-frasa yang paling sering dipakai di restoran. Tapi, supaya lebih pas dan efektif, boleh tahu nanti peranmu di restoran itu apa?\n\nMisalnya, apakah kamu akan jadi pelayan, koki, kasir, atau bagian kebersihan? Dengan tahu peranmu, saya bisa siapkan materi yang lebih relevan dan langsung bisa kamu pakai.\n\nSebagai contoh, kalau kamu jadi pelayan, salah satu kalimat yang pasti sering dipakai adalah:",
+        "spokenChinese": [
+          {
+            "text": "请问您想点什么？",
+            "pinyin": "Qǐngwèn nín xiǎng diǎn shénme",
+            "indonesian": "Permisi, Anda mau pesan apa?"
+          }
+        ],
+        "latencyMs": 5044,
+        "usage": {
+          "token_input": 484,
+          "token_output": 390,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0011202,
+          "model_used": "google/gemini-2.5-flash",
+          "response_latency_ms": 3407
+        },
+        "tts": {
+          "policy": "EXTRACTED_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 8,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0,
+          "audioListFound": true
+        }
+      },
+      "A": {
+        "status": 200,
+        "answer": "Tentu saja! Senang sekali bisa membantu. Untuk memulai, mari kita pelajari cara menyapa pelanggan dengan \"Selamat datang\" dalam bahasa Mandarin. Ini adalah frasa yang sangat penting di restoran.",
+        "spokenChinese": [
+          {
+            "text": "欢迎光临",
+            "pinyin": "Huānyíng guānglín",
+            "indonesian": "Selamat datang (di tempat usaha)",
+            "purpose": "Mengajarkan frasa 'Selamat datang' untuk restoran"
+          }
+        ],
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "MODEL",
+        "latencyMs": 6193,
+        "usage": {
+          "token_input": 1575,
+          "token_output": 412,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0015025,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5595
+        }
+      }
+    },
+    {
+      "id": "S2-factory-work",
+      "note": "去工厂工作",
+      "input": "saya mau kerja di pabrik, tolong ajari saya Mandarin untuk kerja",
+      "B": {
+        "status": 200,
+        "answer": "Oke, siap! Bekerja di pabrik dan bisa berbahasa Mandarin itu pasti akan sangat membantu dan membuka banyak kesempatan. Saya siap bantu kamu belajar Mandarin yang relevan untuk lingkungan pabrik.\n\nSupaya belajarnya lebih efektif dan langsung kena sasaran, boleh tahu lebih detail sedikit tentang pekerjaanmu di pabrik nanti?\n\nMisalnya:\n*   Kamu akan bekerja di bagian apa? (Produksi, QC/Quality Control, gudang, administrasi, dll.)\n*   Apakah kamu akan sering berinteraksi dengan atasan/supervisor orang Tiongkok?\n*   Atau lebih banyak berinteraksi dengan rekan kerja sesama pekerja?\n*   Produk apa yang diproduksi di pabrik tersebut?\n\nDengan informasi ini, saya bisa siapkan materi yang lebih spesifik dan langsung bisa kamu gunakan di tempat kerja.\n\nSebagai permulaan, ini ada satu kalimat dasar yang mungkin akan sering kamu dengar atau perlu ucapkan di lingkungan kerja:",
+        "spokenChinese": [
+          {
+            "text": "老板，我明天想请假。",
+            "pinyin": "Lǎobǎn wǒ míngtiān xiǎng qǐngjià",
+            "indonesian": "Bos, saya mau minta izin besok."
+          }
+        ],
+        "latencyMs": 3987,
+        "usage": {
+          "token_input": 630,
+          "token_output": 355,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0010765,
+          "model_used": "google/gemini-2.5-flash",
+          "response_latency_ms": 3319
+        },
+        "tts": {
+          "policy": "EXTRACTED_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 10,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0,
+          "audioListFound": true
+        }
+      },
+      "A": {
+        "status": 200,
+        "answer": "Baik, saya paham! Kamu ingin belajar Mandarin untuk bekerja di pabrik. Itu juga tujuan yang sangat bagus dan praktis. Tentu saja saya akan bantu kamu fokus pada percakapan yang relevan untuk lingkungan pabrik.",
+        "spokenChinese": [],
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "latencyMs": 3869,
+        "usage": {
+          "token_input": 1879,
+          "token_output": 388,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0015337,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3565
+        }
+      }
+    },
+    {
+      "id": "S3-practice-now",
+      "note": "直接练习中文",
+      "input": "saya mau langsung latihan ngobrol pakai Mandarin sama kamu",
+      "B": {
+        "status": 200,
+        "answer": "Wah, ide bagus sekali! Langsung latihan ngobrol itu cara yang paling efektif untuk mengasah kemampuan Mandarinmu. Saya siap bantu!\n\nOke, mari kita mulai. Anggap saja ini hari pertamamu di pabrik. Mungkin kamu bertemu dengan supervisor atau rekan kerja dan ingin menyapa atau memperkenalkan diri.\n\nCoba kamu mulai dengan menyapa saya dan memperkenalkan diri, misalnya: \"Halo, saya [nama kamu].\"\n\nAtau, kalau kamu mau menanyakan sesuatu yang sederhana, misalnya kamu perlu bantuan. Kamu bisa bilang:\n\nSilakan dicoba! Saya tunggu balasanmu ya.",
+        "spokenChinese": [
+          {
+            "text": "请问，我需要帮忙。",
+            "pinyin": "Qǐngwèn wǒ xūyào bāngmáng",
+            "indonesian": "Permisi, saya butuh bantuan."
+          }
+        ],
+        "latencyMs": 4689,
+        "usage": {
+          "token_input": 839,
+          "token_output": 299,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0009992,
+          "model_used": "google/gemini-2.5-flash",
+          "response_latency_ms": 4083
+        },
+        "tts": {
+          "policy": "EXTRACTED_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 9,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0,
+          "audioListFound": true
+        }
+      },
+      "A": {
+        "status": 200,
+        "answer": "Baik, mari kita mulai latihan ngobrol pakai Mandarin! Kita bisa bayangkan kamu baru saja tiba di pabrik untuk hari pertama kerja. Saya akan jadi supervisor kamu. Saya akan menyapa kamu dan memberikan instruksi sederhana. Coba kamu balas sapaan saya ya.",
+        "spokenChinese": [
+          {
+            "text": "你好！欢迎来到我们工厂。",
+            "pinyin": "Nǐ hǎo! Huānyíng lái dào wǒmen gōngchǎng.",
+            "indonesian": "Halo! Selamat datang di pabrik kami.",
+            "purpose": "Roleplay initiation"
+          }
+        ],
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "ROLEPLAY",
+        "latencyMs": 4517,
+        "usage": {
+          "token_input": 2059,
+          "token_output": 486,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0018327,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3870
+        }
+      }
+    },
+    {
+      "id": "S4-reexplain",
+      "note": "没听懂，继续解释",
+      "input": "kemarin saya tidak paham, tolong jelaskan lagi pelan-pelan",
+      "B": {
+        "status": 200,
+        "answer": "Baik, tidak apa-apa. Maaf kalau kemarin saya terlalu cepat. Mari kita coba lagi, pelan-pelan ya.\n\nJadi begini, kamu bilang mau belajar Mandarin untuk kerja di pabrik, kan? Nah, cara paling bagus untuk belajar itu adalah dengan langsung mencoba ngobrol, seperti yang kamu minta.\n\nKemarin, saya mengajakmu untuk mulai latihan ngobrol dengan saya, seolah-olah kamu baru pertama kali masuk kerja di pabrik. Tujuannya adalah supaya kamu bisa langsung mencoba mengucapkan kalimat-kalimat dasar yang mungkin kamu butuhkan di sana.\n\nSaya memberi dua pilihan untuk memulai:\n1.  **Memperkenalkan diri atau menyapa.** Misalnya, kamu bisa bilang \"Halo, saya [nama kamu].\" dalam bahasa Mandarin. Ini adalah cara yang baik untuk memulai interaksi.\n2.  **Meminta bantuan sederhana.** Karena di tempat kerja baru, mungkin ada hal yang belum kamu pahami atau butuh bantuan.\n\nContoh kalimat untuk meminta bantuan yang saya berikan adalah:\n\n\n\nKalimat ini bisa kamu pakai kalau kamu butuh bantuan dari rekan kerja atau atasan. Misalnya, kamu tidak tahu cara mengoperasikan mesin atau mencari suatu barang.\n\nNah, sekarang, coba kamu pilih salah satu:\n*   Mau coba memperkenalkan diri dulu?\n*   Atau mau coba bertanya \"Permisi, bisakah Anda membantu saya sebentar?\"\n\nTidak perlu takut salah ya, kita di sini untuk belajar. Coba saja dulu, nanti saya bantu koreksi kalau ada yang kurang pas.\n\nSilakan dicoba! Saya tunggu balasanmu ya.",
+        "spokenChinese": [
+          {
+            "text": "请问，您可以帮我一下吗？",
+            "pinyin": "Qǐngwèn nín kěyǐ bāng wǒ yīxià ma",
+            "indonesian": "Permisi, bisakah Anda membantu saya sebentar?"
+          }
+        ],
+        "latencyMs": 4749,
+        "usage": {
+          "token_input": 976,
+          "token_output": 606,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0018078,
+          "model_used": "google/gemini-2.5-flash",
+          "response_latency_ms": 4165
+        },
+        "tts": {
+          "policy": "EXTRACTED_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 12,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0,
+          "audioListFound": true
+        }
+      },
+      "A": {
+        "status": 200,
+        "answer": "Maaf, saya jelaskan lagi ya. Tadi saya mengajak kamu untuk mulai latihan percakapan Mandarin, seolah-olah ini hari pertamamu di pabrik. Kamu bisa mulai dengan menyapa dan memperkenalkan diri, atau menanyakan sesuatu yang sederhana.\n\nContohnya, kamu bisa bilang:\n\n\"Halo, saya [nama kamu].\"\n(Nǐ hǎo, wǒ shì [nama kamu].)\n\nAtau, kalau kamu butuh bantuan, kamu bisa bilang:\n\n\"Bisakah kamu membantu saya?\"\n(Nǐ néng bāng wǒ ma?)\n\nCoba pilih salah satu kalimat di atas, atau kalimat sapaan lain yang kamu tahu, untuk memulai percakapan. Tidak perlu khawatir salah, kita belajar bersama di sini.",
+        "spokenChinese": [
+          {
+            "text": "你好，我是",
+            "pinyin": "Nǐ hǎo, wǒ shì",
+            "indonesian": "Halo, saya",
+            "purpose": "Model phrase for self-introduction"
+          },
+          {
+            "text": "你能帮我吗？",
+            "pinyin": "Nǐ néng bāng wǒ ma?",
+            "indonesian": "Bisakah kamu membantu saya?",
+            "purpose": "Model phrase for asking for help"
+          }
+        ],
+        "learnerAct": "CONFUSION",
+        "teachingStrategy": "EXPLAIN",
+        "latencyMs": 5075,
+        "usage": {
+          "token_input": 1805,
+          "token_output": 748,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0024115,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4792
+        }
+      }
+    },
+    {
+      "id": "S5-ask-boss-leave",
+      "note": "跟中国老板请假",
+      "input": "saya mau belajar cara minta izin ke bos China, gimana bilangnya",
+      "B": {
+        "status": 200,
+        "answer": "Oke, ini pertanyaan yang sangat penting dan praktis di lingkungan kerja! Bagus sekali kamu memikirkan ini.\n\nUntuk meminta izin atau cuti ke bos orang Tiongkok, kalimat yang paling umum dan sopan adalah:\n\n**老板，我明天想请假。**\n(Lǎobǎn, wǒ míngtiān xiǎng qǐngjià.)\nBos, saya mau minta izin besok.\n\nMari kita bedah sedikit kalimat ini:\n*   **老板 (Lǎobǎn)**: Artinya \"Bos\" atau \"Pemilik\". Ini panggilan standar untuk atasan di sana.\n*   **我 (wǒ)**: Artinya \"saya\".\n*   **明天 (míngtiān)**: Artinya \"besok\". Kamu bisa ganti dengan waktu lain, misalnya `今天 (jīntiān)` untuk \"hari ini\" atau tanggal spesifik.\n*   **想 (xiǎng)**: Artinya \"ingin\" atau \"mau\". Menunjukkan keinginan dengan sopan.\n*   **请假 (qǐngjià)**: Ini adalah kata kunci untuk \"minta izin\" atau \"minta cuti\".\n\nJadi, kalau kamu mau bilang \"Bos, saya mau minta izin besok\", kamu bisa pakai kalimat di atas.\n\nApakah kamu mau coba berlatih mengucapkan kalimat ini, atau ada jenis izin lain yang ingin kamu tanyakan?",
+        "spokenChinese": [
+          {
+            "text": "老板，我明天想请假。",
+            "pinyin": "Lǎobǎn wǒ míngtiān xiǎng qǐngjià",
+            "indonesian": "Bos, saya mau minta izin besok."
+          }
+        ],
+        "latencyMs": 5715,
+        "usage": {
+          "token_input": 1262,
+          "token_output": 651,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0020061,
+          "model_used": "google/gemini-2.5-flash",
+          "response_latency_ms": 5111
+        },
+        "tts": {
+          "policy": "EXTRACTED_CHINESE_ONLY",
+          "eligibleRequestCount": 1,
+          "billableCharacters": 10,
+          "chineseRequestCount": 1,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0,
+          "audioListFound": true
+        }
+      },
+      "A": {
+        "status": 200,
+        "answer": "Tentu, ini topik yang sangat penting di lingkungan kerja! Meminta izin ke atasan dalam bahasa Mandarin ada beberapa cara, tergantung seberapa formal situasinya dan apa yang ingin kamu minta izinnya. Kita akan mulai dengan cara yang paling umum dan sopan ya.",
+        "spokenChinese": [
+          {
+            "text": "我可以…吗？",
+            "pinyin": "wǒ kěyǐ… ma?",
+            "indonesian": "Bolehkah saya…?",
+            "purpose": "Frasa umum untuk meminta izin"
+          },
+          {
+            "text": "请问，我可以…吗？",
+            "pinyin": "qǐngwèn, wǒ kěyǐ… ma?",
+            "indonesian": "Permisi, bolehkah saya…?",
+            "purpose": "Frasa yang lebih sopan untuk meminta izin"
+          }
+        ],
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "EXPLAIN",
+        "latencyMs": 5425,
+        "usage": {
+          "token_input": 2388,
+          "token_output": 819,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0027639,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5144
+        }
+      }
+    },
+    {
+      "id": "S6-no-lesson-chat",
+      "note": "不想上课，随便聊",
+      "input": "saya tidak mau les, ngobrol santai saja ya",
+      "B": {
+        "status": 200,
+        "answer": "Oke, siap! Santai saja ya. Saya juga lebih suka kalau kita bisa ngobrol seperti teman, jadi kamu nyaman bertanya apa pun.\n\nTadi kita sudah bahas cara bilang \"minta izin besok\" ke bos.\n\nNah, biasanya setelah bilang mau minta izin, bos mungkin akan bertanya, \"Kenapa?\" atau \"Ada apa?\".\n\nKalau kamu ingin menjelaskan alasannya, misalnya kamu sakit, kamu bisa bilang:\n\n**我生病了。**\n(Wǒ shēngbìng le.)\nSaya sakit.\n\nAtau, kalau kamu mau minta izin tapi belum tahu kapan, hanya ingin menanyakan prosedur izin, kamu bisa bilang:\n\n**老板，请问怎么请假？**\n(Lǎobǎn, qǐngwèn zěnme qǐngjià?)\nBos, permisi, bagaimana cara minta izin?\n\nBagaimana menurutmu? Apakah ada situasi lain terkait izin yang ingin kamu tanyakan? Atau mungkin ada kalimat lain yang terlintas di pikiranmu?",
+        "spokenChinese": [
+          {
+            "text": "我生病了。",
+            "pinyin": "Wǒ shēngbìng le",
+            "indonesian": "Saya sakit."
+          },
+          {
+            "text": "老板，请问怎么请假？",
+            "pinyin": "Lǎobǎn qǐngwèn zěnme qǐngjià",
+            "indonesian": "Bos, permisi, bagaimana cara minta izin?"
+          }
+        ],
+        "latencyMs": 5250,
+        "usage": {
+          "token_input": 1411,
+          "token_output": 386,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0013883,
+          "model_used": "google/gemini-2.5-flash",
+          "response_latency_ms": 4607
+        },
+        "tts": {
+          "policy": "EXTRACTED_CHINESE_ONLY",
+          "eligibleRequestCount": 2,
+          "billableCharacters": 15,
+          "chineseRequestCount": 2,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0,
+          "audioListFound": true
+        }
+      },
+      "A": {
+        "status": 200,
+        "answer": "Baik, tentu saja! Kita bisa ngobrol santai saja. Saya akan menyesuaikan diri dengan gayamu belajar. Tidak perlu merasa seperti les formal, anggap saja kita sedang ngobrol biasa sambil belajar Mandarin ya.",
+        "spokenChinese": [],
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "latencyMs": 4700,
+        "usage": {
+          "token_input": 2498,
+          "token_output": 454,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0018844,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 4175
+        }
+      }
+    },
+    {
+      "id": "S7-followup-chain",
+      "note": "连续追问（承接上轮）",
+      "input": "kalau bos bilang \"minggu depan kita lembur\", saya harus jawab apa?",
+      "B": {
+        "status": 200,
+        "answer": "Wah, ini situasi yang sering terjadi di pabrik! Bagus sekali kamu memikirkan respons untuk ini.\n\nBiasanya, kalau bos bilang \"minggu depan kita lembur\", dalam bahasa Mandarin mungkin dia akan bilang:\n\n**下个星期我们加班。**\n(Xià ge xīngqī wǒmen jiābān.)\nMinggu depan kita lembur.\n\nNah, untuk jawabannya, ada beberapa pilihan, tergantung niatmu:\n\n1.  **Kalau kamu setuju atau mengerti:**\n    Ini jawaban paling aman dan umum. Kamu bisa bilang:\n    **好的，老板。**\n    (Hǎo de, lǎobǎn.)\n    Baik, Bos.\n\n    Atau:\n    **知道了，老板。**\n    (Zhīdào le, lǎobǎn.)\n    Mengerti, Bos.\n\n2.  **Kalau kamu ingin bertanya detail lebih lanjut:**\n    Mungkin kamu ingin tahu sampai jam berapa atau hari apa saja lembur. Ini juga respons yang umum dan wajar.\n    **老板，加班到几点？**\n    (Lǎobǎn, jiābān dào jǐ diǎn?)\n    Bos, lembur sampai jam berapa?\n\n    Atau:\n    **老板，加班哪几天？**\n    (Lǎobǎn, jiābān nǎ jǐ tiān?)\n    Bos, lembur hari apa saja?\n\nKamu bisa pilih salah satu yang paling sesuai dengan situasimu. Kalau mau yang paling simpel, cukup bilang \"好的，老板。\"\n\nBagaimana? Ada lagi situasi lain yang ingin kamu tanyakan?",
+        "spokenChinese": [
+          {
+            "text": "下个星期我们加班。",
+            "pinyin": "Xià ge xīngqī wǒmen jiābān",
+            "indonesian": "Minggu depan kita lembur."
+          },
+          {
+            "text": "好的，老板。",
+            "pinyin": "Hǎo de lǎobǎn",
+            "indonesian": "Baik, Bos."
+          },
+          {
+            "text": "老板，加班到几点？",
+            "pinyin": "Lǎobǎn jiābān dào jǐ diǎn",
+            "indonesian": "Bos, lembur sampai jam berapa?"
+          }
+        ],
+        "latencyMs": 8378,
+        "usage": {
+          "token_input": 1423,
+          "token_output": 1315,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0037144,
+          "model_used": "google/gemini-2.5-flash",
+          "response_latency_ms": 7985
+        },
+        "tts": {
+          "policy": "EXTRACTED_CHINESE_ONLY",
+          "eligibleRequestCount": 3,
+          "billableCharacters": 24,
+          "chineseRequestCount": 3,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0,
+          "audioListFound": true
+        }
+      },
+      "A": {
+        "status": 200,
+        "answer": "Oke, ini pertanyaan yang bagus! Kalau bos bilang \"minggu depan kita lembur\", kamu bisa merespons dengan sederhana dan sopan seperti ini:",
+        "spokenChinese": [
+          {
+            "text": "好的，老板。",
+            "pinyin": "Hǎo de, lǎobǎn.",
+            "indonesian": "Baik, Bos.",
+            "purpose": "Contoh respons sederhana dan sopan"
+          },
+          {
+            "text": "下周我们加班。",
+            "pinyin": "Xià zhōu wǒmen jiābān.",
+            "indonesian": "Minggu depan kita lembur.",
+            "purpose": "Kalimat bos yang dikutip"
+          }
+        ],
+        "learnerAct": "QUESTION",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "latencyMs": 5836,
+        "usage": {
+          "token_input": 2542,
+          "token_output": 698,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0025076,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5538
+        }
+      }
+    },
+    {
+      "id": "S8-sudden-switch",
+      "note": "突然换话题",
+      "input": "oh iya, ganti topik ya — saya mau beli SIM card di China, bilangnya gimana",
+      "B": {
+        "status": 200,
+        "answer": "Oke, ganti topik ya! Siap. Ini juga pertanyaan yang sangat berguna kalau kamu di Tiongkok.\n\nUntuk bilang \"Saya mau beli SIM card\" di Tiongkok, kamu bisa pakai kalimat ini:\n\n**你好，我想买一张电话卡。**\n(Nǐ hǎo, wǒ xiǎng mǎi yī zhāng diànhuàkǎ.)\nHalo, saya mau beli satu kartu telepon (SIM card).\n\nMari kita bedah kalimatnya:\n*   **你好 (Nǐ hǎo)**: Ini sapaan umum \"Halo\" atau \"Hai\", sopan untuk memulai percakapan dengan petugas toko.\n*   **我 (wǒ)**: Artinya \"saya\".\n*   **想 (xiǎng)**: Artinya \"ingin\" atau \"mau\".\n*   **买 (mǎi)**: Artinya \"membeli\".\n*   **一张 (yī zhāng)**: Ini adalah \"satu\" dengan kata penggolong (`zhāng`) yang dipakai untuk benda pipih seperti kartu, kertas, meja. Jadi artinya \"satu lembar\" atau \"satu buah\".\n*   **电话卡 (diànhuàkǎ)**: Ini artinya \"kartu telepon\" atau \"SIM card\".\n\nJadi, kalau kamu masuk ke toko operator seluler (seperti China Mobile, China Unicom, atau China Telecom) dan bilang kalimat itu, mereka akan langsung mengerti.\n\nApakah kamu juga ingin tahu cara menanyakan paket data atau pulsa? Atau ada hal lain terkait SIM card yang ingin kamu tanyakan?",
+        "spokenChinese": [
+          {
+            "text": "老板，我明天想请假。",
+            "pinyin": "Lǎobǎn wǒ míngtiān xiǎng qǐngjià",
+            "indonesian": "Bos, saya mau minta izin besok."
+          },
+          {
+            "text": "我生病了。",
+            "pinyin": "Wǒ shēngbìng le",
+            "indonesian": "Saya sakit."
+          },
+          {
+            "text": "老板，请问怎么请假？",
+            "pinyin": "Lǎobǎn qǐngwèn zěnme qǐngjià",
+            "indonesian": "Bos, permisi, bagaimana cara minta izin?"
+          },
+          {
+            "text": "下个星期我们加班。",
+            "pinyin": "Xià ge xīngqī wǒmen jiābān",
+            "indonesian": "Minggu depan kita lembur."
+          },
+          {
+            "text": "好的，老板。",
+            "pinyin": "Hǎo de lǎobǎn",
+            "indonesian": "Baik, Bos."
+          },
+          {
+            "text": "知道了，老板。",
+            "pinyin": "Zhīdào le lǎobǎn",
+            "indonesian": "Mengerti, Bos."
+          },
+          {
+            "text": "老板，加班到几点？",
+            "pinyin": "Lǎobǎn jiābān dào jǐ diǎn",
+            "indonesian": "Bos, lembur sampai jam berapa?"
+          },
+          {
+            "text": "老板，加班哪几天？",
+            "pinyin": "Lǎobǎn jiābān nǎ jǐ tiān",
+            "indonesian": "Bos, lembur hari apa saja?"
+          }
+        ],
+        "latencyMs": 5034,
+        "usage": {
+          "token_input": 1651,
+          "token_output": 976,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0029353,
+          "model_used": "google/gemini-2.5-flash",
+          "response_latency_ms": 4516
+        },
+        "tts": {
+          "policy": "EXTRACTED_CHINESE_ONLY",
+          "eligibleRequestCount": 8,
+          "billableCharacters": 65,
+          "chineseRequestCount": 8,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0,
+          "audioListFound": true
+        }
+      },
+      "A": {
+        "status": 200,
+        "answer": "Oke, topik baru! Ini juga sangat berguna kalau kamu baru sampai di Tiongkok. Untuk bilang \"Saya mau beli SIM card di China\", kamu bisa pakai kalimat ini:",
+        "spokenChinese": [
+          {
+            "text": "我想在中国买一张电话卡。",
+            "pinyin": "Wǒ xiǎng zài Zhōngguó mǎi yī zhāng diànhuǎkǎ.",
+            "indonesian": "Saya ingin di Tiongkok membeli satu kartu telepon (SIM card).",
+            "purpose": "Contoh kalimat untuk membeli SIM card"
+          }
+        ],
+        "learnerAct": "REQUEST",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "latencyMs": 5941,
+        "usage": {
+          "token_input": 2647,
+          "token_output": 505,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0020566,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 5663
+        }
+      }
+    },
+    {
+      "id": "S9-messy-input",
+      "note": "拼写错误/俚语/中印混合",
+      "input": "bang gue mau tanya dong, 老板 bilang apa klo mau pulang cepet? makasih ya",
+      "B": {
+        "status": 200,
+        "answer": "Siap, bang! Pertanyaan bagus lagi nih. Ini juga sering banget kepakai di tempat kerja.\n\nKalau kamu mau bilang ke bos \"mau pulang cepet\", kalimat yang paling sopan dan umum adalah:\n\n**老板，我能早点回家吗？**\n(Lǎobǎn, wǒ néng zǎodiǎn huíjiā ma?)\nBos, apakah saya bisa pulang lebih awal?\n\nMari kita bedah sedikit:\n*   **老板 (Lǎobǎn)**: Seperti yang sudah kita bahas, ini panggilan \"Bos\".\n*   **我 (wǒ)**: \"Saya\".\n*   **能 (néng)**: Artinya \"bisa\" atau \"dapat\". Ini membuat permintaanmu terdengar lebih sopan, seperti \"Bisakah saya...?\"\n*   **早点 (zǎodiǎn)**: Artinya \"lebih awal\" atau \"lebih cepat\".\n*   **回家 (huíjiā)**: Artinya \"pulang ke rumah\".\n*   **吗 (ma)**: Partikel pertanyaan, mengubah kalimat menjadi pertanyaan.\n\nJadi, secara harfiah, kalimat itu berarti \"Bos, saya bisa pulang ke rumah lebih awal?\" yang dalam konteks Indonesia sama dengan \"Bos, apakah saya bisa pulang lebih cepat?\".\n\nAda juga istilah **早退 (zǎotuì)** yang artinya \"pulang lebih awal\" atau \"meninggalkan pekerjaan lebih awal\", tapi kadang ini bisa punya konotasi \"pulang tanpa izin\" atau \"bolos\". Jadi, lebih aman pakai **早点回家 (zǎodiǎn huíjiā)** atau **提前走 (tíqián zǒu)** yang berarti \"pergi lebih awal\".\n\nMisalnya, kalau kamu mau bilang \"Bos, saya mau pulang lebih awal hari ini\", kamu bisa bilang:\n**老板，我今天想早点回家。**\n(Lǎobǎn, wǒ jīntiān xiǎng zǎodiǎn huíjiā.)\n\nGimana? Semoga membantu ya!",
+        "spokenChinese": [
+          {
+            "text": "老板，我能早点回家吗？",
+            "pinyin": "Lǎobǎn wǒ néng zǎodiǎn huíjiā ma",
+            "indonesian": "Bos, apakah saya bisa pulang lebih awal?"
+          },
+          {
+            "text": "早点回家",
+            "pinyin": "zǎodiǎn huíjiā",
+            "indonesian": "pulang lebih awal"
+          },
+          {
+            "text": "早退",
+            "pinyin": "zǎotuì",
+            "indonesian": "pulang lebih awal (seringkali tanpa izin)"
+          },
+          {
+            "text": "老板，我今天想早点回家。",
+            "pinyin": "Lǎobǎn wǒ jīntiān xiǎng zǎodiǎn huíjiā",
+            "indonesian": "Bos, saya mau pulang lebih awal hari ini."
+          }
+        ],
+        "latencyMs": 11750,
+        "usage": {
+          "token_input": 1707,
+          "token_output": 1837,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0051046,
+          "model_used": "google/gemini-2.5-flash",
+          "response_latency_ms": 11188
+        },
+        "tts": {
+          "policy": "EXTRACTED_CHINESE_ONLY",
+          "eligibleRequestCount": 4,
+          "billableCharacters": 29,
+          "chineseRequestCount": 4,
+          "nonChineseRequestCount": 0,
+          "rejectedItems": 0,
+          "audioListFound": true
+        }
+      },
+      "A": {
+        "status": 200,
+        "answer": "Ini masih latihan mengikuti contoh, jadi saya belum menilai penguasaan atau pengucapanmu dari teks ini.",
+        "spokenChinese": [
+          {
+            "text": "老板，我今天想早点儿下班。",
+            "pinyin": "Lǎobǎn, wǒ jīntiān xiǎng zǎodiǎnr xiàbān.",
+            "indonesian": "Bos, saya hari ini ingin pulang kerja lebih awal.",
+            "purpose": "Model sentence for asking to leave early"
+          }
+        ],
+        "learnerAct": "PRACTICE",
+        "teachingStrategy": "DIRECT_ANSWER",
+        "latencyMs": 4334,
+        "usage": {
+          "token_input": 2726,
+          "token_output": 508,
+          "model_calls": 1,
+          "estimated_ai_cost": 0.0020878,
+          "model_used": "google/gemini-2.5-flash",
+          "structured_retries": 0,
+          "response_latency_ms": 3810
+        }
+      }
+    }
+  ],
+  "ttsCases": [
+    {
+      "kind": "success",
+      "text": "请问您想点什么？",
+      "status": 200,
+      "contentType": "audio/mpeg",
+      "bytes": 9360,
+      "cache": "MISS",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "billableCharacters": "8",
+      "expected": "200 audio"
+    },
+    {
+      "kind": "success-mixed-context",
+      "text": "请问您想点什么？",
+      "status": 200,
+      "contentType": "audio/mpeg",
+      "bytes": 9360,
+      "cache": "HIT",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "billableCharacters": "8",
+      "expected": "200 audio",
+      "sourceScenario": "S1-real-user-sentence"
+    },
+    {
+      "kind": "failure",
+      "text": "lǎo bǎn, wǒ míngtiān xiǎng qǐngjià",
+      "status": 400,
+      "contentType": "application/json",
+      "bytes": 61,
+      "cache": null,
+      "voice": null,
+      "billableCharacters": null,
+      "expected": "400"
+    },
+    {
+      "kind": "failure",
+      "text": "Bos, saya mau minta izin besok.",
+      "status": 400,
+      "contentType": "application/json",
+      "bytes": 61,
+      "cache": null,
+      "voice": null,
+      "billableCharacters": null,
+      "expected": "400"
+    },
+    {
+      "kind": "failure",
+      "text": "老板 hello",
+      "status": 400,
+      "contentType": "application/json",
+      "bytes": 61,
+      "cache": null,
+      "voice": null,
+      "billableCharacters": null,
+      "expected": "400"
+    },
+    {
+      "kind": "failure",
+      "text": "你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好",
+      "status": 400,
+      "contentType": "application/json",
+      "bytes": 61,
+      "cache": null,
+      "voice": null,
+      "billableCharacters": null,
+      "expected": "400"
+    }
+  ],
+  "details": [
+    {
+      "id": "S1-real-user-sentence",
+      "name": "B answered (HTTP 200, non-empty)",
+      "passed": true,
+      "detail": "status=200 chars=579 latency=5044ms"
+    },
+    {
+      "id": "S1-real-user-sentence",
+      "name": "B answer not truncated",
+      "passed": true,
+      "detail": "truncated=false outTokens=390"
+    },
+    {
+      "id": "S1-real-user-sentence",
+      "name": "B four layers complete (zh+pinyin+tone+arti)",
+      "passed": true,
+      "detail": "1/1 :: 请问您想点什么？|Qǐngwèn nín xiǎng diǎn shénme|Permisi, Anda mau pesan "
+    },
+    {
+      "id": "S1-real-user-sentence",
+      "name": "B audio list detected",
+      "passed": true,
+      "detail": "found=true"
+    },
+    {
+      "id": "S2-factory-work",
+      "name": "B answered (HTTP 200, non-empty)",
+      "passed": true,
+      "detail": "status=200 chars=873 latency=3987ms"
+    },
+    {
+      "id": "S2-factory-work",
+      "name": "B answer not truncated",
+      "passed": true,
+      "detail": "truncated=false outTokens=355"
+    },
+    {
+      "id": "S2-factory-work",
+      "name": "B produced playable Chinese",
+      "passed": true,
+      "detail": "count=1"
+    },
+    {
+      "id": "S2-factory-work",
+      "name": "B four layers complete (zh+pinyin+tone+arti)",
+      "passed": true,
+      "detail": "1/1 :: 老板，我明天想请假。|Lǎobǎn wǒ míngtiān xiǎng qǐngjià|Bos, saya mau minta izin"
+    },
+    {
+      "id": "S2-factory-work",
+      "name": "B audio list detected",
+      "passed": true,
+      "detail": "found=true"
+    },
+    {
+      "id": "S3-practice-now",
+      "name": "B answered (HTTP 200, non-empty)",
+      "passed": true,
+      "detail": "status=200 chars=540 latency=4689ms"
+    },
+    {
+      "id": "S3-practice-now",
+      "name": "B answer not truncated",
+      "passed": true,
+      "detail": "truncated=false outTokens=299"
+    },
+    {
+      "id": "S3-practice-now",
+      "name": "B produced playable Chinese",
+      "passed": true,
+      "detail": "count=1"
+    },
+    {
+      "id": "S3-practice-now",
+      "name": "B four layers complete (zh+pinyin+tone+arti)",
+      "passed": true,
+      "detail": "1/1 :: 请问，我需要帮忙。|Qǐngwèn wǒ xūyào bāngmáng|Permisi, saya butuh bant"
+    },
+    {
+      "id": "S3-practice-now",
+      "name": "B audio list detected",
+      "passed": true,
+      "detail": "found=true"
+    },
+    {
+      "id": "S4-reexplain",
+      "name": "B answered (HTTP 200, non-empty)",
+      "passed": true,
+      "detail": "status=200 chars=1411 latency=4749ms"
+    },
+    {
+      "id": "S4-reexplain",
+      "name": "B answer not truncated",
+      "passed": true,
+      "detail": "truncated=false outTokens=606"
+    },
+    {
+      "id": "S4-reexplain",
+      "name": "B produced playable Chinese",
+      "passed": true,
+      "detail": "count=1"
+    },
+    {
+      "id": "S4-reexplain",
+      "name": "B four layers complete (zh+pinyin+tone+arti)",
+      "passed": true,
+      "detail": "1/1 :: 请问，您可以帮我一下吗？|Qǐngwèn nín kěyǐ bāng wǒ yīxià ma|Permisi, bisakah Anda me"
+    },
+    {
+      "id": "S4-reexplain",
+      "name": "B audio list detected",
+      "passed": true,
+      "detail": "found=true"
+    },
+    {
+      "id": "S5-ask-boss-leave",
+      "name": "B answered (HTTP 200, non-empty)",
+      "passed": true,
+      "detail": "status=200 chars=959 latency=5715ms"
+    },
+    {
+      "id": "S5-ask-boss-leave",
+      "name": "B answer not truncated",
+      "passed": true,
+      "detail": "truncated=false outTokens=651"
+    },
+    {
+      "id": "S5-ask-boss-leave",
+      "name": "B produced playable Chinese",
+      "passed": true,
+      "detail": "count=1"
+    },
+    {
+      "id": "S5-ask-boss-leave",
+      "name": "B four layers complete (zh+pinyin+tone+arti)",
+      "passed": true,
+      "detail": "1/1 :: 老板，我明天想请假。|Lǎobǎn wǒ míngtiān xiǎng qǐngjià|Bos, saya mau minta izin"
+    },
+    {
+      "id": "S5-ask-boss-leave",
+      "name": "B audio list detected",
+      "passed": true,
+      "detail": "found=true"
+    },
+    {
+      "id": "S6-no-lesson-chat",
+      "name": "B answered (HTTP 200, non-empty)",
+      "passed": true,
+      "detail": "status=200 chars=751 latency=5250ms"
+    },
+    {
+      "id": "S6-no-lesson-chat",
+      "name": "B answer not truncated",
+      "passed": true,
+      "detail": "truncated=false outTokens=386"
+    },
+    {
+      "id": "S6-no-lesson-chat",
+      "name": "B four layers complete (zh+pinyin+tone+arti)",
+      "passed": true,
+      "detail": "2/2 :: 我生病了。|Wǒ shēngbìng le|Saya sakit. ; 老板，请问怎么请假？|Lǎobǎn qǐngwèn zěnme qǐngjià|Bos, permisi, bagaimana "
+    },
+    {
+      "id": "S6-no-lesson-chat",
+      "name": "B audio list detected",
+      "passed": true,
+      "detail": "found=true"
+    },
+    {
+      "id": "S7-followup-chain",
+      "name": "B answered (HTTP 200, non-empty)",
+      "passed": true,
+      "detail": "status=200 chars=1079 latency=8378ms"
+    },
+    {
+      "id": "S7-followup-chain",
+      "name": "B answer not truncated",
+      "passed": true,
+      "detail": "truncated=false outTokens=1315"
+    },
+    {
+      "id": "S7-followup-chain",
+      "name": "B produced playable Chinese",
+      "passed": true,
+      "detail": "count=3"
+    },
+    {
+      "id": "S7-followup-chain",
+      "name": "B four layers complete (zh+pinyin+tone+arti)",
+      "passed": true,
+      "detail": "3/3 :: 下个星期我们加班。|Xià ge xīngqī wǒmen jiābān|Minggu depan kita lembur ; 好的，老板。|Hǎo de lǎobǎn|Baik, Bos. ; 老板，加班到几点？|Lǎobǎn jiābān dào jǐ diǎn|Bos, lembur sampai jam b"
+    },
+    {
+      "id": "S7-followup-chain",
+      "name": "B audio list detected",
+      "passed": true,
+      "detail": "found=true"
+    },
+    {
+      "id": "S8-sudden-switch",
+      "name": "B answered (HTTP 200, non-empty)",
+      "passed": true,
+      "detail": "status=200 chars=1074 latency=5034ms"
+    },
+    {
+      "id": "S8-sudden-switch",
+      "name": "B answer not truncated",
+      "passed": true,
+      "detail": "truncated=false outTokens=976"
+    },
+    {
+      "id": "S8-sudden-switch",
+      "name": "B produced playable Chinese",
+      "passed": true,
+      "detail": "count=8"
+    },
+    {
+      "id": "S8-sudden-switch",
+      "name": "B four layers complete (zh+pinyin+tone+arti)",
+      "passed": true,
+      "detail": "8/8 :: 老板，我明天想请假。|Lǎobǎn wǒ míngtiān xiǎng qǐngjià|Bos, saya mau minta izin ; 我生病了。|Wǒ shēngbìng le|Saya sakit. ; 老板，请问怎么请假？|Lǎobǎn qǐngwèn zěnme qǐngjià|Bos, permisi, bagaimana  ; 下个星期我们加班。|Xià ge xīngqī wǒmen jiābān|Minggu depan kita lembur ; 好的，老板。|Hǎo de lǎobǎn|B"
+    },
+    {
+      "id": "S8-sudden-switch",
+      "name": "B audio list detected",
+      "passed": true,
+      "detail": "found=true"
+    },
+    {
+      "id": "S9-messy-input",
+      "name": "B answered (HTTP 200, non-empty)",
+      "passed": true,
+      "detail": "status=200 chars=1349 latency=11750ms"
+    },
+    {
+      "id": "S9-messy-input",
+      "name": "B answer not truncated",
+      "passed": true,
+      "detail": "truncated=false outTokens=1837"
+    },
+    {
+      "id": "S9-messy-input",
+      "name": "B produced playable Chinese",
+      "passed": true,
+      "detail": "count=4"
+    },
+    {
+      "id": "S9-messy-input",
+      "name": "B four layers complete (zh+pinyin+tone+arti)",
+      "passed": true,
+      "detail": "4/4 :: 老板，我能早点回家吗？|Lǎobǎn wǒ néng zǎodiǎn huíjiā ma|Bos, apakah saya bisa pu ; 早点回家|zǎodiǎn huíjiā|pulang lebih awal ; 早退|zǎotuì|pulang lebih awal (serin ; 老板，我今天想早点回家。|Lǎobǎn wǒ jīntiān xiǎng zǎodiǎn huíjiā|Bos, saya mau pulang leb"
+    },
+    {
+      "id": "S9-messy-input",
+      "name": "B audio list detected",
+      "passed": true,
+      "detail": "found=true"
+    },
+    {
+      "id": "S1-intent",
+      "name": "understands work-in-Chinese-restaurant + lesson request",
+      "passed": true,
+      "detail": "Wah, seru sekali! Mau bekerja di restoran China itu kesempatan yang bagus untuk belajar bahasa dan budayanya. Tentu saja saya bisa bantu!  Untuk permulaan, kita bisa fokus pada frasa-frasa yang paling"
+    },
+    {
+      "id": "S1-no-generic-greeting",
+      "name": "does not open with 你好/欢迎光临 drill",
+      "passed": true,
+      "detail": "firstChinese=\"请问您想点什么？\" head=\"Wah, seru sekali! Mau bekerja di restoran China itu kesempat\""
+    },
+    {
+      "id": "AB-both-answered",
+      "name": "A and B both answered all 9 scenarios",
+      "passed": true,
+      "detail": "S1-real-user-sentence:A200/B200 S2-factory-work:A200/B200 S3-practice-now:A200/B200 S4-reexplain:A200/B200 S5-ask-boss-leave:A200/B200 S6-no-lesson-chat:A200/B200 S7-followup-chain:A200/B200 S8-sudden-switch:A200/B200 S9-messy-input:A200/B200"
+    },
+    {
+      "id": "AGG-chinese-coverage",
+      "name": "most turns produced playable Chinese",
+      "passed": true,
+      "detail": "9/9 turns"
+    },
+    {
+      "id": "AGG-pinyin",
+      "name": "every sentence has tone-marked pinyin",
+      "passed": true,
+      "detail": "22/22"
+    },
+    {
+      "id": "AGG-meaning",
+      "name": "every sentence has Indonesian meaning",
+      "passed": true,
+      "detail": "22/22"
+    },
+    {
+      "id": "AGG-zh-only",
+      "name": "every sentence is Simplified Chinese only",
+      "passed": true,
+      "detail": "22/22"
+    },
+    {
+      "id": "TTS-1",
+      "name": "pure Chinese sentence plays",
+      "passed": true,
+      "detail": "status=200 bytes=9360 cache=MISS"
+    },
+    {
+      "id": "TTS-2",
+      "name": "Chinese extracted from mixed id/zh answer plays",
+      "passed": true,
+      "detail": "status=200 text=\"请问您想点什么？\""
+    },
+    {
+      "id": "TTS-3",
+      "name": "pinyin only rejected",
+      "passed": true,
+      "detail": "status=400 bytes=61"
+    },
+    {
+      "id": "TTS-4",
+      "name": "Indonesian only rejected",
+      "passed": true,
+      "detail": "status=400 bytes=61"
+    },
+    {
+      "id": "TTS-5",
+      "name": "mixed latin+han rejected",
+      "passed": true,
+      "detail": "status=400 bytes=61"
+    },
+    {
+      "id": "TTS-6",
+      "name": "over-120-chars rejected",
+      "passed": true,
+      "detail": "status=400 bytes=61"
+    }
+  ]
+}

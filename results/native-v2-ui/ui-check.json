@@ -1,0 +1,55 @@
+{
+  "url": "https://indobrain-01-prd-prd-v0-1-8nr8i16w9-lijian1.vercel.app/coba-gratis/native-chat?x-vercel-protection-bypass=tjsf5ySGeoMx5sKLkRPeatqEmXsEtZWl&x-vercel-set-bypass-cookie=true",
+  "executedAt": "2026-10-26T15:42:55.526Z",
+  "checks": [
+    {
+      "name": "page loads (no Vercel SSO)",
+      "passed": true,
+      "detail": "PREVIEW · MODE TAMU  Ngobrol bebas dengan guru Mandarin AI  "
+    },
+    {
+      "name": "guest session starts, composer visible",
+      "passed": true,
+      "detail": "composer=true"
+    },
+    {
+      "name": "suggestion bar no horizontal scroll",
+      "passed": true,
+      "detail": "rowScroll=0 pageOverflow=0 wrap=wrap items=3"
+    },
+    {
+      "name": "composer not covered by bottom nav",
+      "passed": true,
+      "detail": "{\"inputBottom\":619,\"navTop\":771,\"overlap\":0}"
+    },
+    {
+      "name": "four-layer cards rendered",
+      "passed": true,
+      "detail": "[{\"label\":\"Putar 请问您想点什么？\",\"chinese\":\"请问您想点什么？\",\"pinyin\":\"Qǐngwèn nín xiǎng diǎn shénme\",\"meaning\":\"Permisi, Anda mau pesan apa?\"}]"
+    },
+    {
+      "name": "no technical debug footer (token/model/cost)",
+      "passed": true,
+      "detail": "checked page text"
+    },
+    {
+      "name": "play button triggers zh-CN audio (no error surfaced)",
+      "passed": true,
+      "detail": "{\"clicked\":true,\"alert\":\"\"}"
+    }
+  ],
+  "cards": [
+    {
+      "label": "Putar 请问您想点什么？",
+      "chinese": "请问您想点什么？",
+      "pinyin": "Qǐngwèn nín xiǎng diǎn shénme",
+      "meaning": "Permisi, Anda mau pesan apa?"
+    }
+  ],
+  "layout": {
+    "pageOverflow": 0,
+    "rowScroll": 0,
+    "rowWrap": "wrap",
+    "suggestionCount": 3
+  }
+}
