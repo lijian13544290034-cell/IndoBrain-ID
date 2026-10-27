@@ -27,6 +27,7 @@ assert.match(teacher, /learner-visible result MUST contain the requested Mandari
 assert.match(teacher, /learning plan or cara belajar/i, 'plan-first intent boundary missing');
 assert.match(teacher, /spokenChinese text must contain zero Latin letters/i, 'mixed-language audio boundary missing');
 assert.match(teacher, /reasoning: 'none'/, 'short-turn reasoning budget control missing');
+assert.match(teacher, /streamRetries: 1/, 'single recoverable stream retry missing');
 assert.match(teacher, /Do not force a curriculum, repetition, translation drill, quiz, test, or roleplay/i, 'native intent boundary missing');
 assert.match(teacher, /Leave spokenChinese empty when no Chinese should be taught/i, 'non-teaching chat must not force Chinese');
 assert.doesNotMatch(teacher, /老板，我明天想请假|请问您想点什么/, 'prompt must not inject example lessons every turn');

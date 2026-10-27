@@ -118,8 +118,8 @@ export function createNativeCoachGeneration(input: {
     maxOutputTokens: NATIVE_COACH_MAX_OUTPUT_TOKENS,
     temperature: 0.45,
     reasoning: 'none',
-    maxRetries: 0,
-    streamRetries: 0,
+    maxRetries: 1,
+    streamRetries: 1,
     providerOptions: {
       gateway: {
         tags: ['indobrain', 'native-coach-v1'],
