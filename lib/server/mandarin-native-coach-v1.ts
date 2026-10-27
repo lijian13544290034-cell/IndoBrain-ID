@@ -34,9 +34,10 @@ export type NativeCoachUsage = {
 };
 
 const PURE_CHINESE = /^[\u3400-\u9FFF\u3000-\u303F，。！？、；：“”‘’（）…·\s—–-]+$/u;
+const HAS_PINYIN_TONE = /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜǹńň]/u;
 const SPOKEN_CHINESE_ITEM = z.object({
   text: z.string().min(1).regex(PURE_CHINESE).describe('Complete Simplified Chinese teaching sentence with no Latin letters.'),
-  pinyin: z.string().min(1).describe('Standard Hanyu Pinyin with tone marks.'),
+  pinyin: z.string().min(1).regex(HAS_PINYIN_TONE).describe('Standard Hanyu Pinyin with tone marks.'),
   indonesian: z.string().min(1).describe('Natural Indonesian meaning of exactly this sentence.'),
 });
 const answerSchema = z.string().min(1).describe('Natural learner-facing reply in concise spoken Indonesian, with useful Chinese and pinyin shown when teaching.');

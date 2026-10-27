@@ -39,6 +39,7 @@ assert.match(teacher, /mandarin\|chinese\|china\|tiongkok/, 'Indonesian China wo
 assert.match(teacher, /output-repair/, 'single recovery call missing');
 assert.match(teacher, /NATIVE_COACH_REPAIR_OUTPUT/, 'required Chinese repair schema missing');
 assert.match(teacher, /\.min\(1\)\.max\(3\)/, 'repair schema must require at least one Chinese item');
+assert.match(teacher, /HAS_PINYIN_TONE/, 'tone-marked pinyin schema boundary missing');
 assert.match(route, /replace-text/, 'repaired stream replacement missing');
 
 assert.match(route, /isNativeCoachV1Enabled/, 'route flag gate missing');
