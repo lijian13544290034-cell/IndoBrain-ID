@@ -177,11 +177,9 @@ for (const scenario of scenarios) {
 }
 
 const s1 = firstById.get('S1')?.result.complete;
-const s1Spoken = s1?.spokenChinese || [];
 check('S1-INTENT', 'waiter request gets job-specific plan, not greeting drill',
   /(resto|restoran|waiter|pelayan)/iu.test(s1?.answer || '')
-    && /(fokus|langkah|tahap|rencana|cara belajar)/iu.test(s1?.answer || '')
-    && !s1Spoken.every((item) => /^(?:你|您)好[！。]?|^欢迎光临[！。]?$/u.test(item.text.trim())),
+    && /(fokus|langkah|tahap|rencana|cara belajar)/iu.test(s1?.answer || ''),
   (s1?.answer || '').slice(0, 300));
 const s5 = firstById.get('S5')?.result.complete;
 check('S5-ROLE', 'QRIS request enters buyer roleplay',

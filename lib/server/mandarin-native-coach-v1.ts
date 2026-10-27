@@ -78,14 +78,6 @@ function expectsChineseTeaching(message: string) {
   return !optedOut && (/(mandarin|chinese|bahasa\s+(?:cina|tiongkok))/iu.test(message) || /[\u3400-\u9FFF]/u.test(message));
 }
 
-function isGenericGreetingOnly(items: NativeChineseSentence[]) {
-  return items.length > 0 && items.every((item) => /^(?:你|您)好[！。]?|^欢迎光临[！。]?$/u.test(item.text.trim()));
-}
-
-function isJobRequest(message: string) {
-  return /(kerja|waiter|operator|pabrik|sopir|driver|kasir|resto|restoran|dapur|chef|\bART\b)/iu.test(message);
-}
-
 export function validateNativeCoachOutput(output: { answer: string; spokenChinese: NativeChineseSentence[] }) {
   // Only explicit structured items become TTS-eligible. Invalid rows fail closed.
   const spokenChinese = parseAudioList(output.spokenChinese.map((item) => `${item.text} ||| ${item.pinyin} ||| ${item.indonesian}`))
@@ -147,43 +139,49 @@ export function createNativeCoachGeneration(input: {
       let modelCalls = 1;
       let repaired = false;
 
-      if (expectsChineseTeaching(input.message)
-        && (parsed.spokenChinese.length === 0 || (isJobRequest(input.message) && isGenericGreetingOnly(parsed.spokenChinese)))) {
+      if (expectsChineseTeaching(input.message) && parsed.spokenChinese.length === 0) {
         const preserveAnswer = /[\u3400-\u9FFF]/u.test(parsed.answer);
         const repairInstruction = preserveAnswer
           ? 'Keep the previous assistant answer and latest roleplay direction exactly; do not revert to an earlier topic. Only populate or correct spokenChinese for the Chinese explicitly taught in that answer. Use pure Chinese text, tone-marked pinyin, and Indonesian meaning.'
           : 'Repair the response once: preserve the learner\'s latest intent and roleplay direction, keep it natural and concise, and satisfy the requested Mandarin need. Include at least one non-generic, immediately useful Chinese expression in both answer and spokenChinese. Do not revert to an earlier topic.';
-        const repair = await generateText({
-          model: gateway(NATIVE_COACH_MODEL),
-          system: NATIVE_COACH_SYSTEM,
-          messages: [
-            ...history.map((turn) => ({ role: turn.role, content: turn.text } as const)),
-            { role: 'user' as const, content: input.message.trim().slice(0, 500) },
-            { role: 'assistant' as const, content: parsed.answer },
-            { role: 'user' as const, content: repairInstruction },
-          ],
-          output: NATIVE_COACH_OUTPUT,
-          maxOutputTokens: NATIVE_COACH_MAX_OUTPUT_TOKENS,
-          temperature: 0.35,
-          reasoning: 'none',
-          maxRetries: 0,
-          providerOptions: {
-            gateway: {
-              tags: ['indobrain', 'native-coach-v1', 'output-repair'],
-              user: input.sessionId.slice(0, 96),
+        try {
+          const repair = await generateText({
+            model: gateway(NATIVE_COACH_MODEL),
+            system: NATIVE_COACH_SYSTEM,
+            messages: [
+              ...history.map((turn) => ({ role: turn.role, content: turn.text } as const)),
+              { role: 'user' as const, content: input.message.trim().slice(0, 500) },
+              { role: 'assistant' as const, content: parsed.answer },
+              { role: 'user' as const, content: repairInstruction },
+            ],
+            output: NATIVE_COACH_OUTPUT,
+            maxOutputTokens: NATIVE_COACH_MAX_OUTPUT_TOKENS,
+            temperature: 0.35,
+            reasoning: 'none',
+            maxRetries: 0,
+            abortSignal: AbortSignal.timeout(6_000),
+            providerOptions: {
+              gateway: {
+                tags: ['indobrain', 'native-coach-v1', 'output-repair'],
+                user: input.sessionId.slice(0, 96),
+              },
             },
-          },
-        });
-        const repairedOutput = validateNativeCoachOutput(repair.output);
-        if (repairedOutput.spokenChinese.length > 0) {
-          parsed = repairedOutput;
-          repaired = true;
+          });
+          const repairedOutput = validateNativeCoachOutput(repair.output);
+          if (repairedOutput.spokenChinese.length > 0) {
+            parsed = repairedOutput;
+            repaired = true;
+          }
+          tokenInput += repair.usage.inputTokens || 0;
+          tokenOutput += repair.usage.outputTokens || 0;
+          totalCost += providerCost(repair.providerMetadata)
+            || fallbackCost(NATIVE_COACH_MODEL, repair.usage.inputTokens || 0, repair.usage.outputTokens || 0);
+          modelCalls = 2;
+        } catch (error) {
+          console.warn('[native-coach-v1-output-repair-failed]', {
+            name: error instanceof Error ? error.name : 'UnknownError',
+          });
         }
-        tokenInput += repair.usage.inputTokens || 0;
-        tokenOutput += repair.usage.outputTokens || 0;
-        totalCost += providerCost(repair.providerMetadata)
-          || fallbackCost(NATIVE_COACH_MODEL, repair.usage.inputTokens || 0, repair.usage.outputTokens || 0);
-        modelCalls = 2;
       }
       const usageSummary: NativeCoachUsage = {
         token_input: tokenInput,
