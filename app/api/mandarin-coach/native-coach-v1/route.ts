@@ -81,6 +81,10 @@ export async function POST(request: Request) {
 
           const finalized = await generation.finalize();
           if (generation.getStreamError() && !finalized.answer) throw generation.getStreamError();
+          if (streamedText.trim() !== finalized.answer.trim()) {
+            controller.enqueue(event('replace-text', { text: finalized.answer }));
+            streamedText = finalized.answer;
+          }
           const spokenChinese = finalized.spokenChinese.filter((item) => isValidatedSpokenChinese(item.text));
           const speechSegments = buildExplicitChineseSpeechSegments(spokenChinese.map((item) => item.text));
           const speechMetrics = coachSpeechMetrics(speechSegments);
@@ -123,6 +127,7 @@ export async function POST(request: Request) {
             performance,
             truncated: finalized.truncated,
             generationId: finalized.generationId,
+            repaired: finalized.repaired,
             skillVersion: 'NATIVE_COACH_V1',
           }));
         } catch (error) {

@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { gateway, Output, streamText } from 'ai';
+import { gateway, generateText, Output, streamText } from 'ai';
 import { z } from 'zod';
 import { parseAudioList, type NativeChineseSentence } from '@/lib/server/mandarin-native-chat';
 
@@ -27,7 +27,7 @@ export type NativeCoachTurn = { role: 'user' | 'assistant'; text: string };
 export type NativeCoachUsage = {
   token_input: number;
   token_output: number;
-  model_calls: 1;
+  model_calls: number;
   estimated_ai_cost: number;
   model_used: string;
 };
@@ -70,6 +70,19 @@ function compactHistory(turns: NativeCoachTurn[]) {
     characters += text.length;
   }
   return selected;
+}
+
+function expectsChineseTeaching(message: string) {
+  const optedOut = /(jangan|tidak|nggak|enggak|gak)\b.{0,40}\b(les|belajar|ngajarin|ajar|latihan|mandarin)/iu.test(message);
+  return !optedOut && (/(mandarin|chinese|bahasa\s+(?:cina|tiongkok))/iu.test(message) || /[\u3400-\u9FFF]/u.test(message));
+}
+
+function isGenericGreetingOnly(items: NativeChineseSentence[]) {
+  return items.length > 0 && items.every((item) => /^(?:你|您)好[！。]?|^欢迎光临[！。]?$/u.test(item.text.trim()));
+}
+
+function isJobRequest(message: string) {
+  return /(kerja|waiter|operator|pabrik|sopir|driver|kasir|resto|restoran|dapur|chef|\bART\b)/iu.test(message);
 }
 
 export function validateNativeCoachOutput(output: { answer: string; spokenChinese: NativeChineseSentence[] }) {
@@ -124,16 +137,54 @@ export function createNativeCoachGeneration(input: {
         result.finishReason,
         result.finalStep,
       ]);
-      const parsed = validateNativeCoachOutput(output);
-      const tokenInput = usage.inputTokens || 0;
-      const tokenOutput = usage.outputTokens || 0;
+      let parsed = validateNativeCoachOutput(output);
+      let tokenInput = usage.inputTokens || 0;
+      let tokenOutput = usage.outputTokens || 0;
       const providerMetadata = finalStep.providerMetadata;
+      let totalCost = providerCost(providerMetadata)
+        || fallbackCost(NATIVE_COACH_MODEL, tokenInput, tokenOutput);
+      let modelCalls = 1;
+      let repaired = false;
+
+      if (expectsChineseTeaching(input.message)
+        && (parsed.spokenChinese.length === 0 || (isJobRequest(input.message) && isGenericGreetingOnly(parsed.spokenChinese)))) {
+        const repair = await generateText({
+          model: gateway(NATIVE_COACH_MODEL),
+          system: NATIVE_COACH_SYSTEM,
+          messages: [
+            ...history.map((turn) => ({ role: turn.role, content: turn.text } as const)),
+            { role: 'user' as const, content: input.message.trim().slice(0, 500) },
+            { role: 'assistant' as const, content: parsed.answer },
+            { role: 'user' as const, content: 'Repair the response once: keep it natural and concise, but satisfy the requested Mandarin teaching need. Include at least one non-generic, immediately useful Chinese expression in both answer and spokenChinese. Keep spokenChinese pure Chinese with tone-marked pinyin and Indonesian meaning.' },
+          ],
+          output: NATIVE_COACH_OUTPUT,
+          maxOutputTokens: NATIVE_COACH_MAX_OUTPUT_TOKENS,
+          temperature: 0.35,
+          reasoning: 'none',
+          maxRetries: 0,
+          providerOptions: {
+            gateway: {
+              tags: ['indobrain', 'native-coach-v1', 'output-repair'],
+              user: input.sessionId.slice(0, 96),
+            },
+          },
+        });
+        const repairedOutput = validateNativeCoachOutput(repair.output);
+        if (repairedOutput.spokenChinese.length > 0) {
+          parsed = repairedOutput;
+          repaired = true;
+        }
+        tokenInput += repair.usage.inputTokens || 0;
+        tokenOutput += repair.usage.outputTokens || 0;
+        totalCost += providerCost(repair.providerMetadata)
+          || fallbackCost(NATIVE_COACH_MODEL, repair.usage.inputTokens || 0, repair.usage.outputTokens || 0);
+        modelCalls = 2;
+      }
       const usageSummary: NativeCoachUsage = {
         token_input: tokenInput,
         token_output: tokenOutput,
-        model_calls: 1,
-        estimated_ai_cost: providerCost(providerMetadata)
-          || fallbackCost(NATIVE_COACH_MODEL, tokenInput, tokenOutput),
+        model_calls: modelCalls,
+        estimated_ai_cost: totalCost,
         model_used: finalStep.response.modelId || NATIVE_COACH_MODEL,
       };
       return {
@@ -145,6 +196,7 @@ export function createNativeCoachGeneration(input: {
         generationId: typeof providerMetadata?.gateway?.generationId === 'string'
           ? providerMetadata.gateway.generationId
           : null,
+        repaired,
       };
     },
   };

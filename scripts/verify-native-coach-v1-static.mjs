@@ -32,6 +32,9 @@ assert.doesNotMatch(teacher, /老板，我明天想请假|请问您想点什么/
 assert.match(teacher, /slice\(-8\)/, 'recent context bound missing');
 assert.match(teacher, /3_600/, 'context character budget missing');
 assert.match(teacher, /Only explicit structured items become TTS-eligible/, 'explicit TTS allowlist missing');
+assert.match(teacher, /expectsChineseTeaching/, 'bounded output-contract validation missing');
+assert.match(teacher, /output-repair/, 'single recovery call missing');
+assert.match(route, /replace-text/, 'repaired stream replacement missing');
 
 assert.match(route, /isNativeCoachV1Enabled/, 'route flag gate missing');
 assert.match(route, /resolveGuestScope/, 'guest auth gate missing');

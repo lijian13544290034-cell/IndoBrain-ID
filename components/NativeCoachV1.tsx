@@ -18,7 +18,7 @@ type Turn = {
   performance?: PerformanceMetrics;
 };
 type StreamEvent = {
-  type: 'accepted' | 'text-delta' | 'complete' | 'error';
+  type: 'accepted' | 'text-delta' | 'replace-text' | 'complete' | 'error';
   text?: string;
   answer?: string;
   spokenChinese?: ChineseItem[];
@@ -125,6 +125,11 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
         if (item.type === 'text-delta' && item.text) {
           setTurns((current) => current.map((turn) => turn.id === assistantId
             ? { ...turn, text: `${turn.text}${item.text}` }
+            : turn));
+        }
+        if (item.type === 'replace-text' && item.text) {
+          setTurns((current) => current.map((turn) => turn.id === assistantId
+            ? { ...turn, text: item.text || '' }
             : turn));
         }
         if (item.type === 'complete' && item.answer && item.performance) {

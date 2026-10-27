@@ -97,6 +97,7 @@ async function askOnce(message, sessionId, recentTurns) {
         firstTextMs ??= Math.round(performance.now() - started);
         streamedText += item.text || '';
       }
+      if (item.type === 'replace-text') streamedText = item.text || '';
     }
     if (done) break;
   }
@@ -168,7 +169,7 @@ for (const scenario of scenarios) {
   const spoken = complete?.spokenChinese || [];
   check(`${scenario.id}-ZH`, 'all marked Chinese has pinyin, meaning, and zh-CN-safe text', spoken.every((item) => chineseOnly(item.text) && hasToneMarks(item.pinyin) && item.indonesian?.length > 2),
     spoken.map((item) => `${item.text}|${item.pinyin}|${item.indonesian}`).join(' ; ') || 'no marked Chinese');
-  if (['S2', 'S3', 'S4', 'S5', 'S6', 'S7'].includes(scenario.id)) {
+  if (['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'].includes(scenario.id)) {
     check(`${scenario.id}-PRACTICAL`, 'practical work request includes a playable Chinese sentence', spoken.length > 0,
       spoken.map((item) => item.text).join('、') || 'none');
   }
