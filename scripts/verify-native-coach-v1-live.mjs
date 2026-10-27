@@ -178,7 +178,7 @@ for (const scenario of scenarios) {
 const s1 = firstById.get('S1')?.result.complete;
 check('S1-INTENT', 'waiter request gets job-specific plan, not greeting drill',
   /(resto|restoran|waiter|pelayan)/iu.test(s1?.answer || '')
-    && !/(ulangi|ucapkan|coba katakan)\s+["“']?(你好|您好|欢迎光临)/iu.test(s1?.answer || ''),
+    && !/(你好|您好|欢迎光临)/u.test(`${s1?.answer || ''} ${(s1?.spokenChinese || []).map((item) => item.text).join(' ')}`),
   (s1?.answer || '').slice(0, 300));
 const s5 = firstById.get('S5')?.result.complete;
 check('S5-ROLE', 'QRIS request enters buyer roleplay',
@@ -217,6 +217,10 @@ const s2t4 = rows.find((row) => row.scenarioId === 'S2' && row.turn === 4)?.resu
 check('S2-SWITCH', 'learner can switch to one different safety instruction',
   /(jangan sentuh|不要碰|不要触摸)/iu.test(`${s2t4?.answer || ''} ${(s2t4?.spokenChinese || []).map((item) => item.text).join(' ')}`),
   (s2t4?.answer || '').slice(0, 300));
+const s5t3 = rows.find((row) => row.scenarioId === 'S5' && row.turn === 3)?.result.complete;
+check('S5-CORRECT', 'requested Mandarin correction remains Mandarin and playable',
+  /[\u3400-\u9FFF]/u.test(s5t3?.answer || '') && (s5t3?.spokenChinese || []).length > 0,
+  (s5t3?.answer || '').slice(0, 300));
 const s8Turns = rows.filter((row) => row.scenarioId === 'S8').map((row) => row.result.complete);
 check('S8-CONTEXT', 'three follow-ups stay out of forced teaching and accept topic switch',
   s8Turns.every((item) => (item?.spokenChinese || []).length === 0)
