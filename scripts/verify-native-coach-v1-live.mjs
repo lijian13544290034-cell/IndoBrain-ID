@@ -160,13 +160,18 @@ for (const scenario of scenarios) {
   const complete = result.complete;
   check(`${scenario.id}-HTTP`, 'stream completes', result.status === 200 && complete?.answer?.length > 10 && !result.streamError,
     `status=${result.status} first=${result.firstTextMs}ms full=${result.clientFullMs}ms chars=${complete?.answer?.length || 0}`);
-  check(`${scenario.id}-STREAM`, 'stream text matches final answer', (result.streamedText || '').trim() === (complete?.answer || '').trim(),
+  const normalize = (value) => String(value || '').replace(/\s+/gu, ' ').trim();
+  check(`${scenario.id}-STREAM`, 'stream text matches final answer', normalize(result.streamedText) === normalize(complete?.answer),
     `stream=${result.streamedText?.length || 0} final=${complete?.answer?.length || 0}`);
   check(`${scenario.id}-BOUND`, 'answer is bounded and not truncated', complete?.truncated === false && (complete?.usage?.token_output || 0) <= 900,
     `truncated=${complete?.truncated} output=${complete?.usage?.token_output}`);
   const spoken = complete?.spokenChinese || [];
   check(`${scenario.id}-ZH`, 'all marked Chinese has pinyin, meaning, and zh-CN-safe text', spoken.every((item) => chineseOnly(item.text) && hasToneMarks(item.pinyin) && item.indonesian?.length > 2),
     spoken.map((item) => `${item.text}|${item.pinyin}|${item.indonesian}`).join(' ; ') || 'no marked Chinese');
+  if (['S2', 'S3', 'S4', 'S5', 'S6', 'S7'].includes(scenario.id)) {
+    check(`${scenario.id}-PRACTICAL`, 'practical work request includes a playable Chinese sentence', spoken.length > 0,
+      spoken.map((item) => item.text).join('、') || 'none');
+  }
   await sleep(13_000);
 }
 

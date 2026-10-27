@@ -11,6 +11,7 @@ export const maxDuration = 60;
 
 const encoder = new TextEncoder();
 const AUDIO_MARKER = '[[AUDIO]]';
+const AUDIO_END_MARKER = '[[/AUDIO]]';
 
 function safeBody(value: unknown) {
   if (!value || typeof value !== 'object') return null;
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         let pending = '';
-        let audioBlockStarted = false;
+        let insideAudioBlock = false;
         let firstTextAt: number | null = null;
         let streamedText = '';
         const emitText = (text: string) => {
@@ -76,23 +77,26 @@ export async function POST(request: Request) {
         controller.enqueue(event('accepted', { acceptedAt: new Date(acceptedAt).toISOString() }));
         try {
           for await (const delta of generation.result.textStream) {
-            if (audioBlockStarted) continue;
             pending += delta;
-            const markerIndex = pending.indexOf(AUDIO_MARKER);
-            if (markerIndex >= 0) {
-              emitText(pending.slice(0, markerIndex));
-              pending = '';
-              audioBlockStarted = true;
-              continue;
-            }
-            // Keep enough tail to catch a marker split across provider chunks.
-            if (pending.length > AUDIO_MARKER.length) {
-              const safeLength = pending.length - AUDIO_MARKER.length;
-              emitText(pending.slice(0, safeLength));
-              pending = pending.slice(safeLength);
+            while (pending) {
+              const marker = insideAudioBlock ? AUDIO_END_MARKER : AUDIO_MARKER;
+              const markerIndex = pending.indexOf(marker);
+              if (markerIndex >= 0) {
+                if (!insideAudioBlock) emitText(pending.slice(0, markerIndex));
+                pending = pending.slice(markerIndex + marker.length);
+                insideAudioBlock = !insideAudioBlock;
+                continue;
+              }
+              // Keep enough tail to catch a marker split across provider chunks.
+              if (pending.length > marker.length) {
+                const safeLength = pending.length - marker.length;
+                if (!insideAudioBlock) emitText(pending.slice(0, safeLength));
+                pending = pending.slice(safeLength);
+              }
+              break;
             }
           }
-          if (!audioBlockStarted) emitText(pending);
+          if (!insideAudioBlock) emitText(pending);
 
           const finalized = await generation.finalize();
           if (generation.getStreamError() && !finalized.answer) throw generation.getStreamError();

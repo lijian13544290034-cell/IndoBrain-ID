@@ -59,10 +59,13 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
   }, []);
 
   useEffect(() => {
-    if (!turns.length) return;
+    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [turns]);
+
+  useEffect(() => {
+    if (!turns.length || turns.some((turn) => turn.streaming)) return;
     const stable = turns.filter((turn) => !turn.streaming).slice(-20);
     if (stable.length) localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, turns: stable }));
-    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [turns]);
 
   async function startGuestSession() {
