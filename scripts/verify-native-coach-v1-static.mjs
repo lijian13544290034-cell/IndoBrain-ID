@@ -23,7 +23,8 @@ assert.match(teacher, /NATIVE_COACH_MAX_OUTPUT_TOKENS = 900/, 'bounded output mi
 assert.match(teacher, /at most one clear focus per turn/i, 'single-focus rule missing');
 assert.match(teacher, /give one immediately useful Chinese sentence/i, 'practical work answer-first rule missing');
 assert.match(teacher, /generic greeting such as 你好, 您好, or 欢迎光临 does not satisfy/i, 'job-specific plan boundary missing');
-assert.match(teacher, /visible answer MUST contain the requested Mandarin expression/i, 'requested Mandarin boundary missing');
+assert.match(teacher, /learner-visible result MUST contain the requested Mandarin expression/i, 'requested Mandarin boundary missing');
+assert.match(teacher, /learning plan or cara belajar/i, 'plan-first intent boundary missing');
 assert.match(teacher, /spokenChinese text must contain zero Latin letters/i, 'mixed-language audio boundary missing');
 assert.match(teacher, /reasoning: 'none'/, 'short-turn reasoning budget control missing');
 assert.match(teacher, /Do not force a curriculum, repetition, translation drill, quiz, test, or roleplay/i, 'native intent boundary missing');
