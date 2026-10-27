@@ -34,6 +34,7 @@ assert.match(teacher, /slice\(-8\)/, 'recent context bound missing');
 assert.match(teacher, /3_600/, 'context character budget missing');
 assert.match(teacher, /Only explicit structured items become TTS-eligible/, 'explicit TTS allowlist missing');
 assert.match(teacher, /expectsChineseTeaching/, 'bounded output-contract validation missing');
+assert.match(teacher, /mandarin\|chinese\|china\|tiongkok/, 'Indonesian China wording validation missing');
 assert.match(teacher, /output-repair/, 'single recovery call missing');
 assert.match(route, /replace-text/, 'repaired stream replacement missing');
 

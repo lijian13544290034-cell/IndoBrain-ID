@@ -75,7 +75,7 @@ function compactHistory(turns: NativeCoachTurn[]) {
 
 function expectsChineseTeaching(message: string) {
   const optedOut = /(jangan|tidak|nggak|enggak|gak)\b.{0,40}\b(les|belajar|ngajarin|ajar|latihan|mandarin)/iu.test(message);
-  return !optedOut && (/(mandarin|chinese|bahasa\s+(?:cina|tiongkok))/iu.test(message) || /[\u3400-\u9FFF]/u.test(message));
+  return !optedOut && (/(mandarin|chinese|china|tiongkok|bahasa\s+(?:cina|tiongkok))/iu.test(message) || /[\u3400-\u9FFF]/u.test(message));
 }
 
 export function validateNativeCoachOutput(output: { answer: string; spokenChinese: NativeChineseSentence[] }) {
