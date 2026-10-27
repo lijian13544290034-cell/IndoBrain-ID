@@ -36,6 +36,8 @@ assert.match(teacher, /Only explicit structured items become TTS-eligible/, 'exp
 assert.match(teacher, /expectsChineseTeaching/, 'bounded output-contract validation missing');
 assert.match(teacher, /mandarin\|chinese\|china\|tiongkok/, 'Indonesian China wording validation missing');
 assert.match(teacher, /output-repair/, 'single recovery call missing');
+assert.match(teacher, /NATIVE_COACH_REPAIR_OUTPUT/, 'required Chinese repair schema missing');
+assert.match(teacher, /\.min\(1\)\.max\(3\)/, 'repair schema must require at least one Chinese item');
 assert.match(route, /replace-text/, 'repaired stream replacement missing');
 
 assert.match(route, /isNativeCoachV1Enabled/, 'route flag gate missing');

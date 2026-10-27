@@ -33,14 +33,25 @@ export type NativeCoachUsage = {
   model_used: string;
 };
 
+const PURE_CHINESE = /^[\u3400-\u9FFF\u3000-\u303F，。！？、；：“”‘’（）…·\s—–-]+$/u;
+const SPOKEN_CHINESE_ITEM = z.object({
+  text: z.string().min(1).regex(PURE_CHINESE).describe('Complete Simplified Chinese teaching sentence with no Latin letters.'),
+  pinyin: z.string().min(1).describe('Standard Hanyu Pinyin with tone marks.'),
+  indonesian: z.string().min(1).describe('Natural Indonesian meaning of exactly this sentence.'),
+});
+const answerSchema = z.string().min(1).describe('Natural learner-facing reply in concise spoken Indonesian, with useful Chinese and pinyin shown when teaching.');
+
 const NATIVE_COACH_OUTPUT = Output.object({
   schema: z.object({
-    answer: z.string().min(1).describe('Natural learner-facing reply in concise spoken Indonesian, with useful Chinese and pinyin shown when teaching.'),
-    spokenChinese: z.array(z.object({
-      text: z.string().min(1).describe('Complete Simplified Chinese teaching sentence with no Latin letters.'),
-      pinyin: z.string().min(1).describe('Standard Hanyu Pinyin with tone marks.'),
-      indonesian: z.string().min(1).describe('Natural Indonesian meaning of exactly this sentence.'),
-    })).max(3).describe('Only explicitly taught Chinese sentences. Empty when this turn is not teaching Chinese.'),
+    answer: answerSchema,
+    spokenChinese: z.array(SPOKEN_CHINESE_ITEM).max(3).describe('Only explicitly taught Chinese sentences. Empty when this turn is not teaching Chinese.'),
+  }),
+});
+
+const NATIVE_COACH_REPAIR_OUTPUT = Output.object({
+  schema: z.object({
+    answer: answerSchema,
+    spokenChinese: z.array(SPOKEN_CHINESE_ITEM).min(1).max(3).describe('At least one explicitly taught, pure-Chinese sentence is required for this repair.'),
   }),
 });
 
@@ -154,7 +165,7 @@ export function createNativeCoachGeneration(input: {
               { role: 'assistant' as const, content: parsed.answer },
               { role: 'user' as const, content: repairInstruction },
             ],
-            output: NATIVE_COACH_OUTPUT,
+            output: NATIVE_COACH_REPAIR_OUTPUT,
             maxOutputTokens: NATIVE_COACH_MAX_OUTPUT_TOKENS,
             temperature: 0.35,
             reasoning: 'none',
