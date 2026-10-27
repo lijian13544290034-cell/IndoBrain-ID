@@ -1,6 +1,7 @@
 import 'server-only';
 
-import { gateway, streamText } from 'ai';
+import { gateway, Output, streamText } from 'ai';
+import { z } from 'zod';
 import { parseAudioList, type NativeChineseSentence } from '@/lib/server/mandarin-native-chat';
 
 export const NATIVE_COACH_MODEL = process.env.NATIVE_COACH_MODEL || 'google/gemini-2.5-flash';
@@ -18,8 +19,7 @@ export const NATIVE_COACH_SYSTEM = [
   'When the learner asks for Mandarin wording, correction, or a Mandarin roleplay, the visible answer MUST contain the requested Mandarin expression. Do not replace it with an Indonesian-only paraphrase.',
   'Be concise: normally answer in at most 120 Indonesian words. Teach at most one clear focus per turn. A requested course plan may contain up to three short steps and one useful clarifying question.',
   'Do not claim mastery without independent evidence. Do not score pronunciation from text. For safety-critical work language, prefer a clear safe action and do not invent machine procedures or store policies.',
-  'When you teach one or more Chinese sentences, first show the useful Chinese, pinyin, and explanation in the visible answer. Then finish with an [[AUDIO]] block that duplicates 1 to 3 teaching sentences, followed by no more text. Each line must be: Simplified Chinese only ||| standard Hanyu Pinyin with tone marks ||| natural Indonesian meaning. The AUDIO Chinese field must contain zero Latin letters: when the visible sentence contains a brand such as QRIS, write a separate natural all-Chinese generic equivalent in AUDIO. Do not add an audio block when no Chinese should be taught.',
-  'The [[AUDIO]] block is metadata and is hidden from the learner. Do not mention it in the answer.',
+  'Put the natural learner-facing response in answer. When teaching Chinese, also mark 1 to 3 complete teaching sentences in spokenChinese with pure Simplified Chinese text, tone-marked Hanyu Pinyin, and Indonesian meaning. The spokenChinese text must contain zero Latin letters; replace a Latin brand with a natural all-Chinese generic equivalent. Leave spokenChinese empty when no Chinese should be taught.',
 ].join('\n');
 
 export type NativeCoachTurn = { role: 'user' | 'assistant'; text: string };
@@ -32,7 +32,16 @@ export type NativeCoachUsage = {
   model_used: string;
 };
 
-const AUDIO_BLOCK = /\[\[\s*AUDIO\s*\]\]([\s\S]*?)(?:\[\[\s*\/\s*AUDIO\s*\]\]|$)/iu;
+const NATIVE_COACH_OUTPUT = Output.object({
+  schema: z.object({
+    answer: z.string().min(1).describe('Natural learner-facing reply in concise spoken Indonesian, with useful Chinese and pinyin shown when teaching.'),
+    spokenChinese: z.array(z.object({
+      text: z.string().min(1).describe('Complete Simplified Chinese teaching sentence with no Latin letters.'),
+      pinyin: z.string().min(1).describe('Standard Hanyu Pinyin with tone marks.'),
+      indonesian: z.string().min(1).describe('Natural Indonesian meaning of exactly this sentence.'),
+    })).max(3).describe('Only explicitly taught Chinese sentences. Empty when this turn is not teaching Chinese.'),
+  }),
+});
 
 function fallbackCost(model: string, inputTokens: number, outputTokens: number) {
   if (model === 'google/gemini-2.5-flash') {
@@ -63,18 +72,12 @@ function compactHistory(turns: NativeCoachTurn[]) {
   return selected;
 }
 
-export function parseNativeCoachAnswer(raw: string) {
-  const block = raw.match(AUDIO_BLOCK);
-  const answer = raw
-    .replace(AUDIO_BLOCK, '')
-    .replace(/\[\[\s*\/?\s*AUDIO\s*\]\]/giu, '')
-    .trim();
-  const lines = block?.[1]?.split(/\r?\n/gu).map((line) => line.trim()).filter(Boolean) ?? [];
-  // Unmarked text is never made TTS-eligible. Invalid pinyin/meaning rows fail closed.
-  const spokenChinese = parseAudioList(lines)
+export function validateNativeCoachOutput(output: { answer: string; spokenChinese: NativeChineseSentence[] }) {
+  // Only explicit structured items become TTS-eligible. Invalid rows fail closed.
+  const spokenChinese = parseAudioList(output.spokenChinese.map((item) => `${item.text} ||| ${item.pinyin} ||| ${item.indonesian}`))
     .filter((item): item is NativeChineseSentence => Boolean(item.pinyin && item.indonesian))
     .slice(0, 3);
-  return { answer, spokenChinese };
+  return { answer: output.answer.trim(), spokenChinese };
 }
 
 export function createNativeCoachGeneration(input: {
@@ -94,9 +97,10 @@ export function createNativeCoachGeneration(input: {
       ...history.map((turn) => ({ role: turn.role, content: turn.text } as const)),
       { role: 'user' as const, content: input.message.trim().slice(0, 500) },
     ],
+    output: NATIVE_COACH_OUTPUT,
     maxOutputTokens: NATIVE_COACH_MAX_OUTPUT_TOKENS,
     temperature: 0.45,
-    reasoning: 'low',
+    reasoning: 'none',
     maxRetries: 0,
     streamRetries: 0,
     providerOptions: {
@@ -114,13 +118,13 @@ export function createNativeCoachGeneration(input: {
     result,
     getStreamError: () => streamError,
     async finalize() {
-      const [raw, usage, finishReason, finalStep] = await Promise.all([
-        result.text,
+      const [output, usage, finishReason, finalStep] = await Promise.all([
+        result.output,
         result.usage,
         result.finishReason,
         result.finalStep,
       ]);
-      const parsed = parseNativeCoachAnswer(raw);
+      const parsed = validateNativeCoachOutput(output);
       const tokenInput = usage.inputTokens || 0;
       const tokenOutput = usage.outputTokens || 0;
       const providerMetadata = finalStep.providerMetadata;

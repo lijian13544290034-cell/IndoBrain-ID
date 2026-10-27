@@ -17,19 +17,21 @@ assert.match(flag, /isGuestModeEnabled/, 'guest security boundary missing');
 
 assert.match(teacher, /google\/gemini-2\.5-flash/, 'recommended model missing');
 assert.match(teacher, /streamText\(/, 'model response must stream');
+assert.match(teacher, /Output\.object\(/, 'minimal answer and spokenChinese schema missing');
+assert.match(route, /partialOutputStream/, 'structured answer must stream incrementally');
 assert.match(teacher, /NATIVE_COACH_MAX_OUTPUT_TOKENS = 900/, 'bounded output missing');
 assert.match(teacher, /at most one clear focus per turn/i, 'single-focus rule missing');
 assert.match(teacher, /give one immediately useful Chinese sentence/i, 'practical work answer-first rule missing');
 assert.match(teacher, /generic greeting such as 你好, 您好, or 欢迎光临 does not satisfy/i, 'job-specific plan boundary missing');
 assert.match(teacher, /visible answer MUST contain the requested Mandarin expression/i, 'requested Mandarin boundary missing');
-assert.match(teacher, /AUDIO Chinese field must contain zero Latin letters/i, 'mixed-language audio boundary missing');
-assert.match(teacher, /reasoning: 'low'/, 'balanced reasoning budget control missing');
+assert.match(teacher, /spokenChinese text must contain zero Latin letters/i, 'mixed-language audio boundary missing');
+assert.match(teacher, /reasoning: 'none'/, 'short-turn reasoning budget control missing');
 assert.match(teacher, /Do not force a curriculum, repetition, translation drill, quiz, test, or roleplay/i, 'native intent boundary missing');
-assert.match(teacher, /Do not add an audio block when no Chinese should be taught/i, 'non-teaching chat must not force Chinese');
+assert.match(teacher, /Leave spokenChinese empty when no Chinese should be taught/i, 'non-teaching chat must not force Chinese');
 assert.doesNotMatch(teacher, /老板，我明天想请假|请问您想点什么/, 'prompt must not inject example lessons every turn');
 assert.match(teacher, /slice\(-8\)/, 'recent context bound missing');
 assert.match(teacher, /3_600/, 'context character budget missing');
-assert.match(teacher, /Unmarked text is never made TTS-eligible/, 'explicit TTS allowlist missing');
+assert.match(teacher, /Only explicit structured items become TTS-eligible/, 'explicit TTS allowlist missing');
 
 assert.match(route, /isNativeCoachV1Enabled/, 'route flag gate missing');
 assert.match(route, /resolveGuestScope/, 'guest auth gate missing');

@@ -10,8 +10,6 @@ export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 const encoder = new TextEncoder();
-const AUDIO_MARKER = '[[AUDIO]]';
-const AUDIO_END_MARKER = '[[/AUDIO]]';
 
 function safeBody(value: unknown) {
   if (!value || typeof value !== 'object') return null;
@@ -63,8 +61,7 @@ export async function POST(request: Request) {
 
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
-        let pending = '';
-        let insideAudioBlock = false;
+        let streamedAnswer = '';
         let firstTextAt: number | null = null;
         let streamedText = '';
         const emitText = (text: string) => {
@@ -76,27 +73,11 @@ export async function POST(request: Request) {
 
         controller.enqueue(event('accepted', { acceptedAt: new Date(acceptedAt).toISOString() }));
         try {
-          for await (const delta of generation.result.textStream) {
-            pending += delta;
-            while (pending) {
-              const marker = insideAudioBlock ? AUDIO_END_MARKER : AUDIO_MARKER;
-              const markerIndex = pending.indexOf(marker);
-              if (markerIndex >= 0) {
-                if (!insideAudioBlock) emitText(pending.slice(0, markerIndex));
-                pending = pending.slice(markerIndex + marker.length);
-                insideAudioBlock = !insideAudioBlock;
-                continue;
-              }
-              // Keep enough tail to catch a marker split across provider chunks.
-              if (pending.length > marker.length) {
-                const safeLength = pending.length - marker.length;
-                if (!insideAudioBlock) emitText(pending.slice(0, safeLength));
-                pending = pending.slice(safeLength);
-              }
-              break;
-            }
+          for await (const partial of generation.result.partialOutputStream) {
+            const nextAnswer = typeof partial.answer === 'string' ? partial.answer : streamedAnswer;
+            if (nextAnswer.startsWith(streamedAnswer)) emitText(nextAnswer.slice(streamedAnswer.length));
+            streamedAnswer = nextAnswer;
           }
-          if (!insideAudioBlock) emitText(pending);
 
           const finalized = await generation.finalize();
           if (generation.getStreamError() && !finalized.answer) throw generation.getStreamError();
