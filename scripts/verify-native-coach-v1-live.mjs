@@ -160,8 +160,8 @@ for (const scenario of scenarios) {
   const complete = result.complete;
   check(`${scenario.id}-HTTP`, 'stream completes', result.status === 200 && complete?.answer?.length > 10 && !result.streamError,
     `status=${result.status} first=${result.firstTextMs}ms full=${result.clientFullMs}ms chars=${complete?.answer?.length || 0}`);
-  check(`${scenario.id}-STREAM`, 'stream text matches final answer', result.streamedText.trim() === (complete?.answer || '').trim(),
-    `stream=${result.streamedText.length} final=${complete?.answer?.length || 0}`);
+  check(`${scenario.id}-STREAM`, 'stream text matches final answer', (result.streamedText || '').trim() === (complete?.answer || '').trim(),
+    `stream=${result.streamedText?.length || 0} final=${complete?.answer?.length || 0}`);
   check(`${scenario.id}-BOUND`, 'answer is bounded and not truncated', complete?.truncated === false && (complete?.usage?.token_output || 0) <= 900,
     `truncated=${complete?.truncated} output=${complete?.usage?.token_output}`);
   const spoken = complete?.spokenChinese || [];
