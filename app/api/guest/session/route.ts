@@ -24,7 +24,8 @@ export async function POST(request: Request) {
   const { token, session } = issueGuestToken();
   const requested = typeof body?.next === 'string' ? body.next : '';
   const freeTeachingPath = '/coba-gratis/ai-free-teaching';
-  const reviewPath = requested === freeTeachingPath || requested === '/learn-chinese' || requested.startsWith('/learn-chinese/')
+  const nativeCoachPath = '/coba-gratis/native-coach-v1';
+  const reviewPath = requested === freeTeachingPath || requested === nativeCoachPath || requested === '/learn-chinese' || requested.startsWith('/learn-chinese/')
     ? requested
     : '/learn-chinese/ai-coach';
   const limits = guestLimits();
