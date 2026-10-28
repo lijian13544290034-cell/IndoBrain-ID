@@ -8,7 +8,7 @@ import type { NativeCoachBreakdown } from '@/lib/server/mandarin-native-coach-v1
 const BREAKDOWN_MODEL = process.env.NATIVE_COACH_MODEL || 'google/gemini-2.5-flash';
 const PURE_CHINESE = /^[\u3400-\u9FFF\u3000-\u303F，。！？、；：“”‘’（）…·\s—–-]+$/u;
 const HAS_TONE = /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜǹńň]/u;
-const VALID_PINYIN = /^[a-zA-ZüÜāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜǹńň\s'’,.?!-]+$/u;
+const VALID_PINYIN = /^[a-zA-ZüÜāáǎàĀÁǍÀēéěèĒÉĚÈīíǐìĪÍǏÌōóǒòŌÓǑÒūúǔùŪÚǓÙǖǘǚǜǕǗǙǛǹńňǸŃŇ\s'’,.?!-]+$/u;
 
 const wordSchema = z.object({
   text: z.string().min(1).max(30),
