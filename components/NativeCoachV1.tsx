@@ -241,7 +241,7 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
             ? <button key={`${turn.id}-inline-zh-${index}`} type="button" lang="zh-CN"
               aria-label={`Putar Mandarin: ${fragment.text}`} title="Klik untuk dengar Mandarin"
               onClick={() => playChinese(fragment.text)} disabled={playing === fragment.text}
-              style={{ display: 'inline', boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}
+              style={{ display: 'inline-block', maxWidth: '100%', whiteSpace: 'normal', overflowWrap: 'anywhere', verticalAlign: 'baseline' }}
               className="inline rounded-sm bg-violet-50 px-0.5 font-medium text-violet-900 underline decoration-violet-300 decoration-dotted underline-offset-2 hover:bg-violet-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 disabled:opacity-60">
               {fragment.text}
             </button>

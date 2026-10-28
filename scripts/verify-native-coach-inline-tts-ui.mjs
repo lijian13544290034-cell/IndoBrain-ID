@@ -51,7 +51,7 @@ async function verifyViewport(name, viewport) {
     });
   });
 
-  await page.goto(url, { waitUntil: 'networkidle2', timeout: 60_000 });
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
   const started = await page.evaluate(() => {
     const button = [...document.querySelectorAll('button')].find((item) => /Mulai ngobrol/i.test(item.textContent || ''));
     button?.click();
@@ -64,13 +64,17 @@ async function verifyViewport(name, viewport) {
   const inline = await page.$$eval('button[aria-label^="Putar Mandarin:"]', (buttons) => buttons.map((button) => ({
     text: button.textContent,
     display: getComputedStyle(button).display,
+    maxWidth: getComputedStyle(button).maxWidth,
+    whiteSpace: getComputedStyle(button).whiteSpace,
+    verticalAlign: getComputedStyle(button).verticalAlign,
     width: button.getBoundingClientRect().width,
   })));
   record(`${name}: embedded, word and multi-sentence fragments`,
     inline.map((item) => item.text).join('|') === '分酒器|明天早点来。|不好意思，我不能早到。|你好！|请问您要去哪里？',
     inline.map((item) => item.text).join('|'));
   record(`${name}: inline style does not overflow`,
-    inline.every((item) => item.display === 'inline') && await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+    inline.every((item) => item.display === 'inline-block' && item.maxWidth === '100%' && item.whiteSpace === 'normal' && item.verticalAlign === 'baseline')
+      && await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
     JSON.stringify(inline));
 
   const clickAndFinish = async (selector) => {
