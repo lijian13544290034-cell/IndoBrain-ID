@@ -3,7 +3,7 @@ export type InlineTextFragment = {
   text: string;
 };
 
-const CHINESE_BLOCK = /[\u3400-\u9FFF](?:[\u3400-\u9FFF0-9\u3000 ，。！？、；：“”‘’（）…—-]*[\u3400-\u9FFF0-9，。！？、；：“”‘’（）…])?/gu;
+const CHINESE_BLOCK = /[\u3400-\u9FFF](?:[\u3400-\u9FFF0-9，。！？、；：“”‘’（）…—-]*[\u3400-\u9FFF0-9，。！？、；：“”‘’（）…])?/gu;
 const CHINESE_SENTENCE = /[^。！？；]+[。！？；]?/gu;
 const MAX_TTS_CHARACTERS = 120;
 
