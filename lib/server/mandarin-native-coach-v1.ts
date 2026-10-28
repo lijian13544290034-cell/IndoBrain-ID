@@ -15,7 +15,7 @@ export const NATIVE_COACH_SYSTEM = [
   'Understand the learner\'s current request and the real conversation context. Respond mainly in natural spoken Bahasa Indonesia.',
   'You may naturally teach, explain, correct, plan learning, roleplay, answer directly, or chat according to what the learner asks. The learner decides the direction; do not force a curriculum, repetition, translation drill, quiz, test, or roleplay.',
   'When Chinese is useful, use accurate natural Simplified Chinese and include standard tone-marked pinyin plus a brief Indonesian meaning in the response. Do not add Chinese merely to fill a format.',
-  'If a reference such as “yang tadi” could mean more than one thing, ask one brief clarification instead of guessing.',
+  'Resolve references such as “yang tadi” from the actual visible history. If the reference does not identify exactly one prior expression, do not guess: ask one brief clarification.',
   'Do not claim mastery without evidence and do not score pronunciation from text. Keep safety-critical work guidance conservative.',
 ].join('\n');
 
@@ -57,7 +57,7 @@ function providerCost(metadata: unknown) {
   return Number.isFinite(numeric) ? numeric : 0;
 }
 
-function compactHistory(turns: NativeCoachTurn[]) {
+function compactHistory(turns: NativeCoachTurn[], learningReferences: NativeCoachTeachingItem[]) {
   const selected: NativeCoachTurn[] = [];
   let characters = 0;
   for (const turn of turns.slice(-8).reverse()) {
@@ -78,13 +78,22 @@ function compactHistory(turns: NativeCoachTurn[]) {
     selected.unshift({ role: turn.role, text });
     characters += text.length;
   }
+  const visible = selected.map((turn) => turn.text).join('\n');
+  const earlier = learningReferences
+    .filter((item, index, items) => item.text && items.findIndex((candidate) => candidate.text === item.text) === index)
+    .filter((item) => !visible.includes(item.text))
+    .slice(-8)
+    .map((item) => `${item.text} | ${item.pinyin} | ${item.indonesian}`);
+  if (earlier.length) selected.unshift({ role: 'assistant', text: `[Earlier learning references actually shown: ${earlier.join(' ; ')}]` });
   return selected;
 }
 
 export function extractNaturalTeachingItems(answer: string) {
   const clean = answer.replace(/[*_`#>]/gu, ' ');
   const lines: string[] = [];
-  const inline = /([\u3400-\u9FFF][\u3400-\u9FFF0-9，。！？、；：“”‘’（）…·\s—–-]{0,119})\s*[（(]([A-Za-züÜāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜǹńň\s'’,.?!-]{2,180})[）)]\s*(?:[—–-]|:|：)?\s*([^\n]{2,200})/gu;
+  // Only explicit teaching rows become cards. Natural prose such as “kata 爱 (ài) tadi”
+  // remains clickable text but is not misread as a Chinese/pinyin/meaning triple.
+  const inline = /^\s*(?:[-*]\s*|\d+[.)]\s*)?\**([\u3400-\u9FFF][\u3400-\u9FFF0-9，。！？、；：“”‘’（）…·\s—–-]{0,119})\s*[（(]([A-Za-züÜāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜǹńň\s'’,.?!-]{2,180})[）)]\**\s*(?:[—–-]|:|：)\s*([^\n]{2,200})$/gmu;
   for (const match of clean.matchAll(inline)) lines.push(`${match[1].trim()} ||| ${match[2].trim()} ||| ${match[3].trim()}`);
 
   const labelled = /(?:中文|Mandarin)\s*[:：]\s*([^\n]+)\n\s*(?:拼音|Pinyin)\s*[:：]\s*([^\n]+)\n\s*(?:印尼语|Arti(?:nya)?)\s*[:：]\s*([^\n]+)/giu;
@@ -99,8 +108,9 @@ export function createNativeCoachGeneration(input: {
   message: string;
   sessionId: string;
   recentTurns: NativeCoachTurn[];
+  learningReferences?: NativeCoachTeachingItem[];
 }) {
-  const history = compactHistory(input.recentTurns);
+  const history = compactHistory(input.recentTurns, input.learningReferences ?? []);
   const last = history.at(-1);
   if (last?.role === 'user' && last.text === input.message.trim()) history.pop();
 

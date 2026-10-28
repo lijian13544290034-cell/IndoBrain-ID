@@ -52,6 +52,7 @@ assert.match(ui, /timeToFirstTextMs/, 'client first-text metric missing');
 assert.match(ui, /Audio siap dalam/, 'audio-ready timing missing');
 assert.match(ui, /teaching: turn\.chinese/, 'displayed cards must be returned in recent context');
 assert.match(ui, /Object\.values\(turn\.breakdowns/, 'displayed breakdowns must be returned in recent context');
+assert.match(ui, /learningReferences/, 'bounded earlier learning references must be preserved across topic changes');
 assert.match(ui, /拆词 ·/, 'on-demand word breakdown control missing');
 
 assert.match(breakdown, /natural word segmentation, not mechanical character-by-character splitting/i, 'natural segmentation rule missing');

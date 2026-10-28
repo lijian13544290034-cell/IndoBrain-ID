@@ -41,7 +41,13 @@ function safeBody(value: unknown) {
     }).slice(0, 4) : [];
     return [{ role: turn.role, text: turn.text.slice(0, 1_600), teaching, breakdowns }];
   }).slice(-8) : [];
-  return { message, sessionId, recentTurns };
+  const learningReferences = Array.isArray(body.learningReferences) ? body.learningReferences.flatMap((entry): NonNullable<NativeCoachTurn['teaching']> => {
+    if (!entry || typeof entry !== 'object') return [];
+    const item = entry as Record<string, unknown>;
+    if (typeof item.text !== 'string' || typeof item.pinyin !== 'string' || typeof item.indonesian !== 'string') return [];
+    return [{ text: item.text.slice(0, 120), pinyin: item.pinyin.slice(0, 180), indonesian: item.indonesian.slice(0, 240) }];
+  }).slice(-8) : [];
+  return { message, sessionId, recentTurns, learningReferences };
 }
 
 function event(type: string, payload: Record<string, unknown>) {
@@ -75,6 +81,7 @@ export async function POST(request: Request) {
       message: input.message,
       sessionId: guestScope.sessionId,
       recentTurns: input.recentTurns,
+      learningReferences: input.learningReferences,
     });
 
     const stream = new ReadableStream<Uint8Array>({

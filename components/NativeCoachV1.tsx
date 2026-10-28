@@ -104,6 +104,13 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
     if (!clean || sending) return;
     const userTurn: Turn = { id: `u-${Date.now()}`, role: 'user', text: clean, chinese: [] };
     const history = [...turns.filter((turn) => !turn.streaming), userTurn];
+    const learningReferences = history.slice(-20).flatMap((turn) => [
+      ...turn.chinese,
+      ...Object.values(turn.breakdowns || {}).flatMap((item) => [
+        { text: item.sentence, pinyin: item.pinyin, indonesian: item.indonesian },
+        ...item.words,
+      ]),
+    ]).filter((item, index, items) => items.findIndex((candidate) => candidate.text === item.text) === index).slice(-8);
     const assistantId = `a-${Date.now()}`;
     setTurns([...history, { id: assistantId, role: 'assistant', text: '', chinese: [], streaming: true }]);
     setMessage('');
@@ -124,6 +131,7 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
             teaching: turn.chinese,
             breakdowns: Object.values(turn.breakdowns || {}),
           })),
+          learningReferences,
         }),
       });
       if (!response.ok || !response.body) {
