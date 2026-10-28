@@ -3,13 +3,19 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const puppeteer = require('C:/Users/lijia/WorkBuddy/2026-09-12-20-25-07/node_modules/puppeteer-core');
-const BASE = process.argv[2];
+const accessUrl = process.argv[2] ? new URL(process.argv[2]) : null;
 const BYPASS = process.env.VERCEL_PROTECTION_BYPASS || '';
 const OIDC = process.env.VERCEL_OIDC_TOKEN || '';
-if (!BASE) throw new Error('usage: node scripts/verify-native-coach-inline-tts-ui.mjs <baseUrl>');
+if (!accessUrl) throw new Error('usage: node scripts/verify-native-coach-inline-tts-ui.mjs <baseUrl>');
 
 const path = '/coba-gratis/native-coach-v1';
-const url = `${BASE}${path}${BYPASS ? `?x-vercel-protection-bypass=${BYPASS}&x-vercel-set-bypass-cookie=true` : ''}`;
+const targetUrl = new URL(path, accessUrl.origin);
+for (const [key, value] of accessUrl.searchParams) targetUrl.searchParams.set(key, value);
+if (BYPASS) {
+  targetUrl.searchParams.set('x-vercel-protection-bypass', BYPASS);
+  targetUrl.searchParams.set('x-vercel-set-bypass-cookie', 'true');
+}
+const url = targetUrl.toString();
 const outputDir = 'results/native-coach-inline-tts';
 mkdirSync(outputDir, { recursive: true });
 const checks = [];

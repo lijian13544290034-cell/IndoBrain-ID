@@ -11,14 +11,14 @@ const HAS_TONE = /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜǹńň]/u;
 const VALID_PINYIN = /^[a-zA-ZüÜāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜǹńň\s'’,.?!-]+$/u;
 
 const wordSchema = z.object({
-  text: z.string().min(1).max(30).regex(PURE_CHINESE),
-  pinyin: z.string().min(1).max(80).regex(VALID_PINYIN),
+  text: z.string().min(1).max(30),
+  pinyin: z.string().min(1).max(80),
   indonesian: z.string().min(1).max(160),
 });
 
 const breakdownSchema = z.object({
-  sentence: z.string().min(1).max(120).regex(PURE_CHINESE),
-  pinyin: z.string().min(1).max(180).regex(HAS_TONE),
+  sentence: z.string().min(1).max(120),
+  pinyin: z.string().min(1).max(180),
   indonesian: z.string().min(1).max(240),
   words: z.array(wordSchema).min(1).max(12),
 });
@@ -79,7 +79,12 @@ export async function createMandarinWordBreakdown(input: {
   const returned = normalizeChinese(output.sentence);
   const segmented = normalizeChinese(output.words.map((word) => word.text).join(''));
   if (returned !== original || segmented !== original) throw new Error('BREAKDOWN_MISMATCH');
-  if (!isValidatedSpokenChinese(output.sentence) || output.words.some((word) => !isValidatedSpokenChinese(word.text))) {
+  if (!PURE_CHINESE.test(output.sentence)
+    || !VALID_PINYIN.test(output.pinyin)
+    || !HAS_TONE.test(output.pinyin)
+    || output.words.some((word) => !PURE_CHINESE.test(word.text) || !VALID_PINYIN.test(word.pinyin))
+    || !isValidatedSpokenChinese(output.sentence)
+    || output.words.some((word) => !isValidatedSpokenChinese(word.text))) {
     throw new Error('INVALID_BREAKDOWN_SPEECH');
   }
 

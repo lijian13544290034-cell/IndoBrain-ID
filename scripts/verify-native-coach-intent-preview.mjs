@@ -3,6 +3,7 @@ import { performance } from 'node:perf_hooks';
 
 const accessUrl = new URL(process.argv[2]);
 const outputPath = process.argv[3] || 'results/native-coach-intent-v1/preview-regression.json';
+const onlyBreakdown = process.argv.includes('--only-breakdown');
 const baseUrl = accessUrl.origin;
 const cookies = new Map();
 const rows = [];
@@ -86,26 +87,34 @@ const scenarios = [
   ['I5', 'Cara ngenalin teman saya ke orang China gimana?'],
   ['I6', 'Aku mau belajar Mandarin buat kerja, enaknya mulai dari mana?'],
 ];
-for (const [id, message] of scenarios) await record(id, message, `intent-preview-${id.toLowerCase()}`);
+if (!onlyBreakdown) {
+  for (const [id, message] of scenarios) await record(id, message, `free-intent-preview-${id.toLowerCase()}`);
+}
 
 const history = [];
-for (const [id, message] of [
+for (const [id, message] of onlyBreakdown ? [] : [
   ['C1', 'Aku mau belajar cara bilang nama saya.'],
   ['C2', 'Nama saya Budi. Sekarang ajari bilang umur saya 25.'],
   ['C3', 'Ganti topik ya, aku kerja sebagai kasir. Cara kenalan ke bos gimana?'],
 ]) {
-  const result = await record(id, message, 'intent-preview-context', history);
+  const result = await record(id, message, 'free-intent-preview-context', history);
   history.push({ role: 'user', text: message });
   if (result.complete) history.push({ role: 'assistant', text: result.complete.answer, teaching: result.complete.spokenChinese || [] });
 }
 
 const breakdownStarted = performance.now();
-const breakdownResponse = await request('/api/mandarin-coach/word-breakdown', {
-  method: 'POST',
-  headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({ text: '我叫阿迪', context: 'user: Gimana ngomong nama saya Adi dalam Mandarin?', sessionId: 'intent-preview-breakdown' }),
-});
-const breakdown = await breakdownResponse.json().catch(() => null);
+let breakdownResponse;
+let breakdown;
+for (let attempt = 1; attempt <= 2; attempt += 1) {
+  breakdownResponse = await request('/api/mandarin-coach/word-breakdown', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ text: '我叫阿迪', context: 'user: Gimana ngomong nama saya Adi dalam Mandarin?', sessionId: `free-intent-preview-breakdown-${attempt}` }),
+  });
+  breakdown = await breakdownResponse.json().catch(() => null);
+  if (breakdownResponse.ok) break;
+  if (attempt < 2) await wait(13_000);
+}
 
 const tts = [];
 for (const text of ['我叫阿迪', ...(breakdown?.breakdown?.words || []).map((word) => word.text), '我叫阿迪']) {
