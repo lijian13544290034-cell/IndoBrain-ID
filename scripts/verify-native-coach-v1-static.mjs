@@ -49,11 +49,12 @@ assert.match(ui, /X-IndoBrain-Chinese-TTS-Voice/, 'TTS voice validation missing'
 assert.match(ui, /zh-CN-XiaoxiaoNeural/, 'expected zh-CN voice missing');
 assert.match(ui, /Audio Mandarin belum tersedia\. Teks lain tidak akan diputar sebagai pengganti/, 'fail-closed audio recovery missing');
 assert.match(ui, /timeToFirstTextMs/, 'client first-text metric missing');
-assert.match(ui, /Audio siap dalam/, 'audio-ready timing missing');
+assert.match(ui, /Dengarkan/, 'simple Indonesian listening label missing');
 assert.match(ui, /teaching: turn\.chinese/, 'displayed cards must be returned in recent context');
 assert.match(ui, /Object\.values\(turn\.breakdowns/, 'displayed breakdowns must be returned in recent context');
 assert.match(ui, /learningReferences/, 'bounded earlier learning references must be preserved across topic changes');
-assert.match(ui, /拆词 ·/, 'on-demand word breakdown control missing');
+assert.match(ui, /Arti per kata/, 'on-demand word breakdown control missing');
+assert.doesNotMatch(ui, /拆词|Putar Mandarin|Rincian kata|Mengurai/, 'student controls must use simple Indonesian');
 
 assert.match(breakdown, /natural word segmentation, not mechanical character-by-character splitting/i, 'natural segmentation rule missing');
 assert.match(breakdown, /personal names, place names, fixed expressions/i, 'name and fixed-expression boundary missing');

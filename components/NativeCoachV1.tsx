@@ -42,6 +42,21 @@ const SUGGESTIONS = [
   'Jangan les dulu, aku cuma mau ngobrol santai pakai bahasa Indonesia.',
 ];
 
+function uniqueBreakdownTargets(items: ChineseItem[]) {
+  const unique = items.filter((item, index) => item.text
+    && items.findIndex((candidate) => candidate.text === item.text) === index);
+  return unique.filter((item) => !unique.some((candidate) => candidate.text !== item.text
+    && candidate.text.length > item.text.length && candidate.text.includes(item.text)));
+}
+
+function fallbackBreakdownTarget(text: string) {
+  const candidates = [...new Set(splitInlineChinese(text)
+    .filter((fragment) => fragment.kind === 'chinese')
+    .map((fragment) => fragment.text.trim())
+    .filter(Boolean))];
+  return candidates.toSorted((left, right) => [...right].length - [...left].length)[0] || '';
+}
+
 function newSessionId() {
   return `free-${typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`}`;
 }
@@ -55,7 +70,6 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
   const [retryText, setRetryText] = useState('');
   const [turns, setTurns] = useState<Turn[]>([]);
   const [playing, setPlaying] = useState('');
-  const [ttsReadyMs, setTtsReadyMs] = useState<number | null>(null);
   const [ttsError, setTtsError] = useState('');
   const [breaking, setBreaking] = useState('');
   const [breakdownError, setBreakdownError] = useState('');
@@ -196,10 +210,8 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
 
   async function playChinese(text: string) {
     const prepared = prepareBrowserAudio();
-    const startedAt = performance.now();
     setTtsError('');
     setPlaying(text);
-    setTtsReadyMs(null);
     try {
       const response = await fetch('/api/chinese-tts', {
         method: 'POST',
@@ -212,7 +224,6 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
         throw new Error('Audio Mandarin belum tersedia. Teks lain tidak akan diputar sebagai pengganti.');
       }
       const audio = await response.blob();
-      setTtsReadyMs(Math.round(performance.now() - startedAt));
       await playBrowserAudioBlob(audio, prepared);
     } catch (caught) {
       setTtsError(caught instanceof Error ? caught.message : 'Audio gagal diputar.');
@@ -244,13 +255,13 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
         body: JSON.stringify({ text, context, sessionId }),
       });
       const payload = await response.json().catch(() => null) as { breakdown?: Breakdown; error?: string } | null;
-      if (!response.ok || !payload?.breakdown) throw new Error(payload?.error || 'Rincian kata belum tersedia.');
+      if (!response.ok || !payload?.breakdown) throw new Error(payload?.error || 'Arti per kata belum tersedia.');
       setTurns((current) => current.map((turn) => turn.id === turnId ? {
         ...turn,
         breakdowns: { ...turn.breakdowns, [text]: payload.breakdown! },
       } : turn));
     } catch (caught) {
-      setBreakdownError(caught instanceof Error ? caught.message : 'Rincian kata belum tersedia.');
+      setBreakdownError(caught instanceof Error ? caught.message : 'Arti per kata belum tersedia.');
     } finally {
       setBreaking('');
     }
@@ -260,7 +271,6 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
     localStorage.removeItem(STORAGE_KEY);
     setTurns([]);
     setPlaying('');
-    setTtsReadyMs(null);
     setTtsError('');
     setRetryText('');
     setError('');
@@ -269,7 +279,7 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
   }
 
   if (!ready) return <section className="rounded-3xl border border-violet-200 bg-white p-6 shadow-sm">
-    <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">Native Coach V1 · Preview</p>
+    <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">Guru Mandarin AI · Versi uji coba</p>
     <h1 className="mt-3 text-2xl font-black leading-tight text-stone-950">Guru Mandarin yang mengikuti tujuanmu</h1>
     <p className="mt-3 text-sm leading-7 text-stone-600">Tanpa registrasi. Kamu boleh bertanya, berganti topik, minta roleplay, atau hanya ngobrol santai.</p>
     <button type="button" onClick={startGuestSession} disabled={starting} className="mt-6 min-h-14 w-full rounded-2xl bg-violet-700 px-5 font-bold text-white hover:bg-violet-800 disabled:opacity-60">
@@ -281,9 +291,9 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
   return <section className="overflow-hidden rounded-3xl border border-violet-200 bg-white shadow-sm">
     <header className="flex items-start justify-between gap-4 bg-gradient-to-br from-violet-800 to-indigo-700 px-5 py-4 text-white">
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-100">Native Coach V1 · Preview</p>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-100">Guru Mandarin AI · Versi uji coba</p>
         <h1 className="mt-1 text-xl font-black">Guru Mandarin AI</h1>
-        <p className="mt-1 text-xs text-violet-100">Kamu menentukan arah. Audio hanya untuk kalimat Mandarin tervalidasi.</p>
+        <p className="mt-1 text-xs text-violet-100">Kamu menentukan arah. Suara hanya membacakan teks Mandarin.</p>
       </div>
       <button type="button" onClick={clearConversation} className="shrink-0 rounded-full border border-white/30 px-3 py-2 text-xs font-bold hover:bg-white/10">Mulai baru</button>
     </header>
@@ -293,16 +303,15 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
         Ceritakan kebutuhanmu dengan bahasa sehari-hari. Guru akan menjawab kebutuhan itu dulu, bukan memaksamu masuk kursus.
       </div> : null}
       {turns.map((turn) => {
-        const chineseFragments = turn.role === 'assistant'
-          ? [...new Set(splitInlineChinese(turn.text).filter((fragment) => fragment.kind === 'chinese').map((fragment) => fragment.text))].slice(0, 4)
-          : [];
+        const breakdownTargets = turn.role === 'assistant' ? uniqueBreakdownTargets(turn.chinese) : [];
+        const fallbackTarget = turn.role === 'assistant' && !turn.chinese.length ? fallbackBreakdownTarget(turn.text) : '';
         return <article key={turn.id} className={turn.role === 'user'
         ? 'ml-6 break-words rounded-2xl rounded-br-md bg-violet-700 p-4 text-white'
         : 'mr-2 break-words rounded-2xl rounded-bl-md border border-stone-200 bg-white p-4 text-stone-900'}>
         <p className="whitespace-pre-wrap text-sm leading-6">{turn.role === 'assistant' && turn.text
           ? splitInlineChinese(turn.text).map((fragment, index) => fragment.kind === 'chinese'
             ? <button key={`${turn.id}-inline-zh-${index}`} type="button" lang="zh-CN"
-              aria-label={`Putar Mandarin: ${fragment.text}`} title="Klik untuk dengar Mandarin"
+              aria-label={`Dengarkan Mandarin: ${fragment.text}`} title="Dengarkan"
               onClick={() => playChinese(fragment.text)} disabled={playing === fragment.text}
               style={{ display: 'inline-block', maxWidth: '100%', whiteSpace: 'normal', overflowWrap: 'anywhere', verticalAlign: 'baseline' }}
               className="inline rounded-sm bg-violet-50 px-0.5 font-medium text-violet-900 underline decoration-violet-300 decoration-dotted underline-offset-2 hover:bg-violet-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 disabled:opacity-60">
@@ -311,17 +320,15 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
             : <span key={`${turn.id}-inline-text-${index}`}>{fragment.text}</span>)
           : turn.text || (turn.streaming ? '…' : '')}</p>
         {turn.streaming ? <p className="mt-2 text-xs font-semibold text-violet-600">Sedang menulis…</p> : null}
-        {turn.role === 'assistant' && !turn.streaming && chineseFragments.length ? <div className="mt-2 flex flex-wrap gap-1.5">
-          {chineseFragments.map((text) => <button key={`${turn.id}-break-${text}`} type="button"
-            onClick={() => requestBreakdown(turn.id, text)} disabled={Boolean(breaking)}
-            className="rounded-full border border-violet-200 bg-white px-2.5 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-50 disabled:opacity-50">
-            {breaking === `${turn.id}:${text}` ? 'Mengurai…' : `拆词 · ${text}`}
-          </button>)}
-        </div> : null}
+        {turn.role === 'assistant' && !turn.streaming && fallbackTarget ? <button type="button"
+          onClick={() => requestBreakdown(turn.id, fallbackTarget)} disabled={Boolean(breaking)}
+          className="mt-2 rounded-full border border-violet-200 bg-white px-2.5 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-50 disabled:opacity-50">
+          {breaking === `${turn.id}:${fallbackTarget}` ? 'Menyiapkan…' : 'Arti per kata'}
+        </button> : null}
         {turn.role === 'assistant' && Object.values(turn.breakdowns || {}).length ? <div className="mt-3 space-y-2">
           {Object.values(turn.breakdowns || {}).map((breakdown) => <details key={`${turn.id}-details-${breakdown.sentence}`} open
             className="rounded-xl border border-violet-100 bg-violet-50/70 px-3 py-2.5">
-            <summary className="cursor-pointer list-none text-xs font-bold text-violet-800">拆词 · Rincian kata</summary>
+            <summary className="cursor-pointer list-none text-xs font-bold text-violet-800">Arti per kata</summary>
             <div className="mt-2 flex items-start justify-between gap-3 border-b border-violet-100 pb-2">
               <div className="min-w-0">
                 <p lang="zh-CN" className="break-words text-base font-bold text-violet-950">{breakdown.sentence}</p>
@@ -329,7 +336,8 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
                 <p className="break-words text-xs leading-5 text-stone-600">{breakdown.indonesian}</p>
               </div>
               <button type="button" onClick={() => playChinese(breakdown.sentence)} disabled={playing === breakdown.sentence}
-                aria-label={`Putar ${breakdown.sentence}`} className="min-h-10 min-w-10 shrink-0 rounded-full bg-violet-700 text-sm text-white disabled:opacity-50">🔊</button>
+                aria-label={`Dengarkan ${breakdown.sentence}`} title="Dengarkan"
+                className="min-h-10 min-w-10 shrink-0 rounded-full bg-violet-700 text-sm text-white disabled:opacity-50">🔊</button>
             </div>
             <div className="divide-y divide-violet-100">
               {breakdown.words.map((word, index) => <div key={`${breakdown.sentence}-${word.text}-${index}`} className="flex items-center justify-between gap-3 py-2">
@@ -339,7 +347,8 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
                   <p className="break-words text-xs text-stone-600">{word.indonesian}</p>
                 </div>
                 <button type="button" onClick={() => playChinese(word.text)} disabled={playing === word.text}
-                  aria-label={`Putar ${word.text}`} className="min-h-10 min-w-10 shrink-0 rounded-full border border-violet-200 bg-white text-sm disabled:opacity-50">🔊</button>
+                  aria-label={`Dengarkan ${word.text}`} title="Dengarkan"
+                  className="min-h-10 min-w-10 shrink-0 rounded-full border border-violet-200 bg-white text-sm disabled:opacity-50">🔊</button>
               </div>)}
             </div>
           </details>)}
@@ -352,16 +361,18 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
                 <p className="mt-0.5 break-words text-sm font-semibold text-violet-700">{item.pinyin}</p>
                 <p className="mt-0.5 break-words text-sm leading-6 text-stone-600">{item.indonesian}</p>
               </div>
-              <button type="button" aria-label={`Putar ${item.text}`} onClick={() => playChinese(item.text)} disabled={playing === item.text}
+              <button type="button" aria-label={`Dengarkan ${item.text}`} title="Dengarkan" onClick={() => playChinese(item.text)} disabled={playing === item.text}
                 className="min-h-11 min-w-11 shrink-0 rounded-full bg-violet-700 text-base text-white hover:bg-violet-800 disabled:opacity-50">
                 {playing === item.text ? '⏸' : '🔊'}
               </button>
             </div>
+            {breakdownTargets.some((target) => target.text === item.text) ? <button type="button"
+              onClick={() => requestBreakdown(turn.id, item.text)} disabled={Boolean(breaking)}
+              className="mt-2 rounded-full border border-violet-200 bg-white px-2.5 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-50">
+              {breaking === `${turn.id}:${item.text}` ? 'Menyiapkan…' : 'Arti per kata'}
+            </button> : null}
           </div>)}
         </div> : null}
-        {turn.role === 'assistant' && turn.performance ? <p className="mt-3 text-[11px] text-stone-400">
-          Mulai {turn.performance.timeToFirstTextMs ?? '–'} ms · selesai {turn.performance.fullResponseMs} ms
-        </p> : null}
       </article>})}
       <div ref={endRef} />
     </div>
@@ -377,7 +388,6 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
           placeholder="Tulis kebutuhanmu…" className="min-h-14 min-w-0 flex-1 resize-none rounded-2xl border border-stone-300 px-4 py-3 text-sm outline-none focus:border-violet-600" />
         <button type="submit" disabled={sending || !message.trim()} className="min-w-20 shrink-0 rounded-2xl bg-violet-700 px-4 font-bold text-white hover:bg-violet-800 disabled:opacity-50">Kirim</button>
       </form>
-      {ttsReadyMs !== null ? <p className="mt-2 text-[11px] text-stone-400">Audio siap dalam {ttsReadyMs} ms</p> : null}
       {ttsError ? <p role="status" className="mt-2 text-xs text-amber-700">{ttsError}</p> : null}
       {breakdownError ? <p role="status" className="mt-2 text-xs text-amber-700">{breakdownError}</p> : null}
       {error ? <div role="alert" className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">

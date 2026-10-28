@@ -21,12 +21,12 @@ function safeBody(value: unknown) {
 export async function POST(request: Request) {
   let guestActive = false;
   try {
-    if (!isNativeCoachV1Enabled()) return Response.json({ error: 'Native Coach V1 belum tersedia.' }, { status: 404 });
+    if (!isNativeCoachV1Enabled()) return Response.json({ error: 'Fitur ini belum tersedia.' }, { status: 404 });
     if (Number(request.headers.get('content-length') || 0) > 8_000) {
       return Response.json({ error: 'Permintaan terlalu besar.' }, { status: 413 });
     }
     const input = safeBody(await request.json().catch(() => null));
-    if (!input) return Response.json({ error: 'Pilih teks Mandarin yang valid untuk diurai.' }, { status: 400 });
+    if (!input) return Response.json({ error: 'Pilih ungkapan Mandarin yang ingin dilihat arti per katanya.' }, { status: 400 });
 
     const guestScope = await resolveGuestScope(input.sessionId);
     guestActive = Boolean(guestScope);
@@ -55,6 +55,6 @@ export async function POST(request: Request) {
       name: error instanceof Error ? error.name : 'UnknownError',
       code: error instanceof Error ? error.message.slice(0, 80) : undefined,
     });
-    return Response.json({ error: 'Rincian kata belum bisa dibuat. Kamu tetap bisa membaca jawaban di atas.' }, { status: 503 });
+    return Response.json({ error: 'Arti per kata belum bisa dibuat. Kamu tetap bisa membaca jawaban di atas.' }, { status: 503 });
   }
 }

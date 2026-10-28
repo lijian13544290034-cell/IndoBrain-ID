@@ -35,7 +35,7 @@ async function verifyViewport(name, viewport) {
         id: 'inline-tts-fixture',
         role: 'assistant',
         text: 'Istilah 分酒器 artinya decanter. Bos bilang 明天早点来。 Kalau tidak bisa, jawab 不好意思，我不能早到。 你好！请问您要去哪里？ Contoh lain: 小明爱我。',
-        chinese: [{ text: '明天早点来。', pinyin: 'Míngtiān zǎodiǎn lái.', indonesian: 'Besok datang lebih awal.' }],
+        chinese: [{ text: '小明爱我', pinyin: 'Xiǎomíng ài wǒ', indonesian: 'Xiao Ming mencintaiku.' }],
         breakdowns: {
           小明爱我: {
             sentence: '小明爱我', pinyin: 'Xiǎomíng ài wǒ', indonesian: 'Xiao Ming mencintaiku',
@@ -73,7 +73,7 @@ async function verifyViewport(name, viewport) {
     await page.waitForSelector('#native-coach-message', { timeout: 15_000 });
   }
 
-  const inline = await page.$$eval('button[aria-label^="Putar Mandarin:"]', (buttons) => buttons.map((button) => ({
+  const inline = await page.$$eval('button[aria-label^="Dengarkan Mandarin:"]', (buttons) => buttons.map((button) => ({
     text: button.textContent,
     display: getComputedStyle(button).display,
     maxWidth: getComputedStyle(button).maxWidth,
@@ -88,6 +88,14 @@ async function verifyViewport(name, viewport) {
     inline.every((item) => item.display === 'inline-block' && item.maxWidth === '100%' && item.whiteSpace === 'normal' && item.verticalAlign === 'baseline')
       && await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
     JSON.stringify(inline));
+  const breakdownUi = await page.evaluate(() => ({
+    actionCount: [...document.querySelectorAll('button')]
+      .filter((button) => button.textContent?.trim() === 'Arti per kata').length,
+    hasChineseControl: document.body.innerText.includes('拆词'),
+  }));
+  record(`${name}: one on-demand breakdown entry without fragment button row`,
+    breakdownUi.actionCount === 1 && !breakdownUi.hasChineseControl,
+    JSON.stringify(breakdownUi));
   const breakdown = await page.$$eval('details', (items) => items.map((item) => item.innerText));
   record(`${name}: natural word breakdown remains compact and complete`,
     breakdown.length === 1 && /小明[\s\S]*爱[\s\S]*我/u.test(breakdown[0])
@@ -110,14 +118,13 @@ async function verifyViewport(name, viewport) {
       return button instanceof HTMLButtonElement && !button.disabled;
     }, { timeout: 15_000 }, selector);
   };
-  await clickAndFinish('button[aria-label="Putar Mandarin: 分酒器"]');
-  await clickAndFinish('button[aria-label="Putar Mandarin: 分酒器"]');
-  await clickAndFinish('button[aria-label="Putar Mandarin: 明天早点来。"]');
-  await clickAndFinish('button[aria-label="Putar 明天早点来。"]');
-  await clickAndFinish('button[aria-label="Putar 小明爱我"]');
-  await clickAndFinish('button[aria-label="Putar 小明"]');
-  await clickAndFinish('button[aria-label="Putar 爱"]');
-  await clickAndFinish('button[aria-label="Putar 我"]');
+  await clickAndFinish('button[aria-label="Dengarkan Mandarin: 分酒器"]');
+  await clickAndFinish('button[aria-label="Dengarkan Mandarin: 分酒器"]');
+  await clickAndFinish('button[aria-label="Dengarkan Mandarin: 明天早点来。"]');
+  await clickAndFinish('button[aria-label="Dengarkan 小明爱我"]');
+  await clickAndFinish('button[aria-label="Dengarkan 小明"]');
+  await clickAndFinish('button[aria-label="Dengarkan 爱"]');
+  await clickAndFinish('button[aria-label="Dengarkan 我"]');
 
   record(`${name}: inline and card requests are valid zh-CN audio`,
     ttsResponses.length >= 4 && ttsResponses.every((item) => item.status === 200 && item.contentType.startsWith('audio/') && item.voice === 'zh-CN-XiaoxiaoNeural'),

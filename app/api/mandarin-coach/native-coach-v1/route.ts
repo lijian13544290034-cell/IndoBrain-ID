@@ -59,7 +59,7 @@ export async function POST(request: Request) {
   let guestActive = false;
   try {
     if (!isNativeCoachV1Enabled()) {
-      return Response.json({ error: 'Native Coach V1 belum tersedia.' }, { status: 404 });
+      return Response.json({ error: 'Fitur ini belum tersedia.' }, { status: 404 });
     }
     const contentLength = Number(request.headers.get('content-length') || 0);
     if (contentLength > 64_000) return Response.json({ error: 'Permintaan terlalu besar.' }, { status: 413 });
