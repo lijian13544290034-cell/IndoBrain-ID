@@ -34,8 +34,18 @@ async function verifyViewport(name, viewport) {
       turns: [{
         id: 'inline-tts-fixture',
         role: 'assistant',
-        text: 'Istilah 分酒器 artinya decanter. Bos bilang 明天早点来。 Kalau tidak bisa, jawab 不好意思，我不能早到。 你好！请问您要去哪里？',
+        text: 'Istilah 分酒器 artinya decanter. Bos bilang 明天早点来。 Kalau tidak bisa, jawab 不好意思，我不能早到。 你好！请问您要去哪里？ Contoh lain: 小明爱我。',
         chinese: [{ text: '明天早点来。', pinyin: 'Míngtiān zǎodiǎn lái.', indonesian: 'Besok datang lebih awal.' }],
+        breakdowns: {
+          小明爱我: {
+            sentence: '小明爱我', pinyin: 'Xiǎomíng ài wǒ', indonesian: 'Xiao Ming mencintaiku',
+            words: [
+              { text: '小明', pinyin: 'Xiǎomíng', indonesian: 'Xiao Ming (nama orang)' },
+              { text: '爱', pinyin: 'ài', indonesian: 'cinta, sayang' },
+              { text: '我', pinyin: 'wǒ', indonesian: 'saya, aku' },
+            ],
+          },
+        },
         streaming: false,
       }],
     }));
@@ -72,12 +82,17 @@ async function verifyViewport(name, viewport) {
     width: button.getBoundingClientRect().width,
   })));
   record(`${name}: embedded, word and multi-sentence fragments`,
-    inline.map((item) => item.text).join('|') === '分酒器|明天早点来。|不好意思，我不能早到。|你好！|请问您要去哪里？',
+    inline.map((item) => item.text).join('|') === '分酒器|明天早点来。|不好意思，我不能早到。|你好！|请问您要去哪里？|小明爱我。',
     inline.map((item) => item.text).join('|'));
   record(`${name}: inline style does not overflow`,
     inline.every((item) => item.display === 'inline-block' && item.maxWidth === '100%' && item.whiteSpace === 'normal' && item.verticalAlign === 'baseline')
       && await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
     JSON.stringify(inline));
+  const breakdown = await page.$$eval('details', (items) => items.map((item) => item.innerText));
+  record(`${name}: natural word breakdown remains compact and complete`,
+    breakdown.length === 1 && /小明[\s\S]*爱[\s\S]*我/u.test(breakdown[0])
+      && await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+    breakdown.join(' | ').slice(0, 300));
 
   const clickAndFinish = async (selector) => {
     await page.waitForFunction((value) => {
@@ -99,6 +114,10 @@ async function verifyViewport(name, viewport) {
   await clickAndFinish('button[aria-label="Putar Mandarin: 分酒器"]');
   await clickAndFinish('button[aria-label="Putar Mandarin: 明天早点来。"]');
   await clickAndFinish('button[aria-label="Putar 明天早点来。"]');
+  await clickAndFinish('button[aria-label="Putar 小明爱我"]');
+  await clickAndFinish('button[aria-label="Putar 小明"]');
+  await clickAndFinish('button[aria-label="Putar 爱"]');
+  await clickAndFinish('button[aria-label="Putar 我"]');
 
   record(`${name}: inline and card requests are valid zh-CN audio`,
     ttsResponses.length >= 4 && ttsResponses.every((item) => item.status === 200 && item.contentType.startsWith('audio/') && item.voice === 'zh-CN-XiaoxiaoNeural'),

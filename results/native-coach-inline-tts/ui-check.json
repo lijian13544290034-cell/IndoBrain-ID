@@ -1,26 +1,31 @@
 {
-  "url": "https://indobrain-01-prd-prd-v0-1-4wb6h86t2-lijian1.vercel.app/coba-gratis/native-coach-v1",
-  "executedAt": "2026-10-28T08:44:43.766Z",
+  "url": "https://indobrain-01-prd-prd-v0-1-lg03bdevj-lijian1.vercel.app/coba-gratis/native-coach-v1",
+  "executedAt": "2026-10-28T10:49:34.902Z",
   "checks": [
     {
       "name": "mobile-390x844: embedded, word and multi-sentence fragments",
       "passed": true,
-      "evidence": "分酒器|明天早点来。|不好意思，我不能早到。|你好！|请问您要去哪里？"
+      "evidence": "分酒器|明天早点来。|不好意思，我不能早到。|你好！|请问您要去哪里？|小明爱我。"
     },
     {
       "name": "mobile-390x844: inline style does not overflow",
       "passed": true,
-      "evidence": "[{\"text\":\"分酒器\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":46},{\"text\":\"明天早点来。\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":88},{\"text\":\"不好意思，我不能早到。\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":158},{\"text\":\"你好！\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":46},{\"text\":\"请问您要去哪里？\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":116}]"
+      "evidence": "[{\"text\":\"分酒器\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":46},{\"text\":\"明天早点来。\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":88},{\"text\":\"不好意思，我不能早到。\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":158},{\"text\":\"你好！\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":46},{\"text\":\"请问您要去哪里？\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":116},{\"text\":\"小明爱我。\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":74}]"
+    },
+    {
+      "name": "mobile-390x844: natural word breakdown remains compact and complete",
+      "passed": true,
+      "evidence": "拆词 · Rincian kata\n\n小明爱我\n\nXiǎomíng ài wǒ\n\nXiao Ming mencintaiku\n\n🔊\n\n小明\n\nXiǎomíng\n\nXiao Ming (nama orang)\n\n🔊\n\n爱\n\nài\n\ncinta, sayang\n\n🔊\n\n我\n\nwǒ\n\nsaya, aku\n\n🔊"
     },
     {
       "name": "mobile-390x844: inline and card requests are valid zh-CN audio",
       "passed": true,
-      "evidence": "[{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"MISS\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"MISS\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"}]"
+      "evidence": "[{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"MISS\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"MISS\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"}]"
     },
     {
       "name": "mobile-390x844: repeated exact fragment uses existing cache",
       "passed": true,
-      "evidence": "MISS,HIT,MISS,HIT"
+      "evidence": "MISS,HIT,MISS,HIT,HIT,HIT,HIT,HIT"
     },
     {
       "name": "mobile-390x844: playback does not disturb normal reading",
@@ -30,22 +35,27 @@
     {
       "name": "desktop-1280x900: embedded, word and multi-sentence fragments",
       "passed": true,
-      "evidence": "分酒器|明天早点来。|不好意思，我不能早到。|你好！|请问您要去哪里？"
+      "evidence": "分酒器|明天早点来。|不好意思，我不能早到。|你好！|请问您要去哪里？|小明爱我。"
     },
     {
       "name": "desktop-1280x900: inline style does not overflow",
       "passed": true,
-      "evidence": "[{\"text\":\"分酒器\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":46},{\"text\":\"明天早点来。\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":88},{\"text\":\"不好意思，我不能早到。\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":158},{\"text\":\"你好！\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":46},{\"text\":\"请问您要去哪里？\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":116}]"
+      "evidence": "[{\"text\":\"分酒器\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":46},{\"text\":\"明天早点来。\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":88},{\"text\":\"不好意思，我不能早到。\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":158},{\"text\":\"你好！\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":46},{\"text\":\"请问您要去哪里？\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":116},{\"text\":\"小明爱我。\",\"display\":\"inline-block\",\"maxWidth\":\"100%\",\"whiteSpace\":\"normal\",\"verticalAlign\":\"baseline\",\"width\":74}]"
+    },
+    {
+      "name": "desktop-1280x900: natural word breakdown remains compact and complete",
+      "passed": true,
+      "evidence": "拆词 · Rincian kata\n\n小明爱我\n\nXiǎomíng ài wǒ\n\nXiao Ming mencintaiku\n\n🔊\n\n小明\n\nXiǎomíng\n\nXiao Ming (nama orang)\n\n🔊\n\n爱\n\nài\n\ncinta, sayang\n\n🔊\n\n我\n\nwǒ\n\nsaya, aku\n\n🔊"
     },
     {
       "name": "desktop-1280x900: inline and card requests are valid zh-CN audio",
       "passed": true,
-      "evidence": "[{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"}]"
+      "evidence": "[{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"},{\"status\":200,\"contentType\":\"audio/mpeg\",\"voice\":\"zh-CN-XiaoxiaoNeural\",\"cache\":\"HIT\"}]"
     },
     {
       "name": "desktop-1280x900: repeated exact fragment uses existing cache",
       "passed": true,
-      "evidence": "HIT,HIT,HIT,HIT"
+      "evidence": "HIT,HIT,HIT,HIT,HIT,HIT,HIT,HIT"
     },
     {
       "name": "desktop-1280x900: playback does not disturb normal reading",
@@ -95,6 +105,14 @@
         "whiteSpace": "normal",
         "verticalAlign": "baseline",
         "width": 116
+      },
+      {
+        "text": "小明爱我。",
+        "display": "inline-block",
+        "maxWidth": "100%",
+        "whiteSpace": "normal",
+        "verticalAlign": "baseline",
+        "width": 74
       }
     ],
     "ttsResponses": [
@@ -115,6 +133,30 @@
         "contentType": "audio/mpeg",
         "voice": "zh-CN-XiaoxiaoNeural",
         "cache": "MISS"
+      },
+      {
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "cache": "HIT"
+      },
+      {
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "cache": "HIT"
+      },
+      {
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "cache": "HIT"
+      },
+      {
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "cache": "HIT"
       },
       {
         "status": 200,
@@ -166,9 +208,41 @@
         "whiteSpace": "normal",
         "verticalAlign": "baseline",
         "width": 116
+      },
+      {
+        "text": "小明爱我。",
+        "display": "inline-block",
+        "maxWidth": "100%",
+        "whiteSpace": "normal",
+        "verticalAlign": "baseline",
+        "width": 74
       }
     ],
     "ttsResponses": [
+      {
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "cache": "HIT"
+      },
+      {
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "cache": "HIT"
+      },
+      {
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "cache": "HIT"
+      },
+      {
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "cache": "HIT"
+      },
       {
         "status": 200,
         "contentType": "audio/mpeg",

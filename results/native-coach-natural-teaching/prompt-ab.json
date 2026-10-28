@@ -1,0 +1,203 @@
+{
+  "executedAt": "2026-10-28T10:33:23.841Z",
+  "model": "google/gemini-2.5-flash",
+  "settings": {
+    "temperature": 0.45,
+    "maxOutputTokens": 900,
+    "reasoning": "none"
+  },
+  "cases": [
+    {
+      "id": "A1",
+      "prompt": "sebagai pemulai mandarin, saya mau kerja di restoran china, tlg buat res untuk saya ya",
+      "NO_TEACHING_SYSTEM": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Tentu, ini draf resume yang bisa Anda gunakan sebagai pemula yang ingin bekerja di restoran China. Saya akan menyertakan beberapa bagian penting dan saran untuk mengisinya:\n\n---\n\n**[Nama Lengkap Anda]**\n[Nomor Telepon Anda] | [Alamat Email Anda] | [Link LinkedIn Anda (jika ada)]\n\n---\n\n**RINGKASAN PROFIL**\n\nSeorang individu yang antusias dan bersemangat tinggi dengan minat besar terhadap budaya dan kuliner Tiongkok, mencari kesempatan untuk memulai karir di industri restoran. Cepat belajar, pekerja keras, dan memiliki komitmen kuat untuk memberikan pelayanan terbaik. Bersemangat untuk mengembangkan kemampuan bahasa Mandarin dan pengetahuan tentang masakan Tiongkok.\n\n---\n\n**KEMAMPUAN UTAMA**\n\n*   **Pelayanan Pelanggan:** Ramah, sopan, dan berorientasi pada kepuasan pelanggan.\n*   **Kerja Sama Tim:** Mampu bekerja secara efektif dalam lingkungan tim yang dinamis.\n*   **Komunikasi:** Jelas dan efektif dalam berkomunikasi.\n*   **Belajar Cepat:** Mampu menyerap informasi dan prosedur baru dengan cepat.\n*   **Inisiatif:** Proaktif dalam mencari tugas dan membantu rekan kerja.\n*   **Bahasa Mandarin:** Tingkat Pemula (mampu memahami instruksi dasar dan menyapa).\n*   **Kebersihan & Kerapian:** Memahami pentingnya standar kebersihan di lingkungan kerja.\n\n---\n\n**PENGALAMAN KERJA**\n\n**[Nama Perusahaan Sebelumnya (jika ada, jika tidak, bisa dikosongkan atau diganti dengan pengalaman non-formal)]** | [Posisi Anda]\n[Bulan Tahun Mulai] – [Bulan Tahun Selesai]\n\n*   [Poin-poin tanggung jawab atau pencapaian Anda. Contoh: \"Membantu dalam penataan barang dan menjaga kebersihan area kerja.\"]\n*   [Contoh: \"Berinteraksi dengan pelanggan untuk memberikan informasi produk.\"]\n*   [Contoh: \"Belajar dan menguasai tugas-tugas baru dengan cepat.\"]\n\n**(Jika belum ada pengalaman kerja formal, Anda bisa menuliskan pengalaman non-formal seperti:**\n**Pengalaman Relawan / Kegiatan Sosial** | [Nama Organisasi/Kegiatan]\n[Bulan Tahun Mulai] – [Bulan Tahun Selesai]\n*   [Contoh: \"Berpartisipasi dalam acara komunitas, membantu persiapan dan penataan.\"]\n*   [Contoh: \"Berinteraksi dengan berbagai individu, mengembangkan kemampuan komunikasi.\"]\n*   [Contoh: \"Menunjukkan tanggung jawab dan komitmen dalam menyelesaikan tugas.\"]\n)\n\n---\n\n**PENDIDIKAN**\n\n**[Nama Institusi Pendidikan Terakhir Anda]** | [Jurusan/Program Studi Anda (jika ada)]\n[Tahun Lulus]\n\n*   [Contoh: \"Mempelajari dasar-dasar [jurusan Anda] dan mengembangkan kemampuan analitis.\"]\n\n---\n\n**BAHASA**\n\n*   **Bahasa Indonesia:** Penutur Asli\n*   **Bahasa Inggris:** Dasar/Menengah (pilih yang sesuai)\n*   **Bahasa Mandarin:** Pemula (mampu menyapa, memahami instruksi dasar, dan menghafal beberapa kosakata terkait makanan)\n\n---\n\n**MINAT & HOBI**\n\n*   Memasak dan mencoba resep masakan baru (terutama masakan Asia).\n*   Mempelajari bahasa dan budaya Tiongkok.\n*   Menjelajahi berbagai jenis kuliner.\n\n---\n\n**SARAN PENTING UNTUK ANDA:**\n\n1.  **Sesuaikan dengan Posisi yang Dilamar:** Meskipun Anda pemula, coba cari tahu posisi apa yang Anda incar (misalnya, Dishwasher, Busser, Asisten Koki, Pelayan, dll.). Sesuaikan \"Ringkasan Profil\" dan \"Kemampuan Utama\" agar lebih relevan.\n2.  **Jujur tentang Kemampuan Bahasa Mandarin:** Jangan melebih-lebihkan. \"Pemula\" itu sudah bagus, karena menunjukkan Anda punya dasar dan kemauan untuk belajar. Sebutkan apa yang sudah Anda kuasai (misalnya, \"mampu menyapa, memahami instruksi dasar,",
+        "inputTokens": 20,
+        "outputTokens": 900,
+        "latencyMs": 7544,
+        "finishReason": "length",
+        "providerCost": "0.002256"
+      },
+      "MINIMAL_IDENTITY": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Wah, ide yang bagus sekali! Belajar Mandarin sambil langsung praktik di restoran China pasti seru dan efektif. Saya siap bantu kamu.\n\nUntuk pemula yang mau kerja di restoran China, kita bisa fokus ke percakapan dasar yang paling sering dipakai. Kira-kira, kamu mau mulai dari bagian apa dulu nih?\n\n*   **Menyapa pelanggan dan menanyakan pesanan?** (Misalnya, \"Selamat datang,\" \"Mau pesan apa?\")\n*   **Menerima pesanan dan mengulang pesanan?** (Misalnya, \"Satu nasi goreng ya,\" \"Oke, nasi goreng satu.\")\n*   **Menyebutkan nama-nama makanan atau minuman umum?** (Misalnya, \"Nasi goreng,\" \"Teh.\")\n*   **Menanyakan atau memberitahu harga?** (Misalnya, \"Berapa harganya?\", \"Totalnya sekian.\")\n*   **Atau ada hal lain yang kamu pikirkan?**\n\nKita bisa mulai dari yang paling penting menurut kamu dulu, nanti kita kembangkan pelan-pelan. Gimana?",
+        "inputTokens": 199,
+        "outputTokens": 226,
+        "latencyMs": 3946,
+        "finishReason": "stop",
+        "providerCost": "0.0006247"
+      }
+    },
+    {
+      "id": "A2",
+      "prompt": "Bang aku mau kerja jadi waiter di resto Cina, mandarin nol besar nih wkwk. Bisa bikinin cara belajar yg cocok buat kerja?",
+      "NO_TEACHING_SYSTEM": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Wah, semangat banget nih mau jadi waiter di resto Cina! Meskipun Mandarin-mu nol besar, jangan khawatir, banyak cara kok untuk belajar yang cocok buat kerja. Kuncinya adalah fokus pada frasa dan kosakata yang paling sering digunakan di lingkungan kerja.\n\nIni dia cara belajar yang bisa kamu terapkan:\n\n**Fase 1: Dasar-Dasar Survival (1-2 minggu pertama)**\n\n*   **Fokus pada Angka dan Sapaan:** Ini mutlak harus dikuasai.\n    *   **Angka 1-10:** Ini penting untuk mencatat pesanan, memberitahu nomor meja, dll.\n        *   一 (yī) - satu\n        *   二 (èr) - dua\n        *   三 (sān) - tiga\n        *   四 (sì) - empat\n        *   五 (wǔ) - lima\n        *   六 (liù) - enam\n        *   七 (qī) - tujuh\n        *   八 (bā) - delapan\n        *   九 (jiǔ) - sembilan\n        *   十 (shí) - sepuluh\n    *   **Sapaan Dasar:**\n        *   你好 (Nǐ hǎo) - Halo/Hai\n        *   您好 (Nín hǎo) - Halo (lebih formal, ke pelanggan)\n        *   谢谢 (Xièxie) - Terima kasih\n        *   不客气 (Bù kèqi) - Sama-sama\n        *   对不起 (Duìbuqǐ) - Maaf\n        *   没关系 (Méi guānxi) - Tidak apa-apa\n        *   请 (Qǐng) - Tolong/Silakan\n        *   再见 (Zàijiàn) - Sampai jumpa\n*   **Kosakata Penting di Meja:**\n    *   菜单 (càidān) - Menu\n    *   水 (shuǐ) - Air\n    *   茶 (chá) - Teh\n    *   米饭 (mǐfàn) - Nasi\n    *   筷子 (kuàizi) - Sumpit\n    *   勺子 (sháozi) - Sendok\n    *   盘子 (pánzi) - Piring\n    *   碗 (wǎn) - Mangkuk\n    *   纸巾 (zhǐjīn) - Tisu\n*   **Frasa Kunci untuk Interaksi Awal:**\n    *   请问, 几位？ (Qǐngwèn, jǐ wèi?) - Permisi, berapa orang?\n    *   请坐 (Qǐng zuò) - Silakan duduk\n    *   请看菜单 (Qǐng kàn càidān) - Silakan lihat menu\n    *   您想喝什么？ (Nín xiǎng hē shénme?) - Anda ingin minum apa?\n    *   您想吃什么？ (Nín xiǎng chī shénme?) - Anda ingin makan apa?\n    *   好的 (Hǎo de) - Baik/Oke\n    *   请稍等 (Qǐng shāo děng) - Mohon tunggu sebentar\n    *   买单 (mǎidān) - Bayar (saat pelanggan minta bill)\n\n**Fase 2: Memahami Pesanan & Pelayanan (Minggu ke-3 dan seterusnya)**\n\n*   **Nama-nama Makanan Populer:**\n    *   **Fokus pada menu di resto tempatmu bekerja.** Minta daftar menu dan pelajari nama-nama hidangan yang paling sering dipesan.\n    *   Contoh umum:\n        *   炒饭 (chǎofàn) - Nasi goreng\n        *   炒面 (chǎomiàn) - Mie goreng\n        *   饺子 (jiǎozi) - Pangsit\n        *   包子 (bāozi) - Bakpao\n        *   汤 (tāng) - Sup\n        *   鱼 (yú) - Ikan\n        *   鸡肉 (jīròu) - Ayam\n        *   牛肉 (niúròu) - Daging sapi\n        ",
+        "inputTokens": 28,
+        "outputTokens": 900,
+        "latencyMs": 7276,
+        "finishReason": "length",
+        "providerCost": "0.0022584"
+      },
+      "MINIMAL_IDENTITY": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Wah, ide bagus banget! Pasti seru tuh kerja di restoran Cina. Mandarin nol besar bukan masalah, justru ini kesempatan emas buat belajar sambil praktik langsung. Aku siap bantu kamu nyusun strategi belajarnya.\n\nUntuk kerja sebagai waiter di restoran Cina, kita fokus ke percakapan praktis yang sering dipakai sehari-hari di sana ya. Jadi, kita bisa pecah jadi beberapa tahap:\n\n1.  **Dasar-dasar Sapaan dan Salam:** Ini penting banget buat kesan pertama yang baik.\n    *   Halo/Hai: 你好 (nǐ hǎo) - halo\n    *   Selamat datang: 欢迎光临 (huānyíng guānglín) - selamat datang (ini sering banget diucapkan pas pelanggan masuk)\n    *   Terima kasih: 谢谢 (xièxie) - terima kasih\n    *   Sama-sama: 不客气 (bú kèqi) - sama-sama\n    *   Permisi/Maaf: 对不起 (duìbuqǐ) - maaf / 不好意思 (bù hǎoyìsi) - permisi/maaf (lebih ringan)\n\n2.  **Menerima Pesanan Dasar:** Ini inti dari pekerjaan waiter.\n    *   Mau pesan apa?: 您想点什么？ (nín xiǎng diǎn shénme?) - Anda mau pesan apa? (nín itu bentuk sopan dari kamu)\n    *   Ada lagi?: 还要别的吗？ (hái yào biéde ma?) - Masih mau yang lain?\n    *   Sudah cukup?: 够了吗？ (gòu le ma?) - Sudah cukup?\n    *   Tunggu sebentar: 请稍等 (qǐng shāoděng) - mohon tunggu sebentar\n\n3.  **Angka dan Jumlah:** Pasti kepakai buat jumlah pesanan atau nomor meja.\n    *   Satu: 一 (yī)\n    *   Dua: 二 (èr)\n    *   Tiga: 三 (sān)\n    *   ...dan seterusnya (kita bisa pelajari ini bertahap)\n\n4.  **Nama Makanan Populer (Opsional tapi bagus):** Ini bisa kamu pelajari sambil jalan nanti, tergantung menu di restoranmu. Misalnya:\n    *   Nasi goreng: 炒饭 (chǎofàn)\n    *   Mie goreng: 炒面 (chǎomiàn)\n    *   Teh: 茶 (chá)\n    *   Air putih: 水 (shuǐ)\n\n**Gimana cara belajarnya?**\n\n*   **Dengar dan Ulangi:** Coba cari audio atau video yang mengucapkan frasa-frasa di atas. Dengar baik-baik nadanya (nada di Mandarin itu penting!) lalu ulangi.\n*   **Tempel Catatan:** Tulis frasa-frasa penting di kertas kecil, tempel di tempat yang sering kamu lihat (kulkas, cermin, dll.).\n*   **Praktik Langsung (kalau sudah kerja):** Jangan takut salah! Pelanggan biasanya mengerti kalau kamu sedang belajar. Coba aja pakai frasa yang kamu tahu.\n*   **Fokus ke Nada:** Ini yang paling tricky. Setiap kata di Mandarin punya nada yang beda, dan beda nada bisa beda arti. Tapi jangan terlalu stres di awal, yang penting bisa dimengerti dulu.\n\nKita bisa mulai dari yang paling dasar dulu, yaitu sapaan dan salam. Gimana? Mau coba latihan mengucapkan beberapa frasa sapaan dulu?",
+        "inputTokens": 207,
+        "outputTokens": 758,
+        "latencyMs": 7288,
+        "finishReason": "stop",
+        "providerCost": "0.0019571"
+      }
+    },
+    {
+      "id": "B1",
+      "prompt": "Aku mau belajar 小明爱我, gimana bacanya?",
+      "NO_TEACHING_SYSTEM": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Tentu, mari kita pelajari cara membaca \"小明爱我\" (xiǎo míng ài wǒ).\n\n**Pinyin dan Nada:**\n\n*   **小 (xiǎo):** Nada 3 (rendah-naik). Dibaca seperti \"shiao\" dalam bahasa Inggris, tapi dengan nada yang turun lalu naik.\n*   **明 (míng):** Nada 2 (naik). Dibaca seperti \"ming\" dalam bahasa Inggris, tapi dengan nada yang naik.\n*   **爱 (ài):** Nada 4 (turun). Dibaca seperti \"ai\" dalam bahasa Inggris (seperti \"eye\"), tapi dengan nada yang turun tajam.\n*   **我 (wǒ):** Nada 3 (rendah-naik). Dibaca seperti \"wo\" dalam bahasa Inggris (seperti \"wah\"), tapi dengan nada yang turun lalu naik.\n\n**Gabungan Pinyin:**\n\nxiǎo míng ài wǒ\n\n**Cara Mengucapkan:**\n\n1.  **小 (xiǎo):** Mulai dengan suara rendah, lalu naikkan sedikit. Bayangkan seperti Anda mengatakan \"kecil\" dengan sedikit penekanan di akhir.\n2.  **明 (míng):** Mulai dengan suara sedang, lalu naikkan ke suara tinggi. Bayangkan seperti Anda bertanya \"ming?\" dengan nada yang naik.\n3.  **爱 (ài):** Mulai dengan suara tinggi, lalu turunkan tajam. Bayangkan seperti Anda mengatakan \"aduh!\" dengan nada yang turun.\n4.  **我 (wǒ):** Sama seperti 小 (xiǎo), mulai dengan suara rendah, lalu naikkan sedikit.\n\n**Arti:**\n\n*   **小明 (xiǎo míng):** Ini adalah nama orang. \"Xiao Ming\" adalah nama yang sangat umum di Tiongkok, sering digunakan sebagai contoh atau nama karakter dalam cerita.\n*   **爱 (ài):** Mencintai, menyukai.\n*   **我 (wǒ):** Saya, aku.\n\nJadi, **小明爱我 (xiǎo míng ài wǒ)** berarti **\"Xiao Ming mencintaiku\"** atau **\"Xiao Ming menyukaiku.\"**\n\n**Tips Tambahan:**\n\n*   **Dengarkan penutur asli:** Cara terbaik untuk menguasai nada adalah dengan mendengarkan bagaimana penutur asli mengucapkannya. Anda bisa mencari di Google Translate atau kamus online yang menyediakan audio.\n*   **Latihan berulang:** Ucapkan berulang kali sampai Anda merasa nyaman dengan nada dan pengucapannya.\n*   **Perhatikan intonasi:** Selain nada per kata, perhatikan juga intonasi kalimat secara keseluruhan.\n\nSemoga penjelasan ini membantu Anda belajar membaca \"小明爱我\"! Jika ada pertanyaan lain, jangan ragu untuk bertanya.",
+        "inputTokens": 12,
+        "outputTokens": 593,
+        "latencyMs": 4441,
+        "finishReason": "stop",
+        "providerCost": "0.0014861"
+      },
+      "MINIMAL_IDENTITY": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Oke, mari kita pelajari 小明爱我 (xiǎo míng ài wǒ).\n\n*   **小明 (xiǎo míng)**: Ini adalah nama orang.\n    *   **小 (xiǎo)**: Nada ketiga, artinya 'kecil'.\n    *   **明 (míng)**: Nada kedua, artinya 'terang' atau 'cerah'.\n    *   Jadi, **小明 (xiǎo míng)** dibaca \"siao ming\".\n\n*   **爱 (ài)**: Nada keempat, artinya 'cinta' atau 'sayang'.\n    *   Dibaca \"ai\".\n\n*   **我 (wǒ)**: Nada ketiga, artinya 'saya' atau 'aku'.\n    *   Dibaca \"wo\".\n\nJadi, **小明爱我 (xiǎo míng ài wǒ)** dibaca \"siao ming ai wo\". Artinya \"Xiao Ming mencintaiku\" atau \"Xiao Ming sayang aku\".\n\nAda bagian yang mau kamu coba ucapkan atau ada pertanyaan lain?",
+        "inputTokens": 191,
+        "outputTokens": 220,
+        "latencyMs": 1991,
+        "finishReason": "stop",
+        "providerCost": "0.0006073"
+      }
+    },
+    {
+      "id": "D1",
+      "prompt": "Pak aku operator mesin pabrik, bosku China. Tolong susunin latihan Mandarin biar ngerti instruksi mesin sama safety, jangan mulai dari salam doang ya.",
+      "NO_TEACHING_SYSTEM": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Oke, siap! Ini dia program latihan Mandarin yang fokus pada instruksi mesin dan keselamatan, dirancang khusus untuk kamu yang kerja di pabrik dengan bos orang Tiongkok. Kita langsung ke intinya, tanpa basa-basi salam.\n\n**Target Utama:** Memahami instruksi kerja, melaporkan masalah, dan memahami peringatan keselamatan.\n\n---\n\n**STRUKTUR PELATIHAN (4 MINGGU - Bisa Disesuaikan)**\n\n**Minggu 1: Mengenali Bagian Mesin & Aksi Dasar**\n\n*   **Fokus Kosakata:** Nama-nama bagian mesin, kata kerja dasar untuk operasi.\n*   **Contoh Kalimat & Frasa:**\n    *   **Mesin & Bagian:**\n        *   机器 (jīqì) - Mesin\n        *   开关 (kāiguān) - Saklar (on/off)\n        *   启动 (qǐdòng) - Mulai/Start\n        *   停止 (tíngzhǐ) - Berhenti/Stop\n        *   按钮 (ànniǔ) - Tombol\n        *   屏幕 (píngmù) - Layar\n        *   指示灯 (zhǐshìdēng) - Lampu indikator\n        *   电源 (diànyuán) - Sumber listrik/Power\n        *   马达 (mǎdá) - Motor\n        *   传送带 (chuánsòngdài) - Konveyor\n        *   刀片 (dāopiàn) - Pisau/Blade\n        *   模具 (mújù) - Cetakan/Mould\n        *   传感器 (chuángǎnqì) - Sensor\n    *   **Aksi Dasar:**\n        *   开 (kāi) - Menyalakan (mesin, lampu)\n        *   关 (guān) - Mematikan (mesin, lampu)\n        *   按 (àn) - Menekan (tombol)\n        *   放 (fàng) - Meletakkan/Menaruh\n        *   拿 (ná) - Mengambil\n        *   检查 (jiǎnchá) - Memeriksa\n        *   调整 (tiáozhěng) - Menyesuaikan\n        *   安装 (ānzhuāng) - Memasang\n        *   拆卸 (chāixiè) - Membongkar\n        *   清理 (qīnglǐ) - Membersihkan\n        *   加油 (jiāyóu) - Memberi minyak/melumasi\n*   **Latihan:**\n    *   Identifikasi bagian-bagian mesin yang sering kamu gunakan di pabrik. Ucapkan namanya dalam Mandarin.\n    *   Latih mengucapkan instruksi sederhana: \"按这个按钮\" (Àn zhège ànniǔ - Tekan tombol ini), \"开机器\" (Kāi jīqì - Nyalakan mesin), \"关电源\" (Guān diànyuán - Matikan listrik).\n    *   Minta bosmu menunjuk bagian mesin dan kamu sebutkan namanya dalam Mandarin.\n\n**Minggu 2: Instruksi Operasi & Angka**\n\n*   **Fokus Kosakata:** Angka, urutan, instruksi spesifik.\n*   **Contoh Kalimat & Frasa:**\n    *   **Angka (penting untuk jumlah, kecepatan, suhu):**\n        *   一 (yī) - Satu, 二 (èr) - Dua, 三 (sān) - Tiga, ... 十 (shí) - Sepuluh\n        *   百 (bǎi) - Ratusan, 千 (qiān) - Ribuan\n        *   个 (gè) - Satuan (misal: 两个 - dua buah)\n        *   米 (mǐ) - Meter, 公斤 (gōngjīn) - Kilogram\n        *   度 (dù) - Derajat (suhu)\n        *   分钟 (fēnzhōng) - Menit, 小时 (xiǎoshí) - Jam\n    *   **Instruksi Urutan:**\n        *   第一步 (dì yī bù) - Langkah pertama\n        *   然后",
+        "inputTokens": 34,
+        "outputTokens": 900,
+        "latencyMs": 6061,
+        "finishReason": "length",
+        "providerCost": "0.0022602"
+      },
+      "MINIMAL_IDENTITY": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Wah, menarik sekali! Tentu saja, saya bisa bantu susun latihan Mandarin yang fokus ke instruksi mesin dan keselamatan kerja, biar kamu bisa lebih lancar komunikasi dengan bos dan rekan kerja.\n\nKita bisa langsung masuk ke inti pembicaraan. Gimana kalau kita mulai dengan beberapa frasa penting yang sering dipakai di pabrik, terutama yang berhubungan dengan instruksi dan keamanan?\n\nMisalnya, kita bisa bahas:\n\n1.  **Perintah dasar:** Seperti \"mulai\", \"berhenti\", \"pelan-pelan\", \"cepat\".\n2.  **Bagian mesin:** Nama-nama umum komponen mesin yang sering kamu operasikan.\n3.  **Peringatan bahaya:** Frasa untuk mengingatkan tentang potensi bahaya atau tindakan pencegahan.\n\nGimana menurutmu? Mau langsung kita coba bahas yang mana dulu? Atau ada ide lain yang ingin kamu tambahkan?",
+        "inputTokens": 213,
+        "outputTokens": 184,
+        "latencyMs": 2697,
+        "finishReason": "stop",
+        "providerCost": "0.0005239"
+      }
+    },
+    {
+      "id": "D2",
+      "prompt": "Bro besok aku jadi sopir bos Chinese, bahasa Mandarin kacau banget. Yang penting bisa jemput di bandara dan ngobrol soal tujuan. Latih aku dong.",
+      "NO_TEACHING_SYSTEM": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Oke, siap! Jangan panik, kita fokus ke yang penting-penting dulu. Intinya, kamu harus bisa:\n\n1.  **Menyapa dan memastikan itu bosmu.**\n2.  **Menanyakan tujuan.**\n3.  **Mengatakan \"oke\" atau \"baik\".**\n4.  **Mengatakan \"sama-sama\" atau \"tidak masalah\".**\n\nIni dia percakapan dasar yang bisa kamu latih. Aku kasih fonetik (cara baca) dan artinya.\n\n---\n\n**Skenario 1: Menjemput di Bandara**\n\nAnggap bosmu baru keluar dari pintu kedatangan.\n\n**Kamu (dengan senyum dan ramah):**\n*   **\"Nin hao! Nin shi [Nama Bos] ma?\"**\n    *   (Nín hǎo! Nín shì [Nama Bos] ma?)\n    *   Artinya: \"Halo, Bapak/Ibu! Apakah Anda [Nama Bos]?\"\n    *   **Tips:** Ucapkan \"Nin\" (nín) untuk \"Anda\" yang lebih sopan. Ganti \"[Nama Bos]\" dengan nama bosmu. Kalau kamu tahu nama keluarganya, misalnya \"Mr. Chen\", bisa bilang \"Chen Xiansheng\" (Chén Xiānshēng - Bapak Chen).\n\n**Bos (kemungkinan akan menjawab):**\n*   \"Shi de, wo shi.\" (Shì de, wǒ shì.) - \"Ya, saya.\"\n*   Atau hanya mengangguk.\n\n**Kamu (setelah bos mengonfirmasi):**\n*   **\"Huan ying nin lai!\"**\n    *   (Huān yíng nín lái!)\n    *   Artinya: \"Selamat datang!\"\n*   **\"Wo shi [Nama Kamu], nin de si ji.\"**\n    *   (Wǒ shì [Nama Kamu], nín de sī jī.)\n    *   Artinya: \"Saya [Nama Kamu], sopir Anda.\"\n    *   **Tips:** Ini untuk memperkenalkan diri.\n\n---\n\n**Skenario 2: Menanyakan Tujuan**\n\nSetelah bos masuk mobil dan barang sudah aman.\n\n**Kamu:**\n*   **\"Qing wen, nin xiang qu na li?\"**\n    *   (Qǐng wèn, nín xiǎng qù nǎ lǐ?)\n    *   Artinya: \"Permisi, Anda ingin pergi ke mana?\"\n    *   **Tips:** \"Qing wen\" (qǐng wèn) artinya \"permisi/boleh saya bertanya\". Ini sopan.\n\n**Bos (akan menyebutkan alamat atau nama tempat):**\n*   \"Qu [Nama Hotel/Alamat].\" (Qù [Nama Hotel/Alamat].) - \"Pergi ke [Nama Hotel/Alamat].\"\n*   \"Wo yao qu [Nama Kantor/Tempat].\" (Wǒ yào qù [Nama Kantor/Tempat].) - \"Saya ingin pergi ke [Nama Kantor/Tempat].\"\n\n**Kamu (setelah mendengar tujuan):**\n*   **\"Hao de, ming bai le.\"**\n    *   (Hǎo de, míng bái le.)\n    *   Artinya: \"Baik, saya mengerti.\"\n    *   **Atau yang lebih sederhana:**\n*   **\"Hao de.\"**\n    *   (Hǎo de.)\n    *   Artinya: \"Baik.\" / \"Oke.\"\n    *   **Tips:** Ini yang paling penting. Cukup \"Hao de\" sudah cukup menunjukkan kamu paham.\n\n---\n\n**Skenario 3: Percakapan Singkat (Jika Diperlukan)**\n\n**Jika bos mengucapkan terima kasih:**\n*   **Bos:** \"Xie xie.\" (Xiè xie.) - \"Terima kasih.\"\n*   **Kamu:** **\"Bu ke qi.\"**\n    *   (Bú kè qì.)\n    *   Artinya: \"Sama-sama.\" / \"Tidak masalah.\"\n\n**Jika bos bertanya \"Apakah jauh?\" atau \"Berapa lama lagi?\":**\n*   **Bos:** \"Yao duo jiu?\" (Yào duō jiǔ?) - \"Butuh berapa lama?\"",
+        "inputTokens": 36,
+        "outputTokens": 900,
+        "latencyMs": 7563,
+        "finishReason": "length",
+        "providerCost": "0.0022608"
+      },
+      "MINIMAL_IDENTITY": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Wah, keren banget! Siap, Bro. Santai aja, kita latihan bareng biar besok lancar jemput bos Chinese-nya.\n\nOke, kita mulai dari yang paling penting dulu ya: **menjemput di bandara**.\n\nBiasanya, kalau jemput di bandara, kita perlu tahu beberapa hal:\n1.  **Menyapa dan memperkenalkan diri.**\n2.  **Menanyakan apakah dia bos yang kita jemput.**\n3.  **Menawarkan bantuan membawa barang.**\n4.  **Menanyakan tujuan selanjutnya.**\n\nGimana kalau kita mulai dari yang pertama: **menyapa dan memperkenalkan diri**?\n\nAda beberapa cara, tapi yang paling umum dan sopan itu:\n\n*   **你好 (nǐ hǎo)** - Halo/Hai (ini sapaan umum)\n*   **您好 (nín hǎo)** - Halo/Hai (ini lebih formal dan sopan, cocok untuk bos)\n\nTerus, untuk memperkenalkan diri, kamu bisa bilang:\n*   **我是 [Nama Kamu] (wǒ shì [Nama Kamu])** - Saya adalah [Nama Kamu].\n\nJadi, kalau digabung, kamu bisa coba bilang:\n**您好，我是 [Nama Kamu]. (nín hǎo, wǒ shì [Nama Kamu].)**\n*Halo, saya [Nama Kamu].*\n\nCoba kamu praktekkan dulu, Bro. Gimana ngomongnya?",
+        "inputTokens": 215,
+        "outputTokens": 299,
+        "latencyMs": 3300,
+        "finishReason": "stop",
+        "providerCost": "0.000812"
+      }
+    },
+    {
+      "id": "D3",
+      "prompt": "Aku kasir minimarket, kalo customer China nanya boleh bayar QRIS gimana jawabnya? Langsung roleplay aja deh, kamu jadi pembeli.",
+      "NO_TEACHING_SYSTEM": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Baik, siap! Aku jadi pembeli dari China.\n\n---\n\n**[Scene: Kasir minimarket. Kamu (kasir) sedang melayani pelanggan lain. Aku (pembeli dari China) mendekat ke kasir setelah pelanggan sebelumnya selesai.]**\n\n**Aku (pembeli, dengan aksen sedikit dan mencoba berbahasa Indonesia):** \"Halo... Saya mau bayar ini...\" (Menyerahkan beberapa barang ke kasir)\n\n**Kamu (kasir):** (Tersenyum ramah) \"Baik, totalnya Rp 35.000, Kak.\"\n\n**Aku (pembeli, mengeluarkan ponsel, terlihat sedikit ragu):** \"Ehm... Maaf... Boleh... QRIS? Bisa?\" (Menunjuk layar ponselnya yang menampilkan aplikasi pembayaran, tapi belum membuka QRIS)\n\n**Kamu (kasir, dengan senyum ramah dan jelas):** \"Oh, iya, tentu saja bisa, Kak! Kami menerima pembayaran dengan QRIS.\"\n\n**Aku (pembeli, matanya berbinar):** \"Oh! Bisa! Bagus sekali!\" (Langsung membuka aplikasi pembayaran di ponselnya dan mencari fitur scan QR)\n\n**Kamu (kasir, menunjuk ke stiker QRIS di meja kasir):** \"QRIS-nya ada di sini, Kak. Silakan discan.\"\n\n**Aku (pembeli):** \"Oke, oke...\" (Mengarahkan kamera ponselnya ke stiker QRIS, lalu terdengar bunyi notifikasi pembayaran berhasil dari ponselnya) \"Sudah! Terima kasih banyak!\"\n\n**Kamu (kasir, mengecek layar kasir):** \"Baik, pembayarannya sudah masuk, Kak. Terima kasih banyak sudah berbelanja di sini!\"\n\n**Aku (pembeli, tersenyum lebar):** \"Sama-sama! Sampai jumpa lagi!\" (Mengambil barang belanjaannya dan pergi)\n\n---\n\n**Tips Tambahan untuk Kasir:**\n\n*   **Senyum dan Kontak Mata:** Ini universal dan membuat pelanggan merasa nyaman.\n*   **Nada Bicara Jelas dan Sedikit Lebih Lambat:** Terutama jika kamu tahu mereka mungkin bukan penutur asli bahasa Indonesia.\n*   **Gunakan Gestur:** Menunjuk ke stiker QRIS akan sangat membantu.\n*   **Kata Kunci Sederhana:** \"QRIS,\" \"Bisa,\" \"Silakan Scan\" adalah kata-kata yang mudah dimengerti.\n*   **Jika Mereka Masih Bingung:** Kamu bisa mencoba mengatakan \"Scan ini\" sambil menunjuk stiker QRIS, atau bahkan jika ada, tunjukkan contoh QRIS di ponselmu (jika memungkinkan dan tidak mengganggu alur kerja).\n\nSemoga membantu! Kamu pasti bisa melayani mereka dengan baik!",
+        "inputTokens": 32,
+        "outputTokens": 578,
+        "latencyMs": 6445,
+        "finishReason": "stop",
+        "providerCost": "0.0014546"
+      },
+      "MINIMAL_IDENTITY": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Oke, siap! Menarik nih, langsung roleplay. Aku jadi pembeli ya.\n\n*Aku masuk ke minimarket, ambil beberapa barang, lalu ke kasir.*\n\n你好！(Nǐ hǎo! - Halo!) Ini semua ya. Bisa bayar pakai QRIS?",
+        "inputTokens": 211,
+        "outputTokens": 58,
+        "latencyMs": 2120,
+        "finishReason": "stop",
+        "providerCost": "0.0002083"
+      }
+    },
+    {
+      "id": "D4",
+      "prompt": "Kak aku mau kerja jadi ART keluarga Chinese. Bantu dong belajar ngomong soal bersih-bersih, nyuci sama masak. Enaknya mulai dari mana?",
+      "NO_TEACHING_SYSTEM": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Tentu saja! Senang sekali bisa membantu. Bekerja sebagai ART di keluarga Chinese bisa jadi pengalaman yang menarik. Kunci utamanya adalah komunikasi yang efektif.\n\nMari kita mulai dari dasar, yaitu **kosakata umum** yang sering digunakan dalam kegiatan bersih-bersih, mencuci, dan memasak. Setelah itu, kita akan coba merangkai kalimat sederhana.\n\n**1. Kosakata Umum:**\n\n**A. Bersih-bersih (打扫 - dǎsǎo)**\n\n*   **Bersih:** 干净 (gānjìng)\n*   **Kotor:** 脏 (zāng)\n*   **Sapu:** 扫 (sǎo) / 扫地 (sǎodì - menyapu lantai)\n*   **Pel:** 拖 (tuō) / 拖地 (tuōdì - mengepel lantai)\n*   **Lap:** 擦 (cā)\n*   **Debu:** 灰尘 (huīchén)\n*   **Sampah:** 垃圾 (lājī)\n*   **Buang sampah:** 倒垃圾 (dào lājī)\n*   **Meja:** 桌子 (zhuōzi)\n*   **Kursi:** 椅子 (yǐzi)\n*   **Lantai:** 地板 (dìbǎn)\n*   **Jendela:** 窗户 (chuānghu)\n*   **Kamar mandi:** 卫生间 (wèishēngjiān)\n*   **Dapur:** 厨房 (chúfáng)\n*   **Kamar tidur:** 卧室 (wòshì)\n*   **Ruang tamu:** 客厅 (kètīng)\n*   **Bersihkan kamar mandi:** 清理卫生间 (qīnglǐ wèishēngjiān)\n*   **Bersihkan dapur:** 清理厨房 (qīnglǐ chúfáng)\n\n**B. Mencuci (洗 - xǐ)**\n\n*   **Cuci:** 洗 (xǐ)\n*   **Pakaian:** 衣服 (yīfu)\n*   **Mesin cuci:** 洗衣机 (xǐyījī)\n*   **Jemur:** 晾 (liàng) / 晾衣服 (liàng yīfu - menjemur pakaian)\n*   **Setrika:** 熨 (yùn) / 熨衣服 (yùn yīfu - menyetrika pakaian)\n*   **Lipat:** 叠 (dié) / 叠衣服 (dié yīfu - melipat pakaian)\n*   **Sabun cuci:** 洗衣粉 (xǐyīfěn) / 洗衣液 (xǐyīyè)\n*   **Pakaian kotor:** 脏衣服 (zāng yīfu)\n*   **Pakaian bersih:** 干净衣服 (gānjìng yīfu)\n*   **Cuci piring:** 洗碗 (xǐwǎn)\n*   **Piring:** 碗 (wǎn)\n*   **Gelas:** 杯子 (bēizi)\n\n**C. Memasak (做饭 - zuòfàn)**\n\n*   **Masak:** 做饭 (zuòfàn) / 煮 (zhǔ - merebus) / 炒 (chǎo - menumis/menggoreng) / 蒸 (zhēng - mengukus)\n*   **Makan:** 吃 (chī)\n*   **Nasi:** 米饭 (mǐfàn)\n*   **Sayur:** 蔬菜 (shūcài)\n*   **Daging:** 肉 (ròu)\n*   **Ayam:** 鸡肉 (jīròu)\n*   **Ikan:** 鱼 (yú)\n*   **Garam:** 盐 (yán)\n*   **Gula:** 糖 (táng)\n*   **Minyak:** 油 (yóu)\n*   **Air:** 水 (shuǐ)\n*   **Panas:** 热 (rè)\n*   **Dingin:** 冷 (lěng)\n*   **Sarapan:** 早餐 (z",
+        "inputTokens": 32,
+        "outputTokens": 900,
+        "latencyMs": 6509,
+        "finishReason": "length",
+        "providerCost": "0.0022596"
+      },
+      "MINIMAL_IDENTITY": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Wah, bagus sekali niatnya! Pasti sangat membantu kalau kamu bisa berkomunikasi dengan baik sama keluarga Chinese tempat kamu bekerja nanti.\n\nUntuk mulai belajar, menurutku kita bisa fokus ke **kata-kata dan frasa dasar yang paling sering dipakai sehari-hari** terkait bersih-bersih, nyuci, dan masak. Gimana kalau kita mulai dari perkenalan diri singkat dan beberapa kalimat sopan dulu? Itu penting banget untuk kesan pertama.\n\nSetelah itu, kita bisa masuk ke:\n1.  **Bersih-bersih rumah**: Kata-kata seperti \"menyapu\", \"mengepel\", \"membersihkan kamar mandi\", \"mengelap meja\".\n2.  **Mencuci**: \"Mencuci baju\", \"menjemur\", \"melipat baju\".\n3.  **Memasak**: \"Memasak nasi\", \"memotong sayur\", \"menggoreng\", \"mencuci piring\".\n\nGimana, setuju? Atau kamu ada ide lain mau mulai dari mana dulu? Santai saja ya belajarnya, kita sesuaikan dengan kecepatanmu. 😊",
+        "inputTokens": 211,
+        "outputTokens": 228,
+        "latencyMs": 3916,
+        "finishReason": "stop",
+        "providerCost": "0.0006333"
+      }
+    },
+    {
+      "id": "D5",
+      "prompt": "Eh jangan les dulu, aku lagi capek habis kerja. Temenin ngobrol santai aja pake Indo ya, boleh?",
+      "NO_TEACHING_SYSTEM": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Oke siap! Sini, duduk di sebelahku. Mau ngobrolin apa nih? Cerita aja, aku siap dengerin. Atau mau aku yang cerita? Bebas deh, yang penting kamu rileks dan nggak ngerasa terbebani.\n\nGimana kerjaan hari ini? Ada yang seru atau malah bikin pusing? Santai aja ya, nggak usah mikirin kerjaan dulu. Anggap aja ini waktu \"me time\" kamu.\n\nAtau mau ngobrolin hal-hal ringan aja? Kayak, tadi di jalan lihat apa yang lucu? Atau ada makanan enak yang pengen kamu coba?\n\nPokoknya, aku di sini buat kamu. Nggak perlu mikir keras, ngalir aja. 😊",
+        "inputTokens": 26,
+        "outputTokens": 156,
+        "latencyMs": 2914,
+        "finishReason": "stop",
+        "providerCost": "0.0003978"
+      },
+      "MINIMAL_IDENTITY": {
+        "status": "OK",
+        "model": "google/gemini-2.5-flash",
+        "answer": "Wah, tentu saja boleh! Jangan khawatir, santai aja. Gimana hari ini? Ada cerita menarik setelah kerja? Atau mau ngobrolin apa aja yang bikin kamu rileks? Aku siap nemenin ngobrol santai kok. 😊",
+        "inputTokens": 205,
+        "outputTokens": 51,
+        "latencyMs": 2112,
+        "finishReason": "stop",
+        "providerCost": "0.000189"
+      }
+    }
+  ]
+}

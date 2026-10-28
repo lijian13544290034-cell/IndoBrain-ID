@@ -1,0 +1,935 @@
+{
+  "executedAt": "2026-10-28T10:48:26.595Z",
+  "baseUrl": "https://indobrain-01-prd-prd-v0-1-lg03bdevj-lijian1.vercel.app",
+  "rows": [
+    {
+      "id": "A1",
+      "message": "sebagai pemulai mandarin, saya mau kerja di restoran china, tlg buat res untuk saya ya",
+      "result": {
+        "status": 200,
+        "firstTextMs": 1117,
+        "fullMs": 2484,
+        "streamedText": "Wah, ide yang bagus sekali! Belajar Mandarin sambil langsung praktik di restoran China pasti seru dan efektif banget. Saya siap bantu kamu menyusun resource-nya.\n\nUntuk pemula yang mau kerja di restoran China, kita bisa fokus ke beberapa area penting:\n\n1.  **Kosakata Dasar Restoran:** Ini yang paling penting, mulai dari sapaan, nama makanan, minuman, sampai peralatan makan.\n2.  **Frasa Penting untuk Pelayanan:** Kalimat-kalimat yang sering dipakai saat melayani pelanggan.\n3.  **Memahami Instruksi Sederhana:** Bagaimana kalau atasan atau rekan kerja memberikan instruksi dalam Mandarin.\n\nKita mulai dari mana dulu nih? Atau kamu ada ide lain yang ingin dipelajari duluan?",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Wah, ide yang bagus sekali! Belajar Mandarin sambil langsung praktik di restoran China pasti seru dan efektif banget. Saya siap bantu kamu menyusun resource-nya.\n\nUntuk pemula yang mau kerja di restoran China, kita bisa fokus ke beberapa area penting:\n\n1.  **Kosakata Dasar Restoran:** Ini yang paling penting, mulai dari sapaan, nama makanan, minuman, sampai peralatan makan.\n2.  **Frasa Penting untuk Pelayanan:** Kalimat-kalimat yang sering dipakai saat melayani pelanggan.\n3.  **Memahami Instruksi Sederhana:** Bagaimana kalau atasan atau rekan kerja memberikan instruksi dalam Mandarin.\n\nKita mulai dari mana dulu nih? Atau kamu ada ide lain yang ingin dipelajari duluan?",
+          "spokenChinese": [],
+          "speechSegments": [],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 0,
+            "billableCharacters": 0,
+            "chineseRequestCount": 0,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 209,
+            "token_output": 156,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0004527,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 616,
+            "fullResponseMs": 1979,
+            "modelTimeToFirstOutputMs": 578.768254999999
+          },
+          "truncated": false,
+          "generationId": "gen_01M611RYAQAMW5H1KK6ENGQ300",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "A2",
+      "message": "Bang aku mau kerja jadi waiter di resto Cina, mandarin nol besar nih wkwk. Bisa bikinin cara belajar yg cocok buat kerja?",
+      "result": {
+        "status": 200,
+        "firstTextMs": 1148,
+        "fullMs": 6878,
+        "streamedText": "Wah, semangat banget nih! Bagus itu niatnya. Pasti bisa kok belajar Mandarin dari nol buat kerja jadi waiter di resto Cina. Aku bantu susun rencana belajarnya ya.\n\nKita fokus ke percakapan dan kosakata yang paling sering dipakai di restoran aja dulu. Gimana kalau kita bagi jadi beberapa tahap gini:\n\n**Tahap 1: Dasar-dasar Sapaan dan Angka (Minggu 1-2)**\n*   **Sapaan Umum:** Ini penting banget buat nyambut tamu.\n    *   你好 (nǐ hǎo) - Halo/Hai\n    *   欢迎光临 (huānyíng guānglín) - Selamat datang\n*   **Angka 1-10:** Buat nanyain jumlah orang atau pesanan sederhana.\n    *   一 (yī) - satu\n    *   二 (èr) - dua\n    *   三 (sān) - tiga\n    *   ...sampai 十 (shí) - sepuluh\n*   **Pertanyaan Sederhana:**\n    *   几位？ (jǐ wèi?) - Berapa orang? (lebih sopan dari 几个人 jǐ gè rén)\n\n**Tahap 2: Menerima Pesanan Dasar (Minggu 3-4)**\n*   **Makanan Umum:** Nama-nama makanan yang sering dipesan, misalnya:\n    *   米饭 (mǐfàn) - Nasi putih\n    *   面条 (miàntiáo) - Mie\n    *   菜 (cài) - Sayur (juga bisa berarti hidangan/masakan)\n    *   汤 (tāng) - Sup\n*   **Minuman Umum:**\n    *   水 (shuǐ) - Air\n    *   茶 (chá) - Teh\n    *   可乐 (kělè) - Coca-cola\n*   **Kata Kerja Penting:**\n    *   要 (yào) - Mau/ingin\n    *   吃 (chī) - Makan\n    *   喝 (hē) - Minum\n*   **Contoh Kalimat:**\n    *   您要什么？ (nín yào shénme?) - Anda mau apa? (lebih sopan)\n    *   请问，您要点什么？ (qǐngwèn, nín yào diǎn shénme?) - Permisi, Anda mau pesan apa?\n    *   我想要米饭。 (wǒ xiǎng yào mǐfàn.) - Saya mau nasi putih.\n\n**Tahap 3: Pelayanan Tambahan & Pembayaran (Minggu 5-6)**\n*   **Konfirmasi Pesanan:**\n    *   好的 (hǎo de) - Baik/Oke\n    *   请稍等 (qǐng shāoděng) - Mohon tunggu sebentar\n*   **Permintaan Tambahan:**\n    *   纸巾 (zhǐjīn) - Tisu\n    *   筷子 (kuàizi) - Sumpit\n    *   勺子 (sháozi) - Sendok\n*   **Pembayaran:**\n    *   买单 (mǎidān) - Minta bill/bayar\n    *   一共多少钱？ (yīgòng duōshǎo qián?) - Totalnya berapa?\n    *   谢谢 (xièxie) - Terima kasih\n    *   再见 (zàijiàn) - Sampai jumpa\n\n**Tips Belajar Tambahan:**\n\n1.  **Dengarkan dan Ulangi:** Sering-sering dengarkan pengucapan yang benar (bisa dari aplikasi, YouTube, atau bahkan dengar percakapan di resto nanti). Lalu coba ulangi.\n2.  **Fokus ke Pinyin dan Nada:** Nada itu penting banget di Mandarin. Coba perhatikan baik-baik nada dari setiap kata. Kalau salah nada, artinya bisa beda.\n3.  **Tempel Catatan:** Tulis kosakata penting di kertas kecil, tempel di tempat yang sering kamu lihat (kamar mandi, dapur, dll).\n4.  **Praktik Langsung:** Ini yang paling penting! Begitu",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Wah, semangat banget nih! Bagus itu niatnya. Pasti bisa kok belajar Mandarin dari nol buat kerja jadi waiter di resto Cina. Aku bantu susun rencana belajarnya ya.\n\nKita fokus ke percakapan dan kosakata yang paling sering dipakai di restoran aja dulu. Gimana kalau kita bagi jadi beberapa tahap gini:\n\n**Tahap 1: Dasar-dasar Sapaan dan Angka (Minggu 1-2)**\n*   **Sapaan Umum:** Ini penting banget buat nyambut tamu.\n    *   你好 (nǐ hǎo) - Halo/Hai\n    *   欢迎光临 (huānyíng guānglín) - Selamat datang\n*   **Angka 1-10:** Buat nanyain jumlah orang atau pesanan sederhana.\n    *   一 (yī) - satu\n    *   二 (èr) - dua\n    *   三 (sān) - tiga\n    *   ...sampai 十 (shí) - sepuluh\n*   **Pertanyaan Sederhana:**\n    *   几位？ (jǐ wèi?) - Berapa orang? (lebih sopan dari 几个人 jǐ gè rén)\n\n**Tahap 2: Menerima Pesanan Dasar (Minggu 3-4)**\n*   **Makanan Umum:** Nama-nama makanan yang sering dipesan, misalnya:\n    *   米饭 (mǐfàn) - Nasi putih\n    *   面条 (miàntiáo) - Mie\n    *   菜 (cài) - Sayur (juga bisa berarti hidangan/masakan)\n    *   汤 (tāng) - Sup\n*   **Minuman Umum:**\n    *   水 (shuǐ) - Air\n    *   茶 (chá) - Teh\n    *   可乐 (kělè) - Coca-cola\n*   **Kata Kerja Penting:**\n    *   要 (yào) - Mau/ingin\n    *   吃 (chī) - Makan\n    *   喝 (hē) - Minum\n*   **Contoh Kalimat:**\n    *   您要什么？ (nín yào shénme?) - Anda mau apa? (lebih sopan)\n    *   请问，您要点什么？ (qǐngwèn, nín yào diǎn shénme?) - Permisi, Anda mau pesan apa?\n    *   我想要米饭。 (wǒ xiǎng yào mǐfàn.) - Saya mau nasi putih.\n\n**Tahap 3: Pelayanan Tambahan & Pembayaran (Minggu 5-6)**\n*   **Konfirmasi Pesanan:**\n    *   好的 (hǎo de) - Baik/Oke\n    *   请稍等 (qǐng shāoděng) - Mohon tunggu sebentar\n*   **Permintaan Tambahan:**\n    *   纸巾 (zhǐjīn) - Tisu\n    *   筷子 (kuàizi) - Sumpit\n    *   勺子 (sháozi) - Sendok\n*   **Pembayaran:**\n    *   买单 (mǎidān) - Minta bill/bayar\n    *   一共多少钱？ (yīgòng duōshǎo qián?) - Totalnya berapa?\n    *   谢谢 (xièxie) - Terima kasih\n    *   再见 (zàijiàn) - Sampai jumpa\n\n**Tips Belajar Tambahan:**\n\n1.  **Dengarkan dan Ulangi:** Sering-sering dengarkan pengucapan yang benar (bisa dari aplikasi, YouTube, atau bahkan dengar percakapan di resto nanti). Lalu coba ulangi.\n2.  **Fokus ke Pinyin dan Nada:** Nada itu penting banget di Mandarin. Coba perhatikan baik-baik nada dari setiap kata. Kalau salah nada, artinya bisa beda.\n3.  **Tempel Catatan:** Tulis kosakata penting di kertas kecil, tempel di tempat yang sering kamu lihat (kamar mandi, dapur, dll).\n4.  **Praktik Langsung:** Ini yang paling penting! Begitu",
+          "spokenChinese": [
+            {
+              "text": "你好",
+              "pinyin": "nǐ hǎo",
+              "indonesian": "Halo/Hai"
+            },
+            {
+              "text": "欢迎光临",
+              "pinyin": "huānyíng guānglín",
+              "indonesian": "Selamat datang"
+            },
+            {
+              "text": "一",
+              "pinyin": "yī",
+              "indonesian": "satu"
+            },
+            {
+              "text": "二",
+              "pinyin": "èr",
+              "indonesian": "dua"
+            }
+          ],
+          "speechSegments": [
+            {
+              "language": "zh-CN",
+              "text": "你好"
+            },
+            {
+              "language": "zh-CN",
+              "text": "欢迎光临"
+            },
+            {
+              "language": "zh-CN",
+              "text": "一"
+            },
+            {
+              "language": "zh-CN",
+              "text": "二"
+            }
+          ],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 4,
+            "billableCharacters": 8,
+            "chineseRequestCount": 4,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 217,
+            "token_output": 900,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0023151,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 531,
+            "fullResponseMs": 6258,
+            "modelTimeToFirstOutputMs": 524.2565860000032
+          },
+          "truncated": true,
+          "generationId": "gen_01M611SDJVAJBMVQV7FG6171NF",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "D-FACTORY",
+      "message": "Pak aku operator mesin pabrik, bosku China. Tolong susunin latihan Mandarin biar ngerti instruksi mesin sama safety, jangan mulai dari salam doang ya.",
+      "result": {
+        "status": 200,
+        "firstTextMs": 1258,
+        "fullMs": 2849,
+        "streamedText": "Halo! Wah, menarik sekali nih, belajar Mandarin untuk keperluan kerja langsung. Pasti bos kamu senang kalau kamu bisa berkomunikasi lebih lancar.\n\nOke, kita langsung fokus ke instruksi mesin dan safety ya, nggak perlu dari salam-salam dulu.\n\nGimana kalau kita mulai dengan beberapa kata kunci dasar yang sering muncul di instruksi mesin atau peringatan safety?\n\nMisalnya, kita bisa belajar kata-kata seperti:\n*   **Mulai**\n*   **Berhenti**\n*   **Hidupkan/Nyalakan**\n*   **Matikan**\n*   **Bahaya**\n*   **Hati-hati**\n*   **Tekan**\n*   **Putar**\n\nAtau mungkin ada instruksi spesifik yang sering kamu dengar di pabrik? Coba sebutkan beberapa yang paling sering kamu dengar dalam Bahasa Indonesia, nanti kita coba cari padanan Mandarinnya.\n\nGimana, setuju kita mulai dari sini?",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Halo! Wah, menarik sekali nih, belajar Mandarin untuk keperluan kerja langsung. Pasti bos kamu senang kalau kamu bisa berkomunikasi lebih lancar.\n\nOke, kita langsung fokus ke instruksi mesin dan safety ya, nggak perlu dari salam-salam dulu.\n\nGimana kalau kita mulai dengan beberapa kata kunci dasar yang sering muncul di instruksi mesin atau peringatan safety?\n\nMisalnya, kita bisa belajar kata-kata seperti:\n*   **Mulai**\n*   **Berhenti**\n*   **Hidupkan/Nyalakan**\n*   **Matikan**\n*   **Bahaya**\n*   **Hati-hati**\n*   **Tekan**\n*   **Putar**\n\nAtau mungkin ada instruksi spesifik yang sering kamu dengar di pabrik? Coba sebutkan beberapa yang paling sering kamu dengar dalam Bahasa Indonesia, nanti kita coba cari padanan Mandarinnya.\n\nGimana, setuju kita mulai dari sini?",
+          "spokenChinese": [],
+          "speechSegments": [],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 0,
+            "billableCharacters": 0,
+            "chineseRequestCount": 0,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 223,
+            "token_output": 206,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0005819,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 673,
+            "fullResponseMs": 2262,
+            "modelTimeToFirstOutputMs": 668.440637000007
+          },
+          "truncated": false,
+          "generationId": "gen_01M611T0XJTM67V3Y71ETN707Y",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "D-DRIVER",
+      "message": "Bro besok aku jadi sopir bos Chinese, bahasa Mandarin kacau banget. Yang penting bisa jemput di bandara dan ngobrol soal tujuan. Latih aku dong.",
+      "result": {
+        "status": 200,
+        "firstTextMs": 1095,
+        "fullMs": 1660,
+        "streamedText": "Wah, seru banget! Oke, siap bantu kamu biar besok lancar jemput bos Chinese-nya. Jangan khawatir, kita fokus ke yang paling penting dulu ya.\n\nKita mulai dari jemput di bandara. Kira-kira kalimat apa yang paling kamu butuhkan saat bertemu bos di bandara? Misalnya, \"Halo, saya sopir Anda,\" atau \"Apakah Anda Tuan [nama bos]?\"\n\nCoba kamu sebutkan dulu, nanti aku bantu terjemahkan dan kasih pinyinnya. Gimana?",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Wah, seru banget! Oke, siap bantu kamu biar besok lancar jemput bos Chinese-nya. Jangan khawatir, kita fokus ke yang paling penting dulu ya.\n\nKita mulai dari jemput di bandara. Kira-kira kalimat apa yang paling kamu butuhkan saat bertemu bos di bandara? Misalnya, \"Halo, saya sopir Anda,\" atau \"Apakah Anda Tuan [nama bos]?\"\n\nCoba kamu sebutkan dulu, nanti aku bantu terjemahkan dan kasih pinyinnya. Gimana?",
+          "spokenChinese": [],
+          "speechSegments": [],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 0,
+            "billableCharacters": 0,
+            "chineseRequestCount": 0,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 225,
+            "token_output": 107,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.000335,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 762,
+            "fullResponseMs": 1325,
+            "modelTimeToFirstOutputMs": 757.5849400000006
+          },
+          "truncated": false,
+          "generationId": "gen_01M611TG6FP57W5NXSEY7BHZ7K",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "D-CASHIER",
+      "message": "Aku kasir minimarket, kalo customer China nanya boleh bayar QRIS gimana jawabnya? Langsung roleplay aja deh, kamu jadi pembeli.",
+      "result": {
+        "status": 200,
+        "firstTextMs": 909,
+        "fullMs": 1676,
+        "streamedText": "Oke, siap! Menarik nih, langsung roleplay. Aku jadi pembeli dari Tiongkok ya.\n\n你好！请问这里可以用QRIS支付吗？\nNǐ hǎo! Qǐngwèn zhèlǐ kěyǐ yòng QRIS zhīfù ma?\n(Halo! Maaf, di sini bisa bayar pakai QRIS?)",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Oke, siap! Menarik nih, langsung roleplay. Aku jadi pembeli dari Tiongkok ya.\n\n你好！请问这里可以用QRIS支付吗？\nNǐ hǎo! Qǐngwèn zhèlǐ kěyǐ yòng QRIS zhīfù ma?\n(Halo! Maaf, di sini bisa bayar pakai QRIS?)",
+          "spokenChinese": [],
+          "speechSegments": [],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 0,
+            "billableCharacters": 0,
+            "chineseRequestCount": 0,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 221,
+            "token_output": 77,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0002588,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 575,
+            "fullResponseMs": 1339,
+            "modelTimeToFirstOutputMs": 570.2062330000044
+          },
+          "truncated": false,
+          "generationId": "gen_01M611TYFPDKMPT64PS6AS1ZZX",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "D-NANNY",
+      "message": "Kak aku mau kerja jadi ART keluarga Chinese. Bantu dong belajar ngomong soal bersih-bersih, nyuci sama masak. Enaknya mulai dari mana?",
+      "result": {
+        "status": 200,
+        "firstTextMs": 1271,
+        "fullMs": 2595,
+        "streamedText": "Halo! Wah, niat banget mau belajar Mandarin buat kerja jadi ART di keluarga Chinese. Bagus banget itu! Pasti nanti sangat membantu komunikasi sehari-hari.\n\nKalau mau mulai belajar soal bersih-bersih, nyuci, dan masak, kita bisa mulai dari kosakata dasar yang paling sering dipakai. Gimana kalau kita mulai dari **kosakata umum seputar rumah dan kegiatan bersih-bersih** dulu?\n\nMisalnya, kita bisa belajar kata-kata seperti:\n*   Rumah\n*   Kamar\n*   Dapur\n*   Bersih\n*   Kotor\n*   Sapu\n*   Pel\n*   Cuci\n\nAtau Kakak ada ide lain mau mulai dari mana? Mungkin ada yang paling sering Kakak lakukan dulu di rumah?",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Halo! Wah, niat banget mau belajar Mandarin buat kerja jadi ART di keluarga Chinese. Bagus banget itu! Pasti nanti sangat membantu komunikasi sehari-hari.\n\nKalau mau mulai belajar soal bersih-bersih, nyuci, dan masak, kita bisa mulai dari kosakata dasar yang paling sering dipakai. Gimana kalau kita mulai dari **kosakata umum seputar rumah dan kegiatan bersih-bersih** dulu?\n\nMisalnya, kita bisa belajar kata-kata seperti:\n*   Rumah\n*   Kamar\n*   Dapur\n*   Bersih\n*   Kotor\n*   Sapu\n*   Pel\n*   Cuci\n\nAtau Kakak ada ide lain mau mulai dari mana? Mungkin ada yang paling sering Kakak lakukan dulu di rumah?",
+          "spokenChinese": [],
+          "speechSegments": [],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 0,
+            "billableCharacters": 0,
+            "chineseRequestCount": 0,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 221,
+            "token_output": 159,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0004638,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 668,
+            "fullResponseMs": 1994,
+            "modelTimeToFirstOutputMs": 662.3159200000082
+          },
+          "truncated": false,
+          "generationId": "gen_01M611VD2AED0ZRD4ZAT1JNV54",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "D-CHAT",
+      "message": "Eh jangan les dulu, aku lagi capek habis kerja. Temenin ngobrol santai aja pake Indo ya, boleh?",
+      "result": {
+        "status": 200,
+        "firstTextMs": 1188,
+        "fullMs": 1913,
+        "streamedText": "Oke, siap! Santai aja, nggak perlu les-lesan dulu kalau lagi capek. Ngobrol biasa aja pakai bahasa Indonesia, boleh banget!\n\nGimana hari ini kerjaannya? Lancar atau banyak drama? Curhat aja kalau mau, aku siap mendengarkan. 😊",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Oke, siap! Santai aja, nggak perlu les-lesan dulu kalau lagi capek. Ngobrol biasa aja pakai bahasa Indonesia, boleh banget!\n\nGimana hari ini kerjaannya? Lancar atau banyak drama? Curhat aja kalau mau, aku siap mendengarkan. 😊",
+          "spokenChinese": [],
+          "speechSegments": [],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 0,
+            "billableCharacters": 0,
+            "chineseRequestCount": 0,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 215,
+            "token_output": 60,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0002145,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 843,
+            "fullResponseMs": 1567,
+            "modelTimeToFirstOutputMs": 838.0315450000053
+          },
+          "truncated": false,
+          "generationId": "gen_01M611VW1PAJA7B997ZXNQQG6Q",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "C1",
+      "message": "Aku mau belajar 小明爱我, gimana bacanya?",
+      "result": {
+        "status": 200,
+        "firstTextMs": 1030,
+        "fullMs": 2365,
+        "streamedText": "Halo! Tentu, mari kita pelajari kalimat \"小明爱我\" (xiǎo míng ài wǒ).\n\nIni cara membacanya:\n\n*   **小明 (xiǎo míng)**: Ini adalah nama orang, \"Xiao Ming\".\n    *   **小 (xiǎo)** dibaca seperti \"siao\" tapi dengan nada ketiga (turun lalu naik).\n    *   **明 (míng)** dibaca seperti \"ming\" dengan nada kedua (naik).\n*   **爱 (ài)**: Artinya \"cinta\" atau \"sayang\".\n    *   Dibaca seperti \"ai\" (seperti kata \"hai\" tapi lebih pendek dan nadanya turun lalu naik).\n*   **我 (wǒ)**: Artinya \"saya\" atau \"aku\".\n    *   Dibaca seperti \"wo\" dengan nada ketiga (turun lalu naik).\n\nJadi, kalau digabungkan, **小明爱我 (xiǎo míng ài wǒ)** artinya \"Xiao Ming mencintaiku\" atau \"Xiao Ming menyayangiku\".\n\nApakah ada bagian yang ingin kamu ulangi atau tanyakan lagi?",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Halo! Tentu, mari kita pelajari kalimat \"小明爱我\" (xiǎo míng ài wǒ).\n\nIni cara membacanya:\n\n*   **小明 (xiǎo míng)**: Ini adalah nama orang, \"Xiao Ming\".\n    *   **小 (xiǎo)** dibaca seperti \"siao\" tapi dengan nada ketiga (turun lalu naik).\n    *   **明 (míng)** dibaca seperti \"ming\" dengan nada kedua (naik).\n*   **爱 (ài)**: Artinya \"cinta\" atau \"sayang\".\n    *   Dibaca seperti \"ai\" (seperti kata \"hai\" tapi lebih pendek dan nadanya turun lalu naik).\n*   **我 (wǒ)**: Artinya \"saya\" atau \"aku\".\n    *   Dibaca seperti \"wo\" dengan nada ketiga (turun lalu naik).\n\nJadi, kalau digabungkan, **小明爱我 (xiǎo míng ài wǒ)** artinya \"Xiao Ming mencintaiku\" atau \"Xiao Ming menyayangiku\".\n\nApakah ada bagian yang ingin kamu ulangi atau tanyakan lagi?",
+          "spokenChinese": [
+            {
+              "text": "小明",
+              "pinyin": "xiǎo míng",
+              "indonesian": "Ini adalah nama orang, \"Xiao Ming\"."
+            },
+            {
+              "text": "爱",
+              "pinyin": "ài",
+              "indonesian": "Artinya \"cinta\" atau \"sayang\"."
+            },
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "indonesian": "Artinya \"saya\" atau \"aku\"."
+            }
+          ],
+          "speechSegments": [
+            {
+              "language": "zh-CN",
+              "text": "小明"
+            },
+            {
+              "language": "zh-CN",
+              "text": "爱"
+            },
+            {
+              "language": "zh-CN",
+              "text": "我"
+            }
+          ],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 3,
+            "billableCharacters": 4,
+            "chineseRequestCount": 3,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 201,
+            "token_output": 241,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0006628,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 674,
+            "fullResponseMs": 1982,
+            "modelTimeToFirstOutputMs": 669.3254040000029
+          },
+          "truncated": false,
+          "generationId": "gen_01M611WARGEXN88JRE9Z1SRP0V",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "B-BREAKDOWN",
+      "message": "拆词: 小明爱我",
+      "result": {
+        "status": 200,
+        "fullMs": 2724,
+        "payload": {
+          "breakdown": {
+            "sentence": "小明爱我",
+            "pinyin": "Xiǎo Míng ài wǒ",
+            "indonesian": "Xiao Ming mencintaiku",
+            "words": [
+              {
+                "text": "小明",
+                "pinyin": "Xiǎo Míng",
+                "indonesian": "Xiao Ming (nama orang)"
+              },
+              {
+                "text": "爱",
+                "pinyin": "ài",
+                "indonesian": "cinta, sayang"
+              },
+              {
+                "text": "我",
+                "pinyin": "wǒ",
+                "indonesian": "aku, saya"
+              }
+            ]
+          },
+          "usage": {
+            "token_input": 625,
+            "token_output": 162,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0005925,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "latencyMs": 1761
+        }
+      }
+    },
+    {
+      "id": "C2",
+      "message": "Bisa pisahin kata-katanya satu-satu?",
+      "result": {
+        "status": 200,
+        "firstTextMs": 924,
+        "fullMs": 3070,
+        "streamedText": "Tentu saja! Mari kita pisahkan dan bahas satu per satu ya:\n\n1.  **小 (xiǎo)**\n    *   Artinya: kecil\n    *   Cara baca: Seperti \"siao\" dalam bahasa Indonesia, tapi nadanya adalah nada ketiga (turun sedikit lalu naik lagi). Coba bayangkan seperti kamu bilang \"hai\" tapi dengan intonasi yang sedikit melengkung ke bawah lalu ke atas.\n\n2.  **明 (míng)**\n    *   Artinya: terang, cerah\n    *   Cara baca: Seperti \"ming\" dalam bahasa Indonesia, tapi nadanya adalah nada kedua (naik). Bayangkan seperti kamu bertanya \"ha?\" dengan nada yang naik.\n\n    *Catatan: Ketika digabungkan menjadi **小明 (Xiǎo Míng)**, ini adalah nama orang, seperti \"Budi\" atau \"Ani\" di Indonesia.*\n\n3.  **爱 (ài)**\n    *   Artinya: cinta, sayang\n    *   Cara baca: Seperti \"ai\" (seperti \"ai\" pada kata \"cinta\" tapi nadanya turun lalu naik). Ini juga nada keempat (turun tajam).\n\n4.  **我 (wǒ)**\n    *   Artinya: saya, aku\n    *   Cara baca: Seperti \"wo\" dalam bahasa Indonesia, tapi nadanya adalah nada ketiga (turun sedikit lalu naik lagi), sama seperti nada pada **小 (xiǎo)**.\n\nBagaimana? Apakah penjelasan per kata ini lebih jelas? Ada yang mau dicoba diucapkan?",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Tentu saja! Mari kita pisahkan dan bahas satu per satu ya:\n\n1.  **小 (xiǎo)**\n    *   Artinya: kecil\n    *   Cara baca: Seperti \"siao\" dalam bahasa Indonesia, tapi nadanya adalah nada ketiga (turun sedikit lalu naik lagi). Coba bayangkan seperti kamu bilang \"hai\" tapi dengan intonasi yang sedikit melengkung ke bawah lalu ke atas.\n\n2.  **明 (míng)**\n    *   Artinya: terang, cerah\n    *   Cara baca: Seperti \"ming\" dalam bahasa Indonesia, tapi nadanya adalah nada kedua (naik). Bayangkan seperti kamu bertanya \"ha?\" dengan nada yang naik.\n\n    *Catatan: Ketika digabungkan menjadi **小明 (Xiǎo Míng)**, ini adalah nama orang, seperti \"Budi\" atau \"Ani\" di Indonesia.*\n\n3.  **爱 (ài)**\n    *   Artinya: cinta, sayang\n    *   Cara baca: Seperti \"ai\" (seperti \"ai\" pada kata \"cinta\" tapi nadanya turun lalu naik). Ini juga nada keempat (turun tajam).\n\n4.  **我 (wǒ)**\n    *   Artinya: saya, aku\n    *   Cara baca: Seperti \"wo\" dalam bahasa Indonesia, tapi nadanya adalah nada ketiga (turun sedikit lalu naik lagi), sama seperti nada pada **小 (xiǎo)**.\n\nBagaimana? Apakah penjelasan per kata ini lebih jelas? Ada yang mau dicoba diucapkan?",
+          "spokenChinese": [],
+          "speechSegments": [],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 0,
+            "billableCharacters": 0,
+            "chineseRequestCount": 0,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 461,
+            "token_output": 325,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0009508,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 550,
+            "fullResponseMs": 2683,
+            "modelTimeToFirstOutputMs": 542.7472909999778
+          },
+          "truncated": false,
+          "generationId": "gen_01M611X918TH7VK72WZJBBC609",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "C3",
+      "message": "Yang kata 爱 tadi itu artinya apa?",
+      "result": {
+        "status": 200,
+        "firstTextMs": 3092,
+        "fullMs": 3739,
+        "streamedText": "Oh, maaf, saya terpotong tadi!\n\nYang kata **爱 (ài)** itu artinya **cinta** atau **sayang**.\n\nCara bacanya: Seperti \"ai\" (seperti \"ai\" pada kata \"cinta\" dalam bahasa Indonesia), tapi nadanya adalah nada keempat (turun tajam).",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Oh, maaf, saya terpotong tadi!\n\nYang kata **爱 (ài)** itu artinya **cinta** atau **sayang**.\n\nCara bacanya: Seperti \"ai\" (seperti \"ai\" pada kata \"cinta\" dalam bahasa Indonesia), tapi nadanya adalah nada keempat (turun tajam).",
+          "spokenChinese": [],
+          "speechSegments": [],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 0,
+            "billableCharacters": 0,
+            "chineseRequestCount": 0,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 719,
+            "token_output": 66,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0003807,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 2499,
+            "fullResponseMs": 3145,
+            "modelTimeToFirstOutputMs": 2493.062177999993
+          },
+          "truncated": false,
+          "generationId": "gen_01M611XRYG4DZCYC3X50S2BFM4",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "C4",
+      "message": "Kalau dibalik jadi 我爱小明 gimana?",
+      "result": {
+        "status": 200,
+        "firstTextMs": 822,
+        "fullMs": 1871,
+        "streamedText": "Nah, pertanyaan bagus! Kalau dibalik jadi **我爱小明 (wǒ ài Xiǎo Míng)**, artinya juga ikut berubah.\n\n*   **我 (wǒ)**: saya/aku\n*   **爱 (ài)**: cinta/sayang\n*   **小明 (Xiǎo Míng)**: Xiao Ming\n\nJadi, **我爱小明 (wǒ ài Xiǎo Míng)** artinya menjadi **\"Aku mencintai Xiao Ming\"** atau **\"Aku menyayangi Xiao Ming\"**.\n\nPerhatikan perbedaannya dengan yang pertama tadi, **小明爱我 (Xiǎo Míng ài wǒ)** yang artinya \"Xiao Ming mencintaiku\". Posisinya menentukan siapa yang mencintai dan siapa yang dicintai.\n\nAda lagi yang ingin ditanyakan?",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Nah, pertanyaan bagus! Kalau dibalik jadi **我爱小明 (wǒ ài Xiǎo Míng)**, artinya juga ikut berubah.\n\n*   **我 (wǒ)**: saya/aku\n*   **爱 (ài)**: cinta/sayang\n*   **小明 (Xiǎo Míng)**: Xiao Ming\n\nJadi, **我爱小明 (wǒ ài Xiǎo Míng)** artinya menjadi **\"Aku mencintai Xiao Ming\"** atau **\"Aku menyayangi Xiao Ming\"**.\n\nPerhatikan perbedaannya dengan yang pertama tadi, **小明爱我 (Xiǎo Míng ài wǒ)** yang artinya \"Xiao Ming mencintaiku\". Posisinya menentukan siapa yang mencintai dan siapa yang dicintai.\n\nAda lagi yang ingin ditanyakan?",
+          "spokenChinese": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "indonesian": "saya/aku"
+            },
+            {
+              "text": "爱",
+              "pinyin": "ài",
+              "indonesian": "cinta/sayang"
+            },
+            {
+              "text": "小明",
+              "pinyin": "Xiǎo Míng",
+              "indonesian": "Xiao Ming"
+            }
+          ],
+          "speechSegments": [
+            {
+              "language": "zh-CN",
+              "text": "我"
+            },
+            {
+              "language": "zh-CN",
+              "text": "爱"
+            },
+            {
+              "language": "zh-CN",
+              "text": "小明"
+            }
+          ],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 3,
+            "billableCharacters": 4,
+            "chineseRequestCount": 3,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 793,
+            "token_output": 168,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0006579,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 471,
+            "fullResponseMs": 1511,
+            "modelTimeToFirstOutputMs": 466.7270439999993
+          },
+          "truncated": false,
+          "generationId": "gen_01M611Y92VEQVPB1GC7MN3KTWP",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "C5",
+      "message": "Sekarang ganti topik dulu: makanan hangat murah setelah kerja enaknya apa?",
+      "result": {
+        "status": 200,
+        "firstTextMs": 974,
+        "fullMs": 3165,
+        "streamedText": "Wah, topik yang asyik nih! Setelah kerja, apalagi kalau cuaca lagi dingin atau capek, memang paling enak cari makanan hangat yang murah meriah ya.\n\nBeberapa ide yang bisa kamu coba:\n\n1.  **Bakso/Mie Ayam:** Ini sih juara umum! Hangat, kuahnya gurih, isiannya mantap, dan harganya bersahabat banget.\n2.  **Soto Ayam/Soto Lamongan:** Kuah bening atau kuningnya yang segar, ditambah nasi hangat, bikin badan langsung plong.\n3.  **Nasi Goreng/Mie Goreng:** Meskipun digoreng, tapi kalau masih panas-panas dari wajan, rasanya nikmat dan mengenyangkan. Bisa request pedas biar makin nampol.\n4.  **Bubur Ayam:** Kalau mau yang lebih ringan tapi tetap hangat dan mengenyangkan. Apalagi kalau pakai topping komplit.\n5.  **Ronde/Wedang Jahe (kalau cuma mau camilan hangat):** Ini lebih ke minuman dan camilan, tapi kalau lagi nggak terlalu lapar dan cuma butuh kehangatan, ini pilihan yang pas.\n\nDari pilihan-pilihan itu, ada yang jadi favoritmu atau ada ide lain?",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Wah, topik yang asyik nih! Setelah kerja, apalagi kalau cuaca lagi dingin atau capek, memang paling enak cari makanan hangat yang murah meriah ya.\n\nBeberapa ide yang bisa kamu coba:\n\n1.  **Bakso/Mie Ayam:** Ini sih juara umum! Hangat, kuahnya gurih, isiannya mantap, dan harganya bersahabat banget.\n2.  **Soto Ayam/Soto Lamongan:** Kuah bening atau kuningnya yang segar, ditambah nasi hangat, bikin badan langsung plong.\n3.  **Nasi Goreng/Mie Goreng:** Meskipun digoreng, tapi kalau masih panas-panas dari wajan, rasanya nikmat dan mengenyangkan. Bisa request pedas biar makin nampol.\n4.  **Bubur Ayam:** Kalau mau yang lebih ringan tapi tetap hangat dan mengenyangkan. Apalagi kalau pakai topping komplit.\n5.  **Ronde/Wedang Jahe (kalau cuma mau camilan hangat):** Ini lebih ke minuman dan camilan, tapi kalau lagi nggak terlalu lapar dan cuma butuh kehangatan, ini pilihan yang pas.\n\nDari pilihan-pilihan itu, ada yang jadi favoritmu atau ada ide lain?",
+          "spokenChinese": [],
+          "speechSegments": [],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 0,
+            "billableCharacters": 0,
+            "chineseRequestCount": 0,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 968,
+            "token_output": 261,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0009429,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 551,
+            "fullResponseMs": 2750,
+            "modelTimeToFirstOutputMs": 546.2903410000145
+          },
+          "truncated": false,
+          "generationId": "gen_01M611YQP6J18BV3DR17N7MD1K",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "C6",
+      "message": "Yang tadi di atas bisa dibacain lagi?",
+      "result": {
+        "status": 200,
+        "firstTextMs": 963,
+        "fullMs": 1646,
+        "streamedText": "Oke, yang mana yang mau dibacain lagi?\n\nApakah yang ini:\n**我爱小明 (wǒ ài Xiǎo Míng)**\nArtinya: \"Aku mencintai Xiao Ming\" atau \"Aku menyayangi Xiao Ming\".\n\nAtau yang ini:\n**小明爱我 (Xiǎo Míng ài wǒ)**\nArtinya: \"Xiao Ming mencintaiku\" atau \"Xiao Ming menyayangiku\".\n\nAtau mungkin yang lain? Sebutkan saja ya bagian mana yang kamu maksud.",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Oke, yang mana yang mau dibacain lagi?\n\nApakah yang ini:\n**我爱小明 (wǒ ài Xiǎo Míng)**\nArtinya: \"Aku mencintai Xiao Ming\" atau \"Aku menyayangi Xiao Ming\".\n\nAtau yang ini:\n**小明爱我 (Xiǎo Míng ài wǒ)**\nArtinya: \"Xiao Ming mencintaiku\" atau \"Xiao Ming menyayangiku\".\n\nAtau mungkin yang lain? Sebutkan saja ya bagian mana yang kamu maksud.",
+          "spokenChinese": [],
+          "speechSegments": [],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 0,
+            "billableCharacters": 0,
+            "chineseRequestCount": 0,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 961,
+            "token_output": 111,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0005658,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 589,
+            "fullResponseMs": 1264,
+            "modelTimeToFirstOutputMs": 585.0275700000057
+          },
+          "truncated": false,
+          "generationId": "gen_01M611Z7D4982ER878KXQR2185",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    },
+    {
+      "id": "C7",
+      "message": "yang kata berdua di atas tadi kamu kasih saya itu, bukan pake kata berdua",
+      "result": {
+        "status": 200,
+        "firstTextMs": 1100,
+        "fullMs": 2070,
+        "streamedText": "Ah, maaf, saya salah tangkap! Maksudnya yang ini ya:\n\n1.  **我爱小明 (wǒ ài Xiǎo Míng)**\n    *   **我 (wǒ)**: saya/aku\n    *   **爱 (ài)**: cinta/sayang\n    *   **小明 (Xiǎo Míng)**: Xiao Ming\n    *   Artinya: \"Aku mencintai Xiao Ming\" atau \"Aku menyayangi Xiao Ming\".\n\n2.  **小明爱我 (Xiǎo Míng ài wǒ)**\n    *   **小明 (Xiǎo Míng)**: Xiao Ming\n    *   **爱 (ài)**: cinta/sayang\n    *   **我 (wǒ)**: saya/aku\n    *   Artinya: \"Xiao Ming mencintaiku\" atau \"Xiao Ming menyayangiku\".\n\nApakah ini yang kamu maksud?",
+        "complete": {
+          "type": "complete",
+          "experiment": "NATIVE_COACH_V1",
+          "answer": "Ah, maaf, saya salah tangkap! Maksudnya yang ini ya:\n\n1.  **我爱小明 (wǒ ài Xiǎo Míng)**\n    *   **我 (wǒ)**: saya/aku\n    *   **爱 (ài)**: cinta/sayang\n    *   **小明 (Xiǎo Míng)**: Xiao Ming\n    *   Artinya: \"Aku mencintai Xiao Ming\" atau \"Aku menyayangi Xiao Ming\".\n\n2.  **小明爱我 (Xiǎo Míng ài wǒ)**\n    *   **小明 (Xiǎo Míng)**: Xiao Ming\n    *   **爱 (ài)**: cinta/sayang\n    *   **我 (wǒ)**: saya/aku\n    *   Artinya: \"Xiao Ming mencintaiku\" atau \"Xiao Ming menyayangiku\".\n\nApakah ini yang kamu maksud?",
+          "spokenChinese": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "indonesian": "saya/aku"
+            },
+            {
+              "text": "爱",
+              "pinyin": "ài",
+              "indonesian": "cinta/sayang"
+            },
+            {
+              "text": "小明",
+              "pinyin": "Xiǎo Míng",
+              "indonesian": "Xiao Ming"
+            }
+          ],
+          "speechSegments": [
+            {
+              "language": "zh-CN",
+              "text": "我"
+            },
+            {
+              "language": "zh-CN",
+              "text": "爱"
+            },
+            {
+              "language": "zh-CN",
+              "text": "小明"
+            }
+          ],
+          "tts": {
+            "policy": "EXPLICIT_VALIDATED_CHINESE_ONLY",
+            "eligibleRequestCount": 3,
+            "billableCharacters": 4,
+            "chineseRequestCount": 3,
+            "nonChineseRequestCount": 0,
+            "rejectedItems": 0
+          },
+          "usage": {
+            "token_input": 815,
+            "token_output": 194,
+            "model_calls": 1,
+            "estimated_ai_cost": 0.0007295,
+            "model_used": "google/gemini-2.5-flash"
+          },
+          "performance": {
+            "timeToFirstTextMs": 759,
+            "fullResponseMs": 1728,
+            "modelTimeToFirstOutputMs": 754.6236389999976
+          },
+          "truncated": false,
+          "generationId": "gen_01M611ZNPQB02HD0KG6WJCXAVZ",
+          "skillVersion": "NATIVE_COACH_V1"
+        },
+        "error": null
+      }
+    }
+  ],
+  "contextHistory": [
+    {
+      "role": "user",
+      "text": "Aku mau belajar 小明爱我, gimana bacanya?"
+    },
+    {
+      "role": "assistant",
+      "text": "Halo! Tentu, mari kita pelajari kalimat \"小明爱我\" (xiǎo míng ài wǒ).\n\nIni cara membacanya:\n\n*   **小明 (xiǎo míng)**: Ini adalah nama orang, \"Xiao Ming\".\n    *   **小 (xiǎo)** dibaca seperti \"siao\" tapi dengan nada ketiga (turun lalu naik).\n    *   **明 (míng)** dibaca seperti \"ming\" dengan nada kedua (naik).\n*   **爱 (ài)**: Artinya \"cinta\" atau \"sayang\".\n    *   Dibaca seperti \"ai\" (seperti kata \"hai\" tapi lebih pendek dan nadanya turun lalu naik).\n*   **我 (wǒ)**: Artinya \"saya\" atau \"aku\".\n    *   Dibaca seperti \"wo\" dengan nada ketiga (turun lalu naik).\n\nJadi, kalau digabungkan, **小明爱我 (xiǎo míng ài wǒ)** artinya \"Xiao Ming mencintaiku\" atau \"Xiao Ming menyayangiku\".\n\nApakah ada bagian yang ingin kamu ulangi atau tanyakan lagi?",
+      "teaching": [
+        {
+          "text": "小明",
+          "pinyin": "xiǎo míng",
+          "indonesian": "Ini adalah nama orang, \"Xiao Ming\"."
+        },
+        {
+          "text": "爱",
+          "pinyin": "ài",
+          "indonesian": "Artinya \"cinta\" atau \"sayang\"."
+        },
+        {
+          "text": "我",
+          "pinyin": "wǒ",
+          "indonesian": "Artinya \"saya\" atau \"aku\"."
+        }
+      ],
+      "breakdowns": [
+        {
+          "sentence": "小明爱我",
+          "pinyin": "Xiǎo Míng ài wǒ",
+          "indonesian": "Xiao Ming mencintaiku",
+          "words": [
+            {
+              "text": "小明",
+              "pinyin": "Xiǎo Míng",
+              "indonesian": "Xiao Ming (nama orang)"
+            },
+            {
+              "text": "爱",
+              "pinyin": "ài",
+              "indonesian": "cinta, sayang"
+            },
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "indonesian": "aku, saya"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "text": "Bisa pisahin kata-katanya satu-satu?"
+    },
+    {
+      "role": "assistant",
+      "text": "Tentu saja! Mari kita pisahkan dan bahas satu per satu ya:\n\n1.  **小 (xiǎo)**\n    *   Artinya: kecil\n    *   Cara baca: Seperti \"siao\" dalam bahasa Indonesia, tapi nadanya adalah nada ketiga (turun sedikit lalu naik lagi). Coba bayangkan seperti kamu bilang \"hai\" tapi dengan intonasi yang sedikit melengkung ke bawah lalu ke atas.\n\n2.  **明 (míng)**\n    *   Artinya: terang, cerah\n    *   Cara baca: Seperti \"ming\" dalam bahasa Indonesia, tapi nadanya adalah nada kedua (naik). Bayangkan seperti kamu bertanya \"ha?\" dengan nada yang naik.\n\n    *Catatan: Ketika digabungkan menjadi **小明 (Xiǎo Míng)**, ini adalah nama orang, seperti \"Budi\" atau \"Ani\" di Indonesia.*\n\n3.  **爱 (ài)**\n    *   Artinya: cinta, sayang\n    *   Cara baca: Seperti \"ai\" (seperti \"ai\" pada kata \"cinta\" tapi nadanya turun lalu naik). Ini juga nada keempat (turun tajam).\n\n4.  **我 (wǒ)**\n    *   Artinya: saya, aku\n    *   Cara baca: Seperti \"wo\" dalam bahasa Indonesia, tapi nadanya adalah nada ketiga (turun sedikit lalu naik lagi), sama seperti nada pada **小 (xiǎo)**.\n\nBagaimana? Apakah penjelasan per kata ini lebih jelas? Ada yang mau dicoba diucapkan?",
+      "teaching": [],
+      "breakdowns": []
+    },
+    {
+      "role": "user",
+      "text": "Yang kata 爱 tadi itu artinya apa?"
+    },
+    {
+      "role": "assistant",
+      "text": "Oh, maaf, saya terpotong tadi!\n\nYang kata **爱 (ài)** itu artinya **cinta** atau **sayang**.\n\nCara bacanya: Seperti \"ai\" (seperti \"ai\" pada kata \"cinta\" dalam bahasa Indonesia), tapi nadanya adalah nada keempat (turun tajam).",
+      "teaching": [],
+      "breakdowns": []
+    },
+    {
+      "role": "user",
+      "text": "Kalau dibalik jadi 我爱小明 gimana?"
+    },
+    {
+      "role": "assistant",
+      "text": "Nah, pertanyaan bagus! Kalau dibalik jadi **我爱小明 (wǒ ài Xiǎo Míng)**, artinya juga ikut berubah.\n\n*   **我 (wǒ)**: saya/aku\n*   **爱 (ài)**: cinta/sayang\n*   **小明 (Xiǎo Míng)**: Xiao Ming\n\nJadi, **我爱小明 (wǒ ài Xiǎo Míng)** artinya menjadi **\"Aku mencintai Xiao Ming\"** atau **\"Aku menyayangi Xiao Ming\"**.\n\nPerhatikan perbedaannya dengan yang pertama tadi, **小明爱我 (Xiǎo Míng ài wǒ)** yang artinya \"Xiao Ming mencintaiku\". Posisinya menentukan siapa yang mencintai dan siapa yang dicintai.\n\nAda lagi yang ingin ditanyakan?",
+      "teaching": [
+        {
+          "text": "我",
+          "pinyin": "wǒ",
+          "indonesian": "saya/aku"
+        },
+        {
+          "text": "爱",
+          "pinyin": "ài",
+          "indonesian": "cinta/sayang"
+        },
+        {
+          "text": "小明",
+          "pinyin": "Xiǎo Míng",
+          "indonesian": "Xiao Ming"
+        }
+      ],
+      "breakdowns": []
+    },
+    {
+      "role": "user",
+      "text": "Sekarang ganti topik dulu: makanan hangat murah setelah kerja enaknya apa?"
+    },
+    {
+      "role": "assistant",
+      "text": "Wah, topik yang asyik nih! Setelah kerja, apalagi kalau cuaca lagi dingin atau capek, memang paling enak cari makanan hangat yang murah meriah ya.\n\nBeberapa ide yang bisa kamu coba:\n\n1.  **Bakso/Mie Ayam:** Ini sih juara umum! Hangat, kuahnya gurih, isiannya mantap, dan harganya bersahabat banget.\n2.  **Soto Ayam/Soto Lamongan:** Kuah bening atau kuningnya yang segar, ditambah nasi hangat, bikin badan langsung plong.\n3.  **Nasi Goreng/Mie Goreng:** Meskipun digoreng, tapi kalau masih panas-panas dari wajan, rasanya nikmat dan mengenyangkan. Bisa request pedas biar makin nampol.\n4.  **Bubur Ayam:** Kalau mau yang lebih ringan tapi tetap hangat dan mengenyangkan. Apalagi kalau pakai topping komplit.\n5.  **Ronde/Wedang Jahe (kalau cuma mau camilan hangat):** Ini lebih ke minuman dan camilan, tapi kalau lagi nggak terlalu lapar dan cuma butuh kehangatan, ini pilihan yang pas.\n\nDari pilihan-pilihan itu, ada yang jadi favoritmu atau ada ide lain?",
+      "teaching": [],
+      "breakdowns": []
+    },
+    {
+      "role": "user",
+      "text": "Yang tadi di atas bisa dibacain lagi?"
+    },
+    {
+      "role": "assistant",
+      "text": "Oke, yang mana yang mau dibacain lagi?\n\nApakah yang ini:\n**我爱小明 (wǒ ài Xiǎo Míng)**\nArtinya: \"Aku mencintai Xiao Ming\" atau \"Aku menyayangi Xiao Ming\".\n\nAtau yang ini:\n**小明爱我 (Xiǎo Míng ài wǒ)**\nArtinya: \"Xiao Ming mencintaiku\" atau \"Xiao Ming menyayangiku\".\n\nAtau mungkin yang lain? Sebutkan saja ya bagian mana yang kamu maksud.",
+      "teaching": [],
+      "breakdowns": []
+    },
+    {
+      "role": "user",
+      "text": "yang kata berdua di atas tadi kamu kasih saya itu, bukan pake kata berdua"
+    },
+    {
+      "role": "assistant",
+      "text": "Ah, maaf, saya salah tangkap! Maksudnya yang ini ya:\n\n1.  **我爱小明 (wǒ ài Xiǎo Míng)**\n    *   **我 (wǒ)**: saya/aku\n    *   **爱 (ài)**: cinta/sayang\n    *   **小明 (Xiǎo Míng)**: Xiao Ming\n    *   Artinya: \"Aku mencintai Xiao Ming\" atau \"Aku menyayangi Xiao Ming\".\n\n2.  **小明爱我 (Xiǎo Míng ài wǒ)**\n    *   **小明 (Xiǎo Míng)**: Xiao Ming\n    *   **爱 (ài)**: cinta/sayang\n    *   **我 (wǒ)**: saya/aku\n    *   Artinya: \"Xiao Ming mencintaiku\" atau \"Xiao Ming menyayangiku\".\n\nApakah ini yang kamu maksud?",
+      "teaching": [
+        {
+          "text": "我",
+          "pinyin": "wǒ",
+          "indonesian": "saya/aku"
+        },
+        {
+          "text": "爱",
+          "pinyin": "ài",
+          "indonesian": "cinta/sayang"
+        },
+        {
+          "text": "小明",
+          "pinyin": "Xiǎo Míng",
+          "indonesian": "Xiao Ming"
+        }
+      ],
+      "breakdowns": []
+    }
+  ],
+  "tts": [
+    {
+      "text": "小明爱我",
+      "status": 200,
+      "latencyMs": 1237,
+      "bytes": 7920,
+      "contentType": "audio/mpeg",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "cache": "MISS"
+    },
+    {
+      "text": "小明",
+      "status": 200,
+      "latencyMs": 661,
+      "bytes": 7632,
+      "contentType": "audio/mpeg",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "cache": "MISS"
+    },
+    {
+      "text": "爱",
+      "status": 200,
+      "latencyMs": 827,
+      "bytes": 7632,
+      "contentType": "audio/mpeg",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "cache": "MISS"
+    },
+    {
+      "text": "我",
+      "status": 200,
+      "latencyMs": 826,
+      "bytes": 7632,
+      "contentType": "audio/mpeg",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "cache": "MISS"
+    },
+    {
+      "text": "小明爱我",
+      "status": 200,
+      "latencyMs": 503,
+      "bytes": 7920,
+      "contentType": "audio/mpeg",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "cache": "HIT"
+    }
+  ]
+}
