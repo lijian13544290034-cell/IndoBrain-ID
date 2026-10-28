@@ -52,6 +52,8 @@ async function verifyViewport(name, viewport) {
   });
 
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await page.waitForSelector('button', { timeout: 15_000 });
+  await new Promise((resolve) => setTimeout(resolve, 1_500));
   const started = await page.evaluate(() => {
     const button = [...document.querySelectorAll('button')].find((item) => /Mulai ngobrol/i.test(item.textContent || ''));
     button?.click();
