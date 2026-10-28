@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { playBrowserAudioBlob, prepareBrowserAudio } from '@/lib/browser-audio';
+import { splitInlineChinese } from '@/lib/chinese-inline-fragments';
 
 type ChineseItem = { text: string; pinyin: string; indonesian: string };
 type PerformanceMetrics = {
@@ -48,6 +49,7 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
   const [turns, setTurns] = useState<Turn[]>([]);
   const [playing, setPlaying] = useState('');
   const [ttsReadyMs, setTtsReadyMs] = useState<number | null>(null);
+  const [ttsError, setTtsError] = useState('');
   const [sessionId] = useState(newSessionId);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -173,7 +175,7 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
   async function playChinese(text: string) {
     const prepared = prepareBrowserAudio();
     const startedAt = performance.now();
-    setError('');
+    setTtsError('');
     setPlaying(text);
     setTtsReadyMs(null);
     try {
@@ -191,7 +193,7 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
       setTtsReadyMs(Math.round(performance.now() - startedAt));
       await playBrowserAudioBlob(audio, prepared);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Audio gagal diputar.');
+      setTtsError(caught instanceof Error ? caught.message : 'Audio gagal diputar.');
     } finally {
       setPlaying('');
     }
@@ -202,6 +204,7 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
     setTurns([]);
     setPlaying('');
     setTtsReadyMs(null);
+    setTtsError('');
     setRetryText('');
     setError('');
   }
@@ -233,7 +236,16 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
       {turns.map((turn) => <article key={turn.id} className={turn.role === 'user'
         ? 'ml-6 break-words rounded-2xl rounded-br-md bg-violet-700 p-4 text-white'
         : 'mr-2 break-words rounded-2xl rounded-bl-md border border-stone-200 bg-white p-4 text-stone-900'}>
-        <p className="whitespace-pre-wrap text-sm leading-6">{turn.text || (turn.streaming ? '…' : '')}</p>
+        <p className="whitespace-pre-wrap text-sm leading-6">{turn.role === 'assistant' && turn.text
+          ? splitInlineChinese(turn.text).map((fragment, index) => fragment.kind === 'chinese'
+            ? <button key={`${turn.id}-inline-zh-${index}`} type="button" lang="zh-CN"
+              aria-label={`Putar Mandarin: ${fragment.text}`} title="Klik untuk dengar Mandarin"
+              onClick={() => playChinese(fragment.text)} disabled={playing === fragment.text}
+              className="inline rounded-sm bg-violet-50 px-0.5 font-medium text-violet-900 underline decoration-violet-300 decoration-dotted underline-offset-2 hover:bg-violet-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 disabled:opacity-60">
+              {fragment.text}
+            </button>
+            : <span key={`${turn.id}-inline-text-${index}`}>{fragment.text}</span>)
+          : turn.text || (turn.streaming ? '…' : '')}</p>
         {turn.streaming ? <p className="mt-2 text-xs font-semibold text-violet-600">Sedang menulis…</p> : null}
         {turn.role === 'assistant' && turn.chinese.length ? <div className="mt-3 space-y-2 border-t border-stone-100 pt-3">
           {turn.chinese.map((item) => <div key={`${turn.id}-${item.text}`} className="rounded-xl bg-violet-50 px-3 py-2.5">
@@ -269,6 +281,7 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
         <button type="submit" disabled={sending || !message.trim()} className="min-w-20 shrink-0 rounded-2xl bg-violet-700 px-4 font-bold text-white hover:bg-violet-800 disabled:opacity-50">Kirim</button>
       </form>
       {ttsReadyMs !== null ? <p className="mt-2 text-[11px] text-stone-400">Audio siap dalam {ttsReadyMs} ms</p> : null}
+      {ttsError ? <p role="status" className="mt-2 text-xs text-amber-700">{ttsError}</p> : null}
       {error ? <div role="alert" className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
         <p>{error}</p>
         {retryText ? <button type="button" onClick={() => { setMessage(retryText); setError(''); }} className="mt-2 font-bold underline">Masukkan lagi pesan terakhir</button> : null}
