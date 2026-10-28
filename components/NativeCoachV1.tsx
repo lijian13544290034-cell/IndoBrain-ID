@@ -5,6 +5,12 @@ import { playBrowserAudioBlob, prepareBrowserAudio } from '@/lib/browser-audio';
 import { splitInlineChinese } from '@/lib/chinese-inline-fragments';
 
 type ChineseItem = { text: string; pinyin: string; indonesian: string };
+type Breakdown = {
+  sentence: string;
+  pinyin: string;
+  indonesian: string;
+  words: ChineseItem[];
+};
 type PerformanceMetrics = {
   timeToFirstTextMs: number | null;
   fullResponseMs: number;
@@ -15,6 +21,7 @@ type Turn = {
   role: 'user' | 'assistant';
   text: string;
   chinese: ChineseItem[];
+  breakdowns?: Record<string, Breakdown>;
   streaming?: boolean;
   performance?: PerformanceMetrics;
 };
@@ -50,6 +57,8 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
   const [playing, setPlaying] = useState('');
   const [ttsReadyMs, setTtsReadyMs] = useState<number | null>(null);
   const [ttsError, setTtsError] = useState('');
+  const [breaking, setBreaking] = useState('');
+  const [breakdownError, setBreakdownError] = useState('');
   const [sessionId] = useState(newSessionId);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -109,7 +118,12 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
         body: JSON.stringify({
           message: clean,
           sessionId,
-          recentTurns: history.slice(-8).map((turn) => ({ role: turn.role, text: turn.text })),
+          recentTurns: history.slice(-8).map((turn) => ({
+            role: turn.role,
+            text: turn.text,
+            teaching: turn.chinese,
+            breakdowns: Object.values(turn.breakdowns || {}),
+          })),
         }),
       });
       if (!response.ok || !response.body) {
@@ -199,6 +213,41 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
     }
   }
 
+  async function requestBreakdown(turnId: string, text: string) {
+    if (breaking) return;
+    const existing = turns.find((turn) => turn.id === turnId)?.breakdowns?.[text];
+    if (existing) {
+      setTurns((current) => current.map((turn) => turn.id === turnId
+        ? { ...turn, breakdowns: { ...turn.breakdowns, [text]: existing } }
+        : turn));
+      return;
+    }
+    setBreaking(`${turnId}:${text}`);
+    setBreakdownError('');
+    try {
+      const turnIndex = turns.findIndex((turn) => turn.id === turnId);
+      const context = turns.slice(Math.max(0, turnIndex - 2), turnIndex + 1)
+        .map((turn) => `${turn.role}: ${turn.text}`)
+        .join('\n')
+        .slice(-800);
+      const response = await fetch('/api/mandarin-coach/word-breakdown', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ text, context, sessionId }),
+      });
+      const payload = await response.json().catch(() => null) as { breakdown?: Breakdown; error?: string } | null;
+      if (!response.ok || !payload?.breakdown) throw new Error(payload?.error || 'Rincian kata belum tersedia.');
+      setTurns((current) => current.map((turn) => turn.id === turnId ? {
+        ...turn,
+        breakdowns: { ...turn.breakdowns, [text]: payload.breakdown! },
+      } : turn));
+    } catch (caught) {
+      setBreakdownError(caught instanceof Error ? caught.message : 'Rincian kata belum tersedia.');
+    } finally {
+      setBreaking('');
+    }
+  }
+
   function clearConversation() {
     localStorage.removeItem(STORAGE_KEY);
     setTurns([]);
@@ -207,6 +256,8 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
     setTtsError('');
     setRetryText('');
     setError('');
+    setBreaking('');
+    setBreakdownError('');
   }
 
   if (!ready) return <section className="rounded-3xl border border-violet-200 bg-white p-6 shadow-sm">
@@ -233,7 +284,11 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
       {!turns.length ? <div className="rounded-2xl border border-dashed border-violet-300 bg-white p-4 text-sm leading-6 text-stone-600">
         Ceritakan kebutuhanmu dengan bahasa sehari-hari. Guru akan menjawab kebutuhan itu dulu, bukan memaksamu masuk kursus.
       </div> : null}
-      {turns.map((turn) => <article key={turn.id} className={turn.role === 'user'
+      {turns.map((turn) => {
+        const chineseFragments = turn.role === 'assistant'
+          ? [...new Set(splitInlineChinese(turn.text).filter((fragment) => fragment.kind === 'chinese').map((fragment) => fragment.text))].slice(0, 4)
+          : [];
+        return <article key={turn.id} className={turn.role === 'user'
         ? 'ml-6 break-words rounded-2xl rounded-br-md bg-violet-700 p-4 text-white'
         : 'mr-2 break-words rounded-2xl rounded-bl-md border border-stone-200 bg-white p-4 text-stone-900'}>
         <p className="whitespace-pre-wrap text-sm leading-6">{turn.role === 'assistant' && turn.text
@@ -248,6 +303,39 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
             : <span key={`${turn.id}-inline-text-${index}`}>{fragment.text}</span>)
           : turn.text || (turn.streaming ? '…' : '')}</p>
         {turn.streaming ? <p className="mt-2 text-xs font-semibold text-violet-600">Sedang menulis…</p> : null}
+        {turn.role === 'assistant' && !turn.streaming && chineseFragments.length ? <div className="mt-2 flex flex-wrap gap-1.5">
+          {chineseFragments.map((text) => <button key={`${turn.id}-break-${text}`} type="button"
+            onClick={() => requestBreakdown(turn.id, text)} disabled={Boolean(breaking)}
+            className="rounded-full border border-violet-200 bg-white px-2.5 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-50 disabled:opacity-50">
+            {breaking === `${turn.id}:${text}` ? 'Mengurai…' : `拆词 · ${text}`}
+          </button>)}
+        </div> : null}
+        {turn.role === 'assistant' && Object.values(turn.breakdowns || {}).length ? <div className="mt-3 space-y-2">
+          {Object.values(turn.breakdowns || {}).map((breakdown) => <details key={`${turn.id}-details-${breakdown.sentence}`} open
+            className="rounded-xl border border-violet-100 bg-violet-50/70 px-3 py-2.5">
+            <summary className="cursor-pointer list-none text-xs font-bold text-violet-800">拆词 · Rincian kata</summary>
+            <div className="mt-2 flex items-start justify-between gap-3 border-b border-violet-100 pb-2">
+              <div className="min-w-0">
+                <p lang="zh-CN" className="break-words text-base font-bold text-violet-950">{breakdown.sentence}</p>
+                <p className="break-words text-xs font-semibold text-violet-700">{breakdown.pinyin}</p>
+                <p className="break-words text-xs leading-5 text-stone-600">{breakdown.indonesian}</p>
+              </div>
+              <button type="button" onClick={() => playChinese(breakdown.sentence)} disabled={playing === breakdown.sentence}
+                aria-label={`Putar ${breakdown.sentence}`} className="min-h-10 min-w-10 shrink-0 rounded-full bg-violet-700 text-sm text-white disabled:opacity-50">🔊</button>
+            </div>
+            <div className="divide-y divide-violet-100">
+              {breakdown.words.map((word, index) => <div key={`${breakdown.sentence}-${word.text}-${index}`} className="flex items-center justify-between gap-3 py-2">
+                <div className="min-w-0">
+                  <p lang="zh-CN" className="break-words text-base font-bold text-stone-900">{word.text}</p>
+                  <p className="break-words text-xs font-semibold text-violet-700">{word.pinyin}</p>
+                  <p className="break-words text-xs text-stone-600">{word.indonesian}</p>
+                </div>
+                <button type="button" onClick={() => playChinese(word.text)} disabled={playing === word.text}
+                  aria-label={`Putar ${word.text}`} className="min-h-10 min-w-10 shrink-0 rounded-full border border-violet-200 bg-white text-sm disabled:opacity-50">🔊</button>
+              </div>)}
+            </div>
+          </details>)}
+        </div> : null}
         {turn.role === 'assistant' && turn.chinese.length ? <div className="mt-3 space-y-2 border-t border-stone-100 pt-3">
           {turn.chinese.map((item) => <div key={`${turn.id}-${item.text}`} className="rounded-xl bg-violet-50 px-3 py-2.5">
             <div className="flex items-start justify-between gap-3">
@@ -266,7 +354,7 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
         {turn.role === 'assistant' && turn.performance ? <p className="mt-3 text-[11px] text-stone-400">
           Mulai {turn.performance.timeToFirstTextMs ?? '–'} ms · selesai {turn.performance.fullResponseMs} ms
         </p> : null}
-      </article>)}
+      </article>})}
       <div ref={endRef} />
     </div>
 
@@ -283,6 +371,7 @@ export default function NativeCoachV1({ initialReady }: { initialReady: boolean 
       </form>
       {ttsReadyMs !== null ? <p className="mt-2 text-[11px] text-stone-400">Audio siap dalam {ttsReadyMs} ms</p> : null}
       {ttsError ? <p role="status" className="mt-2 text-xs text-amber-700">{ttsError}</p> : null}
+      {breakdownError ? <p role="status" className="mt-2 text-xs text-amber-700">{breakdownError}</p> : null}
       {error ? <div role="alert" className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
         <p>{error}</p>
         {retryText ? <button type="button" onClick={() => { setMessage(retryText); setError(''); }} className="mt-2 font-bold underline">Masukkan lagi pesan terakhir</button> : null}

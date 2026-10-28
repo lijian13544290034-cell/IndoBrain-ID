@@ -21,7 +21,25 @@ function safeBody(value: unknown) {
     if (!item || typeof item !== 'object') return [];
     const turn = item as Record<string, unknown>;
     if ((turn.role !== 'user' && turn.role !== 'assistant') || typeof turn.text !== 'string') return [];
-    return [{ role: turn.role, text: turn.text.slice(0, 1_200) }];
+    const teaching = Array.isArray(turn.teaching) ? turn.teaching.flatMap((entry): NonNullable<NativeCoachTurn['teaching']> => {
+      if (!entry || typeof entry !== 'object') return [];
+      const item = entry as Record<string, unknown>;
+      if (typeof item.text !== 'string' || typeof item.pinyin !== 'string' || typeof item.indonesian !== 'string') return [];
+      return [{ text: item.text.slice(0, 120), pinyin: item.pinyin.slice(0, 180), indonesian: item.indonesian.slice(0, 240) }];
+    }).slice(0, 8) : [];
+    const breakdowns = Array.isArray(turn.breakdowns) ? turn.breakdowns.flatMap((entry): NonNullable<NativeCoachTurn['breakdowns']> => {
+      if (!entry || typeof entry !== 'object') return [];
+      const item = entry as Record<string, unknown>;
+      if (typeof item.sentence !== 'string' || typeof item.pinyin !== 'string' || typeof item.indonesian !== 'string' || !Array.isArray(item.words)) return [];
+      const words = item.words.flatMap((word): NonNullable<NativeCoachTurn['teaching']> => {
+        if (!word || typeof word !== 'object') return [];
+        const value = word as Record<string, unknown>;
+        if (typeof value.text !== 'string' || typeof value.pinyin !== 'string' || typeof value.indonesian !== 'string') return [];
+        return [{ text: value.text.slice(0, 60), pinyin: value.pinyin.slice(0, 100), indonesian: value.indonesian.slice(0, 160) }];
+      }).slice(0, 12);
+      return [{ sentence: item.sentence.slice(0, 120), pinyin: item.pinyin.slice(0, 180), indonesian: item.indonesian.slice(0, 240), words }];
+    }).slice(0, 4) : [];
+    return [{ role: turn.role, text: turn.text.slice(0, 1_600), teaching, breakdowns }];
   }).slice(-8) : [];
   return { message, sessionId, recentTurns };
 }
@@ -61,7 +79,6 @@ export async function POST(request: Request) {
 
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
-        let streamedAnswer = '';
         let firstTextAt: number | null = null;
         let streamedText = '';
         const emitText = (text: string) => {
@@ -73,11 +90,7 @@ export async function POST(request: Request) {
 
         controller.enqueue(event('accepted', { acceptedAt: new Date(acceptedAt).toISOString() }));
         try {
-          for await (const partial of generation.result.partialOutputStream) {
-            const nextAnswer = typeof partial.answer === 'string' ? partial.answer : streamedAnswer;
-            if (nextAnswer.startsWith(streamedAnswer)) emitText(nextAnswer.slice(streamedAnswer.length));
-            streamedAnswer = nextAnswer;
-          }
+          for await (const delta of generation.result.textStream) emitText(delta);
 
           const finalized = await generation.finalize();
           if (generation.getStreamError() && !finalized.answer) throw generation.getStreamError();
@@ -127,7 +140,6 @@ export async function POST(request: Request) {
             performance,
             truncated: finalized.truncated,
             generationId: finalized.generationId,
-            repaired: finalized.repaired,
             skillVersion: 'NATIVE_COACH_V1',
           }));
         } catch (error) {
